@@ -1,0 +1,156 @@
+﻿@using Teknik.Models
+<div class="container">
+    <div class="row">
+        <center>
+            <img src="/Content/Images/logo-blue.svg" class="img-responsive" alt="Teknik">
+        </center>
+    </div>
+    <br />
+    <div class="row text-center">
+        <h2>
+            Teknik is dedicated to the advancement of technology and ideas, and we provide these services to help those who try to innovate.
+        </h2>
+    </div>
+</div>
+<br />
+<div class="container">
+    <div class="row">
+        <a href="@Url.Action("Index", "Upload")">
+            <div class="col-md-3 text-center">
+                <div class="thumbnail">
+                    <br />
+                    <i class="fa fa-lock fa-5x"></i>
+                    <div class="caption">
+                        <h3>Encrypted File Uploads</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="@Url.Action("Index", "Paste")">
+            <div class="col-md-3 text-center">
+                <div class="thumbnail">
+                    <br />
+                    <i class="fa fa-code fa-5x"></i>
+                    <div class="caption">
+                        <h3>Clean Pastebin</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="@Url.Action("Index", "Podcast")">
+            <div class="col-md-3 text-center">
+                <div class="thumbnail">
+                    <br />
+                    <i class="fa fa-microphone fa-5x"></i>
+                    <div class="caption">
+                        <h3>Technical Podcasts</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="@Url.Action("Index", "Help")/#Mumble">
+            <div class="col-md-3 text-center">
+                <div class="thumbnail">
+                    <br />
+                    <i class="fa fa-comments fa-5x"></i>
+                    <div class="caption">
+                        <h3>Mumble Server</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+<br />
+<div class="container">
+    <div class="row text-center">
+        <h1>Sign Up for free and get access to these features and more!</h1>
+    </div>
+    <br/>
+    <div class="row">
+        <a href="@Url.Action("Index", "Help")/#Mail">
+            <div class="col-md-3 text-center">
+                <div class="thumbnail">
+                    <br/>
+                    <i class="fa fa-at fa-5x"></i>
+                    <div class="caption">
+                        <h3>Free Email</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="@Url.Action("Index", "Git")">
+            <div class="col-md-3 text-center">
+                <div class="thumbnail">
+                    <br/>
+                    <i class="fa fa-git fa-5x"></i>
+                    <div class="caption">
+                        <h3>Unlimited Git Repositories</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="@Url.Action("Index", "Blog")">
+            <div class="col-md-3 text-center">
+                <div class="thumbnail">
+                    <br/>
+                    <i class="fa fa-book fa-5x"></i>
+                    <div class="caption">
+                        <h3>Personal Blog</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="@Url.Action("Index", "Help")/#IRC">
+            <div class="col-md-3 text-center">
+                <div class="thumbnail">
+                    <br/>
+                    <i class="fa fa-tag fa-5x"></i>
+                    <div class="caption">
+                        <h3>IRC Nickname</h3>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">Recent Blog Posts</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <ul class="list-group">
+                        @foreach (Post post in Model)
+                        {
+
+                            <script>
+                                var converter = new Markdown.getSanitizingConverter();
+                                // Title Conversion
+                                var old_post = $("#title_@post.PostId").text();
+                                var new_post = converter.makeHtml(old_post);
+                                $("#title_@post.PostId").html(new_post);
+                            </script>
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="blog-post-sm">
+                                            <h2 class="blog-post-title-sm text-left"><a href="@Url.Action("Index", "Blog")/@post.Blog.User.Username/@post.PostId" id="title_@post.PostId">@post.Title</a>
+                                            </h2>
+                                            <p class="blog-post-meta-sm text-left text-muted">
+                                                Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.Action("Index", "Profile")/@post.Blog.User.Username">@post.Blog.User.Username</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

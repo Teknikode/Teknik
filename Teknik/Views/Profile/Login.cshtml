@@ -1,0 +1,21 @@
+﻿@model Teknik.ViewModels.LoginViewModel
+
+<form role="form" id="loginForm" action="@Url.Action("Login", "Profile")" method="post" accept-charset="UTF-8">
+    @Html.ValidationSummary(true, "Login failed. Check your login details.")
+    <div class="form-group">
+        <input type="text" class="form-control" id="Username" value="" placeholder="Username" name="Username" data-val-required="The Username field is required." data-val="true" />
+        @Html.ValidationMessageFor(u => u.Username)
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control" id="Password" value="" placeholder="Password" name="Password" data-val-required="The Password field is required." data-val="true" />
+        @Html.ValidationMessageFor(u => u.Password)
+    </div>
+    <div class="checkbox">
+        <label>
+            <input id="RememberMe" type="checkbox" value="true" name="RememberMe" data-val-required="The Remember Me field is required." data-val="true" /><input name="RememberMe" type="hidden" value="false"> Remember Me
+        </label>
+    </div>
+    <div class="form-group text-center">
+        <button class="btn btn-primary" id="login_submit" type="submit" name="submit">Sign In</button>
+    </div>
+</form>
