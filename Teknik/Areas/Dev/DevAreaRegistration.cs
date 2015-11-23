@@ -18,7 +18,13 @@ namespace Teknik.Areas.Dev
             context.MapSubdomainRoute(
                  "Dev_subdomain", // Route name
                  "dev",
-                 "{area}/{controller}/{action}",    // URL with parameters 
+                 "Dev/{controller}/{action}",    // URL with parameters 
+                 new { area = "Dev", controller = "Dev", action = "Index" }  // Parameter defaults 
+             );
+            context.MapSubdomainRoute(
+                 "Dev_default", // Route name
+                 "dev",
+                 "",    // URL with parameters 
                  new { area = "Home", controller = "Home", action = "Index" }  // Parameter defaults 
              );
             //context.MapRoute(

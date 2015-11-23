@@ -17,12 +17,18 @@ namespace Teknik.Areas.Home
         {
             context.MapSubdomainRoute(
                  "Home_dev", // Route name
+                 "dev",
+                 "Home/{controller}/{action}",    // URL with parameters 
+                 new { area = "Home", controller = "Home", action = "Index" }  // Parameter defaults 
+             );
+            context.MapSubdomainRoute(
+                 "Home_subdomain", // Route name
                  "www",
                  "{controller}/{action}",    // URL with parameters 
                  new { area = this.AreaName, controller = "Home", action = "Index" }  // Parameter defaults 
              );
             context.MapSubdomainRoute(
-                 "Home_subdomain", // Route name
+                 "Home_default", // Route name
                  null,
                  "{controller}/{action}",    // URL with parameters 
                  new { area = this.AreaName, controller = "Home", action = "Index" }  // Parameter defaults 

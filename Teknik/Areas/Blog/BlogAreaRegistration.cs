@@ -21,6 +21,12 @@ namespace Teknik.Areas.Blog
             //     new { subdomain = "blog", area = this.AreaName, controller = "Blog", action = "Index", username = UrlParameter.Optional, page = UrlParameter.Optional }  // Parameter defaults 
             // );
             context.MapSubdomainRoute(
+                 "Blog_dev", // Route name
+                 "dev",
+                 "Blog/{controller}/{action}",    // URL with parameters 
+                 new { area = "Blog", controller = "Blog", action = "Index" }  // Parameter defaults 
+             );
+            context.MapSubdomainRoute(
                  "Blog_default", // Route name
                  "blog",
                  "{controller}/{action}/{username}/{page}",    // URL with parameters 
