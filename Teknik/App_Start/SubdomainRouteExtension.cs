@@ -5,14 +5,57 @@ namespace Teknik
 {
     public static class SubdomainRouteExtension
     {
-        public static void MapSubdomainRoute(this RouteCollection routes, string name, string url, object defaults = null, object constraints = null)
+        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, string subDomain, string url, object defaults)
         {
-            routes.Add(name, new SubdomainRoute(url)
-            {
-                Defaults = new RouteValueDictionary(defaults),
-                Constraints = new RouteValueDictionary(constraints),
-                DataTokens = new RouteValueDictionary()
-            });
+
+            SubdomainRoute route = new SubdomainRoute(
+                subDomain,
+                url,
+                new RouteValueDictionary(defaults),
+                new MvcRouteHandler());
+            routes.Add(name, route);
+
+            return route;
+        }
+
+        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, string subDomain, string url, object defaults)
+        {
+            SubdomainRoute route = new SubdomainRoute(
+                subDomain,
+                url,
+                new RouteValueDictionary(defaults),
+                new RouteValueDictionary(new {}),
+                new RouteValueDictionary(new {Area = context.AreaName}),
+                new MvcRouteHandler());
+
+            context.Routes.Add(name, route);
+            return route;
+        }
+
+        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, string subDomain, string url, object defaults, object constraints)
+        {
+            SubdomainRoute route = new SubdomainRoute(
+                subDomain,
+                url,
+                new RouteValueDictionary(defaults),
+                new RouteValueDictionary(constraints),
+                new RouteValueDictionary(new {Area = context.AreaName}),
+                new MvcRouteHandler());
+
+            context.Routes.Add(name, route);
+            return route;
+        }
+
+        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, string subDomain, string url, object defaults, object constraints)
+        {
+            SubdomainRoute route = new SubdomainRoute(
+                subDomain,
+                url,
+                new RouteValueDictionary(defaults),
+                new RouteValueDictionary(constraints),
+                new MvcRouteHandler());
+            routes.Add(name, route);
+            return route;
         }
     }
 }

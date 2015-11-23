@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
+using Teknik.Controllers;
 using Teknik.Models;
-using Teknik.ViewModels;
 
-namespace Teknik.Controllers
+namespace Teknik.Areas.Home.Controllers
 {
     public class HomeController : DefaultController
     {
+        // GET: Home/Home
         private TeknikEntities db = new TeknikEntities();
 
         [AllowAnonymous]
@@ -29,24 +28,6 @@ namespace Teknik.Controllers
 
             ViewBag.Title = Config.Title;
             return View(lastPosts);
-        }
-
-        [AllowAnonymous]
-        public ActionResult About()
-        {
-            ViewBag.Title = Config.Title + " - About";
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        [AllowAnonymous]
-        public ActionResult Contact()
-        {
-            ViewBag.Title = Config.Title + " - Contact";
-            ViewBag.Message = "Your contact page.";
-
-            return View();
         }
     }
 }

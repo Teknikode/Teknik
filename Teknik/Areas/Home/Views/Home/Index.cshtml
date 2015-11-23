@@ -138,10 +138,10 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="blog-post-sm">
-                                            <h2 class="blog-post-title-sm text-left"><a href="@Url.Action("Index", "Blog")/@post.Blog.User.Username/@post.PostId" id="title_@post.PostId">@post.Title</a>
+                                            <h2 class="blog-post-title-sm text-left"><a href="@Url.Action("Index", "Blog", new { area = "Blog"}, "https")/@post.Blog.User.Username/@post.PostId" id="title_@post.PostId">@post.Title</a>
                                             </h2>
                                             <p class="blog-post-meta-sm text-left text-muted">
-                                                Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.Action("Index", "Profile")/@post.Blog.User.Username">@post.Blog.User.Username</a>
+                                                Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.Action("Index", "Profile", new { area = "Blog"}, "https")/@post.Blog.User.Username">@post.Blog.User.Username</a>
                                             </p>
                                         </div>
                                     </div>

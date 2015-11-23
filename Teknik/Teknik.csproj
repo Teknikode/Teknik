@@ -54,6 +54,10 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="RouteDebugger, Version=2.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\routedebugger.2.1.4.0\lib\net40\RouteDebugger.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SecurityDriven.Inferno, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Inferno.1.0.0\lib\net451\SecurityDriven.Inferno.dll</HintPath>
       <Private>True</Private>
@@ -123,51 +127,24 @@
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Owin">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
       <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin">
-      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin">
-      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security">
-      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Facebook">
-      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.3.0.1\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies">
-      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth">
-      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Google">
-      <HintPath>..\packages\Microsoft.Owin.Security.Google.3.0.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Twitter">
-      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.3.0.1\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
-      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.3.0.1\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\About\AboutAreaRegistration.cs" />
+    <Compile Include="Areas\About\Controllers\AboutController.cs" />
+    <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
+    <Compile Include="Areas\Dev\DevAreaRegistration.cs" />
+    <Compile Include="Areas\Home\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Home\HomeAreaRegistration.cs" />
     <Compile Include="Configuration\Config.cs" />
-    <Compile Include="Controllers\BlogController.cs" />
+    <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Areas\Dev\Controllers\DevController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -181,7 +158,6 @@
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Startup.cs" />
     <Compile Include="App_Start\SubdomainRoute.cs" />
     <Compile Include="App_Start\SubdomainRouteExtension.cs" />
   </ItemGroup>
@@ -213,6 +189,17 @@
     <Content Include="Content\fonts\fontawesome-webfont.eot" />
     <Content Include="Content\fonts\FontAwesome.otf" />
     <Content Include="ConnectionStrings.config" />
+    <Content Include="Areas\Blog\Views\web.config" />
+    <Content Include="Areas\Blog\Views\Blog\Index.cshtml" />
+    <Content Include="Areas\Dev\Views\web.config" />
+    <Content Include="Areas\Home\Views\web.config" />
+    <Content Include="Areas\Home\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Dev\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Blog\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Home\Views\Home\Index.cshtml" />
+    <Content Include="Areas\About\Views\web.config" />
+    <Content Include="Areas\About\Views\About\Index.cshtml" />
+    <Content Include="Areas\About\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\IIS.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\common.js" />
@@ -245,20 +232,24 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Navbar.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
-    <Content Include="Views\Blog\Index.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\Login.cshtml" />
     <Content Include="Views\Profile\Register.cshtml" />
+    <Content Include="Areas\Dev\Views\Dev\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Default\" />
+    <Folder Include="Areas\About\Models\" />
+    <Folder Include="Areas\About\Views\Shared\" />
+    <Folder Include="Areas\Blog\Models\" />
+    <Folder Include="Areas\Blog\Views\Shared\" />
+    <Folder Include="Areas\Dev\Models\" />
+    <Folder Include="Areas\Dev\Views\Shared\" />
+    <Folder Include="Areas\Home\Models\" />
+    <Folder Include="Areas\Home\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

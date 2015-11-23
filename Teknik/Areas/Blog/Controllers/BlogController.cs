@@ -6,11 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.Controllers;
 using Teknik.Models;
 
-namespace Teknik.Controllers
+namespace Teknik.Areas.Blog.Controllers
 {
-    public class BlogController : Controller
+    public class BlogController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();
 
@@ -29,7 +30,7 @@ namespace Teknik.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Blog blog = db.Blogs.Find(id);
+            Models.Blog blog = db.Blogs.Find(id);
             if (blog == null)
             {
                 return HttpNotFound();
@@ -48,7 +49,7 @@ namespace Teknik.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "BlogId,UserId")] Blog blog)
+        public ActionResult Create([Bind(Include = "BlogId,UserId")] Models.Blog blog)
         {
             if (ModelState.IsValid)
             {
@@ -67,7 +68,7 @@ namespace Teknik.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Blog blog = db.Blogs.Find(id);
+            Models.Blog blog = db.Blogs.Find(id);
             if (blog == null)
             {
                 return HttpNotFound();
@@ -80,7 +81,7 @@ namespace Teknik.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "BlogId,UserId")] Blog blog)
+        public ActionResult Edit([Bind(Include = "BlogId,UserId")] Models.Blog blog)
         {
             if (ModelState.IsValid)
             {
@@ -98,7 +99,7 @@ namespace Teknik.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Blog blog = db.Blogs.Find(id);
+            Models.Blog blog = db.Blogs.Find(id);
             if (blog == null)
             {
                 return HttpNotFound();
@@ -111,7 +112,7 @@ namespace Teknik.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Blog blog = db.Blogs.Find(id);
+            Models.Blog blog = db.Blogs.Find(id);
             db.Blogs.Remove(blog);
             db.SaveChanges();
             return RedirectToAction("Index");

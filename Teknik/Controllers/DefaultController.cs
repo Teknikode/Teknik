@@ -12,7 +12,7 @@ namespace Teknik.Controllers
 
         protected string Subdomain
         {
-            get { return (string)Request.RequestContext.RouteData.Values["subdomain"]; }
+            get { return (string)Request.RequestContext.RouteData.Values["sub"]; }
         }
 
         protected Config Config
