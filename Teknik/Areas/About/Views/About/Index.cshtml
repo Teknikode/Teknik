@@ -1,0 +1,59 @@
+﻿@using Teknik.Models
+<div class="container">
+    <div class="row">
+        <div class="col-ms-12">
+            <h2 class="text-center">What we are About</h2>
+            <hr>
+            <p>
+                Teknik was created to provide our users free services that they can trust.  All of our services are treated with the utmost care to provide you with the best experience possible, and the best security with your data that we can give.
+            </p>
+            <p>
+                You can view our complete activity and statistics by visiting the @Html.ActionLink("Transparency", "Index", "Transparency", new { area = "Transparency" }, null) page.
+            </p>
+            <h2 class="text-center">What we Offer</h2>
+            <hr>
+            <div class="row">
+                <div class="col-sm-4 col-sm-offset-2 text-center">
+                    <h4>@Html.ActionLink("Fast and Secure Pastebin", "Index", "Paste", new { area = "Paste" }, null)</h4>
+                    <h4>@Html.ActionLink("Encrypted File Uploads", "Index", "Upload", new { area = "Upload" }, null)</h4>
+                    <h4>@Html.ActionLink("Free Email Address", "Index", "Mail", new { area = "Mail" }, null)</h4>
+                    <h4>@Html.ActionLink("Easy to Use API", "Api", "Help", new { area = "Help" }, null)</h4>
+                    <h4>@Html.ActionLink("Personal Git Repositories", "Index", "Git", new { area = "Git" }, null)</h4>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <h4>@Html.ActionLink("Personal Blog", "Index", "Blog", new { area = "Blog" }, null)</h4>
+                    <h4>@Html.ActionLink("Entertaining Podcasts", "Index", "Podcast", new { area = "Podcast" }, null)</h4>
+                    <h4>@Html.ActionLink("Mumble Server", "Mumble", "Help", new { area = "Help" }, null)</h4>
+                    <h4>@Html.ActionLink("Full Transparency", "Index", "Transparency", new { area = "Transparency" }, null)</h4>
+                    <h4>@Html.ActionLink("Completely Open Source", "Index", "Git", new { area = "Git" }, null)</h4>
+                </div>
+            </div>
+
+            <h2 class="text-center">How can I help?</h2>
+            <hr>
+            <p>
+                Teknik's source code can be located on our <a href="http://git.teknik.io/Teknikode/">Git Repository</a> as well as all our internal tools and projects.
+                <br />
+                <br />
+                Have a cool suggestion for the site?  Just submit it using the @Html.ActionLink("Feedback Form", "Index", "Contact", new { area = "Contact" }, null)!
+            </p>
+            <div class="alert alert-info">
+                <div class="text-center">
+                    <p>
+                        While we provide these services for free, sadly that doesn't make the cost magically go away.  If you think we are doing a great job and would like to say thanks, we would greatly appreciate a small donation so that we can pay the bills!  (Or buy some beer)
+                    </p>
+                    <p>
+                        <div class="input-group col-sm-6 col-sm-offset-3">
+                            <span class="input-group-addon" id="basic-addon1">Bitcoin Address</span>
+                            <input type="text" class="form-control" name="bitcoin_address" value="@Model.BitcoinAddress" readonly>
+                        </div>
+                        <br />
+                        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MBG93VKQ343P4">
+                            <button type="button" class="btn btn-default">Paypal Donation</button>
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
