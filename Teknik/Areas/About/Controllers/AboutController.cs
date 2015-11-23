@@ -16,7 +16,7 @@ namespace Teknik.Areas.About.Controllers
             ViewBag.Title = Config.Title + " - About";
             ViewBag.Message = "Your application description page.";
 
-            return View(Config);
+            return View();
         }
     }
 }

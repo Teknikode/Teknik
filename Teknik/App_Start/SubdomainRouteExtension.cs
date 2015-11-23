@@ -18,6 +18,30 @@ namespace Teknik
             return route;
         }
 
+        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, string subDomain, string url, object defaults, object constraints)
+        {
+            SubdomainRoute route = new SubdomainRoute(
+                subDomain,
+                url,
+                new RouteValueDictionary(defaults),
+                new RouteValueDictionary(constraints),
+                new MvcRouteHandler());
+            routes.Add(name, route);
+            return route;
+        }
+
+        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, string subDomain, string url, object defaults, string[] namespaces)
+        {
+            SubdomainRoute route = new SubdomainRoute(
+                subDomain,
+                url,
+                new RouteValueDictionary(defaults),
+                new RouteValueDictionary(namespaces),
+                new MvcRouteHandler());
+            routes.Add(name, route);
+            return route;
+        }
+
         public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, string subDomain, string url, object defaults)
         {
             SubdomainRoute route = new SubdomainRoute(
@@ -46,15 +70,17 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, string subDomain, string url, object defaults, object constraints)
+        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, string subDomain, string url, object defaults, string[] namespaces)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomain,
                 url,
                 new RouteValueDictionary(defaults),
-                new RouteValueDictionary(constraints),
+                new RouteValueDictionary(new {}),
+                new RouteValueDictionary(new { Area = context.AreaName, Namespaces = namespaces }),
                 new MvcRouteHandler());
-            routes.Add(name, route);
+
+            context.Routes.Add(name, route);
             return route;
         }
     }

@@ -58,8 +58,12 @@ namespace Teknik
 
         public static Config Load()
         {
-            string configContents = File.ReadAllText(HttpContext.Current.Server.MapPath("~/App_Data/Config.json"));
-            Config config = Config.Deserialize(configContents);
+            Config config = new Config();
+            if (File.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Config.json")))
+            {
+                string configContents = File.ReadAllText(HttpContext.Current.Server.MapPath("~/App_Data/Config.json"));
+                config = Config.Deserialize(configContents);
+            }
             return config;
         }
     }

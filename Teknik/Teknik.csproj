@@ -169,6 +169,9 @@
     <Content Include="Content\CSS\font-awesome.css" />
     <Content Include="Content\CSS\font-awesome.min.css" />
     <Content Include="Content\Images\favicon.ico" />
+    <Content Include="Content\Images\logo-black-io.svg" />
+    <Content Include="Content\Images\logo-black.svg" />
+    <Content Include="Content\Images\logo-blue-io.svg" />
     <Content Include="Content\Images\logo-blue.svg" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />

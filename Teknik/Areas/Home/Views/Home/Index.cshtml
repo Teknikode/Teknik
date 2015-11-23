@@ -15,7 +15,7 @@
 <br />
 <div class="container">
     <div class="row">
-        <a href="@Url.Action("Index", "Upload")">
+        <a href="@Url.Action("Index", "Upload", new { area = "Upload"})">
             <div class="col-md-3 text-center">
                 <div class="thumbnail">
                     <br />
@@ -26,7 +26,7 @@
                 </div>
             </div>
         </a>
-        <a href="@Url.Action("Index", "Paste")">
+        <a href="@Url.Action("Index", "Paste", new { area = "Paste"})">
             <div class="col-md-3 text-center">
                 <div class="thumbnail">
                     <br />
@@ -37,7 +37,7 @@
                 </div>
             </div>
         </a>
-        <a href="@Url.Action("Index", "Podcast")">
+        <a href="@Url.Action("Index", "Podcast", new { area = "Podcast"})">
             <div class="col-md-3 text-center">
                 <div class="thumbnail">
                     <br />
@@ -48,7 +48,7 @@
                 </div>
             </div>
         </a>
-        <a href="@Url.Action("Index", "Help")/#Mumble">
+        <a href="@Url.Action("Index", "Help", new { area = "Help"})/#Mumble">
             <div class="col-md-3 text-center">
                 <div class="thumbnail">
                     <br />
@@ -68,7 +68,7 @@
     </div>
     <br/>
     <div class="row">
-        <a href="@Url.Action("Index", "Help")/#Mail">
+        <a href="@Url.Action("Index", "Help", new { area = "Help"})/#Mail">
             <div class="col-md-3 text-center">
                 <div class="thumbnail">
                     <br/>
@@ -79,7 +79,7 @@
                 </div>
             </div>
         </a>
-        <a href="@Url.Action("Index", "Git")">
+        <a href="@Url.Action("Index", "Git", new { area = "Git"})">
             <div class="col-md-3 text-center">
                 <div class="thumbnail">
                     <br/>
@@ -90,7 +90,7 @@
                 </div>
             </div>
         </a>
-        <a href="@Url.Action("Index", "Blog")">
+        <a href="@Url.Action("Index", "Blog", new { area = "Blog"})">
             <div class="col-md-3 text-center">
                 <div class="thumbnail">
                     <br/>
@@ -101,7 +101,7 @@
                 </div>
             </div>
         </a>
-        <a href="@Url.Action("Index", "Help")/#IRC">
+        <a href="@Url.Action("Index", "Help", new { area = "Help"})/#IRC">
             <div class="col-md-3 text-center">
                 <div class="thumbnail">
                     <br/>
