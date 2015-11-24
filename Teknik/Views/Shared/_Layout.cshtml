@@ -10,13 +10,8 @@
         <link rel="shortcut icon" href="/Content/Images/favicon.ico" type="image/x-icon" />
         @Styles.Render("~/Content/css")
         @Scripts.Render("~/bundles/modernizr")
-
         @Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/bootstrap")
         @Scripts.Render("~/bundles/markdown")
-        @Scripts.Render("~/bundles/common")
-        @RenderSection("scripts", required: false)
-
     </head>
     <body data-twttr-rendered="true">
         <div id="wrap">
@@ -63,5 +58,10 @@
         </script>
         <noscript><p><img src="//stats.teknik.io/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
         <!-- End Piwik Code -->
+
+        <!-- Load Scripts -->
+        @Scripts.Render("~/bundles/bootstrap")
+        @Scripts.Render("~/bundles/common")
+        @RenderSection("scripts", required: false)
     </body>
 </html>

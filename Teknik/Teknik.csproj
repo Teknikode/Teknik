@@ -166,6 +166,7 @@
     <Compile Include="App_Start\SubdomainRouteExtension.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Home\Scripts\Home.js" />
     <Content Include="Content\CSS\bootstrap-theme.css" />
     <Content Include="Content\CSS\bootstrap-theme.min.css" />
     <Content Include="Content\CSS\bootstrap.css" />

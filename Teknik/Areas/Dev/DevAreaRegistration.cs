@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using Teknik.Areas.Home.Controllers;
 
 namespace Teknik.Areas.Dev
 {
@@ -14,25 +15,21 @@ namespace Teknik.Areas.Dev
 
         public override void RegisterArea(AreaRegistrationContext context)
         {
-            //Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Dev_subdomain", // Route name
                  "dev",
                  "Dev/{controller}/{action}",    // URL with parameters 
-                 new { area = "Dev", controller = "Dev", action = "Index" }  // Parameter defaults 
+                 new { controller = "Dev", action = "Index" },  // Parameter defaults 
+                 new[] { typeof(Controllers.DevController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Dev_default", // Route name
                  "dev",
                  "",    // URL with parameters 
-                 new { area = "Home", controller = "Home", action = "Index" }  // Parameter defaults 
+                 "Home",
+                 new { controller = "Home", action = "Index" },  // Parameter defaults 
+                 new[] { typeof(HomeController).Namespace }
              );
-            //context.MapRoute(
-            //    "Dev_default",
-            //    "Dev/{controller}/{action}",
-            //    new { controller = "Dev", action = "Index" },
-            //    namespaces: new[] { "Teknik.Areas.Dev.Controllers" }
-            //);
         }
     }
 }
