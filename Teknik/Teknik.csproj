@@ -214,7 +214,7 @@
     <Content Include="Areas\Contact\Views\web.config" />
     <Content Include="Areas\Contact\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Contact\Views\Contact\Index.cshtml" />
-    <None Include="Properties\PublishProfiles\IIS.pubxml" />
+    <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\common.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
