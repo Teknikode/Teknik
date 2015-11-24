@@ -138,9 +138,13 @@
     <Compile Include="Areas\About\AboutAreaRegistration.cs" />
     <Compile Include="Areas\About\Controllers\AboutController.cs" />
     <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
+    <Compile Include="Areas\Contact\ContactAreaRegistration.cs" />
+    <Compile Include="Areas\Contact\Controllers\ContactController.cs" />
     <Compile Include="Areas\Dev\DevAreaRegistration.cs" />
     <Compile Include="Areas\Home\Controllers\HomeController.cs" />
     <Compile Include="Areas\Home\HomeAreaRegistration.cs" />
+    <Compile Include="Areas\Privacy\Controllers\PrivacyController.cs" />
+    <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
@@ -203,6 +207,12 @@
     <Content Include="Areas\About\Views\web.config" />
     <Content Include="Areas\About\Views\About\Index.cshtml" />
     <Content Include="Areas\About\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Privacy\Views\web.config" />
+    <Content Include="Areas\Privacy\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Privacy\Views\Privacy\Index.cshtml" />
+    <Content Include="Areas\Contact\Views\web.config" />
+    <Content Include="Areas\Contact\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Contact\Views\Contact\Index.cshtml" />
     <None Include="Properties\PublishProfiles\IIS.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\common.js" />
@@ -249,10 +259,14 @@
     <Folder Include="Areas\About\Views\Shared\" />
     <Folder Include="Areas\Blog\Models\" />
     <Folder Include="Areas\Blog\Views\Shared\" />
+    <Folder Include="Areas\Contact\Models\" />
+    <Folder Include="Areas\Contact\Views\Shared\" />
     <Folder Include="Areas\Dev\Models\" />
     <Folder Include="Areas\Dev\Views\Shared\" />
     <Folder Include="Areas\Home\Models\" />
     <Folder Include="Areas\Home\Views\Shared\" />
+    <Folder Include="Areas\Privacy\Models\" />
+    <Folder Include="Areas\Privacy\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
