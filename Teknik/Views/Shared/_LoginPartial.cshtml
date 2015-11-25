@@ -12,14 +12,14 @@
             <li>
                 <a href="@Url.Action("Index", "Blog", new { area = "Blog" })/@User.Identity.Name">Blog</a>
             </li>
-            if (User.Identity.Group == Groups.Founder)
+            @if (User.IsInRole("Admin"))
             {
             <li>
                 <a href="@Url.Action("Index", "Admin", new { area = "Admin" })">Administration</a>
             </li>
             }
             <li>
-                @Html.ActionLink("Sign Out", "Logout", "Profile", new { area = "Profile" })
+                @Html.ActionLink("Sign Out", "Logout", "Profile", new { area = "Profile" }, null)
             </li>
         </ul>
     </li>
@@ -29,14 +29,14 @@ else
     <li class="dropdown">
         <a class="dropdown-toggle" href="#" data-toggle="dropdown" id="reg_dropdown">Sign Up <strong class="caret"></strong></a>
         <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-            @Html.Partial("../Profile/Register", new Teknik.ViewModels.RegisterViewModel())
+            @Html.Partial("../../Areas/Profile/Views/Profile/Register", new Teknik.Areas.Profile.ViewModels.RegisterViewModel())
         </div>
     </li>
 
     <li class="dropdown">
         <a class="dropdown-toggle" href="#" data-toggle="dropdown" id="login_dropdown">Sign In <strong class="caret"></strong></a>
         <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-            @Html.Partial("../Profile/Login", new Teknik.ViewModels.LoginViewModel())
+            @Html.Partial("../../Areas/Profile/Views/Profile/Login", new Teknik.Areas.Profile.ViewModels.LoginViewModel())
         </div>
     </li>
 }

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Teknik.Areas.Profile.Models;
 using Teknik.Helpers;
 using Teknik.Models;
 
-namespace Teknik.ViewModels
+namespace Teknik.Areas.Profile.ViewModels
 {
     public class RegisterViewModel
     {

@@ -7,7 +7,7 @@ using System.Web.Security;
 using Teknik.Helpers;
 using Teknik.Models;
 
-namespace Teknik.ViewModels
+namespace Teknik.Areas.Profile.ViewModels
 {
     public class LoginViewModel
     {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections.Generic;
 
-namespace Teknik.Models
+namespace Teknik.Areas.Profile.Models
 {
     public class User
     {
@@ -16,12 +17,15 @@ namespace Teknik.Models
 
         public DateTime LastSeen { get; set; }
 
+        public List<Group> Groups { get; set; }
+
         public User()
         {
             Username = String.Empty;
             HashedPassword = String.Empty;
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;
+            Groups = new List<Group>();
         }
     }
 }

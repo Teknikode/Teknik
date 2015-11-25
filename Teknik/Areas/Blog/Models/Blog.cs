@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Teknik.Areas.Profile.Models;
 
-namespace Teknik.Models
+namespace Teknik.Areas.Blog.Models
 {
     public class Blog
     {

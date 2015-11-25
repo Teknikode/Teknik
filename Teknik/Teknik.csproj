@@ -145,21 +145,29 @@
     <Compile Include="Areas\Home\HomeAreaRegistration.cs" />
     <Compile Include="Areas\Privacy\Controllers\PrivacyController.cs" />
     <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
+    <Compile Include="Areas\Profile\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\Profile\Models\AuthUser.cs" />
+    <Compile Include="Areas\Profile\Models\UserIdentity.cs" />
+    <Compile Include="Areas\Profile\ProfileAreaRegistration.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Areas\Dev\Controllers\DevController.cs" />
-    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Crypto.cs" />
-    <Compile Include="Models\Post.cs" />
+    <Compile Include="Areas\Profile\Models\Group.cs" />
+    <Compile Include="Areas\Profile\Models\PermissionTarget.cs" />
+    <Compile Include="Areas\Profile\Models\PermissionType.cs" />
+    <Compile Include="Areas\Blog\Models\Post.cs" />
+    <Compile Include="Areas\Profile\Models\Role.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\TeknikEntities.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\Blog.cs" />
-    <Compile Include="ViewModels\LoginViewModel.cs" />
-    <Compile Include="ViewModels\RegisterViewModel.cs" />
+    <Compile Include="Areas\Profile\Models\User.cs" />
+    <Compile Include="Areas\Blog\Models\Blog.cs" />
+    <Compile Include="Areas\Profile\ViewModels\LoginViewModel.cs" />
+    <Compile Include="Areas\Profile\ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="App_Start\SubdomainRoute.cs" />
@@ -214,6 +222,9 @@
     <Content Include="Areas\Contact\Views\web.config" />
     <Content Include="Areas\Contact\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Contact\Views\Contact\Index.cshtml" />
+    <Content Include="Areas\Profile\Views\web.config" />
+    <Content Include="Areas\Profile\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Profile\Views\Profile\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\common.js" />
@@ -250,15 +261,13 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Navbar.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
-    <Content Include="Views\Profile\Index.cshtml" />
-    <Content Include="Views\Profile\Login.cshtml" />
-    <Content Include="Views\Profile\Register.cshtml" />
+    <Content Include="Areas\Profile\Views\Profile\Login.cshtml" />
+    <Content Include="Areas\Profile\Views\Profile\Register.cshtml" />
     <Content Include="Areas\Dev\Views\Dev\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\About\Models\" />
     <Folder Include="Areas\About\Views\Shared\" />
-    <Folder Include="Areas\Blog\Models\" />
     <Folder Include="Areas\Blog\Views\Shared\" />
     <Folder Include="Areas\Contact\Models\" />
     <Folder Include="Areas\Contact\Views\Shared\" />
@@ -268,6 +277,7 @@
     <Folder Include="Areas\Home\Views\Shared\" />
     <Folder Include="Areas\Privacy\Models\" />
     <Folder Include="Areas\Privacy\Views\Shared\" />
+    <Folder Include="Areas\Profile\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -1,4 +1,4 @@
-﻿@model Teknik.ViewModels.RegisterViewModel
+﻿@model Teknik.Areas.Profile.ViewModels.RegisterViewModel
 
 <form role="form" id="registrationForm" action="@Url.Action("Register", "Profile", new { area = "Profile" })" method="post" accept-charset="UTF-8">
     @Html.ValidationSummary(true, "Registration failed. Check your registration details.")

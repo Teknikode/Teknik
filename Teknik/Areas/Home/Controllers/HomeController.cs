@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.Areas.Blog.Models;
 using Teknik.Controllers;
 using Teknik.Models;
 

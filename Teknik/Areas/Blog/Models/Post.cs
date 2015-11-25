@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Teknik.Models
+namespace Teknik.Areas.Blog.Models
 {
     public class Post
     {

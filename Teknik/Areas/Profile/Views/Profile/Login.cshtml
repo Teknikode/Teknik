@@ -1,6 +1,6 @@
-﻿@model Teknik.ViewModels.LoginViewModel
+﻿@model Teknik.Areas.Profile.ViewModels.LoginViewModel
 
-<form role="form" id="loginForm" action="@Url.Action("Login", "Profile", new { area = "Home" })" method="post" accept-charset="UTF-8">
+<form role="form" id="loginForm" action="@Url.Action("Login", "Profile", new { area = "Profile" })" method="post" accept-charset="UTF-8">
     @Html.ValidationSummary(true, "Login failed. Check your login details.")
     <div class="form-group">
         <input type="text" class="form-control" id="Username" value="" placeholder="Username" name="Username" data-val-required="The Username field is required." data-val="true" />
