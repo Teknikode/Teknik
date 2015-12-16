@@ -140,6 +140,7 @@
     <Compile Include="Areas\About\AboutAreaRegistration.cs" />
     <Compile Include="Areas\About\Controllers\AboutController.cs" />
     <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
+    <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
     <Compile Include="Areas\Contact\ContactAreaRegistration.cs" />
     <Compile Include="Areas\Contact\Controllers\ContactController.cs" />
     <Compile Include="Areas\Contact\Models\Contact.cs" />
@@ -179,20 +180,15 @@
     <Compile Include="App_Start\SubdomainRouteExtension.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Blog\Scripts\Blog.js" />
     <Content Include="Areas\Contact\Scripts\Contact.js" />
     <Content Include="Areas\Home\Scripts\Home.js" />
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\CSS\bootstrap-theme.css" />
     <Content Include="Content\CSS\bootstrap-theme.min.css" />
     <Content Include="Content\CSS\bootstrap.css" />
     <Content Include="Content\CSS\bootstrap.min.css" />
     <Content Include="Content\CSS\font-awesome.css" />
     <Content Include="Content\CSS\font-awesome.min.css" />
-    <Content Include="Content\font-awesome.css" />
-    <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\Images\favicon.ico" />
     <Content Include="Content\Images\logo-black-io.svg" />
     <Content Include="Content\Images\logo-black.svg" />
@@ -246,10 +242,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-theme.min.css.map" />
-    <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
