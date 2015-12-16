@@ -155,6 +155,7 @@
     <Compile Include="Areas\Profile\ProfileAreaRegistration.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
+    <Compile Include="Configuration\SMTPConfig.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Areas\Dev\Controllers\DevController.cs" />
     <Compile Include="Global.asax.cs">

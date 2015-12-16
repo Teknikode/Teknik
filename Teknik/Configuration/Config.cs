@@ -12,19 +12,28 @@ namespace Teknik
         private ReaderWriterLockSlim _ConfigFileRWLock;
         private JsonSerializerSettings _JsonSettings;
 
-        private bool    _DevEnvironment;
-        private string  _Title;
-        private string  _Description;
-        private string  _Author;
-        private string  _Host;
-        private string  _BitcoinAddress;
+        private bool        _DevEnvironment;
+        private string      _Title;
+        private string      _Description;
+        private string      _Author;
+        private string      _Host;
+        private SMTPConfig  _SMTPConfig;
+        private string      _SupportEmail;
+        private string      _BitcoinAddress;
 
-        public bool     DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
-        public string   Title           { get { return _Title; }            set { _Title = value; } }
-        public string   Description     { get { return _Description; }      set { _Description = value; } }
-        public string   Author          { get { return _Author; }           set { _Author = value; } }
-        public string   Host            { get { return _Host; }             set { _Host = value; } }
-        public string   BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
+        public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
+
+        public string       Title           { get { return _Title; }            set { _Title = value; } }
+        public string       Description     { get { return _Description; }      set { _Description = value; } }
+        public string       Author          { get { return _Author; }           set { _Author = value; } }
+
+        public string       Host            { get { return _Host; }             set { _Host = value; } }
+
+        public SMTPConfig   SMTPConfig      { get { return _SMTPConfig; }       set { _SMTPConfig = value; } }
+
+        public string       SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
+
+        public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
 
         public Config()
         {
@@ -43,6 +52,8 @@ namespace Teknik
             Description = String.Empty;
             Author = String.Empty;
             Host = String.Empty;
+            SMTPConfig = new SMTPConfig();
+            SupportEmail = string.Empty;
             BitcoinAddress = string.Empty;
         }
 
