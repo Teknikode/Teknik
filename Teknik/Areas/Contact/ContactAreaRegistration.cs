@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using System.Web.Optimization;
 
 namespace Teknik.Areas.Contact
 {
@@ -28,6 +29,10 @@ namespace Teknik.Areas.Contact
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ContactController).Namespace }
              );
+
+            // Register Bundles
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/contact").Include(
+                      "~/Areas/Contact/Scripts/Contact.js"));
         }
     }
 }

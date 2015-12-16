@@ -1,4 +1,6 @@
-﻿@using Teknik.Models
+﻿@model Teknik.Areas.Contact.ViewModels.ContactViewModel
+
+@Scripts.Render("~/bundles/contact")
 <div class="container">
     <div class="row">
         <div class="col-sm-12 col-lg-12">
@@ -12,48 +14,44 @@
     <div class="row">
         <div class="col-md-8">
             <div class="well well-sm">
-                <form>
+                <form role="form" id="contactForm" action="@Url.Action("Submit", "Contact", new { area = "Contact" })" method="post" accept-charset="UTF-8">
+                    @Html.ValidationSummary(true, "Message send failed.")
                     <div class="row">
                         <div class="col-md-6">
-                            @if (!Request.IsAuthenticated)
-                            {
                             <div class="form-group">
-                                <label for="contact_name">
+                                @Html.ValidationMessageFor(u => u.Name)
+                                <label for="Name">
                                     Name
                                 </label>
-                                <input type="text" class="form-control" id="contact_name" placeholder="Enter name" required="required" />
+                                <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter name" required="required" value="@((Request.IsAuthenticated) ? User.Identity.Name : string.Empty)" />
                             </div>
                             <div class="form-group">
-                                <label for="contact_email">
+                                @Html.ValidationMessageFor(u => u.Email)
+                                <label for="Email">
                                     Email Address
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-envelope"></span>
                                     </span>
-                                    <input type="email" class="form-control" id="contact_email" placeholder="Enter email" required="required" />
+                                    <input type="email" class="form-control" id="Email" name="Email" placeholder="Enter email" required="required" value="@((Request.IsAuthenticated) ? User.Identity.Name + "@" + ViewBag.Config.Host : string.Empty)" />
                                 </div>
                             </div>
-                            }
                             <div class="form-group">
-                                <label for="contact_subject">
+                                @Html.ValidationMessageFor(u => u.Subject)
+                                <label for="Subject">
                                     Subject
                                 </label>
-                                <select id="contact_subject" name="contact_subject" class="form-control" required="required">
-                                    <option value="na" selected="">Choose One:</option>
-                                    <option value="general">General Questions</option>
-                                    <option value="suggestions">Suggestions</option>
-                                    <option value="service">Service Support</option>
-                                    <option value="feedback">Feedback</option>
-                                </select>
+                                <input type="text" class="form-control" id="Subject" name="Subject" placeholder="Subject" required="required" />
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="contact_message">
+                                @Html.ValidationMessageFor(u => u.Message)
+                                <label for="Message">
                                     Message
                                 </label>
-                                <textarea name="contact_message" id="contact_message" class="form-control" rows="9" cols="25" required="required"
+                                <textarea id="Message" name="Message" class="form-control" rows="9" cols="25" required="required"
                                           placeholder="Message"></textarea>
                             </div>
                         </div>
