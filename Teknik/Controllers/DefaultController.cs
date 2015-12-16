@@ -21,12 +21,17 @@ namespace Teknik.Controllers
             {
                 if (_config == null)
                 {
-                    string configContents = System.IO.File.ReadAllText(HttpContext.Server.MapPath("~/App_Data/Config.json"));
-                    _config = Config.Deserialize(configContents);
+                    _config = Config.Load();
                     ViewBag.Config = _config;
                 }
                 return _config;
             }
+        }
+
+        public DefaultController()
+        {
+            ViewBag.Title = Config.Title;
+            ViewBag.Message = Config.Description;
         }
     }
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

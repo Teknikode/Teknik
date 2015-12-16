@@ -30,10 +30,10 @@ namespace Teknik
             bundles.Add(new ScriptBundle("~/bundles/common").Include(
                         "~/Scripts/common.js"));
 
-            bundles.Add(new StyleBundle("~/Content/CSS/Common").Include(
-                      "~/Content/CSS/bootstrap.css",
-                      "~/Content/CSS/font-awesome.css",
-                      "~/Content/CSS/Site.css"));
+            bundles.Add(new StyleBundle("~/Content/Common").Include(
+                      "~/Content/bootstrap.css",
+                      "~/Content/font-awesome.css",
+                      "~/Content/teknik.css"));
         }
     }
 }

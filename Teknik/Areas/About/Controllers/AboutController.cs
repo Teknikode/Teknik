@@ -13,8 +13,8 @@ namespace Teknik.Areas.About.Controllers
         // GET: About/About
         public ActionResult Index()
         {
-            ViewBag.Title = Config.Title + " - About";
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Title = "About - " + Config.Title;
+            ViewBag.Message = "What is Teknik?";
 
             return View();
         }

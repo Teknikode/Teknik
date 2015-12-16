@@ -70,9 +70,10 @@ namespace Teknik
         public static Config Load()
         {
             Config config = new Config();
-            if (File.Exists(HttpContext.Current.Server.MapPath("~/App_Data/Config.json")))
+            string path = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
+            if (File.Exists(Path.Combine(path, "Config.json")))
             {
-                string configContents = File.ReadAllText(HttpContext.Current.Server.MapPath("~/App_Data/Config.json"));
+                string configContents = File.ReadAllText(Path.Combine(path, "Config.json"));
                 config = Config.Deserialize(configContents);
             }
             return config;

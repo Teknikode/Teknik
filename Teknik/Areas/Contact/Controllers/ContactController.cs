@@ -20,7 +20,7 @@ namespace Teknik.Areas.Contact.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            ViewBag.Title = Config.Title + " - Contact";
+            ViewBag.Title = "Contact - " + Config.Title;
             ViewBag.Message = "Contact Teknik Support";
 
             return View(new ContactViewModel());
@@ -32,41 +32,47 @@ namespace Teknik.Areas.Contact.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (model.Insert())
+                try
                 {
-                    try
-                    {
-                        // Let's also email the message to support
-                        SmtpClient client = new SmtpClient();
-                        client.Host = Config.SMTPConfig.Host;
-                        client.Port = Config.SMTPConfig.Port;
-                        client.EnableSsl = Config.SMTPConfig.SSL;
-                        client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                        client.UseDefaultCredentials = true;
-                        client.Credentials = new System.Net.NetworkCredential(Config.SMTPConfig.Username, Config.SMTPConfig.Password);
-                        client.Timeout = 5000;
+                    // Insert the message into the DB
+                    Models.Contact newContact = db.Contact.Create();
+                    newContact.Name = model.Name;
+                    newContact.Email = model.Email;
+                    newContact.Subject = model.Subject;
+                    newContact.Message = model.Message;
+                    newContact.DateAdded = DateTime.Now;
+                    db.Contact.Add(newContact);
+                    db.SaveChanges();
 
-                        MailMessage mail = new MailMessage(Config.SupportEmail, Config.SupportEmail);
-                        mail.Subject = string.Format("Support Message from: {0} <{1}>", model.Name, model.Email);
-                        mail.Body = string.Format(@"
+                    // Let's also email the message to support
+                    SmtpClient client = new SmtpClient();
+                    client.Host = Config.SMTPConfig.Host;
+                    client.Port = Config.SMTPConfig.Port;
+                    client.EnableSsl = Config.SMTPConfig.SSL;
+                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    client.UseDefaultCredentials = true;
+                    client.Credentials = new System.Net.NetworkCredential(Config.SMTPConfig.Username, Config.SMTPConfig.Password);
+                    client.Timeout = 5000;
+
+                    MailMessage mail = new MailMessage(Config.SupportEmail, Config.SupportEmail);
+                    mail.Subject = string.Format("Support Message from: {0} <{1}>", model.Name, model.Email);
+                    mail.Body = string.Format(@"
 New Support Message from: {0} <{1}>
                                                 
 ---------------------------------
 Subject: {2}
 Message: {3}", model.Name, model.Email, model.Subject, model.Message);
-                        mail.BodyEncoding = UTF8Encoding.UTF8;
-                        mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
+                    mail.BodyEncoding = UTF8Encoding.UTF8;
+                    mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
-                        client.Send(mail);
-                    }
-                    catch (Exception ex)
-                    {
-                        return Json(new { error = "Error submitting message. Exception: " +  ex.Message});
-                    }
-
-                    return Json(new { result = "true" });
+                    client.Send(mail);
                 }
-                return Json(new { error = "Error submitting message." });
+                catch (Exception ex)
+                {
+                    return Json(new { error = "Error submitting message. Exception: " +  ex.Message});
+                }
+
+                return Json(new { result = "true" });
             }
             else
             {

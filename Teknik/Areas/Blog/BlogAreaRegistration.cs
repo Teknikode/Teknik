@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using System.Web.Optimization;
 
 namespace Teknik.Areas.Blog
 {
@@ -17,15 +18,19 @@ namespace Teknik.Areas.Blog
             context.MapSubdomainRoute(
                  "Blog_dev", // Route name
                  "dev",
-                 "Blog/{controller}/{action}",    // URL with parameters 
-                 new { controller = "Blog", action = "Index" }  // Parameter defaults 
+                 "Blog/{controller}/{action}/{username}/{id}",    // URL with parameters 
+                 new { controller = "Blog", action = "Index", username = UrlParameter.Optional, id = UrlParameter.Optional }  // Parameter defaults 
              );
             context.MapSubdomainRoute(
                  "Blog_default", // Route name
                  "blog",
-                 "{controller}/{action}/{username}/{page}",    // URL with parameters 
-                 new { controller = "Blog", action = "Index", username = UrlParameter.Optional, page = UrlParameter.Optional }  // Parameter defaults 
+                 "{controller}/{action}/{username}/{id}",    // URL with parameters 
+                 new { controller = "Blog", action = "Index", username = UrlParameter.Optional, id = UrlParameter.Optional }  // Parameter defaults 
              );
+
+            // Register Bundles
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/blog").Include(
+                      "~/Areas/Blog/Scripts/Blog.js"));
         }
     }
 }

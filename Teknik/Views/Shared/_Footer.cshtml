@@ -1,5 +1,5 @@
 ﻿<footer id="footer" class="footer navbar navbar-default">
     <div class="container">
-        <p class="text-muted">&copy; Teknik 2013-2015 | @Html.ActionLink("Privacy", "Index", "Privacy", new { area = "Privacy"}, htmlAttributes: new { title = "Privacy" }) | @Html.ActionLink("Transparency", "Index", "Transparency", new { area = "Transparency" }, htmlAttributes: new { title = "Transparency" }) | @Html.ActionLink("Server", "Index", "Server", new { area = "Server" }, htmlAttributes: new { title = "Server" })</p>
+        <p class="text-muted">&copy; Teknik 2013-2015 | @string.Format("v{0}", ViewContext.Controller.GetType().Assembly.GetName().Version) | @Html.ActionLink("Privacy", "Index", "Privacy", new { area = "Privacy"}, htmlAttributes: new { title = "Privacy" }) | @Html.ActionLink("Transparency", "Index", "Transparency", new { area = "Transparency" }, htmlAttributes: new { title = "Transparency" }) | @Html.ActionLink("Server", "Index", "Server", new { area = "Server" }, htmlAttributes: new { title = "Server" })</p>
     </div>
 </footer>
