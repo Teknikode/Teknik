@@ -25,23 +25,26 @@ namespace Teknik.Areas.Blog.Controllers
 
             // by default, view the teknik blog
             Models.Blog blog = db.Blogs.Find(Constants.SERVERBLOGID);
-            if (blog == null)
-            {
-                return HttpNotFound();
-            }
             BlogViewModel model = new BlogViewModel();
-            model.BlogId = blog.BlogId;
-            model.UserId = blog.UserId;
-            model.User = blog.User;
-            model.Posts = blog.Posts;
+            model.BlogId = Constants.SERVERBLOGID;
+            if (blog != null)
+            {
+                model.UserId = blog.UserId;
+                model.User = blog.User;
+                model.Posts = blog.Posts;
+            }
 
             return View(model);
         }
 
         // GET: Blogs/Details/5
         [AllowAnonymous]
-        public ActionResult Details(int? id)
+        public ActionResult Details(string username, int? id)
         {
+            if (string.IsNullOrEmpty(username))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

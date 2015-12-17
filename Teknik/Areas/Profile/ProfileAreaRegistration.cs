@@ -17,14 +17,14 @@ namespace Teknik.Areas.Profile
             context.MapSubdomainRoute(
                  "Profile_dev", // Route name
                  "dev",
-                 "Profile/{controller}/{action}",    // URL with parameters 
+                 "Profile",    // URL with parameters 
                  new { controller = "Profile", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Profile_default", // Route name
                  "profile",
-                 "{controller}/{action}",    // URL with parameters 
+                 "",    // URL with parameters 
                  new { controller = "Profile", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
