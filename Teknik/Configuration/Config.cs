@@ -39,7 +39,7 @@ namespace Teknik
 
         public int          PostsToLoad     { get { return _PostsToLoad; }      set { _PostsToLoad = value; } }
 
-        public int          CommentsToLoad  { get { return _PostsToLoad; }      set { _PostsToLoad = value; } }
+        public int          CommentsToLoad  { get { return _CommentsToLoad; }   set { _CommentsToLoad = value; } }
 
         public Config()
         {
