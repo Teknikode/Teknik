@@ -17,14 +17,28 @@ namespace Teknik.Areas.Profile
             context.MapSubdomainRoute(
                  "Profile_dev", // Route name
                  "dev",
-                 "Profile",    // URL with parameters 
+                 "Profile/{username}",    // URL with parameters 
+                 new { controller = "Profile", action = "Index", username = UrlParameter.Optional },  // Parameter defaults 
+                 new[] { typeof(Controllers.ProfileController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Profile_dev_unique", // Route name
+                 "dev",
+                 "Profile/{controller}/{action}",    // URL with parameters 
                  new { controller = "Profile", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Profile_default", // Route name
                  "profile",
-                 "",    // URL with parameters 
+                 "{username}",    // URL with parameters 
+                 new { controller = "Profile", action = "Index", username = UrlParameter.Optional },  // Parameter defaults 
+                 new[] { typeof(Controllers.ProfileController).Namespace }
+            );
+            context.MapSubdomainRoute(
+                 "Profile_default_unique", // Route name
+                 "profile",
+                 "{controller}/{action}",    // URL with parameters 
                  new { controller = "Profile", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );

@@ -1,0 +1,164 @@
+﻿@model Teknik.Areas.Blog.ViewModels.PostViewModel
+
+@using Teknik.Helpers
+
+<script>
+    // We need to define the action URLs for the script
+
+    var uploadURL = '@Url.Action("UploadFile", "Upload", new { area = "Upload" })';
+
+    var getPostsURL = '@Url.Action("GetPosts", "Blog", new { area = "Blog" })';
+    var getPostTitleURL = '@Url.Action("GetPostTitle", "Blog", new { area = "Blog" })';
+    var getPostArticleURL = '@Url.Action("GetPostArticle", "Blog", new { area = "Blog" })';
+    var publishPostURL = '@Url.Action("PublishPost", "Blog", new { area = "Blog" })';
+    var addPostURL = '@Url.Action("CreatePost", "Blog", new { area = "Blog" })';
+    var editPostURL = '@Url.Action("EditPost", "Blog", new { area = "Blog" })';
+    var deletePostURL = '@Url.Action("DeletePost", "Blog", new { area = "Blog" })';
+
+    var getCommentsURL = '@Url.Action("GetComments", "Blog", new { area = "Blog" })';
+    var getCommentContentURL = '@Url.Action("GetCommentContent", "Blog", new { area = "Blog" })';
+    var addCommentURL = '@Url.Action("CreatePost", "Blog", new { area = "Blog" })';
+    var editCommentURL = '@Url.Action("EditPost", "Blog", new { area = "Blog" })';
+    var deleteCommentURL = '@Url.Action("DeleteComment", "Blog", new { area = "Blog" })';
+</script>
+
+@Scripts.Render("~/bundles/blog")
+
+<div class="container">
+@if (Model != null)
+{
+    if (Model.Blog.User.Username == User.Identity.Name)
+    {
+    <div class="modal fade" id="editPost" tabindex="-1" role="dialog" aria-labelledby="editPostLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="##" method="post" id="editPostForm">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+                        <h4 class="modal-title" id="editPostLabel">Edit Your Post</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input name="edit_blog_userid" id="edit_blog_userid" type="hidden" value="@Model.Blog.User.UserId" />
+                        <input name="edit_blog_postid" id="edit_blog_postid" type="hidden" />
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="edit_blog_title"><h4>Title</h4></label>
+                                <input class="form-control" name="edit_blog_title" id="edit_blog_title" placeholder="generic click bait" title="enter a title for your post." type="text" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="edit_blog_post"><h4>Article</h4></label>
+                                <textarea class="form-control" name="edit_blog_post" id="edit_blog_post" placeholder="I ate a burger today." title="enter any information you want to share with the world." data-provide="markdown" rows="10"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="edit_submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Blog", "Blog", new { area = "Blog", username = Model.Blog.User.Username })">@Model.Blog.User.Username</a></li>
+        <li class="active"><a href="#">@Model.Title</a></li>
+    </ol>
+
+    @Html.Partial("../../Areas/Blog/Views/Blog/Post", Model)
+
+    if (Request.IsAuthenticated)
+    {
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newComment">Add Comment</button>
+        </div>
+    </div>
+    <br />
+    <div class="modal fade" id="newComment" tabindex="-1" role="dialog" aria-labelledby="newCommentLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="##" method="post" id="publishComment">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+                        <h4 class="modal-title" id="newCommentLabel">Add a New Comment</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input name="post_id" id="post_id" type="hidden" value="@Model.PostId" />
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="comment_post"><h4>Comment</h4></label>
+                                <textarea class="form-control wmd-input" name="comment_post" id="comment_post" placeholder="Nice post!" title="enter what you think about the post." data-provide="markdown" rows="10"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="comment_submit">Publish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editComment" tabindex="-1" role="dialog" aria-labelledby="editCommentLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="##" method="post" id="editCommentForm">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+                        <h4 class="modal-title" id="editCommentLabel">Edit Your Comment</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input name="edit_comment_postid" id="edit_comment_postid" type="hidden" />
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="edit_comment_post"><h4>Comment</h4></label>
+                                <textarea class="form-control" name="edit_comment_post" id="edit_comment_post" placeholder="What an interesting article!" title="enter what you thought about the article." data-provide="markdown" rows="10"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="edit_comment_submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+    <a name="replies"></a>
+    <div class="post-comments" id="<?php echo $post_id; ?>"></div>
+    <script>
+            var converter = new Markdown.getSanitizingConverter();
+            // Title Conversion
+            var old_post = $("#title_@Model.PostId").text();
+            var new_post = converter.makeHtml(old_post);
+            $("#title_@Model.PostId").html(new_post);
+            // Post Conversion
+            var old_post = $("#post_@Model.PostId").text();
+            var new_post = converter.makeHtml(old_post);
+            $("#post_@Model.PostId").html(new_post);
+
+            linkPostDelete('.delete_post');
+            linkPostPublish('.publish_post');
+            linkPostUnpublish('.unpublish_post');
+
+            var posts = @(ViewBag.Config.CommentsToLoad);
+            var start_post = 0;
+            var view_post_id = @(Model.PostId);
+            loadMoreComments(start_post, posts);
+            start_post = start_post + posts;
+    </script>
+}
+else
+{
+    <div class="row">
+        <div class="col-sm-12 text-center">
+            <h2>That post does not exist</h2>
+        </div>
+    </div>
+}
+</div>

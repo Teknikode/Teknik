@@ -16,7 +16,7 @@ namespace Teknik.Areas.Profile.Controllers
         private TeknikEntities db = new TeknikEntities();
 
         // GET: Profile/Profile
-        public ActionResult Index()
+        public ActionResult Index(string username)
         {
             ViewBag.Title = Config.Title + " - Profile";
             ViewBag.Message = "View Your Profile";

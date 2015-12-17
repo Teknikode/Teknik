@@ -1,29 +1,48 @@
 ﻿@model Teknik.Areas.Blog.ViewModels.BlogViewModel
 
+@using Teknik.Helpers
+
+<script>
+    // We need to define the action URLs for the script
+
+    var uploadURL = '@Url.Action("UploadFile", "Upload", new { area = "Upload" })';
+
+    var getPostsURL = '@Url.Action("GetPosts", "Blog", new { area = "Blog" })';
+    var getPostTitleURL = '@Url.Action("GetPostTitle", "Blog", new { area = "Blog" })';
+    var getPostArticleURL = '@Url.Action("GetPostArticle", "Blog", new { area = "Blog" })';
+    var publishPostURL = '@Url.Action("PublishPost", "Blog", new { area = "Blog" })';
+    var addPostURL = '@Url.Action("CreatePost", "Blog", new { area = "Blog" })';
+    var editPostURL = '@Url.Action("EditPost", "Blog", new { area = "Blog" })';
+    var deletePostURL = '@Url.Action("DeletePost", "Blog", new { area = "Blog" })';
+
+    var getCommentsURL = '@Url.Action("GetComments", "Blog", new { area = "Blog" })';
+    var getCommentArticleURL = '@Url.Action("GetCommentArticle", "Blog", new { area = "Blog" })';
+    var addCommentURL = '@Url.Action("CreatePost", "Blog", new { area = "Blog" })';
+    var editCommentURL = '@Url.Action("EditPost", "Blog", new { area = "Blog" })';
+    var deleteCommentURL = '@Url.Action("DeleteComment", "Blog", new { area = "Blog" })';
+</script>
+
 @Scripts.Render("~/bundles/blog")
+
 <div class="container">
-    <?php
-    if ($blog_id >= 0)
+    @if (Model.BlogId != Constants.SERVERBLOGID)
     {
-    ?>
     <div class="row">
         <div class="col-sm-12 blog-heading">
-            <h1 class="blog-title text-center"><?php echo $blog_title; ?></h1>
-            <p class="lead blog-description text-center text-muted"><?php echo $blog_desc; ?></p>
+            <h1 class="blog-title text-center">@Model.Title</h1>
+            <p class="lead blog-description text-center text-muted">@Model.Description</p>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-12 text-center">
             <p>
-                <a href="<?php echo get_page_url('rss', $CONF).'/blog/'.$blog_author; ?>"><i class="fa fa-rss fa-2x fa-border"></i></a>
+                <a href="@Url.Action("Blog", "RSS", new { area = "RSS", username = Model.User.Username })"><i class="fa fa-rss fa-2x fa-border"></i></a>
             </p>
         </div>
     </div>
-    <?php
     }
-    if ($own_blog)
+    @if (Model.User.Username == User.Identity.Name)
     {
-    ?>
     <div class="row">
         <div class="col-sm-12 text-center">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newPost">Create Post</button>
@@ -38,7 +57,6 @@
                         <h4 class="modal-title" id="newPostLabel">Create a New Post</h4>
                     </div>
                     <div class="modal-body">
-                        <input name="blog_userid" id="blog_userid" type="hidden" value="<?php echo $blog_id; ?>" />
                         <div class="row">
                             <div class="form-group col-sm-12">
                                 <label for="blog_title"><h4>Title</h4></label>
@@ -69,7 +87,6 @@
                         <h4 class="modal-title" id="editPostLabel">Edit Your Post</h4>
                     </div>
                     <div class="modal-body">
-                        <input name="edit_blog_userid" id="edit_blog_userid" type="hidden" value="<?php echo $blog_id; ?>" />
                         <input name="edit_blog_postid" id="edit_blog_postid" type="hidden" />
                         <div class="row">
                             <div class="form-group col-sm-12">
@@ -92,30 +109,13 @@
             </div>
         </div>
     </div>
-    <?php
     }
 
-    if (empty($error))
-    {
-    ?>
-    <div class="blog-main" id="<?php echo $blog_id; ?>"></div>
+    <div class="blog-main" id="@Model.BlogId"></div>
     <script>
-      var posts = <?php echo $posts_per_load; ?>;
-      var start_post = 0;
+        var posts = @ViewBag.Config.PostsToLoad;
+        var start_post = 0;
         loadMorePosts(start_post, posts);
         start_post = start_post + posts;
     </script>
-    <?php
-    }
-    else
-    {
-    ?>
-    <div class="row">
-        <div class="col-sm-12 text-center">
-            <h2><?php echo $error; ?></h2>
-        </div>
-    </div>
-    <?php
-    }
-    ?>
 </div>

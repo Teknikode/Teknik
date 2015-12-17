@@ -46,24 +46,31 @@ namespace Teknik.Areas.Blog.Controllers
             Models.Blog blog = null;
             if (string.IsNullOrEmpty(username))
             {
+                ViewBag.Title = "Teknik Blog - " + Config.Title;
                 blog = db.Blogs.Find(Constants.SERVERBLOGID);
             }
             else
             {
-                var blogs = db.Blogs.Include("Blog.User").Where(p => p.User.Username == username);
+                var blogs = db.Blogs.Include("User").Where(p => p.User.Username == username);
                 if (blogs.Any())
                 {
                     blog = blogs.First();
+                    ViewBag.Title = blog.User.Username + "'s Blog - " + Config.Title;
                 }
             }
             // find the post specified
             if (blog != null)
             {
+                var foundPosts = db.Posts.Include("Blog").Include("Blog.User").Where(p =>   (p.Blog.BlogId == blog.BlogId) &&
+                                                                                            (p.Published || p.Blog.User.Username == User.Identity.Name)
+                                                                                        );
                 BlogViewModel model = new BlogViewModel();
                 model.BlogId = blog.BlogId;
                 model.UserId = blog.UserId;
                 model.User = blog.User;
-                model.Posts = blog.Posts;
+                model.Title = blog.Title;
+                model.Description = blog.Description;
+                model.Posts = (foundPosts != null && foundPosts.Any()) ? foundPosts.ToList() : null;
 
                 return View(model);
             }
@@ -79,31 +86,36 @@ namespace Teknik.Areas.Blog.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             // find the post specified
-
-            var post = db.Posts.Include("Blog").Include("Blog.User").Where(p => p.Blog.User.Username == username && p.PostId == id);
-            if (post.Any())
+            var post = db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.Blog.User.Username == username && p.PostId == id) && 
+                                                                                (p.Published || p.Blog.User.Username == User.Identity.Name)
+                                                                            );
+            if (post != null && post.Any())
             {
                 Post curPost = post.First();
-                PostViewModel model = new PostViewModel();
-                model.BlogId = curPost.BlogId;
-                model.PostId = curPost.PostId;
-                model.DatePosted = curPost.DatePosted;
-                model.Published = curPost.Published;
-                model.DatePublished = curPost.DatePublished;
-                model.Title = curPost.Title;
-                model.Tags = curPost.Tags;
-                model.Article = curPost.Article;
+                PostViewModel model = new PostViewModel(curPost);
 
-                return View(model);
+                ViewBag.Title = model.Title + " - " + username + "'s Blog - " + Config.Title;
+                return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
             }
-            return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", null);
         }
 
+        [HttpPost]
+        [AllowAnonymous]
         public ActionResult GetPosts(int blogID, int startPostID, int count)
         {
-            object model = null;
-
-            return PartialView("Post", model);
+            var posts = db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blogID && p.PostId > startPostID) &&
+                                                                                (p.Published || p.Blog.User.Username == User.Identity.Name)
+                                                                            ).Take(count);
+            List<PostViewModel> postViews = new List<PostViewModel>();
+            if (posts != null)
+            {
+                foreach (Post post in posts)
+                {
+                    postViews.Add(new PostViewModel(post));
+                }
+            }
+            return PartialView("~/Areas/Blog/Views/Blog/Posts.cshtml", postViews);
         }
 
         // GET: Blogs/Create

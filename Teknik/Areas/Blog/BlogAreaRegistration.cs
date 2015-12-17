@@ -30,6 +30,13 @@ namespace Teknik.Areas.Blog
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
+                 "Blog_dev_post_unique", // Route name
+                 "dev",
+                 "Blog/Action/{controller}/{action}",    // URL with parameters 
+                 new { controller = "Blog", action = "Blog" },  // Parameter defaults 
+                 new[] { typeof(Controllers.BlogController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Blog_default_blog", // Route name
                  "blog",
                  "{username}",    // URL with parameters 
@@ -41,6 +48,13 @@ namespace Teknik.Areas.Blog
                  "blog",
                  "{username}/{id}",    // URL with parameters 
                  new { controller = "Blog", action = "Post", username = "", id = 0 },  // Parameter defaults 
+                 new[] { typeof(Controllers.BlogController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Blog_default_post_unique", // Route name
+                 "blog",
+                 "Action/{controller}/{action}",    // URL with parameters 
+                 new { controller = "Blog", action = "Blog" },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
 

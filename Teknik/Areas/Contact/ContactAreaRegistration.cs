@@ -18,14 +18,14 @@ namespace Teknik.Areas.Contact
             context.MapSubdomainRoute(
                  "Contact_dev", // Route name
                  "dev",
-                 "Contact",    // URL with parameters 
+                 "Contact/{controller}/{action}",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ContactController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Contact_default", // Route name
                  "contact",
-                 "",    // URL with parameters 
+                 "{controller}/{action}",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ContactController).Namespace }
              );

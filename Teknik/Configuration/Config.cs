@@ -20,6 +20,8 @@ namespace Teknik
         private SMTPConfig  _SMTPConfig;
         private string      _SupportEmail;
         private string      _BitcoinAddress;
+        private int         _PostsToLoad;
+        private int         _CommentsToLoad;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
 
@@ -35,6 +37,10 @@ namespace Teknik
 
         public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
 
+        public int          PostsToLoad     { get { return _PostsToLoad; }      set { _PostsToLoad = value; } }
+
+        public int          CommentsToLoad  { get { return _PostsToLoad; }      set { _PostsToLoad = value; } }
+
         public Config()
         {
             _ConfigRWLock               = new ReaderWriterLockSlim();
@@ -47,14 +53,16 @@ namespace Teknik
 
         public void SetDefaults()
         {
-            DevEnvironment = false;
-            Title = String.Empty;
-            Description = String.Empty;
-            Author = String.Empty;
-            Host = String.Empty;
-            SMTPConfig = new SMTPConfig();
-            SupportEmail = string.Empty;
-            BitcoinAddress = string.Empty;
+            DevEnvironment  = false;
+            Title           = String.Empty;
+            Description     = String.Empty;
+            Author          = String.Empty;
+            Host            = String.Empty;
+            SMTPConfig      = new SMTPConfig();
+            SupportEmail    = string.Empty;
+            BitcoinAddress  = string.Empty;
+            PostsToLoad     = 10;
+            CommentsToLoad  = 10;
         }
 
         public static Config Deserialize(string text)

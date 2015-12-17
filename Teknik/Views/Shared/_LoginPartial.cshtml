@@ -7,10 +7,10 @@
         <a href="#" id="user_menu" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <strong class="caret"></strong></a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="user_menu">
             <li>
-                <a href="@Url.Action("Index", "Profile", new { area = "Profile" })/@User.Identity.Name">Profile</a>
+                <a href="@Url.Action("Index", "Profile", new { area = "Profile", username = User.Identity.Name })">Profile</a>
             </li>
             <li>
-                <a href="@Url.Action("Index", "Blog", new { area = "Blog" })/@User.Identity.Name">Blog</a>
+                <a href="@Url.Action("Blog", "Blog", new { area = "Blog", username = User.Identity.Name })">Blog</a>
             </li>
             @if (User.IsInRole("Admin"))
             {
