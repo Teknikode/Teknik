@@ -90,7 +90,7 @@
                 </div>
             </div>
         </a>
-        <a href="@Url.Action("Index", "Blog", new { area = "Blog"})">
+        <a href="@Url.Action("blog", "Blog", new { area = "Blog"})">
             <div class="col-md-3 text-center">
                 <div class="thumbnail">
                     <br/>
@@ -137,10 +137,10 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="blog-post-sm">
-                                            <h2 class="blog-post-title-sm text-left"><a href="@Url.Action("Index", "Blog", new { area = "Blog"}, "https")/@post.Blog.User.Username/@post.PostId" id="title_@post.PostId">@post.Title</a>
+                                            <h2 class="blog-post-title-sm text-left"><a href="@Url.Action("Post", "Blog", new { area = "Blog", username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
                                             </h2>
                                             <p class="blog-post-meta-sm text-left text-muted">
-                                                Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.Action("Index", "Profile", new { area = "Blog"}, "https")/@post.Blog.User.Username">@post.Blog.User.Username</a>
+                                                Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.Action("Blog", "Blog", new { area = "Blog", username = post.Blog.User.Username })">@post.Blog.User.Username</a>
                                             </p>
                                         </div>
                                     </div>
