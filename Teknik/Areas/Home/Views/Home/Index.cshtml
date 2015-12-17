@@ -1,4 +1,7 @@
-﻿@using Teknik.Areas.Blog.Models
+﻿@model Teknik.Areas.Home.ViewModels.HomeViewModel
+
+@using Teknik.Areas.Blog.Models
+
 <div class="container">
     <div class="row">
         <center>
@@ -116,6 +119,109 @@
 </div>
 
 <div class="container">
+    <!-- Display Site News -->
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">Recent News</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <ul class="list-group">
+                        @if (Model.SitePosts.Any())
+                        {
+                            foreach (Post post in Model.SitePosts)
+                            {
+                                <script>
+                                    var converter = new Markdown.getSanitizingConverter();
+                                    // Title Conversion
+                                    var old_post = $("#title_@post.PostId").text();
+                                    var new_post = converter.makeHtml(old_post);
+                                    $("#title_@post.PostId").html(new_post);
+                                </script>
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="blog-post-sm">
+                                                <h2 class="blog-post-title-sm text-left">
+                                                    <a href="@Url.Action("Post", "Blog", new { area = "Blog", username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
+                                                </h2>
+                                                <p class="blog-post-meta-sm text-left text-muted">
+                                                    Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.Action("Index", "Profile", new { area = "Profile", username = post.Blog.User.Username })">@post.Blog.User.Username</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-sm-12 text-center">
+                                        <h2>No News Available</h2>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- Display Recent Podcasts -->
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">Recent Podcasts</h3>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <ul class="list-group">
+                        @if (Model.Podcasts.Any())
+                        {
+                            foreach (Post post in Model.Podcasts)
+                            {
+                                <script>
+                                        var converter = new Markdown.getSanitizingConverter();
+                                        // Title Conversion
+                                        var old_post = $("#title_@post.PostId").text();
+                                        var new_post = converter.makeHtml(old_post);
+                                        $("#title_@post.PostId").html(new_post);
+                                </script>
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="blog-post-sm">
+                                                <h2 class="blog-post-title-sm text-left">
+                                                    <a href="@Url.Action("Post", "Blog", new { area = "Blog", username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
+                                                </h2>
+                                                <p class="blog-post-meta-sm text-left text-muted">
+                                                    Posted on @post.DatePosted.ToString("MMMM dd, yyyy")
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-sm-12 text-center">
+                                        <h2>No Podcasts Available</h2>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+<!-- Display Recent Blog Posts -->
     <div class="col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -124,25 +230,38 @@
             <div class="panel-body">
                 <p>
                     <ul class="list-group">
-                        @foreach (Post post in Model)
+                        @if (Model.BlogPosts.Any())
                         {
-                            <script>
-                                var converter = new Markdown.getSanitizingConverter();
-                                // Title Conversion
-                                var old_post = $("#title_@post.PostId").text();
-                                var new_post = converter.makeHtml(old_post);
-                                $("#title_@post.PostId").html(new_post);
-                            </script>
+                            foreach (Post post in Model.BlogPosts)
+                            {
+                                <script>
+                                    var converter = new Markdown.getSanitizingConverter();
+                                    // Title Conversion
+                                    var old_post = $("#title_@post.PostId").text();
+                                    var new_post = converter.makeHtml(old_post);
+                                    $("#title_@post.PostId").html(new_post);
+                                </script>
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="blog-post-sm">
+                                                <h2 class="blog-post-title-sm text-left"><a href="@Url.Action("Post", "Blog", new { area = "Blog", username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
+                                                </h2>
+                                                <p class="blog-post-meta-sm text-left text-muted">
+                                                    Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.Action("Index", "Profile", new { area = "Profile", username = post.Blog.User.Username })">@post.Blog.User.Username</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                        else
+                        {
                             <li class="list-group-item">
                                 <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="blog-post-sm">
-                                            <h2 class="blog-post-title-sm text-left"><a href="@Url.Action("Post", "Blog", new { area = "Blog", username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
-                                            </h2>
-                                            <p class="blog-post-meta-sm text-left text-muted">
-                                                Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.Action("Blog", "Blog", new { area = "Blog", username = post.Blog.User.Username })">@post.Blog.User.Username</a>
-                                            </p>
-                                        </div>
+                                    <div class="col-sm-12 text-center">
+                                        <h2>No Posts Available</h2>
                                     </div>
                                 </div>
                             </li>
