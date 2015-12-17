@@ -44,6 +44,7 @@ namespace Teknik.Areas.Blog.Controllers
         public ActionResult Blog(string username)
         {
             Models.Blog blog = null;
+            BlogViewModel model = null;
             if (string.IsNullOrEmpty(username))
             {
                 ViewBag.Title = "Teknik Blog - " + Config.Title;
@@ -63,8 +64,8 @@ namespace Teknik.Areas.Blog.Controllers
             {
                 var foundPosts = db.Posts.Include("Blog").Include("Blog.User").Where(p =>   (p.Blog.BlogId == blog.BlogId) &&
                                                                                             (p.Published || p.Blog.User.Username == User.Identity.Name)
-                                                                                        );
-                BlogViewModel model = new BlogViewModel();
+                                                                                         );
+                model = new BlogViewModel();
                 model.BlogId = blog.BlogId;
                 model.UserId = blog.UserId;
                 model.User = blog.User;
@@ -74,7 +75,7 @@ namespace Teknik.Areas.Blog.Controllers
 
                 return View(model);
             }
-            return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            return View(model);
         }
 
         // GET: Blogs/Details/5
