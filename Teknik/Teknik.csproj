@@ -141,6 +141,7 @@
     <Compile Include="Areas\About\Controllers\AboutController.cs" />
     <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
     <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
+    <Compile Include="Areas\Blog\ViewModels\PostViewModel.cs" />
     <Compile Include="Areas\Contact\ContactAreaRegistration.cs" />
     <Compile Include="Areas\Contact\Controllers\ContactController.cs" />
     <Compile Include="Areas\Contact\Models\Contact.cs" />
@@ -203,7 +204,7 @@
     <Content Include="App_Data\Config.json" />
     <Content Include="ConnectionStrings.config" />
     <Content Include="Areas\Blog\Views\web.config" />
-    <Content Include="Areas\Blog\Views\Blog\Index.cshtml" />
+    <Content Include="Areas\Blog\Views\Blog\Blog.cshtml" />
     <Content Include="Areas\Dev\Views\web.config" />
     <Content Include="Areas\Home\Views\web.config" />
     <Content Include="Areas\Home\Views\_ViewStart.cshtml" />
@@ -234,6 +235,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Areas\Blog\Views\Blog\Post.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />

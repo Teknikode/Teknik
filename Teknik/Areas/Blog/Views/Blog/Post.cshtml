@@ -1,0 +1,53 @@
+﻿@model Teknik.Areas.Blog.Models.Post
+<script>
+          var converter = new Markdown.getSanitizingConverter();
+          // Title Conversion
+          var old_post = $("#title_@Model.PostId").text();
+          var new_post = converter.makeHtml(old_post);
+          $("#title_@Model.PostId").html(new_post);
+          // Post Conversion
+          var old_post = $("#post_@Model.PostId").text();
+          var new_post = converter.makeHtml(old_post);
+          $("#post_@Model.PostId").html(new_post);
+</script>
+<div class="row">
+    <div class="col-sm-10 col-sm-offset-1">
+        <div class="blog-post">
+            <h2 class="blog-post-title text-center"><a href="@Url.Action("Post", "Blog", new { area = "Blog", username = Model.Blog.User.Username, id = Model.PostId })" id="title_@Model.PostId">@Model.Title</a></h2>
+            <p class="blog-post-meta text-center text-muted">
+                Posted on @Model.DatePublished.ToString("F d, Y") by <a href="@Url.Action("Index", "Profile", new { area = "Profile" })/@Model.Blog.User.Username">@Model.Blog.User.Username</a>
+                <?php
+                if ($own_blog)
+                {
+                ?>
+                <br />
+                <button type="button" class="btn btn-info edit_post" id="<?php echo $post_id; ?>" data-toggle="modal" data-target="#editPost">Edit</button>
+                <?php
+                if ($published)
+                {
+                ?>
+                <button type="button" class="btn btn-warning unpublish_post" id="<?php echo $post_id; ?>">Unpublish</button>
+                <?php
+                }
+                else
+                {
+                ?>
+                <button type="button" class="btn btn-success publish_post" id="<?php echo $post_id; ?>">Publish</button>
+                <?php
+                }
+                ?>
+                <button type="button" class="btn btn-danger delete_post" id="<?php echo $post_id; ?>">Delete</button>
+                <?php
+                }
+                ?>
+            </p>
+            <p id="post_@Model.PostId">@Model.Article</p>
+        </div>
+    </div>
+</div>
+<!-- NO POSTS -->
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <h2>There are currently no articles.</h2>
+    </div>
+</div>

@@ -16,31 +16,31 @@ namespace Teknik.Areas.Blog
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapSubdomainRoute(
-                 "Blog_dev_index", // Route name
+                 "Blog_dev_blog", // Route name
                  "dev",
-                 "Blog",    // URL with parameters 
-                 new { controller = "Blog", action = "Index" },  // Parameter defaults 
+                 "Blog/{username}",    // URL with parameters 
+                 new { controller = "Blog", action = "Blog", username = UrlParameter.Optional },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Blog_dev_detail", // Route name
+                 "Blog_dev_post", // Route name
                  "dev",
                  "Blog/{username}/{id}",    // URL with parameters 
-                 new { controller = "Blog", action = "Details", username = "", id = UrlParameter.Optional },  // Parameter defaults 
+                 new { controller = "Blog", action = "Post", username = "", id = 0 },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Blog_default_index", // Route name
+                 "Blog_default_blog", // Route name
                  "blog",
-                 "",    // URL with parameters 
-                 new { controller = "Blog", action = "Index" },  // Parameter defaults 
+                 "{username}",    // URL with parameters 
+                 new { controller = "Blog", action = "Blog", username = UrlParameter.Optional },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Blog_default_detail", // Route name
+                 "Blog_default_post", // Route name
                  "blog",
                  "{username}/{id}",    // URL with parameters 
-                 new { controller = "Blog", action = "Details", username = "", id = UrlParameter.Optional },  // Parameter defaults 
+                 new { controller = "Blog", action = "Post", username = "", id = 0 },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
 
