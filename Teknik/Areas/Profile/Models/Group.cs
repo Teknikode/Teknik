@@ -14,6 +14,8 @@ namespace Teknik.Areas.Profile.Models
 
         public string Description { get; set; }
 
+        public List<User> Users { get; set; }
+
         public List<Role> Roles { get; set; }
     }
 }

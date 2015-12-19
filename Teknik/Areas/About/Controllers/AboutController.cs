@@ -9,7 +9,8 @@ namespace Teknik.Areas.About.Controllers
 {
     public class AboutController : DefaultController
     {
-        [AllowAnonymous]
+        //[AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         // GET: About/About
         public ActionResult Index()
         {

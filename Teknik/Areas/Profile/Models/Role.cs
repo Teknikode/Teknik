@@ -14,8 +14,6 @@ namespace Teknik.Areas.Profile.Models
 
         public string Description { get; set; }
 
-        public PermissionType Permission { get; set; }
-
-        public PermissionTarget Target { get; set; }
+        public List<Group> Groups { get; set; }
     }
 }

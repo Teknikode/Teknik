@@ -155,8 +155,6 @@
     <Compile Include="Areas\Privacy\Controllers\PrivacyController.cs" />
     <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
     <Compile Include="Areas\Profile\Controllers\ProfileController.cs" />
-    <Compile Include="Areas\Profile\Models\AuthUser.cs" />
-    <Compile Include="Areas\Profile\Models\UserIdentity.cs" />
     <Compile Include="Areas\Profile\ProfileAreaRegistration.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Areas\Blog\Controllers\BlogController.cs" />

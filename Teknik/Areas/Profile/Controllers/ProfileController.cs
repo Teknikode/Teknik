@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Teknik.Areas.Profile.ViewModels;
 using Teknik.Controllers;
+using Teknik.Helpers;
 using Teknik.Models;
 using Teknik.ViewModels;
 
@@ -38,7 +39,10 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (model.IsValid())
+                string username = model.Username;
+                string password = SHA384.Hash(model.Username, model.Password);
+                bool userValid = db.Users.Any(b => b.Username == username && b.HashedPassword == password);
+                if (userValid)
                 {
                     FormsAuthentication.SetAuthCookie(model.Username, model.RememberMe);
                     return Json(new { result = "true" });
