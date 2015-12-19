@@ -186,6 +186,7 @@
     <Content Include="Areas\Blog\Scripts\Blog.js" />
     <Content Include="Areas\Contact\Scripts\Contact.js" />
     <Content Include="Areas\Home\Scripts\Home.js" />
+    <Content Include="Content\bootstrap-markdown.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -239,11 +240,18 @@
     <Content Include="Areas\Blog\Views\Blog\Posts.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\Post.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\ViewPost.cshtml" />
-    <Content Include="GitVersionConfig.yaml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\bootbox\bootbox.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\bootstrap\bootstrap.min.js" />
+    <Content Include="Scripts\bootstrap\image-gallery\bootstrap-image-gallery.min.js" />
+    <Content Include="Scripts\bootstrap\markdown\bootstrap-markdown.js" />
+    <Content Include="Scripts\bootstrap\modal\bootstrap-modal.js" />
+    <Content Include="Scripts\bootstrap\modal\bootstrap-modalmanager.js" />
+    <Content Include="Scripts\bootstrap\select\bootstrap-select.js" />
+    <Content Include="Scripts\bootstrap\tags\bootstrap-tags.js" />
     <Content Include="Scripts\common.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />

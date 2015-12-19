@@ -19,26 +19,6 @@ namespace Teknik.Areas.Blog.Controllers
     {
         private TeknikEntities db = new TeknikEntities();
 
-        // GET: Blogs 
-        [AllowAnonymous]
-        public ActionResult Index()
-        {
-            ViewBag.Title = "Teknik Blog - " + Config.Title;
-
-            // by default, view the teknik blog
-            Models.Blog blog = db.Blogs.Find(Constants.SERVERBLOGID);
-            BlogViewModel model = new BlogViewModel();
-            model.BlogId = Constants.SERVERBLOGID;
-            if (blog != null)
-            {
-                model.UserId = blog.UserId;
-                model.User = blog.User;
-                model.Posts = blog.Posts;
-            }
-
-            return View(model);
-        }
-
         // GET: Blogs/Details/5
         [AllowAnonymous]
         public ActionResult Blog(string username)
@@ -64,7 +44,7 @@ namespace Teknik.Areas.Blog.Controllers
             {
                 var foundPosts = db.Posts.Include("Blog").Include("Blog.User").Where(p =>   (p.Blog.BlogId == blog.BlogId) &&
                                                                                             (p.Published || p.Blog.User.Username == User.Identity.Name)
-                                                                                         );
+                                                                                         ).OrderByDescending(p => p.DatePosted);
                 model = new BlogViewModel();
                 model.BlogId = blog.BlogId;
                 model.UserId = blog.UserId;
@@ -87,13 +67,12 @@ namespace Teknik.Areas.Blog.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             // find the post specified
-            var post = db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.Blog.User.Username == username && p.PostId == id) && 
+            Post post = db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.Blog.User.Username == username && p.PostId == id) && 
                                                                                 (p.Published || p.Blog.User.Username == User.Identity.Name)
-                                                                            );
-            if (post != null && post.Any())
+                                                                            ).First();
+            if (post != null)
             {
-                Post curPost = post.First();
-                PostViewModel model = new PostViewModel(curPost);
+                PostViewModel model = new PostViewModel(post);
 
                 ViewBag.Title = model.Title + " - " + username + "'s Blog - " + Config.Title;
                 return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
@@ -107,7 +86,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             var posts = db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blogID && p.PostId > startPostID) &&
                                                                                 (p.Published || p.Blog.User.Username == User.Identity.Name)
-                                                                            ).Take(count);
+                                                                            ).OrderByDescending(p => p.DatePosted).Skip(startPostID).Take(count).ToList();
             List<PostViewModel> postViews = new List<PostViewModel>();
             if (posts != null)
             {
@@ -119,84 +98,88 @@ namespace Teknik.Areas.Blog.Controllers
             return PartialView("~/Areas/Blog/Views/Blog/Posts.cshtml", postViews);
         }
 
-        // GET: Blogs/Create
-        public ActionResult Create()
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult GetPostTitle(int postID)
         {
-            return View();
+            string title = string.Empty;
+            Post post = (User.IsInRole("Admin")) ? db.Posts.Find(postID) : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.PostId == postID) && 
+                                                                                                                                    (p.Published || p.Blog.User.Username == User.Identity.Name)).First();
+            if (post != null)
+            {
+                return Json(new { result = post.Title });
+            }
+            return Json(new { error = "No title found" });
         }
 
-        // POST: Blogs/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult GetPostArticle(int postID)
+        {
+            string title = string.Empty;
+            Post post = (User.IsInRole("Admin")) ? db.Posts.Find(postID) : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.PostId == postID) && 
+                                                                                                                                    (p.Published || p.Blog.User.Username == User.Identity.Name)).First();
+            if (post != null)
+            {
+                return Json(new { result = post.Article });
+            }
+            return Json(new { error = "No article found" });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "BlogId,UserId")] Models.Blog blog)
+        public ActionResult CreatePost(int blogID, string title, string article)
         {
             if (ModelState.IsValid)
             {
-                db.Blogs.Add(blog);
+                Post post = db.Posts.Create();
+                post.BlogId = blogID;
+                post.Title = title;
+                post.Article = article;
+                post.DatePosted = DateTime.Now;
+                post.DatePublished = DateTime.Now;
+
+                db.Posts.Add(post);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return Json(new { result = true });
             }
-
-            return View(blog);
+            return Json(new { error = "No post found" });
         }
 
-        // GET: Blogs/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Models.Blog blog = db.Blogs.Find(id);
-            if (blog == null)
-            {
-                return HttpNotFound();
-            }
-            return View(blog);
-        }
-
-        // POST: Blogs/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "BlogId,UserId")] Models.Blog blog)
+        public ActionResult EditPost(int postID, string title, string article)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(blog).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                Post post = db.Posts.Find(postID);
+                if (post != null)
+                {
+                    post.Title = title;
+                    post.Article = article;
+                    db.Entry(post).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return Json(new { result = true });
+                }
             }
-            return View(blog);
+            return Json(new { error = "No post found" });
         }
-
-        // GET: Blogs/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Models.Blog blog = db.Blogs.Find(id);
-            if (blog == null)
-            {
-                return HttpNotFound();
-            }
-            return View(blog);
-        }
-
-        // POST: Blogs/Delete/5
-        [HttpPost, ActionName("Delete")]
+        
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeletePost(int postID)
         {
-            Models.Blog blog = db.Blogs.Find(id);
-            db.Blogs.Remove(blog);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                Post post = db.Posts.Find(postID);
+                if (post != null)
+                {
+                    db.Posts.Remove(post);
+                    db.SaveChanges();
+                    return Json(new { result = true });
+                }
+            }
+            return Json(new { error = "No post found" });
         }
     }
 }

@@ -1,19 +1,20 @@
 ﻿$(document).ready(function () {
     $("#blog_submit").click(function () {
         $('#newPost').modal('hide');
-        title = encodeURIComponent($("#blog_title").val());
-        post = encodeURIComponent($("#blog_post").val());
+        blogID = $("#blog_blogid").val();
+        title = $("#blog_title").val();
+        post = $("#blog_post").val();
         $.ajax({
             type: "POST",
             url: addPostURL,
-            data: { title: title, post: post },
+            data: AddAntiForgeryToken({ blogID: blogID, title: title, article: post }),
             success: function (html) {
-                if (html == 'true') {
+                if (html.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                 }
             }
         });
@@ -22,25 +23,25 @@
 
     $('#editPost').on('show.bs.modal', function (e) {
         $("#edit_blog_post").val("");
-        postID = encodeURIComponent($(e.relatedTarget).attr("id"));
+        postID = $(e.relatedTarget).attr("id");
         $("#edit_blog_postid").val(postID);
         $.ajax({
             type: "POST",
             url: getPostTitleURL,
-            data: { id: postID },
+            data: { postID: postID },
             success: function (html) {
-                if (html) {
-                    $("#edit_blog_title").val(html);
+                if (html.result) {
+                    $("#edit_blog_title").val(html.result);
                 }
             }
         });
         $.ajax({
             type: "POST",
             url: getPostArticleURL,
-            data: { id: postID },
+            data: { postID: postID },
             success: function (html) {
-                if (html) {
-                    $("#edit_blog_post").val(html);
+                if (html.result) {
+                    $("#edit_blog_post").val(html.result);
                 }
             }
         });
@@ -48,20 +49,20 @@
 
     $("#edit_submit").click(function () {
         $('#editPost').modal('hide');
-        postID = encodeURIComponent($("#edit_blog_postid").val());
-        title = encodeURIComponent($("#edit_blog_title").val());
-        post = encodeURIComponent($("#edit_blog_post").val());
+        postID = $("#edit_blog_postid").val();
+        title = $("#edit_blog_title").val();
+        post = $("#edit_blog_post").val();
         $.ajax({
             type: "POST",
             url: editPostURL,
-            data: { postID: postID, title: title, post: post },
+            data: AddAntiForgeryToken({ postID: postID, title: title, article: post }),
             success: function (html) {
-                if (html == 'true') {
+                if (html.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                 }
             }
         });
@@ -70,12 +71,12 @@
 
     $("#comment_submit").click(function () {
         $('#newComment').modal('hide');
-        postID = encodeURIComponent($("#post_id").val());
-        post = encodeURIComponent($("#comment_post").val());
+        postID = $("#post_id").val();
+        post = $("#comment_post").val();
         $.ajax({
             type: "POST",
             url: addCommentURL,
-            data: { postID: postID, service: 'blog', comment: post },
+            data: AddAntiForgeryToken({ postID: postID, service: 'blog', comment: post }),
             success: function (html) {
                 if (html == 'true') {
                     window.location.reload();
@@ -112,7 +113,7 @@
         $.ajax({
             type: "POST",
             url: editCommentURL,
-            data: { commentID: postID, post: post },
+            data: AddAntiForgeryToken({ commentID: postID, post: post }),
             success: function (html) {
                 if (html == 'true') {
                     window.location.reload();
@@ -148,7 +149,7 @@
 });
 
 function loadMorePosts(start, count) {
-    blog_id = encodeURIComponent($(".blog-main").attr("id"));
+    blog_id = $(".blog-main").attr("id");
     $.ajax({
         type: "POST",
         url: getPostsURL,
@@ -166,7 +167,7 @@ function loadMorePosts(start, count) {
 }
 
 function loadMoreComments(start, count) {
-    post_id = encodeURIComponent($(".post-comments").attr("id"));
+    post_id = $(".post-comments").attr("id");
     $.ajax({
         type: "POST",
         url: getCommentsURL,
@@ -200,11 +201,11 @@ function bindScrollComments() {
 function linkPostUnpublish(selector) {
     $(selector).click(function () {
         var object = $(this);
-        post_id = encodeURIComponent(object.attr("id"));
+        post_id = object.attr("id");
         $.ajax({
             type: "POST",
             url: publishPostURL,
-            data: { publish: false, id: post_id },
+            data: AddAntiForgeryToken({ publish: false, postID: post_id }),
             success: function (html) {
                 if (html == 'true') {
                     window.location.reload();
@@ -221,11 +222,11 @@ function linkPostUnpublish(selector) {
 function linkPostPublish(selector) {
     $(selector).click(function () {
         var object = $(this);
-        post_id = encodeURIComponent(object.attr("id"));
+        post_id = object.attr("id");
         $.ajax({
             type: "POST",
             url: publishPostURL,
-            data: { publish: true, id: post_id },
+            data: AddAntiForgeryToken({ publish: true, postID: post_id }),
             success: function (html) {
                 if (html == 'true') {
                     window.location.reload();
@@ -242,20 +243,20 @@ function linkPostPublish(selector) {
 function linkPostDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
-        post_id = encodeURIComponent(object.attr("id"));
+        post_id = object.attr("id");
         bootbox.confirm("Are you sure you want to delete your post?", function (result) {
             if (result) {
                 $.ajax({
                     type: "POST",
                     url: deletePostURL,
-                    data: { id: post_id },
+                    data: AddAntiForgeryToken({ postID: post_id }),
                     success: function (html) {
-                        if (html == 'true') {
+                        if (html.result) {
                             window.location.reload();
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                         }
                     }
                 });
@@ -267,13 +268,13 @@ function linkPostDelete(selector) {
 function linkCommentDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
-        post_id = encodeURIComponent(object.attr("id"));
+        post_id = object.attr("id");
         bootbox.confirm("Are you sure you want to delete your comment?", function (result) {
             if (result) {
                 $.ajax({
                     type: "POST",
                     url: deleteCommentURL,
-                    data: { id: post_id },
+                    data: AddAntiForgeryToken({ postID: post_id }),
                     success: function (html) {
                         if (html == 'true') {
                             window.location.reload();

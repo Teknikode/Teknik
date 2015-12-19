@@ -22,6 +22,7 @@
     var deleteCommentURL = '@Url.Action("DeleteComment", "Blog", new { area = "Blog" })';
 </script>
 
+@Styles.Render("~/Content/blog")
 @Scripts.Render("~/bundles/blog")
 
 <div class="container">
@@ -59,6 +60,7 @@
                             <h4 class="modal-title" id="newPostLabel">Create a New Post</h4>
                         </div>
                         <div class="modal-body">
+                            <input name="blog_blogid" id="blog_blogid" type="hidden" value="@Model.BlogId" />
                             <div class="row">
                                 <div class="form-group col-sm-12">
                                     <label for="blog_title"><h4>Title</h4></label>

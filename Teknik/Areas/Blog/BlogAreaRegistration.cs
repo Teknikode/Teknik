@@ -58,10 +58,15 @@ namespace Teknik.Areas.Blog
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
 
-            // Register Bundles
+            // Register Script Bundles
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/blog").Include(
                       "~/Scripts/ocupload/1.1.2/ocupload.js",
+                      "~/Scripts/bootstrap/markdown/bootstrap-markdown.js",
+                      "~/Scripts/bootbox/bootbox.min.js",
                       "~/Areas/Blog/Scripts/Blog.js"));
+            // Register Style Bundles
+            BundleTable.Bundles.Add(new StyleBundle("~/Content/blog").Include(
+                      "~/Content/bootstrap-markdown.min.css"));
         }
     }
 }
