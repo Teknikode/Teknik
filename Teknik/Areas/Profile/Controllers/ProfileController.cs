@@ -17,6 +17,7 @@ namespace Teknik.Areas.Profile.Controllers
         private TeknikEntities db = new TeknikEntities();
 
         // GET: Profile/Profile
+        [AllowAnonymous]
         public ActionResult Index(string username)
         {
             ViewBag.Title = Config.Title + " - Profile";
@@ -30,7 +31,7 @@ namespace Teknik.Areas.Profile.Controllers
         // GET: Profile
         public ActionResult Login()
         {
-            return View();
+            return View(new LoginViewModel());
         }
 
         [HttpPost]

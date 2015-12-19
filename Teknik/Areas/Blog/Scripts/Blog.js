@@ -205,14 +205,14 @@ function linkPostUnpublish(selector) {
         $.ajax({
             type: "POST",
             url: publishPostURL,
-            data: AddAntiForgeryToken({ publish: false, postID: post_id }),
+            data: AddAntiForgeryToken({ postID: post_id, publish: false }),
             success: function (html) {
-                if (html == 'true') {
+                if (html.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                 }
             }
         });
@@ -226,14 +226,14 @@ function linkPostPublish(selector) {
         $.ajax({
             type: "POST",
             url: publishPostURL,
-            data: AddAntiForgeryToken({ publish: true, postID: post_id }),
+            data: AddAntiForgeryToken({postID: post_id, publish: true }),
             success: function (html) {
-                if (html == 'true') {
+                if (html.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                 }
             }
         });

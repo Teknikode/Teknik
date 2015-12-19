@@ -164,7 +164,27 @@ namespace Teknik.Areas.Blog.Controllers
             }
             return Json(new { error = "No post found" });
         }
-        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PublishPost(int postID, bool publish)
+        {
+            if (ModelState.IsValid)
+            {
+                Post post = db.Posts.Find(postID);
+                if (post != null)
+                {
+                    post.Published = publish;
+                    if (publish)
+                        post.DatePublished = DateTime.Now;
+                    db.Entry(post).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return Json(new { result = true });
+                }
+            }
+            return Json(new { error = "No post found" });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult DeletePost(int postID)

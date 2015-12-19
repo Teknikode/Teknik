@@ -1,17 +1,6 @@
 ﻿@model List<Teknik.Areas.Blog.ViewModels.PostViewModel>
 
-@if (Model.Any())
+@foreach (var post in Model)
 {
-    foreach (var post in Model)
-    {
-        @Html.Partial("Post", post)
-    }
-}
-else
-{
-    <div class="row">
-        <div class="col-sm-12 text-center">
-            <h2>There are currently no articles.</h2>
-        </div>
-    </div>
+    @Html.Partial("Post", post)
 }
