@@ -17,8 +17,8 @@
             <h2 class="blog-post-title text-center"><a href="@Url.Action("Post", "Blog", new { area = "Blog", username = Model.Blog.User.Username, id = Model.PostId })" id="title_@Model.PostId">@Model.Title</a></h2>
             <p class="blog-post-meta text-center text-muted">
                 Posted on @Model.DatePublished.ToString("MMMM dd, yyyy") by <a href="@Url.Action("Index", "Profile", new { area = "Profile", username = Model.Blog.User.Username })">@Model.Blog.User.Username</a>
-                @if (Model.Blog.User.Username == User.Identity.Name)
-            {
+                @if (Model.Blog.User.Username == User.Identity.Name || User.IsInRole("Admin"))
+                {
                     <br />
                     <button type="button" class="btn btn-info edit_post" id="@Model.PostId" data-toggle="modal" data-target="#editPost">Edit</button>
                     if (Model.Published)

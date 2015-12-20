@@ -15,6 +15,7 @@ namespace Teknik.Models
         public DbSet<Role> Roles { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Comment> BlogComments { get; set; }
         public DbSet<Contact> Contact { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -24,6 +25,7 @@ namespace Teknik.Models
             modelBuilder.Entity<Role>().ToTable("Roles");
             modelBuilder.Entity<Blog>().ToTable("Blogs");
             modelBuilder.Entity<Post>().ToTable("Posts");
+            modelBuilder.Entity<Comment>().ToTable("BlogComments");
             modelBuilder.Entity<Contact>().ToTable("Contact");
 
             base.OnModelCreating(modelBuilder);

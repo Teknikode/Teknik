@@ -27,6 +27,8 @@ namespace Teknik.Areas.Blog.ViewModels
 
         public List<string> Tags { get; set; }
 
+        public List<Comment> Comments { get; set; }
+
         public PostViewModel(Post post)
         {
             BlogId = post.BlogId;
@@ -38,11 +40,7 @@ namespace Teknik.Areas.Blog.ViewModels
             Title = post.Title;
             Tags = post.Tags;
             Article = post.Article;
-        }
-
-        public bool CanView(IPrincipal user)
-        {
-            return (Published || Blog.User.Username == user.Identity.Name || user.IsInRole("Admin"));  
+            Comments = post.Comments;
         }
     }
 }

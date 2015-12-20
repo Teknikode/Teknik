@@ -23,5 +23,7 @@ namespace Teknik.Areas.Blog.Models
         public string Article { get; set; }
 
         public List<string> Tags { get; set; }
+
+        public List<Comment> Comments { get; set; }
     }
 }

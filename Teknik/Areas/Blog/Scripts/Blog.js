@@ -76,14 +76,14 @@
         $.ajax({
             type: "POST",
             url: addCommentURL,
-            data: AddAntiForgeryToken({ postID: postID, service: 'blog', comment: post }),
+            data: AddAntiForgeryToken({ postID: postID, article: post }),
             success: function (html) {
-                if (html == 'true') {
+                if (html.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                 }
             }
         });
@@ -97,10 +97,10 @@
         $.ajax({
             type: "POST",
             url: getCommentContentURL,
-            data: { id: commentID },
+            data: { commentID: commentID },
             success: function (html) {
-                if (html) {
-                    $("#edit_comment_post").val(html);
+                if (html.result) {
+                    $("#edit_comment_post").val(html.result);
                 }
             }
         });
@@ -115,12 +115,12 @@
             url: editCommentURL,
             data: AddAntiForgeryToken({ commentID: postID, post: post }),
             success: function (html) {
-                if (html == 'true') {
+                if (html.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                 }
             }
         });
@@ -171,7 +171,7 @@ function loadMoreComments(start, count) {
     $.ajax({
         type: "POST",
         url: getCommentsURL,
-        data: { postID: post_id, service: 'blog', postCount: count, startPost: start },
+        data: { postID: post_id, count: count, startCommentID: start },
         success: function (html) {
             if (html) {
                 $(".post-comments").append(html);
@@ -274,14 +274,14 @@ function linkCommentDelete(selector) {
                 $.ajax({
                     type: "POST",
                     url: deleteCommentURL,
-                    data: AddAntiForgeryToken({ postID: post_id }),
+                    data: AddAntiForgeryToken({ commentID: post_id }),
                     success: function (html) {
-                        if (html == 'true') {
+                        if (html.result) {
                             window.location.reload();
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                         }
                     }
                 });

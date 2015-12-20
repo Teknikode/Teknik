@@ -142,7 +142,9 @@
     <Compile Include="Areas\About\AboutAreaRegistration.cs" />
     <Compile Include="Areas\About\Controllers\AboutController.cs" />
     <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
+    <Compile Include="Areas\Blog\Models\Comment.cs" />
     <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
+    <Compile Include="Areas\Blog\ViewModels\CommentViewModel.cs" />
     <Compile Include="Areas\Blog\ViewModels\PostViewModel.cs" />
     <Compile Include="Areas\Contact\ContactAreaRegistration.cs" />
     <Compile Include="Areas\Contact\Controllers\ContactController.cs" />
@@ -241,6 +243,8 @@
     <Content Include="Areas\Blog\Views\Blog\Post.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\ViewPost.cshtml" />
     <Content Include="Areas\Profile\Views\Profile\ViewLogin.cshtml" />
+    <Content Include="Areas\Blog\Views\Blog\Comments.cshtml" />
+    <Content Include="Areas\Blog\Views\Blog\Comment.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />

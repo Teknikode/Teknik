@@ -1,0 +1,6 @@
+﻿@model List<Teknik.Areas.Blog.ViewModels.CommentViewModel>
+
+@foreach (var comment in Model)
+{
+    @Html.Partial("Comment", comment)
+}
