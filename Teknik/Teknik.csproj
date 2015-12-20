@@ -185,6 +185,7 @@
     <Compile Include="App_Start\SubdomainRouteExtension.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
     <Content Include="Areas\Contact\Scripts\Contact.js" />
     <Content Include="Areas\Home\Scripts\Home.js" />

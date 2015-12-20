@@ -96,7 +96,7 @@
         $("#edit_comment_postid").val(commentID);
         $.ajax({
             type: "POST",
-            url: getCommentContentURL,
+            url: getCommentArticleURL,
             data: { commentID: commentID },
             success: function (html) {
                 if (html.result) {
