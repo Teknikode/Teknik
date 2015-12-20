@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using Teknik.Areas.Blog.Models;
+using Teknik.Areas.Profile.Models;
 using Teknik.Areas.Profile.ViewModels;
 using Teknik.Controllers;
 using Teknik.Helpers;
@@ -83,11 +85,26 @@ namespace Teknik.Areas.Profile.Controllers
                 {
                     return Json(new { error = "Passwords must match." });
                 }
-                if (model.Insert())
+                try
                 {
-                    return RedirectToAction("Login", "Profile", new LoginViewModel { Username = model.Username, Password = model.Password });
+                    // Add User
+                    User newUser = db.Users.Create();
+                    newUser.JoinDate = DateTime.Now;
+                    newUser.Username = model.Username;
+                    newUser.HashedPassword = SHA384.Hash(model.Username, model.Password);
+                    db.Users.Add(newUser);
+                    db.SaveChanges();
+
+                    // Generate blog for the user
+                    var newBlog = db.Blogs.Create();
+                    newBlog.UserId = db.Users.Where(u => u.Username == model.Username).Select(u => u.UserId).First();
+                    db.SaveChanges();
                 }
-                return Json(new { error = "You must include all fields." });
+                catch (Exception ex)
+                {
+                    return Json(new { error = "Unable to create the user." });
+                }
+                return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false });
             }
             return Json(new { error = "You must include all fields." });
         }

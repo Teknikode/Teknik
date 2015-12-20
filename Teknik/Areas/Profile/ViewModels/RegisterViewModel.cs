@@ -23,25 +23,5 @@ namespace Teknik.Areas.Profile.ViewModels
         [Display(Name = "Confirm Password")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
-
-        public bool Insert()
-        {
-            bool success = true;
-            try
-            {
-                User newUser = db.Users.Create();
-                newUser.JoinDate = DateTime.Now;
-                newUser.Username = Username;
-                newUser.HashedPassword = SHA384.Hash(Username, Password);
-                db.Users.Add(newUser);
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                success = false;
-            }
-
-            return success;
-        }
     }
 }
