@@ -29,9 +29,12 @@ namespace Teknik.Areas.Profile.Controllers
         [HttpGet]
         [AllowAnonymous]
         // GET: Profile
-        public ActionResult Login()
+        public ActionResult Login(string ReturnUrl)
         {
-            return View(new LoginViewModel());
+            LoginViewModel model = new LoginViewModel();
+            model.ReturnUrl = ReturnUrl;
+
+            return View("/Areas/Profile/Views/Profile/ViewLogin.cshtml", model);
         }
 
         [HttpPost]
@@ -46,7 +49,14 @@ namespace Teknik.Areas.Profile.Controllers
                 if (userValid)
                 {
                     FormsAuthentication.SetAuthCookie(model.Username, model.RememberMe);
-                    return Json(new { result = "true" });
+                    if (string.IsNullOrEmpty(model.ReturnUrl))
+                    {
+                        return Json(new { result = "true" });
+                    }
+                    else
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
                 }
             }
             return Json(new { error = "Invalid User name or Password." });

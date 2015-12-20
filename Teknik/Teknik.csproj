@@ -240,6 +240,7 @@
     <Content Include="Areas\Blog\Views\Blog\Posts.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\Post.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\ViewPost.cshtml" />
+    <Content Include="Areas\Profile\Views\Profile\ViewLogin.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />

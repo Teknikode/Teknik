@@ -15,10 +15,17 @@ namespace Teknik.Areas.Profile
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapSubdomainRoute(
+                 "Profile_dev_login", // Route name
+                 "dev",
+                 "Profile/Login",    // URL with parameters 
+                 new { controller = "Profile", action = "Login" },  // Parameter defaults 
+                 new[] { typeof(Controllers.ProfileController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Profile_dev", // Route name
                  "dev",
                  "Profile/{username}",    // URL with parameters 
-                 new { controller = "Profile", action = "Index", username = UrlParameter.Optional },  // Parameter defaults 
+                 new { controller = "Profile", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
              );
             context.MapSubdomainRoute(
@@ -33,6 +40,13 @@ namespace Teknik.Areas.Profile
                  "profile",
                  "{username}",    // URL with parameters 
                  new { controller = "Profile", action = "Index", username = UrlParameter.Optional },  // Parameter defaults 
+                 new[] { typeof(Controllers.ProfileController).Namespace }
+            );
+            context.MapSubdomainRoute(
+                 "Profile_default_login", // Route name
+                 "profile",
+                 "Login",    // URL with parameters 
+                 new { controller = "Profile", action = "Login" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
             context.MapSubdomainRoute(

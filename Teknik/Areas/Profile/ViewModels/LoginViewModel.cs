@@ -25,6 +25,8 @@ namespace Teknik.Areas.Profile.ViewModels
         [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
 
+        public string ReturnUrl { get; set; }
+
         public bool IsValid()
         {
             return IsValid(Username, Password);
