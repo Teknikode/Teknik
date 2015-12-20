@@ -113,7 +113,7 @@
         $.ajax({
             type: "POST",
             url: editCommentURL,
-            data: AddAntiForgeryToken({ commentID: postID, post: post }),
+            data: AddAntiForgeryToken({ commentID: postID, article: post }),
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
