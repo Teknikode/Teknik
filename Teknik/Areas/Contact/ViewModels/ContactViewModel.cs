@@ -4,10 +4,11 @@ using Teknik.Areas.Contact.Models;
 using System.Linq;
 using System.Web;
 using Teknik.Models;
+using Teknik.ViewModels;
 
 namespace Teknik.Areas.Contact.ViewModels
 {
-    public class ContactViewModel
+    public class ContactViewModel : ViewModelBase
     {
         private TeknikEntities db = new TeknikEntities();
 

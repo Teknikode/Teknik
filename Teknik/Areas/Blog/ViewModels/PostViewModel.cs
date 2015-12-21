@@ -4,10 +4,11 @@ using Teknik.Areas.Blog.Models;
 using System.Security.Principal;
 using System.Linq;
 using System.Web;
+using Teknik.ViewModels;
 
 namespace Teknik.Areas.Blog.ViewModels
 {
-    public class PostViewModel
+    public class PostViewModel : ViewModelBase
     {
         public int PostId { get; set; }
 

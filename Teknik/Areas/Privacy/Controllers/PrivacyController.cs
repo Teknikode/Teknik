@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.Areas.Privacy.ViewModels;
 using Teknik.Controllers;
 
 namespace Teknik.Areas.Privacy.Controllers
@@ -16,7 +17,7 @@ namespace Teknik.Areas.Privacy.Controllers
             ViewBag.Title = Config.Title + " - Privacy";
             ViewBag.Message = "Teknik privacy policy.";
 
-            return View();
+            return View(new PrivacyViewModel());
         }
     }
 }

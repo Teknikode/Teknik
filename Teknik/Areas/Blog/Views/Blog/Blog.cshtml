@@ -5,7 +5,7 @@
 <script>
     // We need to define the action URLs for the script
 
-    var uploadURL = '@Url.Action("UploadFile", "Upload", new { area = "Upload" })';
+    var uploadURL = '@Url.Action("Upload", "Upload", new { area = "Upload" })';
 
     var getPostsURL = '@Url.Action("GetPosts", "Blog", new { area = "Blog" })';
     var getPostTitleURL = '@Url.Action("GetPostTitle", "Blog", new { area = "Blog" })';
@@ -116,7 +116,7 @@
         {
             <div class="blog-main" id="@Model.BlogId"></div>
             <script>
-                var posts = @ViewBag.Config.PostsToLoad;
+                var posts = @Model.Config.BlogConfig.PostsToLoad;
                 var start_post = 0;
                 loadMorePosts(start_post, posts);
                 start_post = start_post + posts;

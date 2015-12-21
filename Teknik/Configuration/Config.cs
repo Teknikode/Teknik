@@ -4,7 +4,7 @@ using System.Threading;
 using System.Web;
 using Newtonsoft.Json;
 
-namespace Teknik
+namespace Teknik.Configuration
 {
     public class Config
     {
@@ -12,18 +12,20 @@ namespace Teknik
         private ReaderWriterLockSlim _ConfigFileRWLock;
         private JsonSerializerSettings _JsonSettings;
 
-        private bool        _DevEnvironment;
-        private string      _Title;
-        private string      _Description;
-        private string      _Author;
-        private string      _Host;
-        private SMTPConfig  _SMTPConfig;
-        private string      _SupportEmail;
-        private string      _BitcoinAddress;
-        private string      _BlogTitle;
-        private string      _BlogDescription;
-        private int         _PostsToLoad;
-        private int         _CommentsToLoad;
+        private bool            _DevEnvironment;
+        private string          _Title;
+        private string          _Description;
+        private string          _Author;
+        private string          _Host;
+        private SMTPConfig      _SMTPConfig;
+        private UploadConfig    _UploadConfig;
+        private BlogConfig      _BlogConfig;
+        private string          _SupportEmail;
+        private string          _BitcoinAddress;
+        private string          _BlogTitle;
+        private string          _BlogDescription;
+        private int             _PostsToLoad;
+        private int             _CommentsToLoad;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
 
@@ -43,10 +45,10 @@ namespace Teknik
         public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
 
         // Blog Information
-        public string       BlogTitle       { get { return _BlogTitle; }        set { _BlogTitle = value; } }
-        public string       BlogDescription { get { return _BlogDescription; }  set { _BlogDescription = value; } }
-        public int          PostsToLoad     { get { return _PostsToLoad; }      set { _PostsToLoad = value; } }
-        public int          CommentsToLoad  { get { return _CommentsToLoad; }   set { _CommentsToLoad = value; } }
+        public BlogConfig BlogConfig        { get { return _BlogConfig; }       set { _BlogConfig = value; } }
+
+        // Upload Configuration
+        public UploadConfig UploadConfig    { get { return _UploadConfig; }     set { _UploadConfig = value; } }
 
         public Config()
         {
@@ -61,17 +63,15 @@ namespace Teknik
         public void SetDefaults()
         {
             DevEnvironment  = false;
-            Title           = String.Empty;
-            Description     = String.Empty;
-            Author          = String.Empty;
-            Host            = String.Empty;
+            Title           = string.Empty;
+            Description     = string.Empty;
+            Author          = string.Empty;
+            Host            = string.Empty;
             SMTPConfig      = new SMTPConfig();
+            BlogConfig      = new BlogConfig();
+            UploadConfig    = new UploadConfig();
             SupportEmail    = string.Empty;
             BitcoinAddress  = string.Empty;
-            BlogTitle       = string.Empty;
-            BlogDescription = string.Empty;
-            PostsToLoad     = 10;
-            CommentsToLoad  = 10;
         }
 
         public static Config Deserialize(string text)

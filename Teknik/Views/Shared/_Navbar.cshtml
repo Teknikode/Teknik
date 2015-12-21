@@ -1,4 +1,5 @@
-﻿
+﻿@model Teknik.ViewModels.ViewModelBase
+
 <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -38,7 +39,7 @@
                             <a href="@Url.Action("Index", "Mail", new { area = "Mail" })" target="_blank">Mail</a>
                         </li>
                         <li>
-                            <a href="mumble://mumble.@(ViewBag.Config.Host):64738/?version=1.2.5" target="_blank">Mumble</a>
+                            <a href="mumble://mumble.@(Model.Config.Host):64738/?version=1.2.5" target="_blank">Mumble</a>
                         </li>
                         <li class="divider"></li>
                         <li>

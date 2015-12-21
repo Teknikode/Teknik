@@ -1,4 +1,6 @@
-﻿@using Teknik.Models
+﻿@model Teknik.Areas.Privacy.ViewModels.PrivacyViewModel
+
+@using Teknik.Models
 <div class="container">
     <div class="row">
         <div class="col-xs-10">
@@ -7,7 +9,7 @@
                 The following information is publicly available.
             </p>
             <ul>
-                <li>Email Address (username@(string.Format("@{0}", ViewBag.Config.Host))</li>
+                <li>Email Address (username@(string.Format("@{0}", Model.Config.Host))</li>
                 <li>Published Blog Posts</li>
                 <li>Comments</li>
                 <li>Uploads (Only accessible by direct link)</li>

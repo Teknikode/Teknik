@@ -141,6 +141,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\About\AboutAreaRegistration.cs" />
     <Compile Include="Areas\About\Controllers\AboutController.cs" />
+    <Compile Include="Areas\About\ViewModels\AboutViewModel.cs" />
     <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
     <Compile Include="Areas\Blog\Models\Comment.cs" />
     <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
@@ -156,11 +157,18 @@
     <Compile Include="Areas\Home\ViewModels\HomeViewModel.cs" />
     <Compile Include="Areas\Privacy\Controllers\PrivacyController.cs" />
     <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
+    <Compile Include="Areas\Privacy\ViewModels\PrivacyViewModel.cs" />
     <Compile Include="Areas\Profile\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Profile\ProfileAreaRegistration.cs" />
+    <Compile Include="Areas\Upload\Controllers\UploadController.cs" />
+    <Compile Include="Areas\Upload\Models\Upload.cs" />
+    <Compile Include="Areas\Upload\UploadAreaRegistration.cs" />
+    <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
+    <Compile Include="Configuration\BlogConfig.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
     <Compile Include="Configuration\SMTPConfig.cs" />
+    <Compile Include="Configuration\UploadConfig.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Areas\Dev\Controllers\DevController.cs" />
     <Compile Include="Global.asax.cs">
@@ -190,11 +198,14 @@
     <Content Include="Areas\Contact\Scripts\Contact.js" />
     <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
+    <Content Include="Areas\Upload\Scripts\aes.js" />
+    <Content Include="Areas\Upload\Scripts\Upload.js" />
     <Content Include="Content\bootstrap-markdown.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\dropzone.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Fonts\fontawesome-webfont.svg" />
@@ -248,6 +259,9 @@
     <Content Include="Areas\Blog\Views\Blog\Comments.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\Comment.cshtml" />
     <Content Include="Fonts\fontawesome-webfont.woff2" />
+    <Content Include="Areas\Upload\Views\web.config" />
+    <Content Include="Areas\Upload\Views\Upload\Index.cshtml" />
+    <Content Include="Areas\Upload\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />
@@ -261,6 +275,7 @@
     <Content Include="Scripts\bootstrap\select\bootstrap-select.js" />
     <Content Include="Scripts\bootstrap\tags\bootstrap-tags.js" />
     <Content Include="Scripts\common.js" />
+    <Content Include="Scripts\Dropzone\dropzone.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -312,6 +327,7 @@
     <Folder Include="Areas\Privacy\Models\" />
     <Folder Include="Areas\Privacy\Views\Shared\" />
     <Folder Include="Areas\Profile\Views\Shared\" />
+    <Folder Include="Areas\Upload\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

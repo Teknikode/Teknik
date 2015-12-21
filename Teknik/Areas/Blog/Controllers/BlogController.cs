@@ -33,8 +33,8 @@ namespace Teknik.Areas.Blog.Controllers
                 if (blogs != null && blogs.Any())
                 {
                     blog = blogs.First();
-                    blog.Title = Config.BlogTitle;
-                    blog.Description = Config.BlogDescription;
+                    blog.Title = Config.BlogConfig.Title;
+                    blog.Description = Config.BlogConfig.Description;
                 }
             }
             else // A user specific blog

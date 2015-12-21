@@ -4,10 +4,11 @@ using System.Linq;
 using System.Web;
 using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Profile.Models;
+using Teknik.ViewModels;
 
 namespace Teknik.Areas.Blog.ViewModels
 {
-    public class CommentViewModel
+    public class CommentViewModel : ViewModelBase
     {
         public int CommentId { get; set; }
         public int PostId { get; set; }

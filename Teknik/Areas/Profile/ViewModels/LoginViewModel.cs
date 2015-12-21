@@ -6,10 +6,11 @@ using System.Web;
 using System.Web.Security;
 using Teknik.Helpers;
 using Teknik.Models;
+using Teknik.ViewModels;
 
 namespace Teknik.Areas.Profile.ViewModels
 {
-    public class LoginViewModel
+    public class LoginViewModel : ViewModelBase
     {
         private TeknikEntities db = new TeknikEntities();
 

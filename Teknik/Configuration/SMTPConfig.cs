@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Mail;
 
-namespace Teknik
+namespace Teknik.Configuration
 {
     public class SMTPConfig
     {

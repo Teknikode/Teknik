@@ -1,11 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@model Teknik.ViewModels.ViewModelBase
+
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="description" content="@ViewBag.Config.Description" />
-        <meta name="author" content="@ViewBag.Config.Author" />
+        <meta name="description" content="@Model.Config.Description" />
+        <meta name="author" content="@Model.Config.Author" />
         <title>@ViewBag.Title</title>
         <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon" />
         @Styles.Render("~/Content/Common")

@@ -18,7 +18,7 @@ namespace Teknik
     {
         protected void Application_Start()
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<TeknikEntities, Configuration>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<TeknikEntities, Migrations.Configuration>());
 
             AreaRegistration.RegisterAllAreas();
 
