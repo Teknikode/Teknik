@@ -188,6 +188,7 @@
     <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
     <Content Include="Areas\Contact\Scripts\Contact.js" />
+    <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
     <Content Include="Content\bootstrap-markdown.min.css" />
     <Content Include="Content\bootstrap-theme.css" />

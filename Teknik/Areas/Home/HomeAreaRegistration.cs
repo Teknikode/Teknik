@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using System.Web.Optimization;
 using Teknik;
 
 namespace Teknik.Areas.Home
@@ -36,6 +37,10 @@ namespace Teknik.Areas.Home
                  new { controller = "Home", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.HomeController).Namespace }
              );
+
+            // Register Style Bundles
+            BundleTable.Bundles.Add(new StyleBundle("~/Content/home").Include(
+                      "~/Areas/Home/Content/Home.css"));
         }
     }
 }

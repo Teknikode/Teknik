@@ -1,0 +1,30 @@
+﻿/*
+ * Blog posts
+ */
+
+.blog-post {
+  margin-bottom: 60px;
+}
+.blog-post-sm {
+  margin-bottom: 5px;
+}
+.blog-post-title {
+  margin-bottom: 5px;
+  font-size: 40px;
+}
+.blog-post-title-sm {
+  margin-bottom: 5px;
+  font-size: 18px;
+  line-height: 1;
+}
+/*.blog-post-title  a {
+  color: rgb(51, 51, 51);
+}*/
+.blog-post-meta {
+  margin-bottom: 20px;
+}
+.blog-post-meta-sm {
+  margin-bottom: 5px;
+  font-size: 12px;
+  line-height: 1;
+}
