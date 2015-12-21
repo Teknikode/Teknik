@@ -65,7 +65,7 @@
     }
 
     <ol class="breadcrumb">
-        <li><a href="@Url.Action("Blog", "Blog", new { area = "Blog", username = Model.Blog.User.Username })">@Model.Blog.User.Username</a></li>
+        <li><a href="@Url.Action("Blog", "Blog", new { area = "Blog", username = (Model.BlogId == Constants.SERVERBLOGID) ? string.Empty : Model.Blog.User.Username })">@((Model.BlogId == Constants.SERVERBLOGID) ? ViewBag.Config.BlogTitle : Model.Blog.Title)</a></li>
         <li class="active"><a href="#">@Model.Title</a></li>
     </ol>
 

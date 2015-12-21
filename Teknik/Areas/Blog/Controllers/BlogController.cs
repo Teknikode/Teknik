@@ -25,33 +25,40 @@ namespace Teknik.Areas.Blog.Controllers
         {
             Models.Blog blog = null;
             BlogViewModel model = null;
+            // The blog is the main site's blog
             if (string.IsNullOrEmpty(username))
             {
                 ViewBag.Title = "Teknik Blog - " + Config.Title;
-                blog = db.Blogs.Find(Constants.SERVERBLOGID);
+                var blogs = db.Blogs.Include("User").Where(p => (p.BlogId == Constants.SERVERBLOGID));
+                if (blogs != null && blogs.Any())
+                {
+                    blog = blogs.First();
+                    blog.Title = Config.BlogTitle;
+                    blog.Description = Config.BlogDescription;
+                }
             }
-            else
+            else // A user specific blog
             {
-                var blogs = db.Blogs.Include("User").Where(p => p.User.Username == username);
+                var blogs = db.Blogs.Include("User").Where(p => p.User.Username == username && p.BlogId != Constants.SERVERBLOGID);
                 if (blogs.Any())
                 {
                     blog = blogs.First();
                     ViewBag.Title = blog.User.Username + "'s Blog - " + Config.Title;
                 }
             }
-            // find the post specified
+            // find the blog specified
             if (blog != null)
             {
-                var foundPosts = db.Posts.Include("Blog").Include("Blog.User").Where(p =>   (p.Blog.BlogId == blog.BlogId) &&
-                                                                                            (p.Published || p.Blog.User.Username == User.Identity.Name)
-                                                                                         ).OrderByDescending(p => p.DatePosted);
+                var foundPosts = (User.IsInRole("Admin"))   ? db.Posts.Include("Blog").Include("Blog.User").Where(p =>  (p.BlogId == blog.BlogId))
+                                                            : db.Posts.Include("Blog").Include("Blog.User").Where(p =>  (p.BlogId == blog.BlogId) &&
+                                                                                                                        (p.Published || p.Blog.User.Username == User.Identity.Name));
                 model = new BlogViewModel();
                 model.BlogId = blog.BlogId;
                 model.UserId = blog.UserId;
                 model.User = blog.User;
                 model.Title = blog.Title;
                 model.Description = blog.Description;
-                model.Posts = (foundPosts != null && foundPosts.Any()) ? foundPosts.ToList() : null;
+                model.HasPosts = (foundPosts != null && foundPosts.Any());
 
                 return View(model);
             }

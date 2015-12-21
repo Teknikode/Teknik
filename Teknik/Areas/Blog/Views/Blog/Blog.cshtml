@@ -28,8 +28,6 @@
 <div class="container">
     @if (Model != null && Model.User != null)
     {
-        if (Model.BlogId != Constants.SERVERBLOGID)
-        {
         <div class="row">
             <div class="col-sm-12 blog-heading">
                 <h1 class="blog-title text-center">@Model.Title</h1>
@@ -39,11 +37,10 @@
         <div class="row">
             <div class="col-sm-12 text-center">
                 <p>
-                    <a href="@Url.Action("Blog", "RSS", new { area = "RSS", username = Model.User.Username })"><i class="fa fa-rss fa-2x fa-border"></i></a>
+                    <a href="@Url.Action("Blog", "RSS", new { area = "RSS", username = (Model.BlogId == Constants.SERVERBLOGID) ? string.Empty : Model.User.Username })"><i class="fa fa-rss fa-2x fa-border"></i></a>
                 </p>
             </div>
         </div>
-        }
         if (Model.User.Username == User.Identity.Name)
         {
         <div class="row">
@@ -115,7 +112,7 @@
         </div>
         }
 
-        if (Model.Posts != null && Model.Posts.Any())
+        if (Model.HasPosts)
         {
             <div class="blog-main" id="@Model.BlogId"></div>
             <script>

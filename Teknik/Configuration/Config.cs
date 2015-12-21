@@ -20,25 +20,32 @@ namespace Teknik
         private SMTPConfig  _SMTPConfig;
         private string      _SupportEmail;
         private string      _BitcoinAddress;
+        private string      _BlogTitle;
+        private string      _BlogDescription;
         private int         _PostsToLoad;
         private int         _CommentsToLoad;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
 
+        // Site Information
         public string       Title           { get { return _Title; }            set { _Title = value; } }
         public string       Description     { get { return _Description; }      set { _Description = value; } }
         public string       Author          { get { return _Author; }           set { _Author = value; } }
-
         public string       Host            { get { return _Host; }             set { _Host = value; } }
 
+        // Mail Server Information
         public SMTPConfig   SMTPConfig      { get { return _SMTPConfig; }       set { _SMTPConfig = value; } }
 
+        // Contact Information
         public string       SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
 
+        // About Information
         public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
 
+        // Blog Information
+        public string       BlogTitle       { get { return _BlogTitle; }        set { _BlogTitle = value; } }
+        public string       BlogDescription { get { return _BlogDescription; }  set { _BlogDescription = value; } }
         public int          PostsToLoad     { get { return _PostsToLoad; }      set { _PostsToLoad = value; } }
-
         public int          CommentsToLoad  { get { return _CommentsToLoad; }   set { _CommentsToLoad = value; } }
 
         public Config()
@@ -61,6 +68,8 @@ namespace Teknik
             SMTPConfig      = new SMTPConfig();
             SupportEmail    = string.Empty;
             BitcoinAddress  = string.Empty;
+            BlogTitle       = string.Empty;
+            BlogDescription = string.Empty;
             PostsToLoad     = 10;
             CommentsToLoad  = 10;
         }

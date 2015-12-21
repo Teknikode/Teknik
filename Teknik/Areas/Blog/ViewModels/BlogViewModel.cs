@@ -20,6 +20,6 @@ namespace Teknik.Areas.Blog.ViewModels
 
         public User User { get; set; }
 
-        public List<Post> Posts { get; set; }
+        public bool HasPosts { get; set; }
     }
 }

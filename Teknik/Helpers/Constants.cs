@@ -9,6 +9,6 @@ namespace Teknik.Helpers
     public static class Constants
     {
         // Blog Constants
-        public static int SERVERBLOGID = 0;
+        public static int SERVERBLOGID = 1;
     }
 }
