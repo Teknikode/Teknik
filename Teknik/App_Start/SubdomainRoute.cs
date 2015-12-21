@@ -41,9 +41,16 @@ namespace Teknik
             if (subdomain == null)
             {
                 string host = httpContext.Request.Headers["Host"];
-                int index = host.IndexOf('.');
-                if (index >= 0)
-                    subdomain = host.Substring(0, index);
+                if (host.Split('.').Count() > 2)
+                {
+                    int index = host.IndexOf('.');
+                    if (index >= 0)
+                        subdomain = host.Substring(0, index);
+                }
+                else
+                {
+                    subdomain = string.Empty;
+                }
             }
 
             routeData.Values["sub"] = subdomain;
@@ -59,7 +66,30 @@ namespace Teknik
             object subdomainParam = requestContext.HttpContext.Request.Params["sub"];
             if (subdomainParam != null)
                 values["sub"] = subdomainParam;
-            return base.GetVirtualPath(requestContext, values);
+            var data = base.GetVirtualPath(requestContext, values); // we now have the route based on subdomain
+
+            if (data != null)
+            {
+                // we should generate the URL now 
+                var split = requestContext.HttpContext.Request.Url.Host.Split('.'); // split the host by '.'
+                if (split.Count() > 0 && !split[0].ToLower().Contains("dev")) // fire only if the hostname doesn't contain the 'dev' subdomain
+                {
+                    // Get the current domain
+                    string domain = requestContext.HttpContext.Request.Url.Host;
+                    if (split.Count() > 2)
+                    {
+                        domain = split[1] + "." + split[2];
+                    }
+
+                    // now let's replace the subdomain
+                    if (data.VirtualPath.StartsWith("/"))
+                        data.VirtualPath = data.VirtualPath.Substring(1);
+                    // generate the full URL, not just relevent path
+                    data.VirtualPath = string.Format("{0}.{1}/{2}", subdomainParam, domain, data.VirtualPath);
+                }
+            }
+
+            return data;
         }
     }
 }

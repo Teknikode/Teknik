@@ -19,21 +19,21 @@ namespace Teknik.Areas.Home
             context.MapSubdomainRoute(
                  "Home_dev", // Route name
                  "dev",
-                 "Home/{controller}/{action}",    // URL with parameters 
+                 "Home",    // URL with parameters 
                  new { controller = "Home", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.HomeController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Home_subdomain", // Route name
                  "www",
-                 "{controller}/{action}",    // URL with parameters 
+                 "",    // URL with parameters 
                  new { controller = "Home", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.HomeController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Home_default", // Route name
-                 null,
-                 "{controller}/{action}",    // URL with parameters 
+                 string.Empty,
+                 "",    // URL with parameters 
                  new { controller = "Home", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.HomeController).Namespace }
              );
