@@ -25,7 +25,7 @@ namespace Teknik.Areas.Profile.Controllers
             ViewBag.Title = Config.Title + " - Profile";
             ViewBag.Message = "View Your Profile";
 
-            return View();
+            return View(new ProfileViewModel());
         }
 
         [HttpGet]

@@ -9,24 +9,24 @@
                 Teknik was created to provide our users free services that they can trust.  All of our services are treated with the utmost care to provide you with the best experience possible, and the best security with your data that we can give.
             </p>
             <p>
-                You can view our complete activity and statistics by visiting the @Html.ActionLink("Transparency", "Index", "Transparency", new { area = "Transparency" }, null) page.
+                You can view our complete activity and statistics by visiting the <a href="@Url.SubAction("transparency", "Index", "Transparency", new { area = "Transparency" })">Transparency</a> page.
             </p>
             <h2 class="text-center">What we Offer</h2>
             <hr>
             <div class="row">
                 <div class="col-sm-4 col-sm-offset-2 text-center">
-                    <h4>@Html.ActionLink("Fast and Secure Pastebin", "Index", "Paste", new { area = "Paste" }, null)</h4>
-                    <h4>@Html.ActionLink("Encrypted File Uploads", "Index", "Upload", new { area = "Upload" }, null)</h4>
-                    <h4>@Html.ActionLink("Free Email Address", "Index", "Mail", new { area = "Mail" }, null)</h4>
-                    <h4>@Html.ActionLink("Easy to Use API", "Api", "Help", new { area = "Help" }, null)</h4>
-                    <h4>@Html.ActionLink("Personal Git Repositories", "Index", "Git", new { area = "Git" }, null)</h4>
+                    <h4><a href="@Url.SubAction("paste", "Index", "Paste", new { area = "Paste" })">Fast and Secure Pastebin</a></h4>
+                    <h4><a href="@Url.SubAction("upload", "Index", "Upload", new { area = "Upload" })">Encrypted File Uploads</a></h4>
+                    <h4><a href="@Url.SubAction("help", "Index", "Help", new { area = "Help", section = "Mail" })">Free Email Address</a></h4>
+                    <h4><a href="@Url.SubAction("help", "Index", "Help", new { area = "Help", section = "Api" })">Easy to Use API</a></h4>
+                    <h4><a href="@Url.SubAction("git", "Index", "Git", new { area = "Git" })">Personal Git Repositories</a></h4>
                 </div>
                 <div class="col-sm-4 text-center">
-                    <h4>@Html.ActionLink("Personal Blog", "Blog", "Blog", new { area = "Blog" }, null)</h4>
-                    <h4>@Html.ActionLink("Entertaining Podcasts", "Index", "Podcast", new { area = "Podcast" }, null)</h4>
-                    <h4>@Html.ActionLink("Mumble Server", "Mumble", "Help", new { area = "Help" }, null)</h4>
-                    <h4>@Html.ActionLink("Full Transparency", "Index", "Transparency", new { area = "Transparency" }, null)</h4>
-                    <h4>@Html.ActionLink("Completely Open Source", "Index", "Git", new { area = "Git" }, null)</h4>
+                    <h4><a href="@Url.SubAction("blog", "Blog", "Blog", new { area = "Blog" })">Personal Blog</a></h4>
+                    <h4><a href="@Url.SubAction("podcast", "Index", "Podcast", new { area = "Podcast" })">Entertaining Podcasts</a></h4>
+                    <h4><a href="@Url.SubAction("help", "Index", "Help", new { area = "Help", section = "Mumble" })">Mumble Server</a></h4>
+                    <h4><a href="@Url.SubAction("transparency", "Index", "Transparency", new { area = "Transparency" })">Full Transparency</a></h4>
+                    <h4><a href="@Url.SubAction("git", "Index", "Git", new { area = "Git" })">Completely Open Source</a></h4>
                 </div>
             </div>
 
@@ -36,7 +36,7 @@
                 Teknik's source code can be located on our <a href="http://git.teknik.io/Teknikode/">Git Repository</a> as well as all our internal tools and projects.
                 <br />
                 <br />
-                Have a cool suggestion for the site?  Just submit it using the @Html.ActionLink("Feedback Form", "Index", "Contact", new { area = "Contact" }, null)!
+                Have a cool suggestion for the site?  Just submit it using the <a href="@Url.SubAction("contact", "Index", "Contact", new { area = "Contact" })">Feedback Form</a>!
             </p>
             <div class="alert alert-info">
                 <div class="text-center">

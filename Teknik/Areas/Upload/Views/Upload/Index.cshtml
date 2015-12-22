@@ -1,0 +1,57 @@
+﻿@model Teknik.Areas.Upload.ViewModels.UploadViewModel
+
+<script>
+    var generateDeleteKeyURL = '@Url.Action("GenerateDeleteKey", "Upload", new { area = "Upload" })';
+    var uploadURL = '@Url.Action("Download", "Upload", new { area = "Upload", url = string.Empty })';
+    var maxUploadSize = @(Model.Config.UploadConfig.MaxUploadSize / 100000);
+</script>
+
+@Styles.Render("~/Content/upload")
+
+<div class="container">
+    <div class="row text-center">
+        <form action="@Url.Action("Upload", "Upload", new { area = "Upload" })" class="dropzone" id="TeknikUpload" name="TeknikUpload">
+            @Html.AntiForgeryToken()
+            <div class="dz-message text-center" id="upload_message">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h1>Drop your files here</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h2>Or just click here</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3>Your Choice</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="fallback text-center">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input name="file" type="file" class="form-control" multiple />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <br />
+    <div class="progress">
+        <div class="progress-bar progress-bar-success" id="progressBar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
+    </div>
+    <div class="container" id="upload-links">
+    </div>
+    <br />
+    <div class="well text-center">Each file is encrypted on upload using an AES-256-CBC cipher.  If you wish to view the file decrypted, you must use the direct Teknik link.</div>
+    <div class="text-center">
+        Useful Tools: <a href="http://git.teknik.io/Teknikode/Tools/src/master/Upload">Upload Scripts and Utilities</a> | <a href="https://github.com/jschx/poomf">Poomf Uploader</a>
+        <br />
+        <br />
+        You can now upload your screenshots automatically using <a href="https://github.com/KittyKatt/screenFetch">Screenfetch</a>!
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/upload")

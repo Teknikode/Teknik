@@ -37,7 +37,7 @@
         <div class="row">
             <div class="col-sm-12 text-center">
                 <p>
-                    <a href="@Url.Action("Blog", "RSS", new { area = "RSS", username = (Model.BlogId == Constants.SERVERBLOGID) ? string.Empty : Model.User.Username })"><i class="fa fa-rss fa-2x fa-border"></i></a>
+                    <a href="@Url.SubAction("rss", "Blog", "RSS", new { area = "RSS", username = (Model.BlogId == Constants.SERVERBLOGID) ? string.Empty : Model.User.Username })"><i class="fa fa-rss fa-2x fa-border"></i></a>
                 </p>
             </div>
         </div>

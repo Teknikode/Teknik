@@ -16,7 +16,7 @@
     <div class="col-sm-8 col-sm-offset-2">
         <div class="post-comment">
             <p class="post-comment-meta text-muted">
-                <a href="@Url.Action("Index", "Profile", new { area = "Profile", username = Model.Post.Blog.User.Username })">@Model.Post.Blog.User.Username</a> replied at @Model.DatePosted.ToString("HH:mm:ss tt") on @Model.DatePosted.ToString("MMMM dd, yyyy")
+                <a href="@Url.SubAction("profile", "Index", "Profile", new { area = "Profile", username = Model.Post.Blog.User.Username })">@Model.Post.Blog.User.Username</a> replied at @Model.DatePosted.ToString("HH:mm:ss tt") on @Model.DatePosted.ToString("MMMM dd, yyyy")
                 @if (Model.Post.Blog.User.Username == User.Identity.Name || User.IsInRole("Admin"))
                 {
                     <br />

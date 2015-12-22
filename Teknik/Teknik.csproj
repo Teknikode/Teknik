@@ -160,6 +160,7 @@
     <Compile Include="Areas\Privacy\ViewModels\PrivacyViewModel.cs" />
     <Compile Include="Areas\Profile\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Profile\ProfileAreaRegistration.cs" />
+    <Compile Include="Areas\Profile\ViewModels\ProfileViewModel.cs" />
     <Compile Include="Areas\Upload\Controllers\UploadController.cs" />
     <Compile Include="Areas\Upload\Models\Upload.cs" />
     <Compile Include="Areas\Upload\UploadAreaRegistration.cs" />
@@ -181,6 +182,8 @@
     <Compile Include="Areas\Profile\Models\PermissionType.cs" />
     <Compile Include="Areas\Blog\Models\Post.cs" />
     <Compile Include="Areas\Profile\Models\Role.cs" />
+    <Compile Include="Helpers\UrlExtensions.cs" />
+    <Compile Include="Helpers\Utility.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\TeknikEntities.cs" />
     <Compile Include="Areas\Profile\Models\User.cs" />
