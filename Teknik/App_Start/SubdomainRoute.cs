@@ -37,7 +37,7 @@ namespace Teknik
         {
             var routeData = base.GetRouteData(httpContext);
             if (routeData == null) return null; // Only look at the subdomain if this route matches in the first place.
-            string subdomain = httpContext.Request.Params["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname.
+            string subdomain = httpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname.
             if (subdomain == null)
             {
                 string host = httpContext.Request.Headers["Host"];
@@ -52,8 +52,19 @@ namespace Teknik
                     subdomain = string.Empty;
                 }
             }
+            else
+            {
+                if (routeData.Values["sub"] == null)
+                {
+                    routeData.Values["sub"] = subdomain;
+                }
+                else
+                {
+                    subdomain = routeData.Values["sub"].ToString();
+                }
+            }
 
-            routeData.Values["sub"] = subdomain;
+            //routeData.Values["sub"] = subdomain;
             if (subDomain == subdomain)
             {
                 return routeData;
@@ -63,8 +74,8 @@ namespace Teknik
 
         public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
         {
-            object subdomainParam = requestContext.HttpContext.Request.Params["sub"];
-            if (subdomainParam != null)
+            object subdomainParam = requestContext.HttpContext.Request.QueryString["sub"];
+            if (subdomainParam != null && values["sub"] == null)
                 values["sub"] = subdomainParam;
             return base.GetVirtualPath(requestContext, values); // we now have the route based on subdomain
         }

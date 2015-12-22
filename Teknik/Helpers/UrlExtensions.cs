@@ -40,20 +40,28 @@ namespace Teknik
             }
 
             // Grab the sub from parameters if it exists
-            string subParam = url.RequestContext.HttpContext.Request.Params["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname.
+            string subParam = url.RequestContext.HttpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname.
             
             // If the param is not being used, we will use the curSub
             if (string.IsNullOrEmpty(subParam))
             {
                 // If we are in dev, we need to keep it in dev
                 firstSub = (curSub == "dev") ? "dev" : sub;
+                rightUrl = url.Action(action, controller, routeValues);
             }
             else
             {
                 // sub within param will always be on the dev subdomain
                 firstSub = (string.IsNullOrEmpty(curSub)) ? string.Empty : "dev";
+                if (subParam != "dev")
+                {
+                    rightUrl = url.Action(action, controller, Utility.Merge(new { sub = sub }, routeValues));
+                }
+                else
+                {
+                    rightUrl = url.Action(action, controller, routeValues);
+                }
             }
-            rightUrl = url.Action(action, controller, routeValues);
 
             domain = (string.IsNullOrEmpty(firstSub)) ? domain : firstSub + "." + domain;
 
