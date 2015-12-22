@@ -15,14 +15,14 @@ body { padding-top: 70px; }
   height: auto !important;
   height: 100%;
   /* Negative indent footer by its height */
-  margin: 0 auto -80px;
+  margin: 0 auto -90px;
   /* Pad bottom by footer height */
   padding: 0 0 80px;
 }
 
 /* Set the fixed height of the footer here */
 #footer {
-  height: 60px;
+  height: 70px;
   text-align: center;
   padding: 15px 0;
   margin-top: 20px;
