@@ -53,21 +53,21 @@ namespace Teknik.Areas.Upload
             context.MapSubdomainRoute(
                  "Upload_default_short_download",
                  "u",
-                 "Upload/{url}",
+                 "{url}",
                  new { controller = "Upload", action = "Download", url = "" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Upload_default_short_delete",
                  "u",
-                 "Upload/{url}/{deleteKey}",
+                 "{url}/{deleteKey}",
                  new { controller = "Upload", action = "Download", url = string.Empty, deleteKey = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Upload_default_short_action",
                  "u",
-                 "Upload/Action/{controller}/{action}",
+                 "Action/{controller}/{action}",
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
@@ -81,21 +81,21 @@ namespace Teknik.Areas.Upload
             context.MapSubdomainRoute(
                  "Upload_default_long_download",
                  "upload",
-                 "Upload/{url}",
+                 "{url}",
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Upload_default_long_delete",
                  "upload",
-                 "Upload/{url}/{deleteKey}",
+                 "{url}/{deleteKey}",
                  new { controller = "Upload", action = "Index", url = string.Empty, deleteKey = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Upload_default_long_action",
                  "upload",
-                 "Upload/Action/{controller}/{action}",
+                 "Action/{controller}/{action}",
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );

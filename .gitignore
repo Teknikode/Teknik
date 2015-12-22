@@ -188,3 +188,6 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/Teknik/ConnectionStrings.config
+/Teknik/App_Data/Config.json
+/.vs/config/applicationhost.config

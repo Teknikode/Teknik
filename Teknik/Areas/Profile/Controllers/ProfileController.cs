@@ -70,6 +70,16 @@ namespace Teknik.Areas.Profile.Controllers
             return RedirectToAction("Index", "Home", new { Area = "Home" });
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        // GET: Profile
+        public ActionResult Register()
+        {
+            RegisterViewModel model = new RegisterViewModel();
+
+            return View("/Areas/Profile/Views/Profile/ViewRegistration.cshtml", model);
+        }
+
         [HttpPost]
         [AllowAnonymous]
         public ActionResult Register(RegisterViewModel model)

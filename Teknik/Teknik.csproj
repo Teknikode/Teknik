@@ -152,6 +152,9 @@
     <Compile Include="Areas\Contact\Models\Contact.cs" />
     <Compile Include="Areas\Contact\ViewModels\ContactViewModel.cs" />
     <Compile Include="Areas\Dev\DevAreaRegistration.cs" />
+    <Compile Include="Areas\Error\Controllers\ErrorController.cs" />
+    <Compile Include="Areas\Error\ErrorAreaRegistration.cs" />
+    <Compile Include="Areas\Error\ViewModels\ErrorViewModel.cs" />
     <Compile Include="Areas\Home\Controllers\HomeController.cs" />
     <Compile Include="Areas\Home\HomeAreaRegistration.cs" />
     <Compile Include="Areas\Home\ViewModels\HomeViewModel.cs" />
@@ -265,6 +268,10 @@
     <Content Include="Areas\Upload\Views\web.config" />
     <Content Include="Areas\Upload\Views\Upload\Index.cshtml" />
     <Content Include="Areas\Upload\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Profile\Views\Profile\ViewRegistration.cshtml" />
+    <Content Include="Areas\Error\Views\web.config" />
+    <Content Include="Areas\Error\Views\Error\Http404.cshtml" />
+    <Content Include="Areas\Error\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />
@@ -325,6 +332,8 @@
     <Folder Include="Areas\Contact\Views\Shared\" />
     <Folder Include="Areas\Dev\Models\" />
     <Folder Include="Areas\Dev\Views\Shared\" />
+    <Folder Include="Areas\Error\Models\" />
+    <Folder Include="Areas\Error\Views\Shared\" />
     <Folder Include="Areas\Home\Models\" />
     <Folder Include="Areas\Home\Views\Shared\" />
     <Folder Include="Areas\Privacy\Models\" />
