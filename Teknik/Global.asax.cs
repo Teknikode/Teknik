@@ -30,13 +30,6 @@ namespace Teknik
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
-        protected void Application_EndRequest(object sender, EventArgs e)
-        {
-            var context = new HttpContextWrapper(Context);
-            context.Response.SuppressFormsAuthenticationRedirect = true;
-            context.Response.TrySkipIisCustomErrors = true;
-        }
-
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
         {
             if (FormsAuthentication.CookiesSupported == true)
