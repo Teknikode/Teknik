@@ -15,16 +15,16 @@ namespace Teknik.Areas.About
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapSubdomainRoute(
-                 "About_dev", // Route name
+                 "About.Index", // Route name
                  "dev",
-                 "About/{controller}/{action}",    // URL with parameters 
+                 "About",    // URL with parameters 
                  new { controller = "About", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.AboutController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "About_default", // Route name
+                 "About.Index", // Route name
                  "about",
-                 "{controller}/{action}",    // URL with parameters 
+                 "",    // URL with parameters 
                  new { controller = "About", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.AboutController).Namespace }
              );

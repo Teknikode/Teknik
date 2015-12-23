@@ -16,84 +16,84 @@ namespace Teknik.Areas.Upload
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapSubdomainRoute(
-                 "Upload_dev",
+                 "Upload.Index",
                  "dev",
                  "Upload",
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_dev_download",
+                 "Upload.Download",
                  "dev",
                  "Upload/{url}",
                  new { controller = "Upload", action = "Download", url = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_dev_delete",
+                 "Upload.Delete",
                  "dev",
                  "Upload/{url}/{deleteKey}",
-                 new { controller = "Upload", action = "Download", url = string.Empty, deleteKey = string.Empty },
+                 new { controller = "Upload", action = "Delete", url = string.Empty, deleteKey = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_dev_action",
+                 "Upload.Action",
                  "dev",
                  "Upload/Action/{controller}/{action}",
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_default_short",
+                 "Upload.Index",
                  "u",
                  "",
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_default_short_download",
+                 "Upload.Download",
                  "u",
                  "{url}",
-                 new { controller = "Upload", action = "Download", url = "" },
+                 new { controller = "Upload", action = "Download", url = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_default_short_delete",
+                 "Upload.Delete",
                  "u",
                  "{url}/{deleteKey}",
-                 new { controller = "Upload", action = "Download", url = string.Empty, deleteKey = string.Empty },
+                 new { controller = "Upload", action = "Delete", url = string.Empty, deleteKey = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_default_short_action",
+                 "Upload.Action",
                  "u",
                  "Action/{controller}/{action}",
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_default_long", 
+                 "Upload.Index", 
                  "upload",
                  "",  
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_default_long_download",
+                 "Upload.Download",
                  "upload",
                  "{url}",
-                 new { controller = "Upload", action = "Index" },
+                 new { controller = "Upload", action = "Download", url = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_default_long_delete",
+                 "Upload.Delete",
                  "upload",
                  "{url}/{deleteKey}",
-                 new { controller = "Upload", action = "Index", url = string.Empty, deleteKey = string.Empty },
+                 new { controller = "Upload", action = "Delete", url = string.Empty, deleteKey = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Upload_default_long_action",
+                 "Upload.Action",
                  "upload",
                  "Action/{controller}/{action}",
                  new { controller = "Upload", action = "Index" },

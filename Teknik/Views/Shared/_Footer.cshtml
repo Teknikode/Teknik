@@ -9,7 +9,7 @@
             string version = fileVersionInfo.ProductVersion;
         }
         <p class="text-muted">
-            &copy; Teknik 2013-2015 | <a href="@Url.SubAction("privacy", "Index", "Privacy", new { area = "Privacy"})">Privacy</a> | <a href="@Url.SubAction("transparency", "Index", "Transparency", new { area = "Transparency" })">Transparency</a> | <a href="@Url.SubAction("server", "Index", "Server", new { area = "Server" })">Server</a>
+            &copy; Teknik 2013-2015 | <a href="@Url.SubRouteUrl("privacy", "Privacy.Index")">Privacy</a> | <a href="@Url.SubRouteUrl("transparency", "Transparency.Index")">Transparency</a> | <a href="@Url.SubRouteUrl("server", "Server.Index")">Server</a>
             <br />
             @string.Format("{0}", version)
         </p>

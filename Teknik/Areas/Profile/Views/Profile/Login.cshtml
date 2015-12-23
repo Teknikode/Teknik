@@ -1,16 +1,12 @@
 ﻿@model Teknik.Areas.Profile.ViewModels.LoginViewModel
 
-@using (Html.BeginForm("Login", "Profile", new { area = "Profile" }, FormMethod.Post, new { id = "loginForm" }))
-{
-    @Html.ValidationMessage("Unable to login.")
+<form role="form" id="loginForm" action="@Url.SubRouteUrl("profile", "Profile.Login")" method="post" accept-charset="UTF-8">
     <input name="ReturnUrl" id="ReturnUrl" type="hidden" value="@Model.ReturnUrl" />
     <div class="form-group">
         <input type="text" class="form-control" id="Username" value="" placeholder="Username" name="Username" data-val-required="The Username field is required." data-val="true" />
-        @Html.ValidationMessageFor(u => u.Username)
     </div>
     <div class="form-group">
         <input type="password" class="form-control" id="Password" value="" placeholder="Password" name="Password" data-val-required="The Password field is required." data-val="true" />
-        @Html.ValidationMessageFor(u => u.Password)
     </div>
     <div class="checkbox">
         <label>
@@ -20,4 +16,4 @@
     <div class="form-group text-center">
         <button class="btn btn-primary" id="login_submit" type="submit" name="submit">Sign In</button>
     </div>
-}
+</form>

@@ -15,14 +15,14 @@ namespace Teknik.Areas.Privacy
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapSubdomainRoute(
-                 "Privacy_dev", // Route name
+                 "Privacy.Index", // Route name
                  "dev",
                  "Privacy/{controller}/{action}",    // URL with parameters 
                  new { controller = "Privacy", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.PrivacyController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Privacy_default", // Route name
+                 "Privacy.Index", // Route name
                  "privacy",
                  "{controller}/{action}",    // URL with parameters 
                  new { controller = "Privacy", action = "Index" },  // Parameter defaults 

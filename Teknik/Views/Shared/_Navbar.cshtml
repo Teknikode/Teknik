@@ -8,50 +8,50 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="@Url.SubAction("www", "Index", "Home", new { area = "Home" })"><img src="/Images/logo-black.svg" height="20" alt="Teknik"></a>
+            <a class="navbar-brand" href="@Url.SubRouteUrl("www", "Home.Index")"><img src="/Images/logo-black.svg" height="20" alt="Teknik"></a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="@Url.SubAction("www", "Index", "Home", new { area = "Home" })">Home</a></li>
-                <li><a href="@Url.SubAction("about", "Index", "About", new { area = "About" })">About</a></li>
+                <li><a href="@Url.SubRouteUrl("www", "Home.Index")">Home</a></li>
+                <li><a href="@Url.SubRouteUrl("about", "About.Index")">About</a></li>
                 <li class="divider-vertical"></li>
 
                 <li class="dropdown">
                     <a href="#" id="services_menu" class="dropdown-toggle" data-toggle="dropdown">Services <strong class="caret"></strong></a>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="services_menu">
                         <li>
-                            <a href="@Url.SubAction("blog", "Blog", "Blog", new { area = "Blog", username = string.Empty })">Blog</a>
+                            <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = string.Empty })">Blog</a>
                         </li>
                         <li>
-                            <a href="@Url.SubAction("podcast", "Index", "Podcast", new { area = "Podcast" })">Podcast</a>
+                            <a href="@Url.SubRouteUrl("podcast", "Podcast.Index")">Podcast</a>
                         </li>
                         <li class="divider"></li>
                         <li>
-                            <a href="@Url.SubAction("upload", "Index", "Upload", new { area = "Upload" })">Upload</a>
+                            <a href="@Url.SubRouteUrl("upload", "Upload.Index")">Upload</a>
                         </li>
                         <li>
-                            <a href="@Url.SubAction("paste", "Index", "Paste", new { area = "Paste" })">Paste</a>
+                            <a href="@Url.SubRouteUrl("paste", "Paste.Index")">Paste</a>
                         </li>
                         <li>
-                            <a href="@Url.SubAction("git", "Index", "Git", new { area = "Git" })">Git</a>
+                            <a href="@Url.SubRouteUrl("git", "Git.Index")">Git</a>
                         </li>
                         <li>
-                            <a href="@Url.SubAction("mail", "Index", "Mail", new { area = "Mail" })" target="_blank">Mail</a>
+                            <a href="@Url.SubRouteUrl("mail", "Mail.Index")" target="_blank">Mail</a>
                         </li>
                         <li>
                             <a href="mumble://mumble.@(Model.Config.Host):64738/?version=1.2.5" target="_blank">Mumble</a>
                         </li>
                         <li class="divider"></li>
                         <li>
-                            <a href="@Url.SubAction("ricehalla", "Index", "Ricehalla", new { area = "Ricehalla" })">Ricehalla</a>
+                            <a href="@Url.SubRouteUrl("ricehalla", "Ricehalla.Index")">Ricehalla</a>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="@Url.SubAction("contact", "Index", "Contact", new { area = "Contact" })">Contact</a>
+                    <a href="@Url.SubRouteUrl("contact", "Contact.Index")">Contact</a>
                 </li>
                 <li>
-                    <a href="@Url.SubAction("help", "Index", "Help", new { area = "Help" })">Help</a>
+                    <a href="@Url.SubRouteUrl("help", "Help.Index")">Help</a>
                 </li>
             </ul>
             @Html.Partial("_LoginPartial")

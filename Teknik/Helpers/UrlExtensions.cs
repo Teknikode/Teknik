@@ -2,39 +2,41 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using System.Web.UI;
 
 namespace Teknik
 {
     public static class UrlExtensions
     {
+        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName)
+        {
+            return url.SubRouteUrl(sub, routeName, null);
+        }
+
         /// <summary>
-        /// Generates a full URL given the specified sub domain.
-        /// If the subdomain is not 'dev', the Controller will be removed
+        /// Generates a full URL given the specified sub domain and route name
         /// </summary>
         /// <param name="url"></param>
         /// <param name="sub"></param>
-        /// <param name="action"></param>
-        /// <param name="controller"></param>
+        /// <param name="routeName"></param>
         /// <param name="routeValues"></param>
         /// <returns></returns>
-        public static string SubAction(this UrlHelper url, string sub, string action, string controller, object routeValues)
+        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, object routeValues)
         {
-            Uri requestUrl = url.RequestContext.HttpContext.Request.Url;
             string host = url.RequestContext.HttpContext.Request.Url.Authority;
             
-            string paramSub = string.Empty;
             string domain = host;
             string rightUrl = string.Empty;
 
             // get current subdomain
-            string curSub = string.Empty;
+            string curSub = host.GetSubdomain();
             var split = host.Split('.'); // split the host by '.'
             if (split.Count() > 2)
             {
-                curSub = split[0];
                 int index = host.IndexOf('.') + 1;
                 if (index >= 0 && index < host.Length)
                     domain = host.Substring(index, (host.Length - index));
@@ -42,40 +44,31 @@ namespace Teknik
 
             // Grab the sub from parameters if it exists
             string subParam = url.RequestContext.HttpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname.
-            string fullHost = url.RequestContext.HttpContext.Request.Headers["Host"];
 
             // If the param is not being used, we will use the curSub
             if (string.IsNullOrEmpty(subParam))
             {
-                // If we are in dev, we need to keep it in dev
                 string firstSub = (curSub == "dev") ? "dev" : sub;
-                rightUrl = url.Action(action, controller, Utility.Merge(new { sub = sub }, routeValues));
-
-                domain = (string.IsNullOrEmpty(firstSub)) ? domain : firstSub + "." + domain;
+                if (!string.IsNullOrEmpty(firstSub))
+                {
+                    routeName = firstSub + "." + routeName;
+                    domain = firstSub + "." + domain;
+                }
             }
             else
             {
-                //
-                if (subParam != "dev")
-                {
-                    // replace the host and sub param in the context in order to generate the correct URLs
-                    string newUrl = url.RequestContext.HttpContext.Request.Url.AbsoluteUri.SetUrlParameter("sub", sub);
-                    url.RequestContext.HttpContext.RewritePath(url.RequestContext.HttpContext.Request.Path, url.RequestContext.HttpContext.Request.PathInfo, newUrl.GetUrlParameters());
-                    // get the url for the new sub
-                    rightUrl = url.Action(action, controller, routeValues);
-                    var page = url.RequestContext.HttpContext.Handler as Page;
-                    rightUrl = page.GetRouteUrl(new { sub = sub });
-                    // Reset the url
-                    string oldUrl = url.RequestContext.HttpContext.Request.Url.AbsoluteUri.SetUrlParameter("sub", subParam);
-                    url.RequestContext.HttpContext.RewritePath(url.RequestContext.HttpContext.Request.Path, url.RequestContext.HttpContext.Request.PathInfo, newUrl.GetUrlParameters());
-                }
-                else // 'dev' is in the param, so we need to generate the action based on 
-                {
-                    rightUrl = url.Action(action, controller, routeValues);
-                }
-
-                // if using sub param, keep domain as is
+                string desiredSub = (subParam == "dev") ? "dev" : sub;
+                routeName = desiredSub + "." + routeName;
                 domain = host;
+            }
+
+            try
+            {
+                rightUrl = url.RouteUrl(routeName, routeValues);
+            }
+            catch (ArgumentException)
+            {
+
             }
 
             string absoluteAction = string.Format("{0}://{1}{2}", url.RequestContext.HttpContext.Request.Url.Scheme, domain, rightUrl);
@@ -109,6 +102,21 @@ namespace Teknik
         public static string AbsoluteUriExcludingQuery(this Uri url)
         {
             return url.AbsoluteUri.Split('?').FirstOrDefault() ?? String.Empty;
+        }
+        public static string GetSubdomain(this string host)
+        {
+            if (host.IndexOf(":") >= 0)
+                host = host.Substring(0, host.IndexOf(":"));
+
+            Regex tldRegex = new Regex(@"\.[a-z]{2,3}\.[a-z]{2}$");
+            host = tldRegex.Replace(host, "");
+            tldRegex = new Regex(@"\.[a-z]{2,4}$");
+            host = tldRegex.Replace(host, "");
+
+            if (host.Split('.').Length > 1)
+                return host.Substring(0, host.IndexOf("."));
+            else
+                return string.Empty;
         }
     }
 }

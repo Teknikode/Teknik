@@ -5,21 +5,21 @@
 <script>
     // We need to define the action URLs for the script
 
-    var uploadURL = '@Url.Action("UploadFile", "Upload", new { area = "Upload" })';
+    var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
 
-    var getPostsURL = '@Url.Action("GetPosts", "Blog", new { area = "Blog" })';
-    var getPostTitleURL = '@Url.Action("GetPostTitle", "Blog", new { area = "Blog" })';
-    var getPostArticleURL = '@Url.Action("GetPostArticle", "Blog", new { area = "Blog" })';
-    var publishPostURL = '@Url.Action("PublishPost", "Blog", new { area = "Blog" })';
-    var addPostURL = '@Url.Action("CreatePost", "Blog", new { area = "Blog" })';
-    var editPostURL = '@Url.Action("EditPost", "Blog", new { area = "Blog" })';
-    var deletePostURL = '@Url.Action("DeletePost", "Blog", new { area = "Blog" })';
+    var getPostsURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetPosts" })';
+    var getPostTitleURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetPostTitle" })';
+    var getPostArticleURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetPostArticle" })';
+    var publishPostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "PublishPost" })';
+    var addPostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "CreatePost" })';
+    var editPostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "EditPost" })';
+    var deletePostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "DeletePost" })';
 
-    var getCommentsURL = '@Url.Action("GetComments", "Blog", new { area = "Blog" })';
-    var getCommentArticleURL = '@Url.Action("GetCommentArticle", "Blog", new { area = "Blog" })';
-    var addCommentURL = '@Url.Action("CreateComment", "Blog", new { area = "Blog" })';
-    var editCommentURL = '@Url.Action("EditComment", "Blog", new { area = "Blog" })';
-    var deleteCommentURL = '@Url.Action("DeleteComment", "Blog", new { area = "Blog" })';
+    var getCommentsURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetComments" })';
+    var getCommentArticleURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetCommentArticle" })';
+    var addCommentURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "CreateComment" })';
+    var editCommentURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "EditComment" })';
+    var deleteCommentURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "DeleteComment" })';
 </script>
 
 @Styles.Render("~/Content/blog")
@@ -65,7 +65,7 @@
     }
 
     <ol class="breadcrumb">
-        <li><a href="@Url.SubAction("blog", "Blog", "Blog", new { area = "Blog", username = (Model.BlogId == Constants.SERVERBLOGID) ? string.Empty : Model.Blog.User.Username })">@((Model.BlogId == Constants.SERVERBLOGID) ? Model.Config.BlogConfig.Title : Model.Blog.Title)</a></li>
+        <li><a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = (Model.BlogId == Constants.SERVERBLOGID) ? string.Empty : Model.Blog.User.Username })">@((Model.BlogId == Constants.SERVERBLOGID) ? Model.Config.BlogConfig.Title : Model.Blog.Title)</a></li>
         <li class="active"><a href="#">@Model.Title</a></li>
     </ol>
 

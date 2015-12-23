@@ -1,1 +1,15 @@
-﻿
+﻿@model Teknik.Areas.Profile.ViewModels.RegisterViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center">
+                <h1>Teknik Registration</h1>
+                <h3>By regsitering, you agree to Teknik's <a href="@Url.SubRouteUrl("tos", "Terms")">Terms of Service</a></h3>
+                <div class="col-md-4 col-md-offset-4">
+                    @Html.Partial("../../Areas/Profile/Views/Profile/Register", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

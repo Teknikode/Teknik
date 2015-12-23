@@ -14,9 +14,9 @@
 <div class="row">
     <div class="col-sm-10 col-sm-offset-1">
         <div class="blog-post">
-            <h2 class="blog-post-title text-center"><a href="@Url.SubAction("blog", "Post", "Blog", new { area = "Blog", username = Model.Blog.User.Username, id = Model.PostId })" id="title_@Model.PostId">@Model.Title</a></h2>
+            <h2 class="blog-post-title text-center"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = Model.Blog.User.Username, id = Model.PostId })" id="title_@Model.PostId">@Model.Title</a></h2>
             <p class="blog-post-meta text-center text-muted">
-                Posted on @Model.DatePublished.ToString("MMMM dd, yyyy") by <a href="@Url.SubAction("profile", "Index", "Profile", new { area = "Profile", username = Model.Blog.User.Username })">@Model.Blog.User.Username</a>
+                Posted on @Model.DatePublished.ToString("MMMM dd, yyyy") by <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = Model.Blog.User.Username })">@Model.Blog.User.Username</a>
                 @if (Model.Blog.User.Username == User.Identity.Name || User.IsInRole("Admin"))
                 {
                     <br />

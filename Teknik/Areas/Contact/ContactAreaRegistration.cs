@@ -16,16 +16,30 @@ namespace Teknik.Areas.Contact
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapSubdomainRoute(
-                 "Contact_dev", // Route name
+                 "Contact.Index", // Route name
                  "dev",
-                 "Contact/{controller}/{action}",    // URL with parameters 
+                 "Contact/",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ContactController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Contact_default", // Route name
+                 "Contact.Action", // Route name
+                 "dev",
+                 "Contact/{action}",    // URL with parameters 
+                 new { controller = "Contact", action = "Index" },  // Parameter defaults 
+                 new[] { typeof(Controllers.ContactController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Contact.Index", // Route name
                  "contact",
-                 "{controller}/{action}",    // URL with parameters 
+                 "",    // URL with parameters 
+                 new { controller = "Contact", action = "Index" },  // Parameter defaults 
+                 new[] { typeof(Controllers.ContactController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Contact.Action", // Route name
+                 "contact",
+                 "{action}",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ContactController).Namespace }
              );

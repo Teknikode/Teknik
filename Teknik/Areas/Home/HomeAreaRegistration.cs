@@ -17,28 +17,28 @@ namespace Teknik.Areas.Home
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapSubdomainRoute(
-                 "Home_dev", // Route name
+                 "Home.Index", // Route name
                  "dev",
                  "Home",    // URL with parameters 
                  new { controller = "Home", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.HomeController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Home_dev_blank", // Route name
+                 "Home.Default", // Route name
                  "dev",
                  "",    // URL with parameters 
                  new { controller = "Home", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.HomeController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Home_subdomain", // Route name
+                 "Home.Index", // Route name
                  "www",
                  "",    // URL with parameters 
                  new { controller = "Home", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.HomeController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Home_default", // Route name
+                 "Home.Index", // Route name
                  string.Empty,
                  "",    // URL with parameters 
                  new { controller = "Home", action = "Index" },  // Parameter defaults 

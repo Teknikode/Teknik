@@ -1,8 +1,8 @@
 ﻿@model Teknik.Areas.Upload.ViewModels.UploadViewModel
 
 <script>
-    var generateDeleteKeyURL = '@Url.Action("GenerateDeleteKey", "Upload", new { area = "Upload" })';
-    var uploadURL = '@Url.Action("Download", "Upload", new { area = "Upload", url = string.Empty })';
+    var generateDeleteKeyURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action= "GenerateDeleteKey" })';
+    var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Download")';
     var maxUploadSize = @(Model.Config.UploadConfig.MaxUploadSize / 100000);
 </script>
 
@@ -10,7 +10,7 @@
 
 <div class="container">
     <div class="row text-center">
-        <form action="@Url.Action("Upload", "Upload", new { area = "Upload" })" class="dropzone" id="TeknikUpload" name="TeknikUpload">
+        <form action="@Url.SubRouteUrl("upload", "Upload.Upload")" class="dropzone" id="TeknikUpload" name="TeknikUpload">
             @Html.AntiForgeryToken()
             <div class="dz-message text-center" id="upload_message">
                 <div class="row">

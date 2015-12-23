@@ -7,19 +7,19 @@
         <a href="#" id="user_menu" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <strong class="caret"></strong></a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="user_menu">
             <li>
-                <a href="@Url.SubAction("profile", "Index", "Profile", new { area = "Profile", username = User.Identity.Name })">Profile</a>
+                <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = User.Identity.Name })">Profile</a>
             </li>
             <li>
-                <a href="@Url.SubAction("blog", "Blog", "Blog", new { area = "Blog", username = User.Identity.Name })">Blog</a>
+                <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })">Blog</a>
             </li>
             @if (User.IsInRole("Admin"))
             {
             <li>
-                <a href="@Url.SubAction("admin", "Index", "Admin", new { area = "Admin" })">Administration</a>
+                <a href="@Url.SubRouteUrl("admin", "Admin.Index")">Administration</a>
             </li>
             }
             <li>
-                <a href="@Url.SubAction("profile", "Logout", "Profile", new { area = "Profile" })">Sign Out</a>
+                <a href="@Url.SubRouteUrl("profile", "Profile.Logout")">Sign Out</a>
             </li>
         </ul>
     </li>

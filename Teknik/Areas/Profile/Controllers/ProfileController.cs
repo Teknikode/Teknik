@@ -67,15 +67,16 @@ namespace Teknik.Areas.Profile.Controllers
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
-            return RedirectToAction("Index", "Home", new { Area = "Home" });
+            return Redirect(Url.SubRouteUrl("www", "Home.Index"));
         }
 
         [HttpGet]
         [AllowAnonymous]
         // GET: Profile
-        public ActionResult Register()
+        public ActionResult Register(string ReturnUrl)
         {
             RegisterViewModel model = new RegisterViewModel();
+            model.ReturnUrl = ReturnUrl;
 
             return View("/Areas/Profile/Views/Profile/ViewRegistration.cshtml", model);
         }
@@ -114,7 +115,7 @@ namespace Teknik.Areas.Profile.Controllers
                 {
                     return Json(new { error = "Unable to create the user." });
                 }
-                return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false });
+                return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false, ReturnUrl = model.ReturnUrl });
             }
             return Json(new { error = "You must include all fields." });
         }

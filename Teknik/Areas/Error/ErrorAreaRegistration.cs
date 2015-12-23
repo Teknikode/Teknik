@@ -15,7 +15,7 @@ namespace Teknik.Areas.Error
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapSubdomainRoute(
-                 "Error_404", // Route name
+                 "Error.Http404", // Route name
                  "*",
                  "Error/404",    // URL with parameters 
                  new { controller = "Error", action = "Http404" },  // Parameter defaults 

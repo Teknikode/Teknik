@@ -16,42 +16,42 @@ namespace Teknik.Areas.Blog
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapSubdomainRoute(
-                 "Blog_dev_blog", // Route name
+                 "Blog.Blog", // Route name
                  "dev",
                  "Blog/{username}",    // URL with parameters 
                  new { controller = "Blog", action = "Blog", username = string.Empty },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Blog_dev_post", // Route name
+                 "Blog.Post", // Route name
                  "dev",
                  "Blog/{username}/{id}",    // URL with parameters 
                  new { controller = "Blog", action = "Post", username = "", id = 0 },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Blog_dev_post_unique", // Route name
+                 "Blog.Action", // Route name
                  "dev",
                  "Blog/Action/{controller}/{action}",    // URL with parameters 
                  new { controller = "Blog", action = "Blog" },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Blog_default_blog", // Route name
+                 "Blog.Blog", // Route name
                  "blog",
                  "{username}",    // URL with parameters 
                  new { controller = "Blog", action = "Blog", username = string.Empty },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Blog_default_post", // Route name
+                 "Blog.Post", // Route name
                  "blog",
                  "{username}/{id}",    // URL with parameters 
                  new { controller = "Blog", action = "Post", username = "", id = 0 },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Blog_default_post_unique", // Route name
+                 "Blog.Action", // Route name
                  "blog",
                  "Action/{controller}/{action}",    // URL with parameters 
                  new { controller = "Blog", action = "Blog" },  // Parameter defaults 

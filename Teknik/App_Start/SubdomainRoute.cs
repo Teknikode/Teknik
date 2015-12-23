@@ -8,29 +8,29 @@ namespace Teknik
 {
     public class SubdomainRoute : Route
     {
-        public string subDomain { get; set; }
+        public string Subdomain { get; set; }
 
         public SubdomainRoute(string subdomain, string url, IRouteHandler handler)
         : base(url, handler)
         {
-            this.subDomain = subdomain;
+            this.Subdomain = subdomain;
         }
         public SubdomainRoute(string subdomain, string url, RouteValueDictionary defaults, IRouteHandler handler)
         : base(url, defaults, handler)
         {
-            this.subDomain = subdomain;
+            this.Subdomain = subdomain;
         }
 
         public SubdomainRoute(string subdomain, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, IRouteHandler handler)
         : base(url, defaults, constraints, handler)
         {
-            this.subDomain = subdomain;
+            this.Subdomain = subdomain;
         }
 
         public SubdomainRoute(string subdomain, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler handler)
         : base(url, defaults, constraints, dataTokens, handler)
         {
-            this.subDomain = subdomain;
+            this.Subdomain = subdomain;
         }
 
         public override RouteData GetRouteData(HttpContextBase httpContext)
@@ -41,16 +41,7 @@ namespace Teknik
             if (subdomain == null)
             {
                 string host = httpContext.Request.Headers["Host"];
-                if (host.Split('.').Count() > 2)
-                {
-                    int index = host.IndexOf('.');
-                    if (index >= 0)
-                        subdomain = host.Substring(0, index);
-                }
-                else
-                {
-                    subdomain = string.Empty;
-                }
+                subdomain = host.GetSubdomain();
             }
             else
             {
@@ -65,7 +56,7 @@ namespace Teknik
             }
 
             //routeData.Values["sub"] = subdomain;
-            if (subDomain == "*" || subDomain == subdomain)
+            if (Subdomain == "*" || Subdomain == subdomain)
             {
                 return routeData;
             }

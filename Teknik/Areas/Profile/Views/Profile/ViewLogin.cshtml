@@ -3,17 +3,10 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div class="error-template text-center">
-                <h1>No Access</h1>
-                <h2>403 Access Denied</h2>
-                <div class="error-details">
-                    You aren't allowed to see this!  If you think you are, then please login below.
-                </div>
-                <br />
-                <div class="error-actions">
-                    <div class="col-md-4 col-md-offset-4">
-                        @Html.Partial("../../Areas/Profile/Views/Profile/Login", Model)
-                    </div>
+            <div class="text-center">
+                <h1>Teknik Login</h1>
+                <div class="col-md-4 col-md-offset-4">
+                    @Html.Partial("../../Areas/Profile/Views/Profile/Login", Model)
                 </div>
             </div>
         </div>
