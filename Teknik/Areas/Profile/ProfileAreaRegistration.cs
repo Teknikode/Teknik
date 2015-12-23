@@ -31,7 +31,7 @@ namespace Teknik.Areas.Profile
             context.MapSubdomainRoute(
                  "Profile.Register", // Route name
                  "dev",
-                 "Profile/Login",    // URL with parameters 
+                 "Profile/Register",    // URL with parameters 
                  new { controller = "Profile", action = "Register" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
              );

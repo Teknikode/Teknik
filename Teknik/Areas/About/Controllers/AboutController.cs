@@ -10,7 +10,7 @@ namespace Teknik.Areas.About.Controllers
 {
     public class AboutController : DefaultController
     {
-        //[AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult Index()
         {
             ViewBag.Title = "About - " + Config.Title;
