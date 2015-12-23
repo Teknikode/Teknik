@@ -65,7 +65,7 @@ namespace Teknik
             }
 
             //routeData.Values["sub"] = subdomain;
-            if (subDomain == subdomain)
+            if (subDomain == "*" || subDomain == subdomain)
             {
                 return routeData;
             }

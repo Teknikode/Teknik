@@ -237,6 +237,41 @@ textarea{
 	background-color:#FFFFFF;
 }
 
+.navbar-xs { min-height:22px; border-radius:0} 
+.navbar-xs .navbar-brand{ padding: 2px 8px;font-size: 14px;line-height: 14px; } 
+.navbar-xs .navbar-nav > li > a { border-right:1px solid #ddd; padding-top: 2px; padding-bottom: 2px; line-height: 16px }
+
+.hero-widget { text-align: center; padding-top: 20px; padding-bottom: 20px; }
+.hero-widget .icon { display: block; font-size: 96px; line-height: 96px; margin-bottom: 10px; text-align: center; }
+.hero-widget var { display: block; height: 64px; font-size: 64px; line-height: 64px; font-style: normal; }
+.hero-widget label { font-size: 17px; }
+.hero-widget .options { margin-top: 10px; }
+
+.error-template {padding: 40px 15px;text-align: center;}
+.error-actions {margin-top:15px;margin-bottom:15px;}
+.error-actions .btn { margin-right:10px; }
+
+.jumbotron-sm { padding-top: 24px;
+padding-bottom: 24px; }
+.jumbotron small {
+color: #FFF;
+}
+
+.h1 small {
+font-size: 24px;
+}
+
+.bs-callout-warning {
+    background-color: #FCF8F2;
+    border-color: #F0AD4E;
+}
+
+.bs-callout {
+    border-left: 3px solid #F0AD4E;
+    margin: 20px 0;
+    padding: 20px;
+}
+
 .glyphicon-lg{font-size:3em}
 .blockquote-box{border-right:5px solid #E6E6E6;margin-bottom:25px}
 .blockquote-box .square{width:100px;min-height:50px;margin-right:15px;text-align:center!important;background-color:#E6E6E6;padding:15px 0}

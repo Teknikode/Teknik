@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
+using Teknik.Areas.Error.Controllers;
+using Teknik.Areas.Error.ViewModels;
 using Teknik.Configuration;
 
 namespace Teknik.Controllers
@@ -32,8 +35,14 @@ namespace Teknik.Controllers
         {
             ViewBag.Title = Config.Title;
             ViewBag.Message = Config.Description;
+
+            if (Response != null)
+            {
+                Response.SuppressFormsAuthenticationRedirect = true;
+            }
         }
     }
+
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class MyAuthorizeAttribute : AuthorizeAttribute
     {

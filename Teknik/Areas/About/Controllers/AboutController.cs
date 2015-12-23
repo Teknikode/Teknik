@@ -11,8 +11,6 @@ namespace Teknik.Areas.About.Controllers
     public class AboutController : DefaultController
     {
         //[AllowAnonymous]
-        [AllowAnonymous]
-        // GET: About/About
         public ActionResult Index()
         {
             ViewBag.Title = "About - " + Config.Title;

@@ -272,6 +272,9 @@
     <Content Include="Areas\Error\Views\web.config" />
     <Content Include="Areas\Error\Views\Error\Http404.cshtml" />
     <Content Include="Areas\Error\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Error\Views\Error\Exception.cshtml" />
+    <Content Include="Areas\Error\Views\Error\General.cshtml" />
+    <Content Include="Areas\Error\Views\Error\Http500.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />

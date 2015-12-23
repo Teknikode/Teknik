@@ -22,14 +22,6 @@ namespace Teknik.Areas.Dev
                  new { controller = "Dev", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.DevController).Namespace }
              );
-            context.MapSubdomainRoute(
-                 "Dev_default", // Route name
-                 "dev",
-                 "",    // URL with parameters 
-                 "Home",
-                 new { controller = "Home", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(HomeController).Namespace }
-             );
         }
     }
 }

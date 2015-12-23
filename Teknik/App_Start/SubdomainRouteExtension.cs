@@ -30,13 +30,14 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, string subDomain, string url, object defaults, string[] namespaces)
+        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, string subDomain, string area, string url, object defaults, string[] namespaces)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomain,
                 url,
                 new RouteValueDictionary(defaults),
-                new RouteValueDictionary(namespaces),
+                new RouteValueDictionary(new { }),
+                new RouteValueDictionary(new { Area = area, Namespaces = namespaces }),
                 new MvcRouteHandler());
             routes.Add(name, route);
             return route;

@@ -4,10 +4,23 @@
     <div class="row">
         <div class="col-md-12">
             <div class="error-template text-center">
-                <h1>Oops!</h1>
-                <h2>404 Not Found</h2>
+                <h1>Unexpected Error</h1>
                 <div class="error-details">
-                    Sorry, an error has occured, Requested page not found!
+                    An unexpected error has occurred. Please contact the system administrator.
+                    <br />
+                    @if (Model != null && HttpContext.Current.IsDebuggingEnabled)
+                    {
+                        <div class="text-left">
+                            <p>
+                                <b>Exception:</b> @Model.Exception.Message
+                                <br />
+                                <b>Source:</b> @Model.Exception.Source
+                            </p>
+                            <div style="overflow:scroll">
+                                <pre>@Model.Exception.StackTrace</pre>
+                            </div>
+                        </div>
+                    }
                 </div>
                 <br />
                 <div class="error-actions">
@@ -24,4 +37,3 @@
         </div>
     </div>
 </div>
-

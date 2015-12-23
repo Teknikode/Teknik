@@ -4,21 +4,16 @@
     <div class="row">
         <div class="col-md-12">
             <div class="error-template text-center">
-                <h1>Oops!</h1>
-                <h2>404 Not Found</h2>
+                <h1>Http Exception</h1>
+                <h2>Status Code: @((Model.Exception as HttpException).GetHttpCode())</h2>
                 <div class="error-details">
-                    Sorry, an error has occured, Requested page not found!
+                    Sorry, an error has occured: @Model.Description
                 </div>
-                <br />
                 <div class="error-actions">
                     <a href="@Url.SubAction("www", "Index", "Home", new { area = "Home"})" class="btn btn-primary btn-lg">
                         <span class="glyphicon glyphicon-home"></span>
                         Take Me Home
-                    </a>
-                    <a href="@Url.SubAction("contact", "Index", "Contact", new { area = "Contact"})" class="btn btn-default btn-lg">
-                        <span class="glyphicon glyphicon-envelope"></span> 
-                        Contact Support 
-                    </a>
+                    </a><a href="@Url.SubAction("contact", "Index", "Contact", new { area = "Contact"})" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-envelope"></span> Contact Support </a>
                 </div>
             </div>
         </div>
