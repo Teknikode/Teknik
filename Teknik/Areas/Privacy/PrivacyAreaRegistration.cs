@@ -17,14 +17,14 @@ namespace Teknik.Areas.Privacy
             context.MapSubdomainRoute(
                  "Privacy.Index", // Route name
                  "dev",
-                 "Privacy/{controller}/{action}",    // URL with parameters 
+                 "Privacy",    // URL with parameters 
                  new { controller = "Privacy", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.PrivacyController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Privacy.Index", // Route name
                  "privacy",
-                 "{controller}/{action}",    // URL with parameters 
+                 "",    // URL with parameters 
                  new { controller = "Privacy", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.PrivacyController).Namespace }
              );
