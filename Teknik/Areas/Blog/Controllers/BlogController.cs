@@ -23,44 +23,50 @@ namespace Teknik.Areas.Blog.Controllers
         [AllowAnonymous]
         public ActionResult Blog(string username)
         {
-            Models.Blog blog = null;
             BlogViewModel model = new BlogViewModel();
             // The blog is the main site's blog
             if (string.IsNullOrEmpty(username))
             {
                 ViewBag.Title = "Teknik Blog - " + Config.Title;
-                var blogs = db.Blogs.Include("User").Where(p => (p.BlogId == Constants.SERVERBLOGID));
-                if (blogs != null && blogs.Any())
-                {
-                    blog = blogs.First();
-                    blog.Title = Config.BlogConfig.Title;
-                    blog.Description = Config.BlogConfig.Description;
-                }
+                var foundPosts = (User.IsInRole("Admin")) ? db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.System))
+                                                            : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.System && p.Published));
+                model = new BlogViewModel();
+                model.BlogId = Constants.SERVERBLOGID;
+
+                User user = (User.IsInRole("Admin")) ? db.Users.Where(u => u.Username == User.Identity.Name).First() : null;
+                model.UserId = (user != null) ? user.UserId : 0;
+                model.User = user;
+                model.Title = Config.BlogConfig.Title;
+                model.Description = Config.BlogConfig.Description;
+                model.HasPosts = (foundPosts != null && foundPosts.Any());
+
+                return View(model);
             }
             else // A user specific blog
             {
-                var blogs = db.Blogs.Include("User").Where(p => p.User.Username == username && p.BlogId != Constants.SERVERBLOGID);
+                Models.Blog blog = null;
+                var blogs = db.Blogs.Include("User").Where(p => p.User.Username == username);
                 if (blogs.Any())
                 {
                     blog = blogs.First();
                     ViewBag.Title = blog.User.Username + "'s Blog - " + Config.Title;
                 }
-            }
-            // find the blog specified
-            if (blog != null)
-            {
-                var foundPosts = (User.IsInRole("Admin"))   ? db.Posts.Include("Blog").Include("Blog.User").Where(p =>  (p.BlogId == blog.BlogId))
-                                                            : db.Posts.Include("Blog").Include("Blog.User").Where(p =>  (p.BlogId == blog.BlogId) &&
-                                                                                                                        (p.Published || p.Blog.User.Username == User.Identity.Name));
-                model = new BlogViewModel();
-                model.BlogId = blog.BlogId;
-                model.UserId = blog.UserId;
-                model.User = blog.User;
-                model.Title = blog.Title;
-                model.Description = blog.Description;
-                model.HasPosts = (foundPosts != null && foundPosts.Any());
+                // find the blog specified
+                if (blog != null)
+                {
+                    var foundPosts = (User.IsInRole("Admin")) ? db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blog.BlogId && !p.System))
+                                                                : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blog.BlogId && !p.System) &&
+                                                                                                                            (p.Published || p.Blog.User.Username == User.Identity.Name));
+                    model = new BlogViewModel();
+                    model.BlogId = blog.BlogId;
+                    model.UserId = blog.UserId;
+                    model.User = blog.User;
+                    model.Title = blog.Title;
+                    model.Description = blog.Description;
+                    model.HasPosts = (foundPosts != null && foundPosts.Any());
 
-                return View(model);
+                    return View(model);
+                }
             }
             model.Error = true;
             return View(model);
@@ -93,8 +99,8 @@ namespace Teknik.Areas.Blog.Controllers
         [AllowAnonymous]
         public ActionResult GetPosts(int blogID, int startPostID, int count)
         {
-            var posts = (User.IsInRole("Admin"))    ? db.Posts.Include("Blog").Include("Blog.User").Where(p => p.BlogId == blogID).OrderByDescending(p => p.DatePosted).Skip(startPostID).Take(count).ToList()
-                                                    : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blogID) && (p.Published || p.Blog.User.Username == User.Identity.Name)
+            var posts = (User.IsInRole("Admin"))    ? db.Posts.Include("Blog").Include("Blog.User").Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == Constants.SERVERBLOGID))).OrderByDescending(p => p.DatePosted).Skip(startPostID).Take(count).ToList()
+                                                    : db.Posts.Include("Blog").Include("Blog.User").Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == Constants.SERVERBLOGID)) && (p.Published || p.Blog.User.Username == User.Identity.Name)
                                                                                                         ).OrderByDescending(p => p.DatePosted).Skip(startPostID).Take(count).ToList();
             List<PostViewModel> postViews = new List<PostViewModel>();
             if (posts != null)
@@ -141,10 +147,20 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool system = (blogID == Constants.SERVERBLOGID);
+                if (system)
+                {
+                    var user = db.Blogs.Include("User").Where(b => b.User.Username == User.Identity.Name);
+                    if (user != null)
+                    {
+                        blogID = user.First().BlogId;
+                    }
+                }
                 Post post = db.Posts.Create();
                 post.BlogId = blogID;
                 post.Title = title;
                 post.Article = article;
+                post.System = system;
                 post.DatePosted = DateTime.Now;
                 post.DatePublished = DateTime.Now;
 

@@ -81,19 +81,33 @@ namespace Teknik.Configuration
 
         public static string Serialize(Config config)
         {
-            return JsonConvert.SerializeObject(config);
+            return JsonConvert.SerializeObject(config, Formatting.Indented);
         }
 
         public static Config Load()
         {
             Config config = new Config();
             string path = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
-            if (File.Exists(Path.Combine(path, "Config.json")))
+            if (!File.Exists(Path.Combine(path, "Config.json")))
+            {
+                Config.Save(Path.Combine(path, "Config.json"), config);
+            }
+            else
             {
                 string configContents = File.ReadAllText(Path.Combine(path, "Config.json"));
                 config = Config.Deserialize(configContents);
             }
             return config;
+        }
+
+        public static void Save(string path, Config config)
+        {
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
+            string configContents = Config.Serialize(config);
+            File.WriteAllText(path, configContents);
         }
     }
 }

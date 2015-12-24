@@ -52,7 +52,7 @@ namespace Teknik.Areas.Profile.Controllers
                 model.Quote = user.Quote;
 
                 // fill in Blog details
-                var blog = db.Blogs.Where(b => b.UserId == user.UserId && b.BlogId != Constants.SERVERBLOGID);
+                var blog = db.Blogs.Where(b => b.UserId == user.UserId);
                 if (blog != null && blog.Any())
                 {
                     Blog.Models.Blog foundBlog = blog.First();
@@ -169,7 +169,7 @@ namespace Teknik.Areas.Profile.Controllers
                 User user = db.Users.Where(u => u.Username == User.Identity.Name).First();
                 if (user != null)
                 {
-                    var foundBlog = db.Blogs.Where(b => b.UserId == user.UserId && b.BlogId != Constants.SERVERBLOGID);
+                    var foundBlog = db.Blogs.Where(b => b.UserId == user.UserId);
                     if (foundBlog != null && foundBlog.Any())
                     {
                         Blog.Models.Blog blog = foundBlog.First();

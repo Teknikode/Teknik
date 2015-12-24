@@ -61,6 +61,8 @@ namespace Teknik.Areas.Blog
             // Register Script Bundles
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/blog").Include(
                       "~/Scripts/ocupload/1.1.2/ocupload.js",
+                      "~/Scripts/PageDown/Markdown.Converter.js",
+                      "~/Scripts/PageDown/Markdown.Sanitizer.js",
                       "~/Scripts/bootstrap/markdown/bootstrap-markdown.js",
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Areas/Blog/Scripts/Blog.js"));

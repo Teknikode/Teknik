@@ -41,7 +41,7 @@
                 </p>
             </div>
         </div>
-        if (Model.User.Username == User.Identity.Name)
+        if (User.IsInRole("Admin") || (Model.User != null && Model.User.Username == User.Identity.Name))
         {
         <div class="row">
             <div class="col-sm-12 text-center">

@@ -16,6 +16,8 @@ namespace Teknik.Areas.Blog.ViewModels
 
         public Models.Blog Blog { get; set; }
 
+        public bool System { get; set; }
+
         public DateTime DatePosted { get; set; }
 
         public DateTime DatePublished { get; set; }
@@ -35,6 +37,7 @@ namespace Teknik.Areas.Blog.ViewModels
             BlogId = post.BlogId;
             PostId = post.PostId;
             Blog = post.Blog;
+            System = post.System;
             DatePosted = post.DatePosted;
             Published = post.Published;
             DatePublished = post.DatePublished;

@@ -22,12 +22,12 @@ namespace Teknik.Areas.Home.Controllers
             HomeViewModel model = new HomeViewModel();
             // Grab the latest site blog posts
             List<Post> lastSite = new List<Post>();
-            var foundSite = db.Posts.Include("Blog").Include("Blog.User").OrderBy(post => post.DatePosted).Where(p => p.Published && p.BlogId == Constants.SERVERBLOGID).Take(10);
+            var foundSite = db.Posts.Include("Blog").Include("Blog.User").OrderBy(post => post.DatePosted).Where(p => p.Published && p.System).Take(10);
             if (foundSite != null)
                 lastSite = foundSite.ToList();
             // Grab the latest user blog posts
             List<Post> lastPosts = new List<Post>();
-            var foundPosts = db.Posts.Include("Blog").Include("Blog.User").OrderBy(post => post.DatePosted).Where(p => p.Published && p.BlogId != Constants.SERVERBLOGID).Take(10);
+            var foundPosts = db.Posts.Include("Blog").Include("Blog.User").OrderBy(post => post.DatePosted).Where(p => p.Published && !p.System).Take(10);
             if (foundPosts != null)
                 lastPosts = foundPosts.ToList();
             // Grab the latest podcasts
