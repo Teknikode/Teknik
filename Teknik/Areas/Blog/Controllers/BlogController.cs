@@ -24,7 +24,7 @@ namespace Teknik.Areas.Blog.Controllers
         public ActionResult Blog(string username)
         {
             Models.Blog blog = null;
-            BlogViewModel model = null;
+            BlogViewModel model = new BlogViewModel();
             // The blog is the main site's blog
             if (string.IsNullOrEmpty(username))
             {
@@ -62,6 +62,7 @@ namespace Teknik.Areas.Blog.Controllers
 
                 return View(model);
             }
+            model.Error = true;
             return View(model);
         }
 

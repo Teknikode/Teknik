@@ -6,6 +6,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using Teknik.Areas.Blog.Models;
+using Teknik.Areas.Error.Controllers;
+using Teknik.Areas.Error.ViewModels;
 using Teknik.Areas.Profile.Models;
 using Teknik.Areas.Profile.ViewModels;
 using Teknik.Controllers;
@@ -28,18 +30,18 @@ namespace Teknik.Areas.Profile.Controllers
                 username = User.Identity.Name;
             }
 
-            ProfileViewModel model = null;
+            ProfileViewModel model = new ProfileViewModel();
             ViewBag.Title = "User Does Not Exist - " + Config.Title;
             ViewBag.Message = "The User does not exist";
 
-            User user = db.Users.Where(u => u.Username == username).First();
+            var userQuery = db.Users.Where(u => u.Username == username);
 
-            if (user != null)
+            if (userQuery != null && userQuery.Any())
             {
+                Models.User user = userQuery.First();
                 ViewBag.Title = username + "'s Profile - " + Config.Title;
                 ViewBag.Message = "Viewing " + username + "'s Profile";
-
-                model = new ProfileViewModel();
+                
                 model.UserID = user.UserId;
                 model.Username = user.Username;
                 model.Email = string.Format("{0}@{1}", user.Username, Config.Host);
@@ -50,13 +52,16 @@ namespace Teknik.Areas.Profile.Controllers
                 model.Quote = user.Quote;
 
                 // fill in Blog details
-                Blog.Models.Blog blog = db.Blogs.Where(b => b.UserId == user.UserId && b.BlogId != Constants.SERVERBLOGID).First();
-                if (blog != null)
+                var blog = db.Blogs.Where(b => b.UserId == user.UserId && b.BlogId != Constants.SERVERBLOGID);
+                if (blog != null && blog.Any())
                 {
-                    model.BlogTitle = blog.Title;
-                    model.BlogDescription = blog.Description;
+                    Blog.Models.Blog foundBlog = blog.First();
+                    model.BlogTitle = foundBlog.Title;
+                    model.BlogDescription = foundBlog.Description;
                 }
+                return View(model);
             }
+            model.Error = true;
             return View(model);
         }
 
@@ -143,6 +148,7 @@ namespace Teknik.Areas.Profile.Controllers
                     // Generate blog for the user
                     var newBlog = db.Blogs.Create();
                     newBlog.UserId = db.Users.Where(u => u.Username == model.Username).Select(u => u.UserId).First();
+                    db.Blogs.Add(newBlog);
                     db.SaveChanges();
                 }
                 catch (Exception ex)
@@ -163,9 +169,10 @@ namespace Teknik.Areas.Profile.Controllers
                 User user = db.Users.Where(u => u.Username == User.Identity.Name).First();
                 if (user != null)
                 {
-                    Blog.Models.Blog blog = db.Blogs.Where(b => b.UserId == user.UserId && b.BlogId != Constants.SERVERBLOGID).First();
-                    if (blog != null)
+                    var foundBlog = db.Blogs.Where(b => b.UserId == user.UserId && b.BlogId != Constants.SERVERBLOGID);
+                    if (foundBlog != null && foundBlog.Any())
                     {
+                        Blog.Models.Blog blog = foundBlog.First();
                         // Changing Password?
                         if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
                         {
@@ -204,12 +211,14 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = db.Users.Where(u => u.Username == User.Identity.Name).First();
-                if (user != null)
+                var user = db.Users.Where(u => u.Username == User.Identity.Name);
+                if (user != null && user.Any())
                 {
-                    db.Users.Remove(user);
+                    Models.User foundUser = user.First();
+                    db.Users.Remove(foundUser);
                     db.SaveChanges();
-                    return Logout();
+                    FormsAuthentication.SignOut();
+                    return Json(new { result = true });
                 }
             }
             return Json(new { error = "Unable to delete user." });

@@ -42,7 +42,7 @@ namespace Teknik.Areas.Error.Controllers
         {
             ViewBag.Title = "404 - " + Config.Title;
             ViewBag.Message = "Uh Oh, can't find it!";
-
+            
             Response.StatusCode = 404;
 
             ErrorViewModel model = new ErrorViewModel();

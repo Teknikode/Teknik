@@ -26,7 +26,7 @@
 @Scripts.Render("~/bundles/blog")
 
 <div class="container">
-    @if (Model != null && Model.User != null)
+    @if (!Model.Error)
     {
         <div class="row">
             <div class="col-sm-12 blog-heading">

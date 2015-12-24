@@ -1,19 +1,18 @@
 ﻿@model Teknik.Areas.Profile.ViewModels.ProfileViewModel
 
 <script>
+    var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
     var editUserURL = '@Url.SubRouteUrl("profile", "Profile.Action", new { action = "Edit" })';
     var deleteUserURL = '@Url.SubRouteUrl("profile", "Profile.Action", new { action = "Delete" })';
 </script>
 
 @Scripts.Render("~/bundles/profile")
 
-@{ 
-    bool OwnProfile = (Model.Username == User.Identity.Name);
-}
-
 <div class="container">
-    @if (Model != null)
+    @if (!Model.Error)
     {
+        bool OwnProfile = (Model.Username == User.Identity.Name);
+
         <div class="row">
             <div class="col-sm-3@((string.IsNullOrEmpty(Model.About) && !OwnProfile) ? " col-sm-offset-4" : string.Empty)"><h1>@Model.Username></h1></div>
         </div>

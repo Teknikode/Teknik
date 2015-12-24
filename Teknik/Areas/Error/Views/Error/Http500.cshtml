@@ -4,12 +4,13 @@
     <div class="row">
         <div class="col-md-12">
             <div class="error-template text-center">
-                <h1>Oops!</h1>
+                <h1>Whoops!</h1>
                 <h2>500 Server Error</h2>
                 <div class="error-details">
                     Sorry, a server error occured.  Please contact an Administrator about this error.
                     <br />
-                    @if (Model != null && HttpContext.Current.IsDebuggingEnabled)
+                    <br />
+                    @if (Model != null && Model.Exception != null)
                     {
                         <div class="text-left">
                             <p>

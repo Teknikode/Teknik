@@ -1,6 +1,7 @@
 ﻿@model Teknik.Areas.Profile.ViewModels.LoginViewModel
 
 <form role="form" id="loginForm" action="@Url.SubRouteUrl("profile", "Profile.Login")" method="post" accept-charset="UTF-8">
+    @Html.AntiForgeryToken()
     <input name="ReturnUrl" id="ReturnUrl" type="hidden" value="@Model.ReturnUrl" />
     <div class="form-group">
         <input type="text" class="form-control" id="Username" value="" placeholder="Username" name="Username" data-val-required="The Username field is required." data-val="true" />

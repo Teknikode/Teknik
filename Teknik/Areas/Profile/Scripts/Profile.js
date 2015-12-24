@@ -8,7 +8,7 @@
                     data: AddAntiForgeryToken({}),
                     success: function (html) {
                         if (html.result) {
-                            window.location.reload();
+                            window.location.replace(homeUrl);
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');

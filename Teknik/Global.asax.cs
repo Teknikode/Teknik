@@ -44,13 +44,16 @@ namespace Teknik
                     {
                         User user = entities.Users.Include("Groups").Include("Groups.Roles").SingleOrDefault(u => u.Username == username);
 
-                        foreach (Group grp in user.Groups)
+                        if (user != null)
                         {
-                            foreach (Role role in grp.Roles)
+                            foreach (Group grp in user.Groups)
                             {
-                                if (!roles.Contains(role.Name))
+                                foreach (Role role in grp.Roles)
                                 {
-                                    roles.Add(role.Name);
+                                    if (!roles.Contains(role.Name))
+                                    {
+                                        roles.Add(role.Name);
+                                    }
                                 }
                             }
                         }

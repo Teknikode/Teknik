@@ -8,7 +8,8 @@
                 <div class="error-details">
                     An unexpected error has occurred. Please contact the system administrator.
                     <br />
-                    @if (Model != null && HttpContext.Current.IsDebuggingEnabled)
+                    <br />
+                    @if (Model != null && Model.Exception != null)
                     {
                         <div class="text-left">
                             <p>

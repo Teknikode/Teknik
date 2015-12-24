@@ -18,9 +18,9 @@ namespace Teknik
             bundles.Add(new ScriptBundle("~/bundles/common").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/jquery.validate*",
-                        "~/Scripts/common.js",
                         "~/Scripts/bootstrap.js",
                         "~/Scripts/bootstrap-select.js",
+                        "~/Scripts/common.js",
                         "~/Scripts/respond.js"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're

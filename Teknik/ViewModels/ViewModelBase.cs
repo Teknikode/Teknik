@@ -21,5 +21,14 @@ namespace Teknik.ViewModels
                 return _config;
             }
         }
+
+        public bool Error { get; set; }
+
+        public string ErrorMessage { get; set; }
+
+        public ViewModelBase()
+        {
+            Error = false;
+        }
     }
 }
