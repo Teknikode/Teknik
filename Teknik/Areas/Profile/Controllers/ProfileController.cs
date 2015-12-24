@@ -73,6 +73,7 @@ namespace Teknik.Areas.Profile.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public ActionResult Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -115,6 +116,7 @@ namespace Teknik.Areas.Profile.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -198,7 +200,7 @@ namespace Teknik.Areas.Profile.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int postID)
+        public ActionResult Delete()
         {
             if (ModelState.IsValid)
             {
@@ -207,7 +209,7 @@ namespace Teknik.Areas.Profile.Controllers
                 {
                     db.Users.Remove(user);
                     db.SaveChanges();
-                    return Redirect(Url.SubRouteUrl("www", "Home.Index"));
+                    return Logout();
                 }
             }
             return Json(new { error = "Unable to delete user." });

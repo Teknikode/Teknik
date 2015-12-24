@@ -5,6 +5,7 @@
                 $.ajax({
                     type: "POST",
                     url: deleteUserURL,
+                    data: AddAntiForgeryToken({}),
                     success: function (html) {
                         if (html.result) {
                             window.location.reload();
@@ -34,7 +35,7 @@
         $.ajax({
             type: "POST",
             url: editUserURL,
-            data: {
+            data: AddAntiForgeryToken({
                 curPass: current_password,
                 newPass: password,
                 newPassConfirm: password_confirm,
@@ -43,7 +44,7 @@
                 about: about,
                 blogTitle: blog_title,
                 blogDesc: blog_desc
-            },
+            }),
             success: function (html) {
                 if (html.result) {
                     $.unblockUI();
