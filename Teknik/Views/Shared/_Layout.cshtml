@@ -10,10 +10,10 @@
         <meta name="author" content="@Model.Config.Author" />
         <title>@ViewBag.Title</title>
         <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon" />
+
         @Styles.Render("~/Content/Common")
-        @Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/jqueryval")
-        @Scripts.Render("~/bundles/markdown")
+        @Scripts.Render("~/bundles/common")
+
     </head>
     <body data-twttr-rendered="true">
         <div id="wrap">
@@ -47,31 +47,5 @@
             @RenderBody()
         </div> 
         @Html.Partial("_Footer")
-
-        <!-- Piwik -->
-        <!--
-        <script type="text/javascript">
-          var _paq = _paq || [];
-          _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
-          _paq.push(["setCookieDomain", "*.teknik.io"]);
-          _paq.push(["setDomains", ["*.teknik.io"]]);
-          _paq.push(['trackPageView']);
-          _paq.push(['enableLinkTracking']);
-          (function() {
-            var u="//stats.teknik.io/";
-            _paq.push(['setTrackerUrl', u+'piwik.php']);
-            _paq.push(['setSiteId', 1]);
-            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-          })();
-        </script>
-        <noscript><p><img src="//stats.teknik.io/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
-        -->
-        <!-- End Piwik Code -->
-
-        <!-- Load Scripts -->
-        @Scripts.Render("~/bundles/bootstrap")
-        @Scripts.Render("~/bundles/common")
-        @RenderSection("scripts", required: false)
     </body>
 </html>

@@ -9,8 +9,6 @@ namespace Teknik.Areas.Profile.ViewModels
 {
     public class RegisterViewModel : ViewModelBase
     {
-        private TeknikEntities db = new TeknikEntities();
-
         [Required]
         [Display(Name = "Username")]
         public string Username { get; set; }

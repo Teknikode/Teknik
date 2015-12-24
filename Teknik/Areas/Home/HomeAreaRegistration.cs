@@ -48,6 +48,11 @@ namespace Teknik.Areas.Home
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/home").Include(
                       "~/Areas/Home/Content/Home.css"));
+
+            // Register Script Bundles
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/home").Include(
+                      "~/Scripts/PageDown/Markdown.Converter.js",
+                      "~/Scripts/PageDown/Markdown.Sanitizer.js"));
         }
     }
 }

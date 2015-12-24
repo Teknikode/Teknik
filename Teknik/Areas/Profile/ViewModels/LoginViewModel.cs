@@ -27,21 +27,5 @@ namespace Teknik.Areas.Profile.ViewModels
         public bool RememberMe { get; set; }
 
         public string ReturnUrl { get; set; }
-
-        public bool IsValid()
-        {
-            return IsValid(Username, Password);
-        }
-
-        public bool IsValid(string username, string password)
-        {
-            var myUser = db.Users.Where(b => b.Username == username).FirstOrDefault();
-
-            if (myUser != null && !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
-            {
-                return (myUser.HashedPassword == SHA384.Hash(username, password));
-            }
-            return false;
-        }
     }
 }

@@ -19,6 +19,12 @@ namespace Teknik.Areas.Profile.Models
 
         public List<Group> Groups { get; set; }
 
+        public string About { get; set; }
+
+        public string Website { get; set; }
+
+        public string Quote { get; set; }
+
         public User()
         {
             Username = String.Empty;
@@ -26,6 +32,9 @@ namespace Teknik.Areas.Profile.Models
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;
             Groups = new List<Group>();
+            About = string.Empty;
+            Website = string.Empty;
+            Quote = string.Empty;
         }
     }
 }

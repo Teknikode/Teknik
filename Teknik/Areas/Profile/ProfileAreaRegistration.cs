@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using System.Web.Optimization;
 
 namespace Teknik.Areas.Profile
 {
@@ -45,7 +46,7 @@ namespace Teknik.Areas.Profile
             context.MapSubdomainRoute(
                  "Profile.Action", // Route name
                  "dev",
-                 "Profile/{controller}/{action}",    // URL with parameters 
+                 "Profile/Action/{action}",    // URL with parameters 
                  new { controller = "Profile", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
              );
@@ -80,10 +81,19 @@ namespace Teknik.Areas.Profile
             context.MapSubdomainRoute(
                  "Profile.Action", // Route name
                  "profile",
-                 "{controller}/{action}",    // URL with parameters 
+                 "Action/{action}",    // URL with parameters 
                  new { controller = "Profile", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
+
+            // Register Script Bundle
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/profile").Include(
+                      "~/Scripts/bootbox/bootbox.min.js",
+                      "~/Scripts/PageDown/Markdown.Converter.js",
+                      "~/Scripts/PageDown/Markdown.Sanitizer.js",
+                      "~/Scripts/bootstrap/markdown/bootstrap-markdown.js",
+                      "~/Scripts/jquery.blockUI.js",
+                      "~/Areas/Profile/Scripts/Profile.js"));
         }
     }
 }
