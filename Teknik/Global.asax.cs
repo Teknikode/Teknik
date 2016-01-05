@@ -14,6 +14,7 @@ using Teknik.Areas.Profile.Models;
 using System.ComponentModel;
 using Teknik.Areas.Error.Controllers;
 using System.Web.Helpers;
+using System.Diagnostics;
 
 namespace Teknik
 {
@@ -31,6 +32,28 @@ namespace Teknik
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+        }
+
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+            HttpContext context = HttpContext.Current;
+            
+            var stopwatch = new Stopwatch();
+            HttpContext.Current.Items["Stopwatch"] = stopwatch;
+            stopwatch.Start();
+        }
+
+        protected void Application_EndRequest(object sender, EventArgs e)
+        {
+            HttpContext context = HttpContext.Current;
+
+            Stopwatch stopwatch = (Stopwatch)context.Items["Stopwatch"];
+            stopwatch.Stop();
+
+            TimeSpan ts = stopwatch.Elapsed;
+            string elapsedTime = String.Format("{0} seconds", ts.TotalSeconds);
+
+            context.Response.AddHeader("LoadTime", elapsedTime);
         }
 
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
