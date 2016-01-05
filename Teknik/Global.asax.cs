@@ -21,6 +21,9 @@ namespace Teknik
     {
         protected void Application_Start()
         {
+            ViewEngines.Engines.Clear();
+            ViewEngines.Engines.Add(new CustomRazorViewEngine());
+
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<TeknikEntities, Migrations.Configuration>());
 
             AreaRegistration.RegisterAllAreas();
