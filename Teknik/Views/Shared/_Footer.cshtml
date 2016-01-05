@@ -8,10 +8,20 @@
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
             string version = fileVersionInfo.ProductVersion;
         }
-        <p class="text-muted">
-            &copy; Teknik 2013-2016 | <a href="@Url.SubRouteUrl("privacy", "Privacy.Index")">Privacy</a> | <a href="@Url.SubRouteUrl("transparency", "Transparency.Index")">Transparency</a> | <a href="@Url.SubRouteUrl("server", "Server.Index")">Server</a>
-            <br />
-            @string.Format("{0}", version)
-        </p>
+        <div class="row">
+            <div class="col-md-6 text-left text-muted">
+                &copy; Teknik 2013-2016 | <a href="@Url.SubRouteUrl("privacy", "Privacy.Index")">Privacy</a> | <a href="@Url.SubRouteUrl("transparency", "Transparency.Index")">Transparency</a> | <a href="@Url.SubRouteUrl("server", "Server.Index")">Server</a>
+            </div>
+            <div class="col-md-6 text-right text-muted">
+                <div id="pagetime" style="display:none;">
+                    Gen: <b><span id="generatetime">0.0</span>ms</b> Load: <b><span id="loadtime">0.0</span>ms</b>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center text-muted">
+                Version: @string.Format("{0}", version)
+            </div>
+        </div>
     </div>
 </footer>

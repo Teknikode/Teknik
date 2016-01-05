@@ -53,7 +53,7 @@ namespace Teknik
             TimeSpan ts = stopwatch.Elapsed;
             string elapsedTime = String.Format("{0} seconds", ts.TotalSeconds);
 
-            context.Response.AddHeader("LoadTime", elapsedTime);
+            context.Response.AppendHeader("GenerationTime", elapsedTime);
         }
 
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)

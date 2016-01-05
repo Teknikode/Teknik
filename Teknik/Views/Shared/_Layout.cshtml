@@ -3,6 +3,9 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script type="text/javascript">
+            var startTime = new Date();
+        </script>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -47,5 +50,9 @@
             @RenderBody()
         </div> 
         @Html.Partial("_Footer")
+
+        <script type="text/javascript">
+            $(document).ready(function () {pageloadDoTimer();});
+        </script>
     </body>
 </html>

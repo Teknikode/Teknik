@@ -194,6 +194,7 @@
     <Compile Include="Areas\Blog\Models\Blog.cs" />
     <Compile Include="Areas\Profile\ViewModels\LoginViewModel.cs" />
     <Compile Include="Areas\Profile\ViewModels\RegisterViewModel.cs" />
+    <Compile Include="Modules\PerformanceMonitorModule.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="App_Start\SubdomainRoute.cs" />
