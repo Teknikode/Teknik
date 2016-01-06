@@ -28,7 +28,7 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Upload(string uploadID)
+        public ActionResult Upload()
         {
             foreach (string fileName in Request.Files)
             {

@@ -32,14 +32,15 @@ Dropzone.options.TeknikUpload = {
     paramName: "file", // The name that will be used to transfer the file
     maxFilesize: maxUploadSize, // MB
     addRemoveLinks: true,
+    autoProcessQueue: false,
     clickable: true,
+    accept: function (file, done) {
+        file.done = done;
+        encryptFile(file);
+    },
     init: function() {
         this.on("addedfile", function(file, responseText) {
             $("#upload_message").css('display', 'none', 'important');
-        });
-        this.on("sending", function (file, xhrObject, formData) {
-
-            // We need to encrypt the file before upload
         });
         this.on("success", function(file, response) {
             var name = response.result;
@@ -76,14 +77,7 @@ Dropzone.options.TeknikUpload = {
         });
         this.on("totaluploadprogress", function(progress, totalBytes, totalBytesSent) {
             $(".progress").children('.progress-bar').css('width', progress.toFixed(2)+'%');
-            if (progress != 100)
-            {
-                $(".progress").children('.progress-bar').html(progress.toFixed(2)+'%');
-            }
-            else
-            {
-                $(".progress").children('.progress-bar').html('Encrypting');
-            }
+            $(".progress").children('.progress-bar').html(progress.toFixed(2)+'%');
         });
         this.on("queuecomplete", function() {
             $(".progress").children('.progress-bar').html('Complete');
@@ -91,74 +85,67 @@ Dropzone.options.TeknikUpload = {
     }
 };
 
-function encryptFile(file)
+function readBlob(file, opt_startByte, opt_stopByte)
 {
-    var key = CryptoJS.enc.Utf8.parse('8080808080808080');
-    var iv = CryptoJS.enc.Utf8.parse('8080808080808080');
-    var reader = new FileReader();
-    reader.onload = function (e) {
-        var encrypted = CryptoJS.AES.encrypt(e.target.result, key);
-
-
-    }
-}
-
-function readBlob(opt_startByte, opt_stopByte) {
-
-    var files = document.getElementById('fileinput').files;
-    if (!files.length) {
-        alert('Please select a file!');
-        return;
-    }
-
-    var file = files[0];
     var start = parseInt(opt_startByte) || 0;
     var stop = parseInt(opt_stopByte) || file.size - 1;
 
     var reader = new FileReader();
 
-    // If we use onloadend, we need to check the readyState.
-    reader.onloadend = function (evt) {
-        if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-            window.bits.push(aesEncryptor.process(evt.target.result));
+    reader.onload = (function (theFile) {
+        var callback = theFile.callback;
+        return function (e) {
+            window.bits.push(window.aesEncryptor.process(evt.target.result));
+            callback();
+        };
+    })(file);
+
+    reader.onprogress = function (data) {
+        if (data.lengthComputable) {
+            var progress = parseInt(((data.loaded / data.total) * 100), 10);
+            $(".progress").children('.progress-bar').css('width', progress.toFixed(2) + '%');
+            $(".progress").children('.progress-bar').html(progress.toFixed(2) + '% Encrypted');
         }
-    };
+    }
 
     var blob = file.slice(start, stop + 1);
-    reader.readAsBinaryString(blob);
+    reader.readAsArrayBuffer(blob);
 }
 
-function handling(evt) {
-
+function encryptFile(file)
+{
     // INITIALIZE PROGRESSIVE ENCRYPTION
-    var key = CryptoJS.enc.Hex.parse(document.getElementById('pass').value);
-    var iv = CryptoJS.lib.WordArray.random(128 / 8);
-    window.bits = [];
+    window.keyStr = randomString(16, '#aA');
+    window.ivStr = randomString(16, '#aA');
+    var key = CryptoJS.enc.Utf8.parse(keyStr);
+    var iv = CryptoJS.enc.Utf8.parse(ivStr);
     window.aesEncryptor = CryptoJS.algo.AES.createEncryptor(key, { iv: iv });
 
     // LOOP THROUGH BYTES AND PROGRESSIVELY ENCRYPT
+
+    window.bits = []
+
     var startByte = 0;
     var endByte = 0;
-    while (startByte < document.querySelector('input[type=file]').files[0].size - 1) {
-        endByte = startByte + 1000000;
-        readBlob(startByte, endByte);
+    while (startByte <= file.size - 1) {
+        endByte = startByte + 1024;
+        readBlob(file, startByte, endByte);
         startByte = endByte;
     }
+}
 
-    // FINALIZE ENCRYPTION AND UPLOAD
-    var encrypted = aesEncryptor.finalize();
-    encrypted = encodeURIComponent(encrypted);
-    var filename = document.getElementById('fileinput').value;
-    var file_type = document.getElementById('fileinput').files[0].type;
-    var url = 'data=' + encrypted + '&filename=' + filename + '&filetype=' + file_type;
-    $.ajax({
-        url: 'myphpscript.php',
-        type: 'POST',
-        data: url
-    }).success(function (data) {
-        // Display encrypted data
-        document.getElementById('status').innerHTML = 'Upload Complete.';
-    });
-    alert(encrypted);
-
+function fileDataEncrypted(done)
+{
+    bits.push(aesEncryptor.finalize());
+    var encrypted = window.bits.join("");
+    var filename = file.name;
+    var file_type = file.type;
+    var fileData =
+            {
+                data: encrypted,
+                filename: filename,
+                filetype: file_type,
+                iv: ivStr
+            };
+    return fileData;
 }
