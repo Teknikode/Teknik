@@ -30,6 +30,15 @@ namespace Teknik.Areas.Upload.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Upload(string uploadID)
         {
+            foreach (string fileName in Request.Files)
+            {
+                HttpPostedFileBase file = Request.Files[fileName];
+                //Save file content goes here
+                string fName = file.FileName;
+                if (file != null && file.ContentLength > 0)
+                {
+                }
+            }
             return Json(new { result = "tempURL.png" });
         }
 

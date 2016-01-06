@@ -10,7 +10,7 @@
 
 <div class="container">
     <div class="row text-center">
-        <form action="@Url.SubRouteUrl("upload", "Upload.Upload")" class="dropzone" id="TeknikUpload" name="TeknikUpload">
+        <form action="@Url.SubRouteUrl("upload", "Upload.Upload")" class="dropzone" id="TeknikUpload" name="TeknikUpload" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
             <div class="dz-message text-center" id="upload_message">
                 <div class="row">
