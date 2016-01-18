@@ -9,6 +9,12 @@ namespace Teknik.Configuration
     {
         // Max upload size in bytes
         public int MaxUploadSize { get; set; }
+        // Location of the upload directory
+        public string UploadDirectory { get; set; }
+        // File Extension for saved files
+        public string FileExtension { get; set; }
+        public int UrlLength { get; set; }
+        public bool IncludeExtension { get; set; }
 
         public UploadConfig()
         {
@@ -18,6 +24,10 @@ namespace Teknik.Configuration
         public void SetDefaults()
         {
             MaxUploadSize = 100000000;
+            UploadDirectory = string.Empty;
+            FileExtension = "enc";
+            UrlLength = 6;
+            IncludeExtension = true;
         }
     }
 }

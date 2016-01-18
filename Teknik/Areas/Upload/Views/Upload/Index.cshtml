@@ -1,6 +1,8 @@
 ﻿@model Teknik.Areas.Upload.ViewModels.UploadViewModel
 
 <script>
+    var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
+    var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
     var generateDeleteKeyURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action= "GenerateDeleteKey" })';
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Download")';
     var maxUploadSize = @(Model.Config.UploadConfig.MaxUploadSize / 100000);
@@ -10,8 +12,9 @@
 
 <div class="container">
     <div class="row text-center">
-        <form action="@Url.SubRouteUrl("upload", "Upload.Upload")" class="dropzone" id="TeknikUpload" name="TeknikUpload" enctype="multipart/form-data">
+        <form action="@Url.SubRouteUrl("upload", "Upload.Action", new { action = "Upload" })" class="dropzone" id="TeknikUpload" name="TeknikUpload" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
+            <input name="iv" id="iv" type="hidden" />
             <div class="dz-message text-center" id="upload_message">
                 <div class="row">
                     <div class="col-sm-12">

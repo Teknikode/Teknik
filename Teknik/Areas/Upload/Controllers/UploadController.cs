@@ -28,8 +28,9 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Upload()
+        public ActionResult Upload(string iv)
         {
+            Models.Upload upload = null;
             foreach (string fileName in Request.Files)
             {
                 HttpPostedFileBase file = Request.Files[fileName];
@@ -37,9 +38,15 @@ namespace Teknik.Areas.Upload.Controllers
                 string fName = file.FileName;
                 if (file != null && file.ContentLength > 0)
                 {
+                    upload = Uploader.SaveFile(file, iv);
+                    break;
                 }
             }
-            return Json(new { result = "tempURL.png" });
+            if (upload != null)
+            {
+                return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }) } }, "text/plain");
+            }
+            return Json(new { error = "Unable to upload file" });
         }
 
         [HttpPost]

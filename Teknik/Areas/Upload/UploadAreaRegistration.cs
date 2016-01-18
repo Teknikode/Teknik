@@ -25,7 +25,7 @@ namespace Teknik.Areas.Upload
             context.MapSubdomainRoute(
                  "Upload.Download",
                  "dev",
-                 "Upload/{url}",
+                 "Upload/{file}",
                  new { controller = "Upload", action = "Download", url = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
@@ -106,6 +106,11 @@ namespace Teknik.Areas.Upload
                       "~/Areas/Upload/Scripts/Upload.js",
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Areas/Upload/Scripts/aes.js"));
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/cryptoWorker").Include(
+                      "~/Areas/Upload/Scripts/EncryptionWorker.js"));
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/crypto").Include(
+                      "~/Areas/Upload/Scripts/aes.js"));
+
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/upload").Include(
                       "~/Content/dropzone.css",

@@ -168,6 +168,7 @@
     <Compile Include="Areas\Upload\Controllers\UploadController.cs" />
     <Compile Include="Areas\Upload\Models\Upload.cs" />
     <Compile Include="Areas\Upload\UploadAreaRegistration.cs" />
+    <Compile Include="Areas\Upload\Uploader.cs" />
     <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
     <Compile Include="Configuration\BlogConfig.cs" />
     <Compile Include="Configuration\Config.cs" />
@@ -208,6 +209,7 @@
     <Content Include="Areas\Home\Scripts\Home.js" />
     <Content Include="Areas\Profile\Scripts\Profile.js" />
     <Content Include="Areas\Upload\Scripts\aes.js" />
+    <Content Include="Areas\Upload\Scripts\EncryptionWorker.js" />
     <Content Include="Areas\Upload\Scripts\Upload.js" />
     <Content Include="Content\bootstrap-markdown.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -278,6 +280,7 @@
     <Content Include="Areas\Error\Views\Error\Exception.cshtml" />
     <Content Include="Areas\Error\Views\Error\General.cshtml" />
     <Content Include="Areas\Error\Views\Error\Http500.cshtml" />
+    <Content Include="Areas\Upload\Views\Upload\Download.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />

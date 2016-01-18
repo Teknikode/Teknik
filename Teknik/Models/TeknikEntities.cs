@@ -5,6 +5,7 @@ using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Profile.Models;
 using Teknik.Areas.Contact.Models;
 using Teknik.Migrations;
+using Teknik.Areas.Upload.Models;
 
 namespace Teknik.Models
 {
@@ -17,6 +18,7 @@ namespace Teknik.Models
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> BlogComments { get; set; }
         public DbSet<Contact> Contact { get; set; }
+        public DbSet<Upload> Uploads { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -27,6 +29,7 @@ namespace Teknik.Models
             modelBuilder.Entity<Post>().ToTable("Posts");
             modelBuilder.Entity<Comment>().ToTable("BlogComments");
             modelBuilder.Entity<Contact>().ToTable("Contact");
+            modelBuilder.Entity<Upload>().ToTable("Uploads");
 
             base.OnModelCreating(modelBuilder);
         }
