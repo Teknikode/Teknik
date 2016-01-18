@@ -4,6 +4,7 @@
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
     var generateDeleteKeyURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action= "GenerateDeleteKey" })';
+    var uploadFileURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action = "Upload" })';
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Download")';
     var maxUploadSize = @(Model.Config.UploadConfig.MaxUploadSize / 100000);
 </script>
@@ -14,6 +15,7 @@
     <div class="row text-center">
         <form action="@Url.SubRouteUrl("upload", "Upload.Action", new { action = "Upload" })" class="dropzone" id="TeknikUpload" name="TeknikUpload" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
+            <input name="key" id="key" type="hidden" />
             <input name="iv" id="iv" type="hidden" />
             <div class="dz-message text-center" id="upload_message">
                 <div class="row">

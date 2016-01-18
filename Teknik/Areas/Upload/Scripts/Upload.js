@@ -32,14 +32,17 @@ Dropzone.options.TeknikUpload = {
     paramName: "file", // The name that will be used to transfer the file
     maxFilesize: maxUploadSize, // MB
     addRemoveLinks: true,
-    autoProcessQueue: true,
+    autoProcessQueue: false,
     clickable: true,
     accept: function (file, done) {
         encryptFile(file, done);
     },
     init: function() {
-        this.on("addedfile", function(file, responseText) {
-            $("#upload_message").css('display', 'none', 'important');
+        this.on("sending", function (file, xhr, formData) {
+            var data = new FormData();
+            data.append('file-content', file.data);
+            data.append('file-iv', file.iv);
+            formData = data;
         });
         this.on("success", function (file, response) {
             obj = JSON.parse(response);
@@ -61,6 +64,14 @@ Dropzone.options.TeknikUpload = {
                 </div> \
               ');
             linkUploadDelete('.generate-delete-link-'+short_name+'');
+        });
+        this.on("addedfile", function (file, responseText) {
+
+            // We will be handling encryption and uploading here
+
+            // Encrypt the file
+            encryptFile(file, uploadFile);
+            $("#upload_message").css('display', 'none', 'important');
         });
         this.on("removedfile", function(file) {
             var name = file.name.split(".")[0].hashCode();
@@ -86,13 +97,56 @@ Dropzone.options.TeknikUpload = {
     }
 };
 
+function uploadFile(data, key, iv)
+{
+    $("#key").val(key);
+    $("#iv").val(iv);
+    // Now we need to upload the file
+    var fd = new FormData();
+    fd.append('data', data);
+    fd.append('iv', iv);
+    fd.append('content-type', document.getElementById('file').files[0].type);
+
+    xhr.upload.addEventListener("progress", uploadProgress, false);
+    xhr.addEventListener("load", uploadComplete, false);
+    xhr.addEventListener("error", uploadFailed, false);
+    xhr.addEventListener("abort", uploadCanceled, false);
+    xhr.open("POST", uploadFileURL);
+    xhr.send(fd);
+}
+
+function uploadProgress(evt) {
+    if (evt.lengthComputable) {
+        var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+        $(".progress").children('.progress-bar').css('width', (percentComplete * (3 / 5)) + 40 + '%');
+        $(".progress").children('.progress-bar').html(progress.toFixed(2) + '% Uploaded');
+    }
+    else {
+        document.getElementById('progressNumber').innerHTML = 'unable to compute';
+    }
+}
+
+function uploadComplete(evt) {
+    /* This event is raised when the server send back a response */
+    alert(evt.target.responseText);
+}
+
+function uploadFailed(evt) {
+    alert("There was an error attempting to upload the file.");
+}
+
+function uploadCanceled(evt) {
+    alert("The upload has been canceled by the user or the browser dropped the connection.");
+}
+
+
 // Function to encrypt a file, overide the file's data attribute with the encrypted value, and then call a callback function if supplied
 function encryptFile(file, callback) {
     // Start the file reader
     var reader = new FileReader();
 
     // When the file has been loaded, encrypt it
-    reader.onload = (function (theFile, callback) {
+    reader.onload = (function (callback) {
         return function (e) {
             // Create random key and iv
             var keyStr = randomString(16, '#aA');
@@ -107,16 +161,9 @@ function encryptFile(file, callback) {
             var worker = new Worker(encScriptSrc);
 
             worker.addEventListener('message', function (e) {
-                // create the blob from e.data.encrypted
-                theFile.data = e.data;
-                theFile.key = keyStr;
-                theFile.iv = ivStr;
-
-                $("#iv").val(ivStr);
-
                 if (callback != null) {
                     // Finish 
-                    callback();
+                    callback(e.data, keyStr, ivStr);
                 }
             });
 
@@ -130,7 +177,7 @@ function encryptFile(file, callback) {
                 chunkSize: 1024
             });
         };
-    })(file, callback);
+    })(callback);
 
     // While reading, display the current progress
     reader.onprogress = function (data) {
@@ -142,83 +189,6 @@ function encryptFile(file, callback) {
     }
 
     // Start async read
-    reader.readAsDataURL(file);
-}
-
-function encryptData(data, file, callback) {
-
-    // 1) create the jQuery Deferred object that will be used
-    var deferred = $.Deferred();
-
-    // Create random key and iv
-    var keyStr = randomString(16, '#aA');
-    var ivStr = randomString(16, '#aA');
-    var key = CryptoJS.enc.Utf8.parse(keyStr);
-    var iv = CryptoJS.enc.Utf8.parse(ivStr);
-
-    // Ecrypt the file
-    var encData = CryptoJS.AES.encrypt(data, key, { iv: iv });
-
-    // Save Data
-    file.data = encData;
-    file.key = keyStr;
-    file.iv = ivStr;
-
-    // Finish 
-    callback();
-
-    // 2) return the promise of this deferred
-    return deferred.promise();
-}
-
-function readBlob(file, opt_startByte, opt_stopByte)
-{
-    var start = parseInt(opt_startByte) || 0;
-    var stop = parseInt(opt_stopByte) || file.size - 1;
-
-    var reader = new FileReader();
-
-    reader.onload = (function (theFile) {
-        var callback = theFile.done;
-        window.processedSize += theFile.size;
-        return function (e) {
-            // Ecrypt the blog
-            window.bits.push(window.aesEncryptor.process(evt.target.result));
-            // Add the current size to the processed variable
-            window.processedSize += evt.target.result.size;
-            // If we have processed the entire file, let's do a finalize and call the callback
-            if (window.processedSize > window.totalSize - 1) {
-                window.bits.push(aesEncryptor.finalize());
-
-                callback();
-            }
-        };
-    })(file);
-
-    reader.onprogress = function (data) {
-        if (data.lengthComputable) {
-            var progress = parseInt(((data.loaded / data.total) * 100), 10);
-            $(".progress").children('.progress-bar').css('width', progress.toFixed(2) + '%');
-            $(".progress").children('.progress-bar').html(progress.toFixed(2) + '% Encrypted');
-        }
-    }
-
-    var blob = file.slice(start, stop + 1);
+    var blob = file.slice(0, file.size);
     reader.readAsDataURL(blob);
-}
-
-function fileDataEncrypted(done)
-{
-    bits.push(aesEncryptor.finalize());
-    var encrypted = window.bits.join("");
-    var filename = file.name;
-    var file_type = file.type;
-    var fileData =
-            {
-                data: encrypted,
-                filename: filename,
-                filetype: file_type,
-                iv: ivStr
-            };
-    return fileData;
 }
