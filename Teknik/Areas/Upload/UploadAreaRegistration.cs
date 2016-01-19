@@ -105,11 +105,13 @@ namespace Teknik.Areas.Upload
                       "~/Scripts/Dropzone/dropzone.js",
                       "~/Areas/Upload/Scripts/Upload.js",
                       "~/Scripts/bootbox/bootbox.min.js",
-                      "~/Areas/Upload/Scripts/aes.js"));
+                      "~/Scripts/Crypto-js/aes.js",
+                      "~/Scripts/Crypto-js/lib-typedarray.js"));
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/cryptoWorker").Include(
                       "~/Areas/Upload/Scripts/EncryptionWorker.js"));
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/crypto").Include(
-                      "~/Areas/Upload/Scripts/aes.js"));
+                      "~/Scripts/Crypto-js/aes.js",
+                      "~/Scripts/Crypto-js/lib-typedarray.js"));
 
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/upload").Include(

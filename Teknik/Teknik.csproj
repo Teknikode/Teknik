@@ -166,6 +166,7 @@
     <Compile Include="Areas\Profile\ProfileAreaRegistration.cs" />
     <Compile Include="Areas\Profile\ViewModels\ProfileViewModel.cs" />
     <Compile Include="Areas\Upload\Controllers\UploadController.cs" />
+    <Compile Include="Areas\Upload\Models\FileModel.cs" />
     <Compile Include="Areas\Upload\Models\Upload.cs" />
     <Compile Include="Areas\Upload\UploadAreaRegistration.cs" />
     <Compile Include="Areas\Upload\Uploader.cs" />
@@ -208,7 +209,7 @@
     <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
     <Content Include="Areas\Profile\Scripts\Profile.js" />
-    <Content Include="Areas\Upload\Scripts\aes.js" />
+    <Content Include="Scripts\Crypto-js\aes.js" />
     <Content Include="Areas\Upload\Scripts\EncryptionWorker.js" />
     <Content Include="Areas\Upload\Scripts\Upload.js" />
     <Content Include="Content\bootstrap-markdown.min.css" />
@@ -288,6 +289,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\common.js" />
+    <Content Include="Scripts\Crypto-js\lib-typedarrays.js" />
     <Content Include="Scripts\Dropzone\dropzone.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Upload.ViewModels;
 using Teknik.Controllers;
 
@@ -28,20 +29,9 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Upload(string iv)
+        public ActionResult Upload(string fileType, string iv, HttpPostedFileWrapper data)
         {
-            Models.Upload upload = null;
-            foreach (string fileName in Request.Files)
-            {
-                HttpPostedFileBase file = Request.Files[fileName];
-                //Save file content goes here
-                string fName = file.FileName;
-                if (file != null && file.ContentLength > 0)
-                {
-                    upload = Uploader.SaveFile(file, iv);
-                    break;
-                }
-            }
+            Models.Upload upload = Uploader.SaveFile(data, fileType, iv);
             if (upload != null)
             {
                 return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }) } }, "text/plain");

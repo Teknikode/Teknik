@@ -34,40 +34,21 @@ Dropzone.options.TeknikUpload = {
     addRemoveLinks: true,
     autoProcessQueue: false,
     clickable: true,
-    accept: function (file, done) {
-        encryptFile(file, done);
-    },
     init: function() {
-        this.on("sending", function (file, xhr, formData) {
-            var data = new FormData();
-            data.append('file-content', file.data);
-            data.append('file-iv', file.iv);
-            formData = data;
-        });
-        this.on("success", function (file, response) {
-            obj = JSON.parse(response);
-            var name = obj.result.name;
-            var fullName = obj.result.url;
+        this.on("addedfile", function (file, responseText) {
+            // Create the UI element for the new item
             var short_name = file.name.split(".")[0].hashCode();
             $("#upload-links").css('display', 'inline', 'important');
             $("#upload-links").prepend(' \
                 <div class="row link_'+short_name+'"> \
-                  <div class="col-sm-6"> \
-                    '+file.name+' \
-                  </div> \
-                  <div class="col-sm-3"> \
-                    <a href="' + fullName + '" target="_blank" class="alert-link">' + fullName + '</a> \
-                  </div> \
-                  <div class="col-sm-3"> \
-                    <button type="button" class="btn btn-default btn-xs generate-delete-link-'+short_name+'" id="'+name+'">Generate Deletion URL</button> \
-                  </div> \
+                    <div class="col-sm-12 text-center"> \
+                        '+file.name+' \
+                    </div> \
+                    <div class="progress col-sm-12"> \
+                        <div class="progress-bar progress-bar-success" id="progressBar-' + short_name + '" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div> \
+                    </div> \
                 </div> \
               ');
-            linkUploadDelete('.generate-delete-link-'+short_name+'');
-        });
-        this.on("addedfile", function (file, responseText) {
-
-            // We will be handling encryption and uploading here
 
             // Encrypt the file
             encryptFile(file, uploadFile);
@@ -97,18 +78,21 @@ Dropzone.options.TeknikUpload = {
     }
 };
 
-function uploadFile(data, key, iv)
+function uploadFile(data, key, iv, filetype, filename)
 {
     $("#key").val(key);
     $("#iv").val(iv);
+    var blob = new Blob([data]);
     // Now we need to upload the file
     var fd = new FormData();
-    fd.append('data', data);
+    fd.append('fileType', filetype);
     fd.append('iv', iv);
-    fd.append('content-type', document.getElementById('file').files[0].type);
+    fd.append('data', blob);
+    fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
 
+    var xhr = new XMLHttpRequest();
     xhr.upload.addEventListener("progress", uploadProgress, false);
-    xhr.addEventListener("load", uploadComplete, false);
+    xhr.addEventListener("load", uploadComplete.bind(null, filename), false);
     xhr.addEventListener("error", uploadFailed, false);
     xhr.addEventListener("abort", uploadCanceled, false);
     xhr.open("POST", uploadFileURL);
@@ -119,16 +103,33 @@ function uploadProgress(evt) {
     if (evt.lengthComputable) {
         var percentComplete = Math.round(evt.loaded * 100 / evt.total);
         $(".progress").children('.progress-bar').css('width', (percentComplete * (3 / 5)) + 40 + '%');
-        $(".progress").children('.progress-bar').html(progress.toFixed(2) + '% Uploaded');
+        $(".progress").children('.progress-bar').html(percentComplete + '% Uploaded');
     }
     else {
         document.getElementById('progressNumber').innerHTML = 'unable to compute';
     }
 }
 
-function uploadComplete(evt) {
-    /* This event is raised when the server send back a response */
-    alert(evt.target.responseText);
+function uploadComplete(filename, evt) {
+    obj = JSON.parse(evt.target.responseText);
+    var name = obj.result.name;
+    var fullName = obj.result.url;
+    var short_name = filename.split(".")[0].hashCode();
+    $("#upload-links").css('display', 'inline', 'important');
+    $("#upload-links").prepend(' \
+                <div class="row link_'+ short_name + '"> \
+                  <div class="col-sm-6"> \
+                    ' + filename + ' \
+                  </div> \
+                  <div class="col-sm-3"> \
+                    <a href="' + fullName + '" target="_blank" class="alert-link">' + fullName + '</a> \
+                  </div> \
+                  <div class="col-sm-3"> \
+                    <button type="button" class="btn btn-default btn-xs generate-delete-link-' + name + '" id="' + name + '">Generate Deletion URL</button> \
+                  </div> \
+                </div> \
+              ');
+    linkUploadDelete('.generate-delete-link-' + name + '');
 }
 
 function uploadFailed(evt) {
@@ -139,9 +140,11 @@ function uploadCanceled(evt) {
     alert("The upload has been canceled by the user or the browser dropped the connection.");
 }
 
-
 // Function to encrypt a file, overide the file's data attribute with the encrypted value, and then call a callback function if supplied
 function encryptFile(file, callback) {
+    var filetype = file.type;
+    var filename = file.name;
+
     // Start the file reader
     var reader = new FileReader();
 
@@ -163,19 +166,20 @@ function encryptFile(file, callback) {
             worker.addEventListener('message', function (e) {
                 if (callback != null) {
                     // Finish 
-                    callback(e.data, keyStr, ivStr);
+                    callback(e.data.encrypted, keyStr, ivStr, filetype, filename);
                 }
             });
 
             // Execute worker with data
-            worker.postMessage({
-                cmd: 'encrypt',
-                script: aesScriptSrc,
-                key: key,
-                iv: iv,
-                file: e.target.result,
-                chunkSize: 1024
-            });
+            var objData =
+                {
+                    cmd: 'encrypt',
+                    script: aesScriptSrc,
+                    key: key,
+                    iv: iv,
+                    file: e.target.result
+                };
+            worker.postMessage(objData, [objData.file]);
         };
     })(callback);
 
@@ -190,5 +194,5 @@ function encryptFile(file, callback) {
 
     // Start async read
     var blob = file.slice(0, file.size);
-    reader.readAsDataURL(blob);
+    reader.readAsArrayBuffer(blob);
 }
