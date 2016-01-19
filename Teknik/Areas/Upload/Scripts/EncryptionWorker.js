@@ -4,18 +4,48 @@
 
     switch (data.cmd) {
         case 'encrypt':
-            var wordArray = CryptoJS.lib.WordArray.create(new Uint8Array(data.file))
+            //var startByte = 0;
+            //var endByte = 0;
+            //var prog = [];
 
-            //var dataStr = ab2str(data.file);
+            //var bytes = new Uint8Array(data.file);
 
-            // encrypt the passed in file data
-            var encrypted = CryptoJS.AES.encrypt(wordArray, data.key, { iv: data.iv });
-            var encByteArray = wordToByteArray(encrypted);
+            //// Create aes encryptor object
+            //var aesEncryptor = CryptoJS.algo.AES.createEncryptor(data.key, { iv: data.iv });
 
+            //while (startByte <= (bytes.length - 1)) {
+            //    // Set the end byte
+            //    endByte = startByte + data.chunkSize;
+            //    if (endByte > bytes.length - 1)
+            //    {
+            //        endByte = bytes.length - 1;
+            //    }
+
+            //    // Grab current set of bytes
+            //    var curBytes = bytes.subarray(startByte, endByte);
+            //    var wordArray = CryptoJS.lib.WordArray.create(curBytes)
+
+            //    // encrypt the passed in file data and add it to bits[]
+            //    prog.push(aesEncryptor.process(wordArray));
+
+            //    // Set the next start as the current end
+            //    startByte = endByte + 1;
+            //}//then finalize
+            //prog.push(aesEncryptor.finalize());
+
+            //throw JSON.stringify({ data: prog, start: startByte, end: endByte, len: bytes.length })
+            var wordArray = CryptoJS.lib.WordArray.create(new Uint8Array(data.file));
+
+            var encWords = CryptoJS.AES.encrypt(wordArray, data.key, { iv: data.iv, mode: CryptoJS.mode.CBC });
+
+            //throw JSON.stringify({ data: wordArray });
+
+            var dcBase64String = encWords.toString(); // to Base64-String
+            //var encByteArray = wordToByteArray(encWords.words);
             // patch it all back together for the trip home
             var objData =
                 {
-                    encrypted: encByteArray.buffer
+                    encrypted: str2ab(dcBase64String)
                 };
 
             self.postMessage(objData, [objData.encrypted]);
@@ -58,7 +88,7 @@ function ab2str(buf) {
 
 function str2ab(str) {
     var buf = new ArrayBuffer(str.length); // 2 bytes for each char
-    var bufView = new Uint8Array(buf);
+    var bufView = new Uint16Array(buf);
     for (var i = 0, strLen = str.length; i < strLen; i++) {
         bufView[i] = str.charCodeAt(i);
     }
