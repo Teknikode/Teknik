@@ -17,6 +17,21 @@
 
 <!-- Add UI for downloading info -->
 <div class="container">
+    <div class="page-header text-center">
+        <h1><strong>@Model.FileName</strong></h1>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <div class="center-block">
+                <dl class="dl-horizontal">
+                    <dt>Content-Type</dt>
+                    <dd>@Model.ContentType</dd>
+                    <dt>File Size</dt>
+                    <dd>@(Utility.GetBytesReadable(Model.ContentLength))</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-sm-12">
             <div class="progress" id="progress">

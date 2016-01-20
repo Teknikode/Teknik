@@ -88,6 +88,7 @@ namespace Teknik
 
             return result;
         }
+
         public static string GetBytesReadable(long i)
         {
             // Get absolute value

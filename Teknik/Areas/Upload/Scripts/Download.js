@@ -17,13 +17,18 @@ function downloadFile() {
                 switch (e.data.cmd) {
                     case 'progress':
                         var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
-                        $("#progress").children('.progress-bar').css('width', (percentComplete * (2 / 5)) + 20 + '%');
+                        $("#progress").children('.progress-bar').css('width', (percentComplete) + '%');
                         $("#progress").children('.progress-bar').html(percentComplete + '% Decrypted');
                         break;
                     case 'finish':
+                        if (fileType == null || fileType == '')
+                        {
+                            fileType = "application/octet-stream";
+                        }
                         var blob = new Blob([e.data.buffer], { type: fileType });
-                        var url = (window.webkitURL || window.URL).createObjectURL(blob);
-                        location.href = url; // <-- Download!
+                        
+                        saveAs(blob, fileName);
+
                         // DO SOMETHING
                         break;
                 }

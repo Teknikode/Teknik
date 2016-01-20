@@ -106,6 +106,8 @@ namespace Teknik.Areas.Upload
                       "~/Areas/Upload/Scripts/Upload.js",
                       "~/Scripts/bootbox/bootbox.min.js"));
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/download").Include(
+                      "~/Scripts/Blob.js",
+                      "~/Scripts/FileSaver.js",
                       "~/Areas/Upload/Scripts/Download.js"));
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/cryptoWorker").Include(
                       "~/Areas/Upload/Scripts/EncryptionWorker.js"));

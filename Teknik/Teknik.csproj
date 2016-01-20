@@ -211,6 +211,7 @@
     <Content Include="Areas\Home\Scripts\Home.js" />
     <Content Include="Areas\Profile\Scripts\Profile.js" />
     <Content Include="Areas\Upload\Scripts\Download.js" />
+    <Content Include="Scripts\Blob.js" />
     <Content Include="Scripts\Crypto-js\aes.js" />
     <Content Include="Areas\Upload\Scripts\EncryptionWorker.js" />
     <Content Include="Areas\Upload\Scripts\Upload.js" />
@@ -297,6 +298,7 @@
     <Content Include="Scripts\Crypto-js\mode-ctr.js" />
     <Content Include="Scripts\Crypto-js\pad-nopadding.js" />
     <Content Include="Scripts\Dropzone\dropzone.js" />
+    <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

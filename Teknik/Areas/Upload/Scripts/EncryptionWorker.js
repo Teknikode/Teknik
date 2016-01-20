@@ -4,7 +4,7 @@
 
     var startByte = 0;
     var endByte = 0;
-    var prog = [];
+    var prog;
 
     var key = CryptoJS.enc.Utf8.parse(e.data.key);
     var iv = CryptoJS.enc.Utf8.parse(e.data.iv);
@@ -26,11 +26,12 @@
         // Set the end byte
         endByte = startByte + e.data.chunkSize;
         if (endByte > bytes.length - 1) {
-            endByte = bytes.length - 1;
+            endByte = bytes.length;
         }
 
         // Grab current set of bytes
         var curBytes = bytes.subarray(startByte, endByte);
+
         //var b64encoded = btoa(String.fromCharCode.apply(null, curBytes));
         var wordArray = CryptoJS.lib.WordArray.create(curBytes)
 
@@ -39,7 +40,12 @@
 
         // Convert and add to current array buffer
         var encStr = enc.toString(CryptoJS.enc.Base64); // to string
-        prog.pushArray(_base64ToArray(encStr));
+        if (prog == null) {
+            prog = _base64ToArray(encStr);
+        }
+        else {
+            prog = Uint8Concat(prog, _base64ToArray(encStr));
+        }
 
         // Send an update on progress
         var objData =
@@ -52,13 +58,13 @@
         self.postMessage(objData);
 
         // Set the next start as the current end
-        startByte = endByte + 1;
+        startByte = endByte;
     }
 
     //then finalize
     var encFinal = aesCrypto.finalize();
     var finalStr = encFinal.toString(CryptoJS.enc.Base64); // to final string
-    prog.pushArray(_base64ToArray(finalStr));
+    prog = Uint8Concat(prog, _base64ToArray(finalStr));
 
     var objData =
         {
@@ -68,7 +74,7 @@
         };
 
     // convert array to ArrayBuffer
-    var arBuf = _arrayToArrayBuffer(prog);
+    //var arBuf = _arrayToArrayBuffer(prog);
 
     //throw JSON.stringify({ dataLength: prog.length, len: bytes.length, finalLength: arBuf.byteLength })
 
@@ -76,7 +82,7 @@
     var objData =
         {
             cmd: 'finish',
-            buffer: arBuf
+            buffer: prog.buffer
         };
 
     self.postMessage(objData, [objData.buffer]);
@@ -102,3 +108,13 @@ function _base64ToArray(base64) {
 Array.prototype.pushArray = function (arr) {
     this.push.apply(this, arr);
 };
+
+function Uint8Concat(first, second) {
+    var firstLength = first.length;
+    var result = new Uint8Array(firstLength + second.length);
+
+    result.set(first);
+    result.set(second, firstLength);
+
+    return result;
+}

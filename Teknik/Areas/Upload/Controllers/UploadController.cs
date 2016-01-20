@@ -57,6 +57,7 @@ namespace Teknik.Areas.Upload.Controllers
                     DownloadViewModel model = new DownloadViewModel();
                     model.FileName = file;
                     model.ContentType = upload.ContentType;
+                    model.ContentLength = upload.ContentLength;
                     model.Key = upload.Key;
                     model.IV = upload.IV;
 
