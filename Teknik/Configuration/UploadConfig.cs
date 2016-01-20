@@ -15,6 +15,8 @@ namespace Teknik.Configuration
         public string FileExtension { get; set; }
         public int UrlLength { get; set; }
         public bool IncludeExtension { get; set; }
+        // The size of the chunk that the file will be encrypted/decrypted in (bytes)
+        public int ChunkSize { get; set; }
 
         public UploadConfig()
         {
@@ -28,6 +30,7 @@ namespace Teknik.Configuration
             FileExtension = "enc";
             UrlLength = 6;
             IncludeExtension = true;
+            ChunkSize = 1024;
         }
     }
 }

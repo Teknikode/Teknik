@@ -1,58 +1,82 @@
 ﻿self.addEventListener('message', function (e) {
-    var data = e.data;
-    importScripts(data.script);
+    importScripts(e.data.script);
 
-    switch (data.cmd) {
+    switch (e.data.cmd) {
         case 'encrypt':
-            //var startByte = 0;
-            //var endByte = 0;
-            //var prog = [];
+            var bytes = new Uint8Array(e.data.file);
 
-            //var bytes = new Uint8Array(data.file);
+            var startByte = 0;
+            var endByte = 0;
+            var prog = [];
 
-            //// Create aes encryptor object
-            //var aesEncryptor = CryptoJS.algo.AES.createEncryptor(data.key, { iv: data.iv });
+            var key = CryptoJS.enc.Utf8.parse(e.data.key);
+            var iv = CryptoJS.enc.Utf8.parse(e.data.iv);
+            // Create aes encryptor object
+            var aesEncryptor = CryptoJS.algo.AES.createEncryptor(key, { iv: iv, mode: CryptoJS.mode.CTR, padding: CryptoJS.pad.NoPadding });
 
-            //while (startByte <= (bytes.length - 1)) {
-            //    // Set the end byte
-            //    endByte = startByte + data.chunkSize;
-            //    if (endByte > bytes.length - 1)
-            //    {
-            //        endByte = bytes.length - 1;
-            //    }
+            while (startByte <= (bytes.length - 1)) {
+                // Set the end byte
+                endByte = startByte + e.data.chunkSize;
+                if (endByte > bytes.length - 1)
+                {
+                    endByte = bytes.length - 1;
+                }
 
-            //    // Grab current set of bytes
-            //    var curBytes = bytes.subarray(startByte, endByte);
-            //    var wordArray = CryptoJS.lib.WordArray.create(curBytes)
+                // Grab current set of bytes
+                var curBytes = bytes.subarray(startByte, endByte);
+                //var b64encoded = btoa(String.fromCharCode.apply(null, curBytes));
+                var wordArray = CryptoJS.lib.WordArray.create(curBytes)
 
-            //    // encrypt the passed in file data and add it to bits[]
-            //    prog.push(aesEncryptor.process(wordArray));
+                // encrypt the passed in file data
+                var enc = aesEncryptor.process(wordArray);
 
-            //    // Set the next start as the current end
-            //    startByte = endByte + 1;
-            //}//then finalize
-            //prog.push(aesEncryptor.finalize());
+                // Convert and add to current array buffer
+                var encStr = enc.toString(CryptoJS.enc.Base64); // to string
+                prog.pushArray(_base64ToArray(encStr));
 
-            //throw JSON.stringify({ data: prog, start: startByte, end: endByte, len: bytes.length })
-            var wordArray = CryptoJS.lib.WordArray.create(new Uint8Array(data.file));
+                // Send an update on progress
+                var objData =
+                    {
+                        cmd: 'progress',
+                        processed: endByte,
+                        total: bytes.length - 1
+                    };
 
-            var encWords = CryptoJS.AES.encrypt(wordArray, data.key, { iv: data.iv, mode: CryptoJS.mode.CBC });
+                self.postMessage(objData);
 
-            //throw JSON.stringify({ data: wordArray });
+                // Set the next start as the current end
+                startByte = endByte + 1;
+            }
 
-            var dcBase64String = encWords.toString(); // to Base64-String
-            //var encByteArray = wordToByteArray(encWords.words);
-            // patch it all back together for the trip home
+            //then finalize
+            var encFinal = aesEncryptor.finalize();
+            var finalStr = encFinal.toString(CryptoJS.enc.Base64); // to final string
+            prog.pushArray(_base64ToArray(finalStr));
+
             var objData =
                 {
-                    encrypted: str2ab(dcBase64String)
+                    cmd: 'progress',
+                    processed: bytes.length - 1,
+                    total: bytes.length - 1
+                };
+
+            // convert array to ArrayBuffer
+            var arBuf = _arrayToArrayBuffer(prog);
+
+            //throw JSON.stringify({ dataLength: prog.length, len: bytes.length, finalLength: arBuf.byteLength })
+
+            // Now package it into a mesage to send home
+            var objData =
+                {
+                    cmd: 'finish',
+                    encrypted: arBuf
                 };
 
             self.postMessage(objData, [objData.encrypted]);
             break;
         case 'decrypt':
             // decrypt the passed in file data
-            var decrypted = CryptoJS.AES.decrypt(data.file, data.key, { iv: data.iv });
+            var decrypted = CryptoJS.AES.decrypt(e.data.file, e.data.key, { iv: e.data.iv });
 
             var fileText = decrypted.toString();
 
@@ -61,36 +85,23 @@
     }
 }, false);
 
-function wordToByteArray(wordArray) {
-    var byteArray = [], word, i, j;
-    for (i = 0; i < wordArray.length; ++i) {
-        word = wordArray[i];
-        for (j = 3; j >= 0; --j) {
-            byteArray.push((word >> 8 * j) & 0xFF);
-        }
-    }
-    return byteArray;
+function _arrayToArrayBuffer(array) {
+    var len = array.length;
+    var bytes = new Uint8Array(len);
+    bytes.set(array, 0);
+    return bytes.buffer;
 }
 
-function _base64ToArrayBuffer(base64) {
+function _base64ToArray(base64) {
     var binary_string = atob(base64);
     var len = binary_string.length;
     var bytes = new Uint8Array(len);
     for (var i = 0; i < len; i++) {
         bytes[i] = binary_string.charCodeAt(i);
     }
-    return bytes.buffer;
+    return bytes;
 }
 
-function ab2str(buf) {
-    return String.fromCharCode.apply(null, new Uint16Array(buf));
-}
-
-function str2ab(str) {
-    var buf = new ArrayBuffer(str.length); // 2 bytes for each char
-    var bufView = new Uint16Array(buf);
-    for (var i = 0, strLen = str.length; i < strLen; i++) {
-        bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
-}
+Array.prototype.pushArray = function (arr) {
+    this.push.apply(this, arr);
+};

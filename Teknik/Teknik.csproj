@@ -289,7 +289,11 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\common.js" />
+    <Content Include="Scripts\Crypto-js\enc-base64.js" />
+    <Content Include="Scripts\Crypto-js\enc-utf16.js" />
     <Content Include="Scripts\Crypto-js\lib-typedarrays.js" />
+    <Content Include="Scripts\Crypto-js\mode-ctr.js" />
+    <Content Include="Scripts\Crypto-js\pad-nopadding.js" />
     <Content Include="Scripts\Dropzone\dropzone.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />

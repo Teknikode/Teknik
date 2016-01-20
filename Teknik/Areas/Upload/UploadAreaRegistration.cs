@@ -30,9 +30,16 @@ namespace Teknik.Areas.Upload
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
+                 "Upload.Download.Key",
+                 "dev",
+                 "Upload/{file}/{key}",
+                 new { controller = "Upload", action = "Download", url = string.Empty },
+                 new[] { typeof(Controllers.UploadController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Upload.Delete",
                  "dev",
-                 "Upload/{url}/{deleteKey}",
+                 "Upload/{file}/{key}",
                  new { controller = "Upload", action = "Delete", url = string.Empty, deleteKey = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
@@ -105,13 +112,15 @@ namespace Teknik.Areas.Upload
                       "~/Scripts/Dropzone/dropzone.js",
                       "~/Areas/Upload/Scripts/Upload.js",
                       "~/Scripts/bootbox/bootbox.min.js",
-                      "~/Scripts/Crypto-js/aes.js",
-                      "~/Scripts/Crypto-js/lib-typedarray.js"));
+                      "~/Scripts/Crypto-js/aes.js"));
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/cryptoWorker").Include(
                       "~/Areas/Upload/Scripts/EncryptionWorker.js"));
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/crypto").Include(
                       "~/Scripts/Crypto-js/aes.js",
-                      "~/Scripts/Crypto-js/lib-typedarray.js"));
+                      "~/Scripts/Crypto-js/enc-base64.js",
+                      "~/Scripts/Crypto-js/mode-ctr.js",
+                      "~/Scripts/Crypto-js/lib-typedarrays.js",
+                      "~/Scripts/Crypto-js/pad-nopadding.js"));
 
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/upload").Include(

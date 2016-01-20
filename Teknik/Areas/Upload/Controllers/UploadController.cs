@@ -18,10 +18,19 @@ namespace Teknik.Areas.Upload.Controllers
         {
             return View(new UploadViewModel());
         }
-        // GET: Upload/Upload
+
+        // User did not supply key
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Download(string url)
+        {
+            return View(new UploadViewModel());
+        }
+
+        // User supplied key
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Download(string url, string key)
         {
             return View(new UploadViewModel());
         }
@@ -34,7 +43,7 @@ namespace Teknik.Areas.Upload.Controllers
             Models.Upload upload = Uploader.SaveFile(data, fileType, iv);
             if (upload != null)
             {
-                return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }) } }, "text/plain");
+                return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download.Key", new { file = upload.Url, key = "{key}" }), keyVar = "{key}" } }, "text/plain");
             }
             return Json(new { error = "Unable to upload file" });
         }
