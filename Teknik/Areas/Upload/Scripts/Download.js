@@ -17,10 +17,12 @@ function downloadFile() {
                 switch (e.data.cmd) {
                     case 'progress':
                         var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
-                        $("#progress").children('.progress-bar').css('width', (percentComplete) + '%');
+                        $("#progress").children('.progress-bar').css('width', (percentComplete / 2) + 50 + '%');
                         $("#progress").children('.progress-bar').html(percentComplete + '% Decrypted');
                         break;
                     case 'finish':
+                        $('#progress').children('.progress-bar').css('width', '100%');
+                        $('#progress').children('.progress-bar').html('Complete');
                         if (fileType == null || fileType == '')
                         {
                             fileType = "application/octet-stream";
@@ -54,6 +56,28 @@ function downloadFile() {
                 };
             worker.postMessage(objData, [objData.file]);
         }
+    };
+
+    xhr.onprogress = function (e) {
+        if (e.lengthComputable) {
+            var percentComplete = Math.round(e.loaded * 100 / e.total);
+            $('#progress').children('.progress-bar').css('width', (percentComplete / 2) + '%');
+            $('#progress').children('.progress-bar').html(percentComplete + '% Downloaded');
+        }
+    };
+
+    xhr.onerror = function (e) {
+        $('#progress').children('.progress-bar').css('width', '100%');
+        $('#progress').children('.progress-bar').removeClass('progress-bar-success');
+        $('#progress').children('.progress-bar').addClass('progress-bar-danger');
+        $('#progress').children('.progress-bar').html('Download Failed');
+    };
+
+    xhr.onabort = function (e) {
+        $('#progress').children('.progress-bar').css('width', '100%');
+        $('#progress').children('.progress-bar').removeClass('progress-bar-success');
+        $('#progress').children('.progress-bar').addClass('progress-bar-warning');
+        $('#progress').children('.progress-bar').html('Download Failed');
     };
 
     xhr.send(fd);
