@@ -14,33 +14,34 @@
 
 <div class="container">
     <div class="row text-center">
-        <form action="@Url.SubRouteUrl("upload", "Upload.Action", new { action = "Upload" })" class="dropzone" id="TeknikUpload" name="TeknikUpload" enctype="multipart/form-data">
-            @Html.AntiForgeryToken()
-            <div class="dz-message text-center" id="upload_message">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h1>Drop your files here</h1>
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="row text-center">
+                <div class="well well-lg text-center" id="uploadButton">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h1>Drop your files here</h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h2>Or just click here</h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h3>Your Choice</h3>
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h2>Or just click here</h2>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h3>Your Choice</h3>
+                <div class="fallback text-center">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-2">
+                            <input name="file" type="file" class="form-control" multiple />
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="fallback text-center">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <input name="file" type="file" class="form-control" multiple />
-                    </div>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
     <br />
     <div class="container" id="upload-links">

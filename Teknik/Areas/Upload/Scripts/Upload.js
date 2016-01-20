@@ -55,12 +55,12 @@ function linkRemove(selector, fileID) {
 
 var fileCount = 0;
 
-Dropzone.options.TeknikUpload = {
-    paramName: "file", // The name that will be used to transfer the file
+var dropZone = new Dropzone(document.body, {
+    url: uploadFileURL, 
     maxFilesize: maxUploadSize, // MB
     addRemoveLinks: true,
     autoProcessQueue: false,
-    clickable: true,
+    clickable: "#uploadButton",
     previewTemplate: function () { },
     addedfile: function (file) {
         // Create the UI element for the new item
@@ -91,7 +91,7 @@ Dropzone.options.TeknikUpload = {
         encryptFile(file, uploadFile);
         this.removeFile(file);
     }
-};
+});
 
 // Function to encrypt a file, overide the file's data attribute with the encrypted value, and then call a callback function if supplied
 function encryptFile(file, callback) {
@@ -209,7 +209,7 @@ function uploadComplete(fileID, key, evt) {
                             <button type="button" class="btn btn-default btn-sm" id="generate-delete-link-' + fileID + '">Generate Deletion URL</button> \
                         </div> \
                         <div class="col-sm-4 text-center"> \
-                            <button type="button" class="btn btn-default btn-sm" id="remove-link-' + fileID + '">Remove</button> \
+                            <button type="button" class="btn btn-default btn-sm" id="remove-link-' + fileID + '">Remove From List</button> \
                         </div> \
                     </div> \
                 </div> \
