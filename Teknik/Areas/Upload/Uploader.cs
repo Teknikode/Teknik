@@ -50,6 +50,7 @@ namespace Teknik.Areas.Upload
             upload.IV = iv;
 
             db.Uploads.Add(upload);
+            db.SaveChanges();
 
             return upload;
         }

@@ -1,1 +1,29 @@
-﻿@model Teknik.Areas.Upload.ViewModels.UploadViewModel
+﻿@model Teknik.Areas.Upload.ViewModels.DownloadViewModel
+
+<script>
+    var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
+    var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
+    var downloadDataUrl = '@Url.SubRouteUrl("upload", "Upload.Action", new { action = "DownloadData" })';
+    var fileName = '@Model.FileName';
+    var fileType = '@Model.ContentType';
+    var key = window.location.hash.substring(1);
+    if (key == null)
+    {
+        key = '@((Model.Key != null) ? Model.Key : string.Empty)';
+    }
+    var iv = '@Model.IV';
+    var chunkSize = @(Model.Config.UploadConfig.ChunkSize);
+</script>
+
+<!-- Add UI for downloading info -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="progress" id="progress">
+                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/download")

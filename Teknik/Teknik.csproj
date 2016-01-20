@@ -170,6 +170,7 @@
     <Compile Include="Areas\Upload\Models\Upload.cs" />
     <Compile Include="Areas\Upload\UploadAreaRegistration.cs" />
     <Compile Include="Areas\Upload\Uploader.cs" />
+    <Compile Include="Areas\Upload\ViewModels\DownloadViewModel.cs" />
     <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
     <Compile Include="Configuration\BlogConfig.cs" />
     <Compile Include="Configuration\Config.cs" />
@@ -209,6 +210,7 @@
     <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
     <Content Include="Areas\Profile\Scripts\Profile.js" />
+    <Content Include="Areas\Upload\Scripts\Download.js" />
     <Content Include="Scripts\Crypto-js\aes.js" />
     <Content Include="Areas\Upload\Scripts\EncryptionWorker.js" />
     <Content Include="Areas\Upload\Scripts\Upload.js" />

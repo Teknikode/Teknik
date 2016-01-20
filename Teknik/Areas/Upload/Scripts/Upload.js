@@ -53,6 +53,13 @@ function linkRemove(selector, fileID) {
     });
 }
 
+function linkCancel(selector, fileID) {
+    $(selector).click(function () {
+        $('#link-' + fileID).remove();
+        return false;
+    });
+}
+
 var fileCount = 0;
 
 var dropZone = new Dropzone(document.body, {
@@ -84,11 +91,31 @@ var dropZone = new Dropzone(document.body, {
                             </div> \
                         </div> \
                     </div> \
+                    <div class="panel-footer" id="link-footer-' + fileID + '"> \
+                        <div class="row"> \
+                            <div class="col-sm-12 text-center"> \
+                                <button type="button" class="btn btn-default btn-sm" id="remove-link-' + fileID + '">Remove From List</button> \
+                            </div> \
+                        </div> \
+                    </div> \
                 </div> \
               ');
 
-        // Encrypt the file
-        encryptFile(file, uploadFile);
+        linkRemove('#remove-link-' + fileID + '', fileID);
+
+        // Check the file size
+        if (file.size <= maxUploadSize) {
+            // Encrypt the file and upload it
+            encryptFile(file, uploadFile);
+        }
+        else
+        {
+            // An error occured
+            $("#progress-" + fileID).children('.progress-bar').css('width', '100%');
+            $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
+            $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-danger');
+            $("#progress-" + fileID).children('.progress-bar').html('File Too Large');
+        }
         this.removeFile(file);
     }
 });
@@ -108,6 +135,13 @@ function encryptFile(file, callback) {
             var keyStr = randomString(24, '#aA');
             var ivStr = randomString(24, '#aA');
 
+            // Let's grab the header and get the file type
+            var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
+            var header = "";
+            for (var i = 0; i < arr.length; i++) {
+                header += arr[i].toString(16);
+            }
+
             var worker = new Worker(encScriptSrc);
 
             worker.addEventListener('message', function (e) {
@@ -121,7 +155,7 @@ function encryptFile(file, callback) {
                     case 'finish':
                         if (callback != null) {
                             // Finish 
-                            callback(e.data.encrypted, keyStr, ivStr, filetype, fileID);
+                            callback(e.data.buffer, keyStr, ivStr, filetype, fileID);
                         }
                         break;
                 }
@@ -194,13 +228,10 @@ function uploadComplete(fileID, key, evt) {
     obj = JSON.parse(evt.target.responseText);
     var name = obj.result.name;
     var fullName = decodeURIComponent(obj.result.url);
-    var keyVar = decodeURIComponent(obj.result.keyVar);
-    fullName = fullName.replace(keyVar, key);
     $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
     $('#progress-' + fileID).children('.progress-bar').html('Complete');
-    $('#upload-link-' + fileID).html('<p><a href="' + fullName + '" target="_blank" class="alert-link">' + fullName + '</a></p>');
-    $('#link-' + fileID).append(' \
-                <div class="panel-footer"> \
+    $('#upload-link-' + fileID).html('<p><a href="' + fullName + '#' + key + '" target="_blank" class="alert-link">' + fullName + '#' + key + '</a></p>');
+    $('#link-footer-' + fileID).html(' \
                     <div class="row"> \
                         <div class="col-sm-4 text-center"> \
                             <button type="button" class="btn btn-default btn-sm" id="save-key-link-' + fileID + '">Save Key On Server</button> \
@@ -212,7 +243,6 @@ function uploadComplete(fileID, key, evt) {
                             <button type="button" class="btn btn-default btn-sm" id="remove-link-' + fileID + '">Remove From List</button> \
                         </div> \
                     </div> \
-                </div> \
               ');
     linkSaveKey('#save-key-link-' + fileID + '', name, key, fileID);
     linkUploadDelete('#generate-delete-link-' + fileID + '', name);
@@ -231,4 +261,26 @@ function uploadCanceled(fileID, evt) {
     $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
     $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-warning');
     $('#progress-' + fileID).children('.progress-bar').html('Upload Canceled');
+}
+
+function GetMIMEType(header)
+{
+    var type = "";
+    switch (header) {
+        case "89504e47":
+            type = "image/png";
+            break;
+        case "47494638":
+            type = "image/gif";
+            break;
+        case "ffd8ffe0":
+        case "ffd8ffe1":
+        case "ffd8ffe2":
+            type = "image/jpeg";
+            break;
+        default:
+            type = "unknown"; // Or you can use the blob.type as fallback
+            break;
+    }
+    return type;
 }
