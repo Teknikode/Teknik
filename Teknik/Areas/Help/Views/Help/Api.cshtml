@@ -1,0 +1,211 @@
+﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
+
+@Styles.Render("~/Content/help");
+
+<div class="container">
+    <div class="row api">
+        <h2><b>Teknik API</b></h2>
+        <hr>
+        <h3>Overview</h3>
+        <p>
+            The Teknik API is free for everyone to use, and is defined on a per service basis.
+            <br />
+            <br />
+            The general API calls can be summarized as follows: <code>@Url.SubRouteUrl("api", "Api.Index", new { service = "<b>Service</b>", action = "<b>Action</b>", version = Model.Config.ApiConfig.Version })</code>
+        </p>
+        <h4>Responses</h4>
+        <p>
+            All responses are returned as json.  The returned json can contain any of the following sections.
+            <br />
+            <br />
+            <strong>Results</strong>
+            <pre><code>{"results":{"&lt;resultType&gt;":{"&lt;resultData&gt;":"&lt;value&gt;"}}}</code></pre>
+            <strong>Errors</strong>
+            <pre><code>{"error":{"code":&lt;value&gt;, "message":"&lt;errorMessage&gt;"}}</code></pre>
+        </p>
+        <h3><b>Upload</b></h3>
+        <hr>
+        <p>This is a description of the API commands available for the Upload service.</p>
+        <h4>Upload a File</h4>
+        <pre><code>POST @Url.SubRouteUrl("api", "Api.Index", new { service = "Upload", action = "Post", version = Model.Config.ApiConfig.Version })</code></pre>
+        <h5>Parameters</h5>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>file</code>
+                    </td>
+                    <td>
+                        <code>file</code>
+                    </td>
+                    <td>
+                        <var>NULL</var>
+                    </td>
+                    <td>
+                        <strong>Required</strong>
+                        The file that you would like to upload.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>encrypt</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>no</var>
+                    </td>
+                    <td>
+                        If you want the file to be encrypted server side.  This will regenerate the key and/or iv if none are passed in.  Choose <code>yes</code> or <code>no</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>key</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>NULL</var>
+                    </td>
+                    <td>
+                        If you want the file to be decrypted server side, include the key.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>iv</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>NULL</var>
+                    </td>
+                    <td>
+                        If the file has been encrypted and you want it decrypted (Both Server and Client Side), include the iv.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>getDeletionKey</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>no</var>
+                    </td>
+                    <td>
+                        Whether you would like to create a deletion link.  Choose <code>yes</code> or <code>no</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h5>Response</h5>
+        <pre><code>{"results":{"file":{"name":"<var>file_name</var>", "url":"<var>url</var>", "type":"<var>file_type</var>", "size":<var>size</var>, "key":<var>key</var>, "iv":<var>iv</var>, "deletionKey":<var>deletion_key</var>}}}</code></pre>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>name</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The filename of the uploaded file.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>url</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The direct url to the uploaded file.  The key is apended to the url as an anchor tag.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>type</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The MIME file type of the uploaded file.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>size</code>
+                    </td>
+                    <td>
+                        <code>integer</code>
+                    </td>
+                    <td>
+                        The size of the uploaded file in bytes.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>key</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The key that was used to encrypt the file.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>iv</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The iv that was used to encrypt the file.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>deletionKey</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <strong>Optional</strong>
+                        The deletion key for file.  Use it as follows: <code>@Url.SubRouteUrl("u", "Upload.Upload", new { file = "<var>file.jpg</var>", key = "<var>deletionKey</var>" })</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h5>Example</h5>
+        <pre><code>$ curl -F "getDeletionKey=yes" -F "encrypt=yes" -F "file=@("@")image.png" @Url.SubRouteUrl("api", "Api.Index", new { service = "Upload", version = Model.Config.ApiConfig.Version })</code></pre>
+        <br />
+        <br />
+    </div>
+</div>

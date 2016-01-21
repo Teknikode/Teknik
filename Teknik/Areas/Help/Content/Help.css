@@ -1,0 +1,63 @@
+﻿.api {
+    color: #393939;
+    font-size: 14px;
+    line-height: 1.5em;
+}
+
+.api pre {
+    border: 1px solid #cacaca;
+    font: 12px/1.4em Consolas, "Liberation Mono", Courier, monospace;
+    padding: 10px;
+    overflow: auto;
+    border-radius: 3px;
+    background-color: #fafafb;
+    color: #393939;
+    margin: 2em 0;
+}
+
+.api pre code {
+    white-space: pre;
+}
+
+.api table {
+    width: 100%;
+    display: block;
+    margin: 15px 0;
+}
+
+.api tbody {
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+.api thead {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.api table tr {
+    border-top: 1px solid #ccc;
+    background-color: #fff;
+    vertical-align: inherit;
+}
+
+.api table th {
+  border: 1px solid #ddd;
+  padding: 6px 13px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.api table td {
+  border: 1px solid #ddd;
+  padding: 6px 13px;
+}
+
+.api code {
+    white-space: nowrap;
+    font: 12px Consolas, "Liberation Mono", Courier, monospace;
+}

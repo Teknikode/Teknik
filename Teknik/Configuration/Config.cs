@@ -20,6 +20,7 @@ namespace Teknik.Configuration
         private SMTPConfig      _SMTPConfig;
         private UploadConfig    _UploadConfig;
         private BlogConfig      _BlogConfig;
+        private ApiConfig       _ApiConfig;
         private string          _SupportEmail;
         private string          _BitcoinAddress;
         private string          _BlogTitle;
@@ -50,6 +51,9 @@ namespace Teknik.Configuration
         // Upload Configuration
         public UploadConfig UploadConfig    { get { return _UploadConfig; }     set { _UploadConfig = value; } }
 
+        // Upload Configuration
+        public ApiConfig    ApiConfig       { get { return _ApiConfig; }        set { _ApiConfig = value; } }
+
         public Config()
         {
             _ConfigRWLock               = new ReaderWriterLockSlim();
@@ -70,6 +74,7 @@ namespace Teknik.Configuration
             SMTPConfig      = new SMTPConfig();
             BlogConfig      = new BlogConfig();
             UploadConfig    = new UploadConfig();
+            ApiConfig       = new ApiConfig();
             SupportEmail    = string.Empty;
             BitcoinAddress  = string.Empty;
         }

@@ -160,6 +160,9 @@
     <Compile Include="Areas\Error\Controllers\ErrorController.cs" />
     <Compile Include="Areas\Error\ErrorAreaRegistration.cs" />
     <Compile Include="Areas\Error\ViewModels\ErrorViewModel.cs" />
+    <Compile Include="Areas\Help\Controllers\HelpController.cs" />
+    <Compile Include="Areas\Help\HelpAreaRegistration.cs" />
+    <Compile Include="Areas\Help\ViewModels\HelpViewModel.cs" />
     <Compile Include="Areas\Home\Controllers\HomeController.cs" />
     <Compile Include="Areas\Home\HomeAreaRegistration.cs" />
     <Compile Include="Areas\Home\ViewModels\HomeViewModel.cs" />
@@ -177,6 +180,7 @@
     <Compile Include="Areas\Upload\ViewModels\DeleteViewModel.cs" />
     <Compile Include="Areas\Upload\ViewModels\DownloadViewModel.cs" />
     <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
+    <Compile Include="Configuration\ApiConfig.cs" />
     <Compile Include="Configuration\BlogConfig.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
@@ -212,10 +216,12 @@
     <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
     <Content Include="Areas\Contact\Scripts\Contact.js" />
+    <Content Include="Areas\Help\Content\Help.css" />
     <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
     <Content Include="Areas\Profile\Scripts\Profile.js" />
     <Content Include="Areas\Upload\Scripts\Download.js" />
+    <Content Include="Content\jquery.tocify.css" />
     <Content Include="Scripts\Blob.js" />
     <Content Include="Scripts\Crypto-js\aes.js" />
     <Content Include="Areas\Upload\Scripts\EncryptionWorker.js" />
@@ -291,6 +297,16 @@
     <Content Include="Areas\Error\Views\Error\Http500.cshtml" />
     <Content Include="Areas\Upload\Views\Upload\Download.cshtml" />
     <Content Include="Areas\Upload\Views\Upload\Delete.cshtml" />
+    <Content Include="Areas\Help\Views\web.config" />
+    <Content Include="Areas\Help\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Help\Views\Help\Index.cshtml" />
+    <Content Include="Areas\Help\Views\Help\Api.cshtml" />
+    <Content Include="Areas\Help\Views\Help\Git.cshtml" />
+    <Content Include="Areas\Help\Views\Help\Irc.cshtml" />
+    <Content Include="Areas\Help\Views\Help\Mail.cshtml" />
+    <Content Include="Areas\Help\Views\Help\Mumble.cshtml" />
+    <Content Include="Areas\Help\Views\Help\Blog.cshtml" />
+    <Content Include="Areas\Help\Views\Help\Upload.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />
@@ -308,7 +324,9 @@
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui.widgets.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
+    <Content Include="Scripts\jquery.tocify.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -352,6 +370,8 @@
     <Folder Include="Areas\Dev\Views\Shared\" />
     <Folder Include="Areas\Error\Models\" />
     <Folder Include="Areas\Error\Views\Shared\" />
+    <Folder Include="Areas\Help\Models\" />
+    <Folder Include="Areas\Help\Views\Shared\" />
     <Folder Include="Areas\Home\Models\" />
     <Folder Include="Areas\Home\Views\Shared\" />
     <Folder Include="Areas\Privacy\Models\" />
