@@ -136,7 +136,7 @@ namespace Teknik.Areas.Upload.Controllers
             if (upload != null)
             {
                 DeleteViewModel model = new DeleteViewModel();
-
+                model.File = file;
                 if (!string.IsNullOrEmpty(upload.DeleteKey) && upload.DeleteKey == key)
                 {
                     string filePath = upload.FileName;

@@ -73,11 +73,6 @@
             total: bytes.length - 1
         };
 
-    // convert array to ArrayBuffer
-    //var arBuf = _arrayToArrayBuffer(prog);
-
-    //throw JSON.stringify({ dataLength: prog.length, len: bytes.length, finalLength: arBuf.byteLength })
-
     // Now package it into a mesage to send home
     var objData =
         {
