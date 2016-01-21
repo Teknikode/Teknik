@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.Areas.Error.ViewModels;
 using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Upload.ViewModels;
 using Teknik.Controllers;
+using Teknik.Helpers;
 using Teknik.Models;
 
 namespace Teknik.Areas.Upload.Controllers
@@ -20,6 +23,7 @@ namespace Teknik.Areas.Upload.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
+            ViewBag.Title = "Teknik Upload - End to End Encryption";
             return View(new UploadViewModel());
         }
 
@@ -48,6 +52,7 @@ namespace Teknik.Areas.Upload.Controllers
         [AllowAnonymous]
         public ActionResult Download(string file)
         {
+            ViewBag.Title = "Teknik Download - " + file;
             Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
             if (upload != null)
             {
@@ -63,16 +68,29 @@ namespace Teknik.Areas.Upload.Controllers
 
                     return View(model);
                 }
-                else
+                else // We have the key, so that means server side decryption
                 {
-                    // decrypt it server side!  Weee
-                    return View();
+                    if (System.IO.File.Exists(upload.FileName))
+                    {
+                        // Read in the file
+                        byte[] encData = System.IO.File.ReadAllBytes(upload.FileName);
+                        // Decrypt the data
+                        byte[] data = AES.Decrypt(encData, upload.Key, upload.IV, Config.UploadConfig.KeySize, Config.UploadConfig.IVSize);
+
+                        // Create File
+                        var cd = new System.Net.Mime.ContentDisposition
+                        {
+                            FileName = upload.Url,
+                            Inline = true
+                        };
+
+                        Response.AppendHeader("Content-Disposition", cd.ToString());
+
+                        return File(data, upload.ContentType);
+                    }
                 }
             }
-            else
-            {
-                return RedirectToRoute("Error.Http404");
-            }
+            return RedirectToRoute("*.Error.Http404");
         }
 
         [HttpPost]
@@ -110,20 +128,70 @@ namespace Teknik.Areas.Upload.Controllers
             return null;
         }
 
-        [HttpPost]
+        [HttpGet]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(string url, string deleteKey)
+        public ActionResult Delete(string file, string key)
         {
-            return Json(new { result = true });
+            ViewBag.Title = "File Delete - " + file + " - " + Config.Title;
+            Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
+            if (upload != null)
+            {
+                DeleteViewModel model = new DeleteViewModel();
+
+                if (!string.IsNullOrEmpty(upload.DeleteKey) && upload.DeleteKey == key)
+                {
+                    string filePath = upload.FileName;
+                    // Delete from the DB
+                    db.Uploads.Remove(upload);
+                    db.SaveChanges();
+
+                    // Delete the File
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    model.Deleted = true;
+                }
+                else
+                {
+                    model.Deleted = false;
+                }
+                return View(model);
+            }
+            return RedirectToRoute("*.Error.Http404");
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult GenerateDeleteKey(string uploadID)
+        public ActionResult GenerateDeleteKey(string file)
         {
-            return Json(new { result = "temp-delete-key" });
+            Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
+            if (upload != null)
+            {
+                string delKey = Utility.RandomString(Config.UploadConfig.DeleteKeyLength);
+                upload.DeleteKey = delKey;
+                db.Entry(upload).State = EntityState.Modified;
+                db.SaveChanges();
+                return Json(new { result = Url.SubRouteUrl("upload", "Upload.Delete", new { file = file, key = delKey }) });
+            }
+            return Json(new { error = "Invalid URL" });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult SaveFileKey(string file, string key)
+        {
+            Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
+            if (upload != null)
+            {
+                upload.Key = key;
+                db.Entry(upload).State = EntityState.Modified;
+                db.SaveChanges();
+                return Json(new { result = Url.SubRouteUrl("upload", "Upload.Download", new { file = file }) });
+            }
+            return Json(new { error = "Invalid URL" });
         }
     }
 }

@@ -14,6 +14,9 @@ namespace Teknik.Configuration
         // File Extension for saved files
         public string FileExtension { get; set; }
         public int UrlLength { get; set; }
+        public int DeleteKeyLength { get; set; }
+        public int KeySize { get; set; }
+        public int IVSize { get; set; }
         public bool IncludeExtension { get; set; }
         // The size of the chunk that the file will be encrypted/decrypted in (bytes)
         public int ChunkSize { get; set; }
@@ -29,6 +32,9 @@ namespace Teknik.Configuration
             UploadDirectory = string.Empty;
             FileExtension = "enc";
             UrlLength = 6;
+            DeleteKeyLength = 24;
+            KeySize = 32;
+            IVSize = 16;
             IncludeExtension = true;
             ChunkSize = 1024;
         }

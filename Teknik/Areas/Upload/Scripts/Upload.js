@@ -8,9 +8,10 @@ function linkSaveKey(selector, uploadID, key, fileID) {
         $.ajax({
             type: "POST",
             url: saveKeyToServerURL,
-            data: AddAntiForgeryToken({ uploadID: uploadID, key: key }),
+            data: AddAntiForgeryToken({ file: uploadID, key: key }),
             success: function (html) {
                 if (html.result) {
+                    $('#upload-link-' + fileID).html('<p><a href="' + html.result + '" target="_blank" class="alert-link">' + html.result + '</a></p>');
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
@@ -27,7 +28,7 @@ function linkUploadDelete(selector, uploadID) {
         $.ajax({
             type: "POST",
             url: generateDeleteKeyURL,
-            data: AddAntiForgeryToken({ uploadID: uploadID }),
+            data: AddAntiForgeryToken({ file: uploadID }),
             success: function (html) {
                 if (html.result) {
                     bootbox.dialog({
@@ -132,8 +133,8 @@ function encryptFile(file, callback) {
     reader.onload = (function (callback) {
         return function (e) {
             // Create random key and iv
-            var keyStr = randomString(24, '#aA');
-            var ivStr = randomString(24, '#aA');
+            var keyStr = randomString(keySize, '#aA');
+            var ivStr = randomString(ivSize, '#aA');
 
             var worker = new Worker(encScriptSrc);
 

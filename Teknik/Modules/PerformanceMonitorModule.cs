@@ -28,8 +28,7 @@ namespace Teknik.Modules
                 timer.Stop();
                 // Don't interfere with non-HTML responses 
 
-                if (requestContext.Response.ContentType == "text/html" ||
-                    requestContext.Response.ContentType == "application/json")
+                if (requestContext.Response.ContentType == "text/html")
                 {
 
                     Uri requestUrl = requestContext.Request.Url;

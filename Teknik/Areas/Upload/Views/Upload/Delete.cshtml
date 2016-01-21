@@ -1,0 +1,16 @@
+﻿@model Teknik.Areas.Upload.ViewModels.DeleteViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 text-center">
+            @if (Model.Deleted)
+            {
+                <h1>@Model.File has been Deleted</h1>
+            }
+            else
+            {
+                <h1>@Model.File was unable to be Deleted</h1>
+            }
+        </div>
+    </div>
+</div>
