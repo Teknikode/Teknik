@@ -8,7 +8,9 @@ namespace Teknik
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+#if !DEBUG
             BundleTable.EnableOptimizations = true;
+#endif
 
             bundles.Add(new StyleBundle("~/Content/Common").Include(
                       "~/Content/bootstrap.css",

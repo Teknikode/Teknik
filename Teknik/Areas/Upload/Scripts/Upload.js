@@ -156,9 +156,9 @@ function encryptFile(file, callback) {
     // When the file has been loaded, encrypt it
     reader.onload = (function (callback) {
         return function (e) {
-            // Create random key and iv
-            var keyStr = randomString(keySize, '#aA');
-            var ivStr = randomString(ivSize, '#aA');
+            // Create random key and iv (divide size by 8 for character length)
+            var keyStr = randomString((keySize / 8), '#aA');
+            var ivStr = randomString((blockSize / 8), '#aA');
 
             var worker = new Worker(encScriptSrc);
 
@@ -222,6 +222,8 @@ function uploadFile(data, key, iv, filetype, fileID)
     var fd = new FormData();
     fd.append('fileType', filetype);
     fd.append('iv', iv);
+    fd.append('keySize', keySize);
+    fd.append('blockSize', blockSize);
     fd.append('data', blob);
     fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
 

@@ -12,18 +12,28 @@ namespace Teknik.Areas.Upload
     {
         public static Models.Upload SaveFile(HttpPostedFileWrapper file, string contentType)
         {
-            return SaveFile(file, contentType, null, null);
+            return SaveFile(file, contentType, null, null, 256, 128);
         }
 
         public static Models.Upload SaveFile(HttpPostedFileWrapper file, string contentType, string iv)
         {
-            return SaveFile(file, contentType, iv, null);
+            return SaveFile(file, contentType, iv, null, 256, 128);
         }
 
         public static Models.Upload SaveFile(HttpPostedFileWrapper file, string contentType, string iv, string key)
         {
+            return SaveFile(file, contentType, iv, key, 256, 128);
+        }
+
+        public static Models.Upload SaveFile(HttpPostedFileWrapper file, string contentType, string iv, string key, int keySize, int blockSize)
+        {
             Config config = Config.Load();
             TeknikEntities db = new TeknikEntities();
+
+            if (!Directory.Exists(config.UploadConfig.UploadDirectory))
+            {
+                Directory.CreateDirectory(config.UploadConfig.UploadDirectory);
+            }
 
             // Generate a unique file name that does not currently exist
             string fileName = Utility.GenerateUniqueFileName(config.UploadConfig.UploadDirectory, config.UploadConfig.FileExtension, 10);
@@ -48,6 +58,8 @@ namespace Teknik.Areas.Upload
             upload.ContentLength = file.ContentLength;
             upload.Key = key;
             upload.IV = iv;
+            upload.KeySize = keySize;
+            upload.BlockSize = blockSize;
 
             db.Uploads.Add(upload);
             db.SaveChanges();

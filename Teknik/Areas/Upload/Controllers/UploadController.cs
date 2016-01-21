@@ -30,11 +30,11 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Upload(string fileType, string iv, HttpPostedFileWrapper data)
+        public ActionResult Upload(string fileType, string iv, int keySize, int blockSize, HttpPostedFileWrapper data)
         {
             if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
             {
-                Models.Upload upload = Uploader.SaveFile(data, fileType, iv);
+                Models.Upload upload = Uploader.SaveFile(data, fileType, iv, null, keySize, blockSize);
                 if (upload != null)
                 {
                     return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }) } }, "text/plain");
@@ -74,7 +74,7 @@ namespace Teknik.Areas.Upload.Controllers
                         // Read in the file
                         byte[] encData = System.IO.File.ReadAllBytes(upload.FileName);
                         // Decrypt the data
-                        byte[] data = AES.Decrypt(encData, upload.Key, upload.IV, Config.UploadConfig.KeySize, Config.UploadConfig.IVSize);
+                        byte[] data = AES.Decrypt(encData, upload.Key, upload.IV, upload.KeySize, upload.BlockSize);
 
                         // Create File
                         var cd = new System.Net.Mime.ContentDisposition

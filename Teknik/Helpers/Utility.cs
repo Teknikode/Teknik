@@ -65,9 +65,21 @@ namespace Teknik
             if (Directory.Exists(path))
             {
                 string filename = RandomString(length);
+                string subDir = filename[0].ToString();
+                path = Path.Combine(path, subDir);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
                 while (File.Exists(Path.Combine(path, string.Format("{0}.{1}", filename, extension))))
                 {
                     filename = RandomString(length);
+                    subDir = filename[0].ToString();
+                    path = Path.Combine(path, subDir);
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
                 }
 
                 return Path.Combine(path, string.Format("{0}.{1}", filename, extension));

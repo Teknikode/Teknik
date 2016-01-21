@@ -28,6 +28,10 @@ namespace Teknik.Areas.Upload.Models
 
         public string IV { get; set; }
 
+        public int KeySize { get; set; }
+
+        public int BlockSize { get; set; }
+
         public string DeleteKey { get; set; }
     }
 }
