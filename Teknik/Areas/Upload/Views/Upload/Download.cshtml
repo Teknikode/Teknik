@@ -6,11 +6,6 @@
     var downloadDataUrl = '@Url.SubRouteUrl("upload", "Upload.Action", new { action = "DownloadData" })';
     var fileName = '@Model.FileName';
     var fileType = '@Model.ContentType';
-    var key = window.location.hash.substring(1);
-    if (key == null)
-    {
-        key = '@((Model.Key != null) ? Model.Key : string.Empty)';
-    }
     var iv = '@Model.IV';
     var chunkSize = @(Model.Config.UploadConfig.ChunkSize);
 </script>

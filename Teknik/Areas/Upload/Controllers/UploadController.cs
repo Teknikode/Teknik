@@ -57,13 +57,12 @@ namespace Teknik.Areas.Upload.Controllers
             if (upload != null)
             {
                 // We don't have the key, so we need to decrypt it client side
-                if (upload.Key == null)
+                if (string.IsNullOrEmpty(upload.Key))
                 {
                     DownloadViewModel model = new DownloadViewModel();
                     model.FileName = file;
                     model.ContentType = upload.ContentType;
                     model.ContentLength = upload.ContentLength;
-                    model.Key = upload.Key;
                     model.IV = upload.IV;
 
                     return View(model);
@@ -190,6 +189,26 @@ namespace Teknik.Areas.Upload.Controllers
                 db.Entry(upload).State = EntityState.Modified;
                 db.SaveChanges();
                 return Json(new { result = Url.SubRouteUrl("upload", "Upload.Download", new { file = file }) });
+            }
+            return Json(new { error = "Invalid URL" });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult RemoveFileKey(string file, string key)
+        {
+            Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
+            if (upload != null)
+            {
+                if (upload.Key == key)
+                {
+                    upload.Key = null;
+                    db.Entry(upload).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return Json(new { result = Url.SubRouteUrl("upload", "Upload.Download", new { file = file }) });
+                }
+                return Json(new { error = "Non-Matching Key" });
             }
             return Json(new { error = "Invalid URL" });
         }

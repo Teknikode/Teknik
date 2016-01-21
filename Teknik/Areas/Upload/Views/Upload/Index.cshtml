@@ -5,6 +5,7 @@
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
     var generateDeleteKeyURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action= "GenerateDeleteKey" })';
     var saveKeyToServerURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action= "SaveFileKey" })';
+    var removeKeyFromServerURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action= "RemoveFileKey" })';
     var uploadFileURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action = "Upload" })';
     var maxUploadSize = @Model.Config.UploadConfig.MaxUploadSize;
     var chunkSize = @Model.Config.UploadConfig.ChunkSize;
@@ -35,13 +36,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="fallback text-center">
-                    <div class="row">
-                        <div class="col-sm-8 col-sm-offset-2">
-                            <input name="file" type="file" class="form-control" multiple />
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -51,7 +45,10 @@
     <br />
     <div class="well text-center">
         <p>
-            Each file is encrypted on upload using an AES-256-CTR cipher.  If you wish to view the file decrypted, you must use the direct Teknik link.
+            Each file is encrypted on upload using an AES-256-CTR cipher.
+        </p>
+        <p>
+            To view the file decrypted, you must use the direct Teknik link in a javascript enabled browser or save the key to the server.
         </p>
         <p>
             The maximum file size per upload is <b>@Utility.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</b>

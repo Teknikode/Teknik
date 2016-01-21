@@ -44,8 +44,8 @@ namespace Teknik.Areas.Upload
             upload.DateUploaded = DateTime.Now;
             upload.Url = url;
             upload.FileName = fileName;
+            upload.ContentType = (!string.IsNullOrEmpty(contentType)) ? contentType : "application/octet-stream";
             upload.ContentLength = file.ContentLength;
-            upload.ContentType = contentType;
             upload.Key = key;
             upload.IV = iv;
 

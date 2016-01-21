@@ -11,7 +11,31 @@ function linkSaveKey(selector, uploadID, key, fileID) {
             data: AddAntiForgeryToken({ file: uploadID, key: key }),
             success: function (html) {
                 if (html.result) {
+                    $('#key-link-' + fileID).html('<button type="button" class="btn btn-default btn-sm" id="remove-key-link-' + fileID + '">Remove Key From Server</button>');
                     $('#upload-link-' + fileID).html('<p><a href="' + html.result + '" target="_blank" class="alert-link">' + html.result + '</a></p>');
+                    linkRemoveKey('#remove-key-link-' + fileID + '', uploadID, key, fileID);
+                }
+                else {
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                }
+            }
+        });
+        return false;
+    });
+}
+
+function linkRemoveKey(selector, uploadID, key, fileID) {
+    $(selector).click(function () {
+        $.ajax({
+            type: "POST",
+            url: removeKeyFromServerURL,
+            data: AddAntiForgeryToken({ file: uploadID, key: key }),
+            success: function (html) {
+                if (html.result) {
+                    $('#key-link-' + fileID).html('<button type="button" class="btn btn-default btn-sm" id="save-key-link-' + fileID + '">Save Key To Server</button>');
+                    $('#upload-link-' + fileID).html('<p><a href="' + html.result + '#' + key + '" target="_blank" class="alert-link">' + html.result + '#' + key + '</a></p>');
+                    linkSaveKey('#save-key-link-' + fileID + '', uploadID, key, fileID);
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
@@ -221,13 +245,13 @@ function uploadProgress(fileID, evt) {
 function uploadComplete(fileID, key, evt) {
     obj = JSON.parse(evt.target.responseText);
     var name = obj.result.name;
-    var fullName = decodeURIComponent(obj.result.url);
+    var fullName = obj.result.url;
     $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
     $('#progress-' + fileID).children('.progress-bar').html('Complete');
     $('#upload-link-' + fileID).html('<p><a href="' + fullName + '#' + key + '" target="_blank" class="alert-link">' + fullName + '#' + key + '</a></p>');
     $('#link-footer-' + fileID).html(' \
                     <div class="row"> \
-                        <div class="col-sm-4 text-center"> \
+                        <div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
                             <button type="button" class="btn btn-default btn-sm" id="save-key-link-' + fileID + '">Save Key On Server</button> \
                         </div> \
                         <div class="col-sm-4 text-center"> \

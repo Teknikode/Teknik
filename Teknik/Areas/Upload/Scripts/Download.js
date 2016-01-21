@@ -1,6 +1,7 @@
 ﻿$(document).ready(downloadFile);
 
 function downloadFile() {
+    var key = window.location.hash.substring(1);
     var fd = new FormData();
     fd.append('file', fileName);
     fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
