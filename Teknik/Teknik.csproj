@@ -300,9 +300,9 @@
     <Content Include="Areas\Help\Views\web.config" />
     <Content Include="Areas\Help\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Help\Views\Help\Index.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Api.cshtml" />
+    <Content Include="Areas\Help\Views\Help\API.cshtml" />
     <Content Include="Areas\Help\Views\Help\Git.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Irc.cshtml" />
+    <Content Include="Areas\Help\Views\Help\IRC.cshtml" />
     <Content Include="Areas\Help\Views\Help\Mail.cshtml" />
     <Content Include="Areas\Help\Views\Help\Mumble.cshtml" />
     <Content Include="Areas\Help\Views\Help\Blog.cshtml" />

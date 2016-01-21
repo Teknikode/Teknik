@@ -29,7 +29,7 @@ namespace Teknik.Areas.Help.Controllers
             switch(topic.ToLower())
             {
                 case "api":
-                    view = "~/Areas/Help/Views/Help/Api.cshtml";
+                    view = "~/Areas/Help/Views/Help/API.cshtml";
                     break;
                 case "blog":
                     view = "~/Areas/Help/Views/Help/Blog.cshtml";
@@ -38,7 +38,7 @@ namespace Teknik.Areas.Help.Controllers
                     view = "~/Areas/Help/Views/Help/Git.cshtml";
                     break;
                 case "irc":
-                    view = "~/Areas/Help/Views/Help/Irc.cshtml";
+                    view = "~/Areas/Help/Views/Help/IRC.cshtml";
                     break;
                 case "mail":
                     view = "~/Areas/Help/Views/Help/Mail.cshtml";
