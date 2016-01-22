@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -8,29 +9,29 @@ namespace Teknik
 {
     public class SubdomainRoute : Route
     {
-        public string Subdomain { get; set; }
+        public List<string> Subdomains { get; set; }
 
-        public SubdomainRoute(string subdomain, string url, IRouteHandler handler)
+        public SubdomainRoute(List<string> subdomains, string url, IRouteHandler handler)
         : base(url, handler)
         {
-            this.Subdomain = subdomain;
+            this.Subdomains = subdomains;
         }
-        public SubdomainRoute(string subdomain, string url, RouteValueDictionary defaults, IRouteHandler handler)
+        public SubdomainRoute(List<string> subdomains, string url, RouteValueDictionary defaults, IRouteHandler handler)
         : base(url, defaults, handler)
         {
-            this.Subdomain = subdomain;
+            this.Subdomains = subdomains;
         }
 
-        public SubdomainRoute(string subdomain, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, IRouteHandler handler)
+        public SubdomainRoute(List<string> subdomains, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, IRouteHandler handler)
         : base(url, defaults, constraints, handler)
         {
-            this.Subdomain = subdomain;
+            this.Subdomains = subdomains;
         }
 
-        public SubdomainRoute(string subdomain, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler handler)
+        public SubdomainRoute(List<string> subdomains, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler handler)
         : base(url, defaults, constraints, dataTokens, handler)
         {
-            this.Subdomain = subdomain;
+            this.Subdomains = subdomains;
         }
 
         public override RouteData GetRouteData(HttpContextBase httpContext)
@@ -38,10 +39,22 @@ namespace Teknik
             var routeData = base.GetRouteData(httpContext);
             if (routeData == null) return null; // Only look at the subdomain if this route matches in the first place.
             string subdomain = httpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname.
+            string host = httpContext.Request.Headers["Host"];
+            string curSub = host.GetSubdomain();
+
+            // special consideration for 'dev' subdomain
+            if (subdomain == null || subdomain == "dev")
+            {
+                if (!string.IsNullOrEmpty(curSub) && curSub == "dev")
+                {
+                    // if we are on dev, and the param is dev or empty, we need to initialize it to 'www'
+                    subdomain = "www";
+                }
+            }
+
             if (subdomain == null)
             {
-                string host = httpContext.Request.Headers["Host"];
-                subdomain = host.GetSubdomain();
+                subdomain = curSub;
             }
             else
             {
@@ -56,7 +69,7 @@ namespace Teknik
             }
 
             //routeData.Values["sub"] = subdomain;
-            if (Subdomain == "*" || Subdomain == subdomain)
+            if (Subdomains.Contains("*") || Subdomains.Contains(subdomain))
             {
                 return routeData;
             }

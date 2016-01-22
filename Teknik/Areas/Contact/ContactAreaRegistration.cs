@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using System.Web.Optimization;
 
 namespace Teknik.Areas.Contact
@@ -17,28 +18,14 @@ namespace Teknik.Areas.Contact
         {
             context.MapSubdomainRoute(
                  "Contact.Index", // Route name
-                 "dev",
-                 "Contact/",    // URL with parameters 
-                 new { controller = "Contact", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.ContactController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Contact.Action", // Route name
-                 "dev",
-                 "Contact/{action}",    // URL with parameters 
-                 new { controller = "Contact", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.ContactController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Contact.Index", // Route name
-                 "contact",
+                 new List<string>() { "dev", "contact" }, // Subdomains
                  "",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ContactController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Contact.Action", // Route name
-                 "contact",
+                 new List<string>() { "dev", "contact" }, // Subdomains
                  "{action}",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ContactController).Namespace }

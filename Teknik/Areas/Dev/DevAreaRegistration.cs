@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using Teknik.Areas.Home.Controllers;
 
 namespace Teknik.Areas.Dev
@@ -17,8 +18,8 @@ namespace Teknik.Areas.Dev
         {
             context.MapSubdomainRoute(
                  "Dev.Index", // Route name
-                 "dev",
-                 "Dev/{controller}/{action}",    // URL with parameters 
+                 new List<string>() { "dev" }, // Subdomains
+                 "",    // URL with parameters 
                  new { controller = "Dev", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.DevController).Namespace }
              );

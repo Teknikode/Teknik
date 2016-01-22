@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using System.Web.Optimization;
 
 namespace Teknik.Areas.Blog
@@ -17,42 +18,21 @@ namespace Teknik.Areas.Blog
         {
             context.MapSubdomainRoute(
                  "Blog.Blog", // Route name
-                 "dev",
-                 "Blog/{username}",    // URL with parameters 
-                 new { controller = "Blog", action = "Blog", username = string.Empty },  // Parameter defaults 
-                 new[] { typeof(Controllers.BlogController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Blog.Post", // Route name
-                 "dev",
-                 "Blog/{username}/{id}",    // URL with parameters 
-                 new { controller = "Blog", action = "Post", username = "", id = 0 },  // Parameter defaults 
-                 new[] { typeof(Controllers.BlogController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Blog.Action", // Route name
-                 "dev",
-                 "Blog/Action/{controller}/{action}",    // URL with parameters 
-                 new { controller = "Blog", action = "Blog" },  // Parameter defaults 
-                 new[] { typeof(Controllers.BlogController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Blog.Blog", // Route name
-                 "blog",
+                 new List<string>() { "dev", "blog" }, // Subdomains
                  "{username}",    // URL with parameters 
                  new { controller = "Blog", action = "Blog", username = string.Empty },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Blog.Post", // Route name
-                 "blog",
+                 new List<string>() { "dev", "blog" }, // Subdomains
                  "{username}/{id}",    // URL with parameters 
                  new { controller = "Blog", action = "Post", username = "", id = 0 },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Blog.Action", // Route name
-                 "blog",
+                 new List<string>() { "dev", "blog" }, // Subdomains
                  "Action/{controller}/{action}",    // URL with parameters 
                  new { controller = "Blog", action = "Blog" },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }

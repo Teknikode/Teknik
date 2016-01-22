@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace Teknik.Areas.About
 {
@@ -16,14 +17,7 @@ namespace Teknik.Areas.About
         {
             context.MapSubdomainRoute(
                  "About.Index", // Route name
-                 "dev",
-                 "About",    // URL with parameters 
-                 new { controller = "About", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.AboutController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "About.Index", // Route name
-                 "about",
+                 new List<string>() { "dev", "about" },
                  "",    // URL with parameters 
                  new { controller = "About", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.AboutController).Namespace }

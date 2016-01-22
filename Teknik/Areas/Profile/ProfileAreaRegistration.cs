@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using System.Web.Optimization;
 
 namespace Teknik.Areas.Profile
@@ -17,70 +18,35 @@ namespace Teknik.Areas.Profile
         {
             context.MapSubdomainRoute(
                  "Profile.Login", // Route name
-                 "dev",
-                 "Profile/Login",    // URL with parameters 
-                 new { controller = "Profile", action = "Login" },  // Parameter defaults 
-                 new[] { typeof(Controllers.ProfileController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Profile.Logout", // Route name
-                 "dev",
-                 "Profile/Logout",    // URL with parameters 
-                 new { controller = "Profile", action = "Logout" },  // Parameter defaults 
-                 new[] { typeof(Controllers.ProfileController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Profile.Register", // Route name
-                 "dev",
-                 "Profile/Register",    // URL with parameters 
-                 new { controller = "Profile", action = "Register" },  // Parameter defaults 
-                 new[] { typeof(Controllers.ProfileController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Profile.Index", // Route name
-                 "dev",
-                 "Profile/{username}",    // URL with parameters 
-                 new { controller = "Profile", action = "Index", username = UrlParameter.Optional },  // Parameter defaults 
-                 new[] { typeof(Controllers.ProfileController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Profile.Action", // Route name
-                 "dev",
-                 "Profile/Action/{action}",    // URL with parameters 
-                 new { controller = "Profile", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.ProfileController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Profile.Login", // Route name
-                 "profile",
+                 new List<string>() { "dev", "profile" }, // Subdomains
                  "Login",    // URL with parameters 
                  new { controller = "Profile", action = "Login" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
             context.MapSubdomainRoute(
                  "Profile.Logout", // Route name
-                 "profile",
+                 new List<string>() { "dev", "profile" }, // Subdomains
                  "Logout",    // URL with parameters 
                  new { controller = "Profile", action = "Logout" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
             context.MapSubdomainRoute(
                  "Profile.Register", // Route name
-                 "profile",
+                 new List<string>() { "dev", "profile" }, // Subdomains
                  "Register",    // URL with parameters 
                  new { controller = "Profile", action = "Register" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
             context.MapSubdomainRoute(
                  "Profile.Index", // Route name
-                 "profile",
+                 new List<string>() { "dev", "profile" }, // Subdomains
                  "{username}",    // URL with parameters 
                  new { controller = "Profile", action = "Index", username = UrlParameter.Optional },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
             context.MapSubdomainRoute(
                  "Profile.Action", // Route name
-                 "profile",
+                 new List<string>() { "dev", "profile" }, // Subdomains
                  "Action/{action}",    // URL with parameters 
                  new { controller = "Profile", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }

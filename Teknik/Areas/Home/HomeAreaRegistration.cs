@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik;
 
@@ -18,28 +19,7 @@ namespace Teknik.Areas.Home
         {
             context.MapSubdomainRoute(
                  "Home.Index", // Route name
-                 "dev",
-                 "Home",    // URL with parameters 
-                 new { controller = "Home", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.HomeController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Home.Default", // Route name
-                 "dev",
-                 "",    // URL with parameters 
-                 new { controller = "Home", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.HomeController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Home.Index", // Route name
-                 "www",
-                 "",    // URL with parameters 
-                 new { controller = "Home", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.HomeController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Home.Index", // Route name
-                 string.Empty,
+                 new List<string>() { "dev", "www", string.Empty }, // Subdomains
                  "",    // URL with parameters 
                  new { controller = "Home", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.HomeController).Namespace }

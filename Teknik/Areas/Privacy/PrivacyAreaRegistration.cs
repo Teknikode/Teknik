@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace Teknik.Areas.Privacy
 {
@@ -16,14 +17,7 @@ namespace Teknik.Areas.Privacy
         {
             context.MapSubdomainRoute(
                  "Privacy.Index", // Route name
-                 "dev",
-                 "Privacy",    // URL with parameters 
-                 new { controller = "Privacy", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.PrivacyController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Privacy.Index", // Route name
-                 "privacy",
+                 new List<string>() { "dev", "privacy" }, // Subdomains
                  "",    // URL with parameters 
                  new { controller = "Privacy", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.PrivacyController).Namespace }

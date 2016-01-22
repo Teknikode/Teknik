@@ -43,23 +43,30 @@ namespace Teknik
             }
 
             // Grab the sub from parameters if it exists
-            string subParam = url.RequestContext.HttpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname.
+            string subParam = url.RequestContext.HttpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname unless on dev
 
             // If the param is not being used, we will use the curSub
             if (string.IsNullOrEmpty(subParam))
             {
+                // If we are on dev and no subparam, we need to set the subparam to the specified sub
+                subParam = (curSub == "dev") ? sub : string.Empty;
                 string firstSub = (curSub == "dev") ? "dev" : sub;
                 if (!string.IsNullOrEmpty(firstSub))
                 {
-                    routeName = firstSub + "." + routeName;
                     domain = firstSub + "." + domain;
                 }
             }
             else
             {
-                string desiredSub = (subParam == "dev") ? "dev" : sub;
-                routeName = desiredSub + "." + routeName;
-                domain = host;
+                string firstSub = (curSub == "dev") ? "dev" : curSub;
+                if (!string.IsNullOrEmpty(firstSub))
+                {
+                    domain = firstSub + "." + domain;
+                }
+                else
+                {
+                    domain = host;
+                }
             }
 
             try
@@ -73,7 +80,7 @@ namespace Teknik
 
             string absoluteAction = string.Format("{0}://{1}{2}", url.RequestContext.HttpContext.Request.Url.Scheme, domain, rightUrl);
 
-            if (!string.IsNullOrEmpty(subParam) && subParam != "dev")
+            if (!string.IsNullOrEmpty(subParam))
             {
                 absoluteAction = absoluteAction.SetUrlParameter("sub", sub);
             }

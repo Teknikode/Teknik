@@ -13,8 +13,7 @@ namespace Teknik.Areas.Dev.Controllers
         // GET: Dev
         public ActionResult Index()
         {
-            ViewBag.Title = Config.Title + " - Development";
-            return View("~/Areas/Dev/Views/Dev/Index.cshtml");
+            return Redirect(Url.SubRouteUrl("www", "Home.Index"));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using System.Web.Optimization;
 
 namespace Teknik.Areas.Upload
@@ -17,84 +18,28 @@ namespace Teknik.Areas.Upload
         {
             context.MapSubdomainRoute(
                  "Upload.Index",
-                 "dev",
-                 "Upload",
-                 new { controller = "Upload", action = "Index" },
-                 new[] { typeof(Controllers.UploadController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Upload.Download",
-                 "dev",
-                 "Upload/{file}",
-                 new { controller = "Upload", action = "Download", file = string.Empty },
-                 new[] { typeof(Controllers.UploadController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Upload.Delete",
-                 "dev",
-                 "Upload/{file}/{key}",
-                 new { controller = "Upload", action = "Delete", file = string.Empty, key = string.Empty },
-                 new[] { typeof(Controllers.UploadController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Upload.Action",
-                 "dev",
-                 "Upload/Action/{controller}/{action}",
-                 new { controller = "Upload", action = "Index" },
-                 new[] { typeof(Controllers.UploadController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Upload.Index",
-                 "u",
-                 "",
-                 new { controller = "Upload", action = "Index" },
-                 new[] { typeof(Controllers.UploadController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Upload.Download",
-                 "u",
-                 "{file}",
-                 new { controller = "Upload", action = "Download", file = string.Empty },
-                 new[] { typeof(Controllers.UploadController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Upload.Delete",
-                 "u",
-                 "{file}/{key}",
-                 new { controller = "Upload", action = "Delete", file = string.Empty, key = string.Empty },
-                 new[] { typeof(Controllers.UploadController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Upload.Action",
-                 "u",
-                 "Action/{controller}/{action}",
-                 new { controller = "Upload", action = "Index" },
-                 new[] { typeof(Controllers.UploadController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Upload.Index", 
-                 "upload",
+                 new List<string>() { "dev", "upload", "u" }, // Subdomains
                  "",  
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Upload.Download",
-                 "upload",
+                 new List<string>() { "dev", "upload", "u" }, // Subdomains
                  "{file}",
                  new { controller = "Upload", action = "Download", file = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Upload.Delete",
-                 "upload",
+                 new List<string>() { "dev", "upload", "u" }, // Subdomains
                  "{file}/{key}",
                  new { controller = "Upload", action = "Delete", file = string.Empty, key = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Upload.Action",
-                 "upload",
+                 new List<string>() { "dev", "upload", "u" }, // Subdomains
                  "Action/{controller}/{action}",
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }

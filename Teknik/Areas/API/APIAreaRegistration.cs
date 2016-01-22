@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace Teknik.Areas.API
 {
@@ -17,30 +18,16 @@ namespace Teknik.Areas.API
             #region API v1
             // Base Routing
             context.MapSubdomainRoute(
-                 "APIv1.Index", // Route name
-                 "dev",
-                 "API/v1",    // URL with parameters 
-                 new { controller = "APIv1", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.APIv1Controller).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "APIv1.Index", // Route name
-                 "api",
+                 "API.v1.Index", // Route name
+                 new List<string>() { "dev", "api" },
                  "v1",    // URL with parameters 
                  new { controller = "APIv1", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             // Uploads
             context.MapSubdomainRoute(
-                 "APIv1.Upload", // Route name
-                 "dev",
-                 "API/v1/Upload",    // URL with parameters 
-                 new { controller = "APIv1", action = "Upload" },  // Parameter defaults 
-                 new[] { typeof(Controllers.APIv1Controller).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "APIv1.Upload", // Route name
-                 "api",
+                 "API.v1.Upload", // Route name
+                 new List<string>() { "dev", "api" },
                  "v1/Upload",    // URL with parameters 
                  new { controller = "APIv1", action = "Upload" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIv1Controller).Namespace }
@@ -50,14 +37,7 @@ namespace Teknik.Areas.API
             // Default Routing
             context.MapSubdomainRoute(
                  "API.Index", // Route name
-                 "dev",
-                 "API",    // URL with parameters 
-                 new { controller = "API", action = "Index" },  // Parameter defaults 
-                 new[] { typeof(Controllers.APIController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "API.Index", // Route name
-                 "api",
+                 new List<string>() { "dev", "" },
                  "",    // URL with parameters 
                  new { controller = "API", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIController).Namespace }

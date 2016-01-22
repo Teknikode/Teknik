@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace Teknik.Areas.Error
 {
@@ -16,7 +17,7 @@ namespace Teknik.Areas.Error
         {
             context.MapSubdomainRoute(
                  "Error.Http404", // Route name
-                 "*",
+                 new List<string>() { "*" }, // Subdomains
                  "Error/404",    // URL with parameters 
                  new { controller = "Error", action = "Http404" },  // Parameter defaults 
                  new[] { typeof(Controllers.ErrorController).Namespace }
