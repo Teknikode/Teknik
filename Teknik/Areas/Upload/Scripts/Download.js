@@ -63,7 +63,7 @@ function downloadFile() {
                 if (fileType == null || fileType == '') {
                     fileType = "application/octet-stream";
                 }
-                var blob = new Blob([e.data.buffer], { type: fileType });
+                var blob = new Blob([this.response], { type: fileType });
 
                 // prompt save-as
                 saveAs(blob, fileName);
