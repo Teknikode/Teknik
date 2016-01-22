@@ -20,44 +20,68 @@ namespace Teknik.Areas.Help.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Topic(string topic)
+        public ActionResult API(string version, string service)
         {
-            ViewBag.Title = topic + " Help - " + Config.Title;
             HelpViewModel model = new HelpViewModel();
-
-            string view = string.Empty;
-            switch(topic.ToLower())
+            if (string.IsNullOrEmpty(version) && string.IsNullOrEmpty(service))
             {
-                case "api":
-                    view = "~/Areas/Help/Views/Help/API.cshtml";
-                    break;
-                case "blog":
-                    view = "~/Areas/Help/Views/Help/Blog.cshtml";
-                    break;
-                case "git":
-                    view = "~/Areas/Help/Views/Help/Git.cshtml";
-                    break;
-                case "irc":
-                    view = "~/Areas/Help/Views/Help/IRC.cshtml";
-                    break;
-                case "mail":
-                    view = "~/Areas/Help/Views/Help/Mail.cshtml";
-                    break;
-                case "mumble":
-                    view = "~/Areas/Help/Views/Help/Mumble.cshtml";
-                    break;
-                case "upload":
-                    view = "~/Areas/Help/Views/Help/Upload.cshtml";
-                    break;
-                default:
-                    break;
+                ViewBag.Title = "API Help - " + Config.Title;
+                return View("~/Areas/Help/Views/Help/API/API.cshtml", model);
             }
-
-            if (!string.IsNullOrEmpty(view))
+            else if(!string.IsNullOrEmpty(version) && !string.IsNullOrEmpty(service))
             {
-                return View(view, model);
+                ViewBag.Title = service + " API " + version + " Help - " + Config.Title;
+                return View("~/Areas/Help/Views/Help/API/" + version + "/" + service + ".cshtml", model);
             }
             return RedirectToRoute("*.Error.Http404");
+        }
+
+        [AllowAnonymous]
+        public ActionResult Blog()
+        {
+            ViewBag.Title = "Blogging Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/Blog.cshtml", model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult Git()
+        {
+            ViewBag.Title = "Git Service Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/Git.cshtml", model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult IRC()
+        {
+            ViewBag.Title = "IRC Server Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/IRC.cshtml", model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult Mail()
+        {
+            ViewBag.Title = "Mail Server Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/Mail.cshtml", model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult Mumble()
+        {
+            ViewBag.Title = "Mumble Server Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/Mumble.cshtml", model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult Upload()
+        {
+            ViewBag.Title = "Upload Service Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/Upload.cshtml", model);
         }
     }
 }

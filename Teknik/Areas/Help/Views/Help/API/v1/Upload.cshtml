@@ -4,31 +4,12 @@
 
 <div class="container">
     <div class="row api">
-        <h2><b>Teknik API</b></h2>
-        <hr>
-        <h3>Overview</h3>
-        <p>
-            The Teknik API is free for everyone to use, and is defined on a per service basis.
-            <br />
-            <br />
-            The general API calls can be summarized as follows: <code>@Url.SubRouteUrl("api", "Api.Index", new { service = "<b>Service</b>", action = "<b>Action</b>", version = Model.Config.ApiConfig.Version })</code>
-        </p>
-        <h4>Responses</h4>
-        <p>
-            All responses are returned as json.  The returned json can contain any of the following sections.
-            <br />
-            <br />
-            <strong>Results</strong>
-            <pre><code>{"results":{"&lt;resultType&gt;":{"&lt;resultData&gt;":"&lt;value&gt;"}}}</code></pre>
-            <strong>Errors</strong>
-            <pre><code>{"error":{"code":&lt;value&gt;, "message":"&lt;errorMessage&gt;"}}</code></pre>
-        </p>
-        <h3><b>Upload</b></h3>
+        <h2><b>Upload Service</b></h2>
         <hr>
         <p>This is a description of the API commands available for the Upload service.</p>
-        <h4>Upload a File</h4>
-        <pre><code>POST @Url.SubRouteUrl("api", "Api.Index", new { service = "Upload", action = "Post", version = Model.Config.ApiConfig.Version })</code></pre>
-        <h5>Parameters</h5>
+        <h3>Upload a File</h3>
+        <pre><code>POST @Url.SubRouteUrl("api", "Api.Index", new { service = "Upload", action = "Post", version = "v1" })</code></pre>
+        <h4>Parameters</h4>
         <table>
             <thead>
                 <tr>
@@ -56,7 +37,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <code>encrypt</code>
+                        <code>contentType</code>
                     </td>
                     <td>
                         <code>string</code>
@@ -65,7 +46,35 @@
                         <var>no</var>
                     </td>
                     <td>
-                        If you want the file to be encrypted server side.  This will regenerate the key and/or iv if none are passed in.  Choose <code>yes</code> or <code>no</code>
+                        The content-type of the file you are uploading.  Only required if the file being uploaded is already encrypted.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>encrypt</code>
+                    </td>
+                    <td>
+                        <code>bool</code>
+                    </td>
+                    <td>
+                        <var>false</var>
+                    </td>
+                    <td>
+                        If you want the file to be encrypted server side.  This will regenerate the key and/or iv if none are passed in.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>saveKey</code>
+                    </td>
+                    <td>
+                        <code>bool</code>
+                    </td>
+                    <td>
+                        <var>false</var>
+                    </td>
+                    <td>
+                        Saves the passed in or generated key to the server.  This will make it so that on download, the file will decrypt server side.
                     </td>
                 </tr>
                 <tr>
@@ -84,6 +93,20 @@
                 </tr>
                 <tr>
                     <td>
+                        <code>keySize</code>
+                    </td>
+                    <td>
+                        <code>int</code>
+                    </td>
+                    <td>
+                        <var>@Model.Config.UploadConfig.KeySize</var>
+                    </td>
+                    <td>
+                        The size of the key provided in bytes.  Only needed if encrypting and no key is provided.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
                         <code>iv</code>
                     </td>
                     <td>
@@ -98,22 +121,36 @@
                 </tr>
                 <tr>
                     <td>
+                        <code>blockSize</code>
+                    </td>
+                    <td>
+                        <code>int</code>
+                    </td>
+                    <td>
+                        <var>@Model.Config.UploadConfig.BlockSize</var>
+                    </td>
+                    <td>
+                        The size of the iv provided in bytes.  Only needed if encrypting and no iv is provided.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
                         <code>getDeletionKey</code>
                     </td>
                     <td>
-                        <code>string</code>
+                        <code>bool</code>
                     </td>
                     <td>
-                        <var>no</var>
+                        <var>false</var>
                     </td>
                     <td>
-                        Whether you would like to create a deletion link.  Choose <code>yes</code> or <code>no</code>
+                        Generates a deletion key.
                     </td>
                 </tr>
             </tbody>
         </table>
-        <h5>Response</h5>
-        <pre><code>{"results":{"file":{"name":"<var>fileName</var>", "url":"<var>url</var>", "type":"<var>file_type</var>", "size":<var>size</var>, "key":<var>key</var>, "iv":<var>iv</var>, "deletionKey":<var>deletionKey</var>}}}</code></pre>
+        <h4>Response</h4>
+        <pre><code>{"result":{"url":"<var>url</var>", "fileName":"<var>fileName</var>", "contentType":"<var>contentType</var>", "contentLength":<var>contentLength</var>, "key":<var>key</var>, "keySize":<var>keySize</var>, "iv":<var>iv</var>, "blockSize":<var>blockSize</var>, "deletionKey":<var>deletionKey</var>}}</code></pre>
         <table>
             <thead>
                 <tr>
@@ -123,17 +160,6 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        <code>name</code>
-                    </td>
-                    <td>
-                        <code>string</code>
-                    </td>
-                    <td>
-                        The filename of the uploaded file.
-                    </td>
-                </tr>
                 <tr>
                     <td>
                         <code>url</code>
@@ -147,7 +173,18 @@
                 </tr>
                 <tr>
                     <td>
-                        <code>type</code>
+                        <code>fileName</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The filename of the uploaded file.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>contentType</code>
                     </td>
                     <td>
                         <code>string</code>
@@ -158,7 +195,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <code>size</code>
+                        <code>contentLength</code>
                     </td>
                     <td>
                         <code>integer</code>
@@ -175,7 +212,19 @@
                         <code>string</code>
                     </td>
                     <td>
+                        <strong>Optional</strong>
                         The key that was used to encrypt the file.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>keySize</code>
+                    </td>
+                    <td>
+                        <code>int</code>
+                    </td>
+                    <td>
+                        The size of the key used in bytes.
                     </td>
                 </tr>
                 <tr>
@@ -186,7 +235,19 @@
                         <code>string</code>
                     </td>
                     <td>
+                        <strong>Optional</strong>
                         The iv that was used to encrypt the file.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>blockSize</code>
+                    </td>
+                    <td>
+                        <code>int</code>
+                    </td>
+                    <td>
+                        The size of the iv used in bytes.
                     </td>
                 </tr>
                 <tr>
@@ -198,13 +259,16 @@
                     </td>
                     <td>
                         <strong>Optional</strong>
-                        The deletion key for file.  Use it as follows: <code>@Url.SubRouteUrl("u", "Upload.Upload", new { file = "<var>file.jpg</var>", key = "<var>deletionKey</var>" })</code>
+                        The deletion key for file.  Use it as follows: <code>@Url.SubRouteUrl("u", "Upload.Delete", new { file = "file.jpg", key = "deletionKey" })</code>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <h5>Example</h5>
-        <pre><code>$ curl -F "getDeletionKey=yes" -F "encrypt=yes" -F "file=@("@")image.png" @Url.SubRouteUrl("api", "Api.Index", new { service = "Upload", version = Model.Config.ApiConfig.Version })</code></pre>
+        <h4>Example</h4>
+        <pre><code>$ curl -F "getDeletionKey=true" -F "encrypt=yes" -F "file=@("@")image.png" @Url.SubRouteUrl("api", "APIv1.Upload")</code></pre>
+        <p>
+            This will upload the file <var>image.png</var>, encrypt it, and then generate a deletion key.
+        </p>
         <br />
         <br />
     </div>

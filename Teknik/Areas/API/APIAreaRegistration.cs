@@ -17,33 +17,33 @@ namespace Teknik.Areas.API
             #region API v1
             // Base Routing
             context.MapSubdomainRoute(
-                 "API.Index.v1", // Route name
+                 "APIv1.Index", // Route name
                  "dev",
                  "API/v1",    // URL with parameters 
-                 new { controller = "API", action = "Index_v1" },  // Parameter defaults 
-                 new[] { typeof(Controllers.APIController).Namespace }
+                 new { controller = "API", action = "Index" },  // Parameter defaults 
+                 new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             context.MapSubdomainRoute(
-                 "API.Index.v1", // Route name
+                 "APIv1.Index", // Route name
                  "api",
                  "v1",    // URL with parameters 
-                 new { controller = "API", action = "Index_v1" },  // Parameter defaults 
-                 new[] { typeof(Controllers.APIController).Namespace }
+                 new { controller = "API", action = "Index" },  // Parameter defaults 
+                 new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             // Uploads
             context.MapSubdomainRoute(
-                 "API.Upload.v1", // Route name
+                 "APIv1.Upload", // Route name
                  "dev",
                  "API/v1/Upload",    // URL with parameters 
-                 new { controller = "API", action = "Upload_v1" },  // Parameter defaults 
-                 new[] { typeof(Controllers.APIController).Namespace }
+                 new { controller = "API", action = "Upload" },  // Parameter defaults 
+                 new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             context.MapSubdomainRoute(
-                 "API.Upload.v1", // Route name
+                 "APIv1.Upload", // Route name
                  "api",
                  "v1/Upload",    // URL with parameters 
-                 new { controller = "API", action = "Upload_v1" },  // Parameter defaults 
-                 new[] { typeof(Controllers.APIController).Namespace }
+                 new { controller = "API", action = "Upload" },  // Parameter defaults 
+                 new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             #endregion
 

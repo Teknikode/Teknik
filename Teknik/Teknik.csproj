@@ -149,6 +149,7 @@
     <Compile Include="Areas\About\ViewModels\AboutViewModel.cs" />
     <Compile Include="Areas\API\APIAreaRegistration.cs" />
     <Compile Include="Areas\API\Controllers\APIController.cs" />
+    <Compile Include="Areas\API\Controllers\APIv1Controller.cs" />
     <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
     <Compile Include="Areas\Blog\Models\Comment.cs" />
     <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
@@ -302,7 +303,7 @@
     <Content Include="Areas\Help\Views\web.config" />
     <Content Include="Areas\Help\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Help\Views\Help\Index.cshtml" />
-    <Content Include="Areas\Help\Views\Help\API.cshtml" />
+    <Content Include="Areas\Help\Views\Help\API\API.cshtml" />
     <Content Include="Areas\Help\Views\Help\Git.cshtml" />
     <Content Include="Areas\Help\Views\Help\IRC.cshtml" />
     <Content Include="Areas\Help\Views\Help\Mail.cshtml" />
@@ -310,6 +311,7 @@
     <Content Include="Areas\Help\Views\Help\Blog.cshtml" />
     <Content Include="Areas\Help\Views\Help\Upload.cshtml" />
     <Content Include="Areas\API\Views\web.config" />
+    <Content Include="Areas\Help\Views\Help\API\v1\Upload.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />
@@ -368,6 +370,7 @@
     <Folder Include="Areas\About\Models\" />
     <Folder Include="Areas\About\Views\Shared\" />
     <Folder Include="Areas\API\Models\" />
+    <Folder Include="Areas\API\Views\APIv1\" />
     <Folder Include="Areas\API\Views\API\" />
     <Folder Include="Areas\API\Views\Shared\" />
     <Folder Include="Areas\Blog\Views\Shared\" />

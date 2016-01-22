@@ -12,50 +12,62 @@ function downloadFile() {
 
     xhr.onload = function (e) {
         if (this.status == 200) {
-            var worker = new Worker(encScriptSrc);
 
-            worker.addEventListener('message', function (e) {
-                switch (e.data.cmd) {
-                    case 'progress':
-                        var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
-                        $("#progress").children('.progress-bar').css('width', (percentComplete / 2) + 50 + '%');
-                        $("#progress").children('.progress-bar').html(percentComplete + '% Decrypted');
-                        break;
-                    case 'finish':
-                        $('#progress').children('.progress-bar').css('width', '100%');
-                        $('#progress').children('.progress-bar').html('Complete');
-                        if (fileType == null || fileType == '')
-                        {
-                            fileType = "application/octet-stream";
-                        }
-                        var blob = new Blob([e.data.buffer], { type: fileType });
-                        
-                        saveAs(blob, fileName);
+            if (iv != '' && key != '') {
+                var worker = new Worker(encScriptSrc);
 
-                        // DO SOMETHING
-                        break;
+                worker.addEventListener('message', function (e) {
+                    switch (e.data.cmd) {
+                        case 'progress':
+                            var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
+                            $("#progress").children('.progress-bar').css('width', (percentComplete / 2) + 50 + '%');
+                            $("#progress").children('.progress-bar').html(percentComplete + '% Decrypted');
+                            break;
+                        case 'finish':
+                            $('#progress').children('.progress-bar').css('width', '100%');
+                            $('#progress').children('.progress-bar').html('Complete');
+                            if (fileType == null || fileType == '') {
+                                fileType = "application/octet-stream";
+                            }
+                            var blob = new Blob([e.data.buffer], { type: fileType });
+
+                            // prompt save-as
+                            saveAs(blob, fileName);
+                            break;
+                    }
+                });
+
+                worker.onerror = function (err) {
+                    // An error occured
+                    $("#progress").children('.progress-bar').css('width', '100%');
+                    $("#progress").children('.progress-bar').removeClass('progress-bar-success');
+                    $("#progress").children('.progress-bar').addClass('progress-bar-danger');
+                    $("#progress").children('.progress-bar').html('Error Occured');
                 }
-            });
 
-            worker.onerror = function (err) {
-                // An error occured
-                $("#progress").children('.progress-bar').css('width', '100%');
-                $("#progress").children('.progress-bar').removeClass('progress-bar-success');
-                $("#progress").children('.progress-bar').addClass('progress-bar-danger');
-                $("#progress").children('.progress-bar').html('Error Occured');
+                // Execute worker with data
+                var objData =
+                    {
+                        cmd: 'decrypt',
+                        script: aesScriptSrc,
+                        key: key,
+                        iv: iv,
+                        chunkSize: chunkSize,
+                        file: this.response
+                    };
+                worker.postMessage(objData, [objData.file]);
             }
+            else {
+                $('#progress').children('.progress-bar').css('width', '100%');
+                $('#progress').children('.progress-bar').html('Complete');
+                if (fileType == null || fileType == '') {
+                    fileType = "application/octet-stream";
+                }
+                var blob = new Blob([e.data.buffer], { type: fileType });
 
-            // Execute worker with data
-            var objData =
-                {
-                    cmd: 'decrypt',
-                    script: aesScriptSrc,
-                    key: key,
-                    iv: iv,
-                    chunkSize: chunkSize,
-                    file: this.response
-                };
-            worker.postMessage(objData, [objData.file]);
+                // prompt save-as
+                saveAs(blob, fileName);
+            }
         }
     };
 

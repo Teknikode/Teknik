@@ -64,7 +64,7 @@ namespace Teknik.Areas.Upload.Controllers
             if (upload != null)
             {
                 // We don't have the key, so we need to decrypt it client side
-                if (string.IsNullOrEmpty(upload.Key))
+                if (string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                 {
                     DownloadViewModel model = new DownloadViewModel();
                     model.FileName = file;
@@ -81,7 +81,7 @@ namespace Teknik.Areas.Upload.Controllers
                         // Read in the file
                         byte[] encData = System.IO.File.ReadAllBytes(upload.FileName);
                         // Decrypt the data
-                        byte[] data = AES.Decrypt(encData, upload.Key, upload.IV, upload.KeySize, upload.BlockSize);
+                        byte[] data = AES.Decrypt(encData, upload.Key, upload.IV);
 
                         // Create File
                         var cd = new System.Net.Mime.ContentDisposition

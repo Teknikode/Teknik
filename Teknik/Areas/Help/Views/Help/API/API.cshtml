@@ -1,0 +1,38 @@
+﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
+
+@Styles.Render("~/Content/help");
+
+<div class="container">
+    <div class="row api">
+        <div class="col-sm-4">
+            <h3><b>API Versions</b></h3>
+            <h4>Version 1</h4>
+            <p>
+                <ul class="list-unstyled">
+                    <li><a href="@Url.SubRouteUrl("help", "Help.API", new { version = "v1", service = "Upload" })">Upload Service</a></li>
+                </ul>
+            </p>
+        </div>
+        <div class="col-sm-8">
+            <h2><b>Teknik API</b></h2>
+            <hr>
+            <p>
+                The Teknik API is free for everyone to use, and is defined on a per service basis.
+                <br />
+                <br />
+                The general API calls can be summarized as follows: <code>@Url.SubRouteUrl("api", "Api.Index")/v@(Model.Config.ApiConfig.Version)/<b>Service</b>/<b>Action</b></code>
+            </p>
+            <h3>Responses</h3>
+            <p>
+                All responses are returned as json.  The returned json can contain any of the following sections.
+                <br />
+                <br />
+                <strong>Results</strong>
+                <pre><code>{"result":{"&lt;resultData&gt;":"&lt;value&gt;"}}</code></pre>
+                <strong>Errors</strong>
+                <pre><code>{"error":{"message":"&lt;errorMessage&gt;"}}</code></pre>
+            </p>
+            <hr />
+        </div>
+    </div>
+</div>
