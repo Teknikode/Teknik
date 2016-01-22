@@ -135,7 +135,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <code>getDeletionKey</code>
+                        <code>genDeletionKey</code>
                     </td>
                     <td>
                         <code>bool</code>
@@ -265,7 +265,7 @@
             </tbody>
         </table>
         <h4>Example</h4>
-        <pre><code>$ curl -F "getDeletionKey=true" -F "encrypt=yes" -F "file=@("@")image.png" @Url.SubRouteUrl("api", "APIv1.Upload")</code></pre>
+        <pre><code>$ curl -F "genDeletionKey=true" -F "encrypt=true" -F "file=@("@")image.png" @Url.SubRouteUrl("api", "APIv1.Upload")</code></pre>
         <p>
             This will upload the file <var>image.png</var>, encrypt it, and then generate a deletion key.
         </p>

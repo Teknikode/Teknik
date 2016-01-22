@@ -20,14 +20,14 @@ namespace Teknik.Areas.API
                  "APIv1.Index", // Route name
                  "dev",
                  "API/v1",    // URL with parameters 
-                 new { controller = "API", action = "Index" },  // Parameter defaults 
+                 new { controller = "APIv1", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             context.MapSubdomainRoute(
                  "APIv1.Index", // Route name
                  "api",
                  "v1",    // URL with parameters 
-                 new { controller = "API", action = "Index" },  // Parameter defaults 
+                 new { controller = "APIv1", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             // Uploads
@@ -35,14 +35,14 @@ namespace Teknik.Areas.API
                  "APIv1.Upload", // Route name
                  "dev",
                  "API/v1/Upload",    // URL with parameters 
-                 new { controller = "API", action = "Upload" },  // Parameter defaults 
+                 new { controller = "APIv1", action = "Upload" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             context.MapSubdomainRoute(
                  "APIv1.Upload", // Route name
                  "api",
                  "v1/Upload",    // URL with parameters 
-                 new { controller = "API", action = "Upload" },  // Parameter defaults 
+                 new { controller = "APIv1", action = "Upload" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             #endregion
