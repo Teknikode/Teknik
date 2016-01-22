@@ -226,6 +226,7 @@
     <Content Include="Areas\Help\Content\Help.css" />
     <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
+    <Content Include="Areas\Paste\Scripts\Paste.js" />
     <Content Include="Areas\Profile\Scripts\Profile.js" />
     <Content Include="Areas\Upload\Scripts\Download.js" />
     <Content Include="Content\Highlight\agate.css" />
@@ -460,7 +461,6 @@
     <Folder Include="Areas\Help\Views\Shared\" />
     <Folder Include="Areas\Home\Models\" />
     <Folder Include="Areas\Home\Views\Shared\" />
-    <Folder Include="Areas\Paste\Scripts\" />
     <Folder Include="Areas\Paste\Views\Shared\" />
     <Folder Include="Areas\Privacy\Models\" />
     <Folder Include="Areas\Privacy\Views\Shared\" />

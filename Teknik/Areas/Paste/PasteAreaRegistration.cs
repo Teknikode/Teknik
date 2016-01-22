@@ -44,10 +44,18 @@ namespace Teknik.Areas.Paste
                  new { controller = "Paste", action = "Raw" },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
+            context.MapSubdomainRoute(
+                 "Paste.Action", // Route name
+                 new List<string>() { "dev", "paste", "p" },
+                 "Action/{action}",    // URL with parameters 
+                 new { controller = "Paste", action = "Paste" },  // Parameter defaults 
+                 new[] { typeof(Controllers.PasteController).Namespace }
+             );
 
             // Register Script Bundles
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/paste").Include(
-                      "~/Scripts/Highlight/highlight.pack.js"));
+                      "~/Scripts/Highlight/highlight.pack.js",
+                      "~/Areas/Paste/Scripts/Paste.js"));
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/paste").Include(
                       "~/Content/Highlight/default.css"));
