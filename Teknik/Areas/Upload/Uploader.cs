@@ -10,22 +10,22 @@ namespace Teknik.Areas.Upload
 {
     public static class Uploader
     {
-        public static Models.Upload SaveFile(HttpPostedFileWrapper file, string contentType)
+        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength)
         {
-            return SaveFile(file, contentType, null, null, 256, 128);
+            return SaveFile(file, contentType, contentLength, null, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(HttpPostedFileWrapper file, string contentType, string iv)
+        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string iv)
         {
-            return SaveFile(file, contentType, iv, null, 256, 128);
+            return SaveFile(file, contentType, contentLength, iv, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(HttpPostedFileWrapper file, string contentType, string iv, string key)
+        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string iv, string key)
         {
-            return SaveFile(file, contentType, iv, key, 256, 128);
+            return SaveFile(file, contentType, contentLength, iv, key, 256, 128);
         }
 
-        public static Models.Upload SaveFile(HttpPostedFileWrapper file, string contentType, string iv, string key, int keySize, int blockSize)
+        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string iv, string key, int keySize, int blockSize)
         {
             Config config = Config.Load();
             TeknikEntities db = new TeknikEntities();
@@ -39,7 +39,7 @@ namespace Teknik.Areas.Upload
             string fileName = Utility.GenerateUniqueFileName(config.UploadConfig.UploadDirectory, config.UploadConfig.FileExtension, 10);
 
             // once we have the filename, lets save the file
-            file.SaveAs(fileName);
+            File.WriteAllBytes(fileName, file);
 
             // Generate a unique url
             string extension = (config.UploadConfig.IncludeExtension) ? Utility.GetDefaultExtension(contentType) : string.Empty;
@@ -55,7 +55,7 @@ namespace Teknik.Areas.Upload
             upload.Url = url;
             upload.FileName = fileName;
             upload.ContentType = (!string.IsNullOrEmpty(contentType)) ? contentType : "application/octet-stream";
-            upload.ContentLength = file.ContentLength;
+            upload.ContentLength = contentLength;
             upload.Key = key;
             upload.IV = iv;
             upload.KeySize = keySize;

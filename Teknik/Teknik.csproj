@@ -147,6 +147,8 @@
     <Compile Include="Areas\About\AboutAreaRegistration.cs" />
     <Compile Include="Areas\About\Controllers\AboutController.cs" />
     <Compile Include="Areas\About\ViewModels\AboutViewModel.cs" />
+    <Compile Include="Areas\API\APIAreaRegistration.cs" />
+    <Compile Include="Areas\API\Controllers\APIController.cs" />
     <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
     <Compile Include="Areas\Blog\Models\Comment.cs" />
     <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
@@ -307,6 +309,7 @@
     <Content Include="Areas\Help\Views\Help\Mumble.cshtml" />
     <Content Include="Areas\Help\Views\Help\Blog.cshtml" />
     <Content Include="Areas\Help\Views\Help\Upload.cshtml" />
+    <Content Include="Areas\API\Views\web.config" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />
@@ -364,6 +367,9 @@
   <ItemGroup>
     <Folder Include="Areas\About\Models\" />
     <Folder Include="Areas\About\Views\Shared\" />
+    <Folder Include="Areas\API\Models\" />
+    <Folder Include="Areas\API\Views\API\" />
+    <Folder Include="Areas\API\Views\Shared\" />
     <Folder Include="Areas\Blog\Views\Shared\" />
     <Folder Include="Areas\Contact\Views\Shared\" />
     <Folder Include="Areas\Dev\Models\" />

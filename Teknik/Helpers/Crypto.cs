@@ -36,17 +36,7 @@ namespace Teknik.Helpers
             byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
             return Decrypt(data, keyBytes, ivBytes);
         }
-        public static byte[] Decrypt(byte[] data, string key, string iv, int keySize, int blockSize)
-        {
-            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-            byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-            return Decrypt(data, keyBytes, ivBytes, keySize, blockSize);
-        }
         public static byte[] Decrypt(byte[] data, byte[] key, byte[] iv)
-        {
-            return Decrypt(data, key, iv, 256, 128);
-        }
-        public static byte[] Decrypt(byte[] data, byte[] key, byte[] iv, int keySize, int blockSize)
         {
             IBufferedCipher cipher = CipherUtilities.GetCipher("AES/CTR/NoPadding");
 
@@ -61,17 +51,7 @@ namespace Teknik.Helpers
             byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
             return Encrypt(data, keyBytes, ivBytes);
         }
-        public static byte[] Encrypt(byte[] data, string key, string iv, int keySize, int blockSize)
-        {
-            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-            byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-            return Encrypt(data, keyBytes, ivBytes, keySize, blockSize);
-        }
         public static byte[] Encrypt(byte[] data, byte[] key, byte[] iv)
-        {
-            return Encrypt(data, key, iv, 256, 128);
-        }
-        public static byte[] Encrypt(byte[] data, byte[] key, byte[] iv, int keySize, int blockSize)
         {
             IBufferedCipher cipher = CipherUtilities.GetCipher("AES/CTR/NoPadding");
 

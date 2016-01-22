@@ -34,7 +34,14 @@ namespace Teknik.Areas.Upload.Controllers
         {
             if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
             {
-                Models.Upload upload = Uploader.SaveFile(data, fileType, iv, null, keySize, blockSize);
+                // convert file to bytes
+                byte[] fileData = null;
+                int contentLength = data.ContentLength;
+                using (var binaryReader = new BinaryReader(data.InputStream))
+                {
+                    fileData = binaryReader.ReadBytes(data.ContentLength);
+                }
+                Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, iv, null, keySize, blockSize);
                 if (upload != null)
                 {
                     return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }) } }, "text/plain");
