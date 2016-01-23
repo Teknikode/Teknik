@@ -24,31 +24,38 @@ namespace Teknik.Areas.Paste
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
             context.MapSubdomainRoute(
-                 "Paste.View", // Route name
-                 new List<string>() { "dev", "paste", "p" },
-                 "{id}",    // URL with parameters 
-                 new { controller = "Paste", action = "ViewPaste" },  // Parameter defaults 
-                 new[] { typeof(Controllers.PasteController).Namespace }
-             );
-            context.MapSubdomainRoute(
                  "Paste.Simple", // Route name
                  new List<string>() { "dev", "paste", "p" },
-                 "Simple/{id}",    // URL with parameters 
-                 new { controller = "Paste", action = "Simple" },  // Parameter defaults 
+                 "Simple/{url}/{password}",    // URL with parameters 
+                 new { controller = "Paste", action = "ViewPaste", type = "Simple", password = UrlParameter.Optional },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Paste.Raw", // Route name
                  new List<string>() { "dev", "paste", "p" },
-                 "Raw/{id}",    // URL with parameters 
-                 new { controller = "Paste", action = "Raw" },  // Parameter defaults 
+                 "Raw/{url}/{password}",    // URL with parameters 
+                 new { controller = "Paste", action = "Raw", password = UrlParameter.Optional },  // Parameter defaults 
+                 new[] { typeof(Controllers.PasteController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Paste.Download", // Route name
+                 new List<string>() { "dev", "paste", "p" },
+                 "Download/{url}/{password}",    // URL with parameters 
+                 new { controller = "Paste", action = "Download", password = UrlParameter.Optional },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Paste.Action", // Route name
                  new List<string>() { "dev", "paste", "p" },
                  "Action/{action}",    // URL with parameters 
-                 new { controller = "Paste", action = string.Empty },  // Parameter defaults 
+                 new { controller = "Paste", action = "Index" },  // Parameter defaults 
+                 new[] { typeof(Controllers.PasteController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Paste.View", // Route name
+                 new List<string>() { "dev", "paste", "p" },
+                 "{url}/{password}",    // URL with parameters 
+                 new { controller = "Paste", action = "ViewPaste", type = "Full", password = UrlParameter.Optional },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
 
@@ -56,9 +63,12 @@ namespace Teknik.Areas.Paste
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/paste").Include(
                       "~/Scripts/Highlight/highlight.pack.js",
                       "~/Areas/Paste/Scripts/Paste.js"));
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/highlight").Include(
+                      "~/Scripts/Highlight/highlight.pack.js"));
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/paste").Include(
-                      "~/Content/Highlight/default.css"));
+                      "~/Content/Highlight/github-gist.css",
+                      "~/Areas/Paste/Content/Paste.css"));
         }
     }
 }

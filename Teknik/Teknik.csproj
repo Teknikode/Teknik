@@ -69,7 +69,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="RouteDebugger, Version=2.1.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -171,6 +171,7 @@
     <Compile Include="Areas\Home\ViewModels\HomeViewModel.cs" />
     <Compile Include="Areas\Paste\Controllers\PasteController.cs" />
     <Compile Include="Areas\Paste\Models\Paste.cs" />
+    <Compile Include="Areas\Paste\ViewModels\PasteCreateViewModel.cs" />
     <Compile Include="Areas\Paste\PasteAreaRegistration.cs" />
     <Compile Include="Areas\Paste\ViewModels\PasswordViewModel.cs" />
     <Compile Include="Areas\Paste\ViewModels\PasteViewModel.cs" />
@@ -228,6 +229,7 @@
     <Content Include="Areas\Help\Content\Help.css" />
     <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
+    <Content Include="Areas\Paste\Content\Paste.css" />
     <Content Include="Areas\Paste\Scripts\Paste.js" />
     <Content Include="Areas\Profile\Scripts\Profile.js" />
     <Content Include="Areas\Upload\Scripts\Download.js" />
@@ -391,9 +393,10 @@
     <Content Include="Areas\Paste\Views\web.config" />
     <Content Include="Areas\Paste\Views\Paste\Index.cshtml" />
     <Content Include="Areas\Paste\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Paste\Views\Paste\ViewPaste.cshtml" />
+    <Content Include="Areas\Paste\Views\Paste\Full.cshtml" />
     <Content Include="Areas\Paste\Views\Paste\PasswordNeeded.cshtml" />
     <Content Include="Areas\Error\Views\Error\Http403.cshtml" />
+    <Content Include="Areas\Paste\Views\Paste\Simple.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />
@@ -409,8 +412,10 @@
     <Content Include="Scripts\Dropzone\dropzone.js" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\Highlight\highlight.pack.js" />
-    <Content Include="Scripts\jquery-2.1.4.js" />
-    <Content Include="Scripts\jquery-2.1.4.min.js" />
+    <None Include="Scripts\jquery-2.2.0-vsdoc.js" />
+    <Content Include="Scripts\jquery-2.2.0.js" />
+    <Content Include="Scripts\jquery-2.2.0.min.js" />
+    <Content Include="Scripts\jquery-2.2.0.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui.widgets.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
@@ -447,7 +452,6 @@
     <Content Include="Areas\Profile\Views\Profile\Login.cshtml" />
     <Content Include="Areas\Profile\Views\Profile\Register.cshtml" />
     <Content Include="Areas\Dev\Views\Dev\Index.cshtml" />
-    <Content Include="Scripts\jquery-2.1.4.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\About\Models\" />

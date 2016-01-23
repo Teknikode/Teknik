@@ -1,0 +1,33 @@
+﻿@model Teknik.Areas.Paste.ViewModels.PasteViewModel
+@{
+    Layout = "";
+    string syntax = string.Empty;
+    if (Model.Syntax != "auto-select")
+    {
+        syntax = Model.Syntax;
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="description" content="@Model.Config.Description" />
+    <meta name="author" content="@Model.Config.Author" />
+    <title>@ViewBag.Title</title>
+    <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon" />
+
+    @Styles.Render("~/Content/paste")
+    @Scripts.Render("~/bundles/highlight")
+
+</head>
+<body data-twttr-rendered="true">
+    <pre><code class="@syntax">@Model.Content</code></pre>
+    <script>
+        hljs.initHighlightingOnLoad();
+
+        function pageloadStopTimer() { }
+    </script>
+</body>
+</html>

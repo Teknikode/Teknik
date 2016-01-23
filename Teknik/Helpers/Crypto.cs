@@ -62,9 +62,13 @@ namespace Teknik.Helpers
 
         public static byte[] CreateKey(string password, string iv, int keySize = 256)
         {
-            const int Iterations = 300;
             byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-            var keyGenerator = new Rfc2898DeriveBytes(password, ivBytes, Iterations);
+            return CreateKey(password, ivBytes, keySize);
+        }
+        public static byte[] CreateKey(string password, byte[] iv, int keySize = 256)
+        {
+            const int Iterations = 300;
+            var keyGenerator = new Rfc2898DeriveBytes(password, iv, Iterations);
             return keyGenerator.GetBytes(keySize / 8);
         }
     }

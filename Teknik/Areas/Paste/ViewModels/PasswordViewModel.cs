@@ -11,6 +11,6 @@ namespace Teknik.Areas.Paste.ViewModels
     {
         public string Url { get; set; }
 
-        public string CallingView { get; set; }
+        public string CallingAction { get; set; }
     }
 }

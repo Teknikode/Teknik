@@ -1,0 +1,41 @@
+﻿@model Teknik.Areas.Paste.ViewModels.PasteViewModel
+
+@Styles.Render("~/Content/paste")
+@Scripts.Render("~/bundles/paste")
+
+@{ 
+    string syntax = string.Empty;
+    if (Model.Syntax != "auto-select")
+    {
+        syntax = Model.Syntax;
+    }
+}
+<div class="container">
+    <div class="row text-center">
+        <div class="col-sm-12 text-center">
+            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>- Posted on @Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt") - Format: @Model.Syntax</small></h2>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-sm-1 col-sm-offset-1 text-center">
+            <a class="btn btn-default" href="@Url.SubRouteUrl("paste", "Paste.Simple", new { url = Model.Url })">Simple</a>
+        </div>
+        <div class="col-sm-1 text-center">
+            <a class="btn btn-default" href="@Url.SubRouteUrl("paste", "Paste.Raw", new { url = Model.Url })">Raw</a>
+        </div>
+        <div class="col-sm-1 text-center">
+            <a class="btn btn-default" href="@Url.SubRouteUrl("paste", "Paste.Download", new { url = Model.Url })">Download</a>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <pre><code class="@syntax">@Model.Content</code></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    hljs.initHighlighting();
+</script>

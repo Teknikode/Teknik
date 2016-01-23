@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.Areas.Error.Controllers;
 using Teknik.Areas.Paste.ViewModels;
 using Teknik.Controllers;
 using Teknik.Helpers;
@@ -20,12 +21,12 @@ namespace Teknik.Areas.Paste.Controllers
         public ActionResult Index()
         {
             ViewBag.Title = Config.Title + " Paste";
-            PasteViewModel model = new PasteViewModel();
+            PasteCreateViewModel model = new PasteCreateViewModel();
             return View(model);
         }
 
         [AllowAnonymous]
-        public ActionResult ViewPaste(string url, string pass)
+        public ActionResult ViewPaste(string type, string url, string password)
         {
             Models.Paste paste = db.Pastes.Where(p => p.Url == url).FirstOrDefault();
             if (paste != null)
@@ -40,132 +41,148 @@ namespace Teknik.Areas.Paste.Controllers
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
                 {
-                    if (string.IsNullOrEmpty(pass) || Helpers.SHA384.Hash(paste.Key, pass) != paste.HashedPassword)
+                    if (string.IsNullOrEmpty(password) || Helpers.SHA384.Hash(paste.Key, password) != paste.HashedPassword)
                     {
                         PasswordViewModel passModel = new PasswordViewModel();
                         passModel.Url = url;
-                        passModel.CallingView = "ViewPaste";
+                        passModel.CallingAction = Url.SubRouteUrl("paste", "Paste.View");
                         // Redirect them to the password request page
-                        return View("~/Areas/Paste/Views/Paste/PasswordNeeded", passModel);
+                        return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
                     }
                     // Now we decrypt the content
-                    byte[] data = Encoding.UTF8.GetBytes(paste.Content);
-                    byte[] ivBytes = Encoding.UTF8.GetBytes(paste.IV);
-                    byte[] encData = AES.Decrypt(data, AES.CreateKey(pass, paste.IV, paste.KeySize), ivBytes);
-                    model.Content = Encoding.UTF8.GetString(encData);
+                    byte[] data = Encoding.Unicode.GetBytes(paste.Content);
+                    byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
+                    byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
+                    byte[] encData = AES.Decrypt(data, keyBytes, ivBytes);
+                    model.Content = Encoding.Unicode.GetString(encData);
                 }
 
-                return View(model);
+                return View("~/Areas/Paste/Views/Paste/" + type + ".cshtml", model);
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
 
         [AllowAnonymous]
-        public ActionResult Simple(string url, string pass)
-        {
-            PasteViewModel model = new PasteViewModel();
-            return View(model);
-        }
-
-        [AllowAnonymous]
-        public ActionResult Raw(string url, string pass)
-        {
-            PasteViewModel model = new PasteViewModel();
-            return View(model);
-
-            // Create File
-            var cd = new System.Net.Mime.ContentDisposition
-            {
-                FileName = upload.Url,
-                Inline = true
-            };
-
-            Response.AppendHeader("Content-Disposition", cd.ToString());
-
-            return File(data, upload.ContentType);
-        }
-
-
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public ActionResult Paste(string content, string title, string syntax, string password, bool hide = false)
-        {
-            Models.Paste paste = db.Pastes.Create();
-            paste.DatePosted = DateTime.Now;
-            paste.Url = Utility.RandomString(Config.PasteConfig.UrlLength);
-
-            // Set the hashed password if one is provided and encrypt stuff
-            if (!string.IsNullOrEmpty(password))
-            {
-                string key = Utility.RandomString(Config.PasteConfig.KeySize / 8);
-                string iv = Utility.RandomString(Config.PasteConfig.BlockSize / 8);
-                paste.HashedPassword = Helpers.SHA384.Hash(key, password);
-
-                // Encrypt Content
-                byte[] data = Encoding.UTF8.GetBytes(content);
-                byte[] keyBytes = AES.CreateKey(password, iv, Config.PasteConfig.KeySize);
-                byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-                byte[] encData = AES.Encrypt(data, keyBytes, ivBytes);
-                content = Encoding.UTF8.GetString(encData);
-
-                paste.Key = key;
-                paste.KeySize = Config.PasteConfig.KeySize;
-                paste.IV = iv;
-                paste.BlockSize = Config.PasteConfig.BlockSize;
-            }
-
-            paste.Content = content;
-            paste.Title = title;
-            paste.Syntax = syntax;
-
-            db.Pastes.Add(paste);
-            db.SaveChanges();
-
-            return Redirect(Url.SubRouteUrl("paste", "Paste.View", new { url = paste.Url }));
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public ActionResult SubmitPassword(string url, string password)
+        public ActionResult Raw(string url, string password)
         {
             Models.Paste paste = db.Pastes.Where(p => p.Url == url).FirstOrDefault();
             if (paste != null)
             {
-                if (Helpers.SHA384.Hash(paste.Key, password) == paste.HashedPassword)
+                string content = paste.Content;
+
+                // The paste has a password set
+                if (!string.IsNullOrEmpty(paste.HashedPassword))
                 {
-                    return View(model);
+                    if (string.IsNullOrEmpty(password) || Helpers.SHA384.Hash(paste.Key, password) != paste.HashedPassword)
+                    {
+                        PasswordViewModel passModel = new PasswordViewModel();
+                        passModel.Url = url;
+                        passModel.CallingAction = Url.SubRouteUrl("paste", "Paste.Raw");
+                        // Redirect them to the password request page
+                        return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
+                    }
+                    // Now we decrypt the content
+                    byte[] data = Encoding.Unicode.GetBytes(paste.Content);
+                    byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
+                    byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
+                    byte[] encData = AES.Decrypt(data, keyBytes, ivBytes);
+                    content = Encoding.Unicode.GetString(encData);
                 }
+
+                return Content(content, "text/plain");
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
 
-        private PasteViewModel GetPasteModel(Models.Paste paste, string pass)
+        [AllowAnonymous]
+        public ActionResult Download(string url, string password)
         {
-            PasteViewModel model = new PasteViewModel();
-            model.Url = paste.Url;
-            model.Content = paste.Content;
-            model.Title = paste.Title;
-            model.Syntax = paste.Syntax;
-            model.DatePosted = paste.DatePosted;
-
-            // The paste has a password set
-            if (!string.IsNullOrEmpty(paste.HashedPassword))
+            Models.Paste paste = db.Pastes.Where(p => p.Url == url).FirstOrDefault();
+            if (paste != null)
             {
-                if (string.IsNullOrEmpty(pass) || Helpers.SHA384.Hash(paste.Key, pass) != paste.HashedPassword)
-                {
-                    // Redirect them to password page
-                }
-                // Now we decrypt the content
-                byte[] data = Encoding.UTF8.GetBytes(paste.Content);
-                byte[] ivBytes = Encoding.UTF8.GetBytes(paste.IV);
-                byte[] encData = AES.Decrypt(data, AES.CreateKey(pass, paste.IV, paste.KeySize), ivBytes);
-                model.Content = Encoding.UTF8.GetString(encData);
-            }
+                byte[] fileData = Encoding.Unicode.GetBytes(paste.Content);
 
-            return model;
+                // The paste has a password set
+                if (!string.IsNullOrEmpty(paste.HashedPassword))
+                {
+                    if (string.IsNullOrEmpty(password) || Helpers.SHA384.Hash(paste.Key, password) != paste.HashedPassword)
+                    {
+                        PasswordViewModel passModel = new PasswordViewModel();
+                        passModel.Url = url;
+                        passModel.CallingAction = Url.SubRouteUrl("paste", "Paste.Download");
+                        // Redirect them to the password request page
+                        return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
+                    }
+                    // Now we decrypt the content
+                    byte[] data = Encoding.Unicode.GetBytes(paste.Content);
+                    byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
+                    byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
+                    fileData = AES.Decrypt(data, keyBytes, ivBytes);
+                }
+
+                //Create File
+                var cd = new System.Net.Mime.ContentDisposition
+                {
+                    FileName = url,
+                    Inline = true
+                };
+
+                Response.AppendHeader("Content-Disposition", cd.ToString());
+
+                return File(fileData, "text/plain");
+            }
+            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Paste([Bind(Include = "Content, Title, Syntax, Password, Hide")]PasteCreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Models.Paste paste = db.Pastes.Create();
+                    paste.DatePosted = DateTime.Now;
+                    paste.Url = Utility.RandomString(Config.PasteConfig.UrlLength);
+
+                    // Set the hashed password if one is provided and encrypt stuff
+                    if (!string.IsNullOrEmpty(model.Password))
+                    {
+                        string key = Utility.RandomString(Config.PasteConfig.KeySize / 8);
+                        string iv = Utility.RandomString(Config.PasteConfig.BlockSize / 8);
+                        paste.HashedPassword = Helpers.SHA384.Hash(key, model.Password);
+
+                        // Encrypt Content
+                        byte[] data = Encoding.Unicode.GetBytes(model.Content);
+                        byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
+                        byte[] keyBytes = AES.CreateKey(model.Password, ivBytes, Config.PasteConfig.KeySize);
+                        byte[] encData = AES.Encrypt(data, keyBytes, ivBytes);
+                        model.Content = Encoding.Unicode.GetString(encData);
+
+                        paste.Key = key;
+                        paste.KeySize = Config.PasteConfig.KeySize;
+                        paste.IV = iv;
+                        paste.BlockSize = Config.PasteConfig.BlockSize;
+                    }
+
+                    paste.Content = model.Content;
+                    paste.Title = model.Title;
+                    paste.Syntax = model.Syntax;
+                    paste.Hide = model.Hide;
+
+                    db.Pastes.Add(paste);
+                    db.SaveChanges();
+
+                    return Redirect(Url.SubRouteUrl("paste", "Paste.View", new { url = paste.Url, password = model.Password }));
+                }
+                catch (Exception ex)
+                {
+                    return Redirect(Url.SubRouteUrl("error", "Error.500", new { exception = ex }));
+                }
+            }
+            return View("~/Areas/Paste/Views/Paste/Index.cshtml", model);
         }
     }
 }
