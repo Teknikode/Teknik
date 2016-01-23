@@ -20,10 +20,10 @@
             <div class="col-sm-3@((string.IsNullOrEmpty(Model.About) && !OwnProfile) ? " col-sm-offset-4" : string.Empty)"><!--left col-->
                 <ul class="list-group">
                     <li class="list-group-item text-muted">Profile</li>
-                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> @Model.JoinDate.ToString("MMMM dd, yyyy")</li>
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.JoinDate.ToString("MMMM dd, yyyy")</time></li>
                     @if (OwnProfile && User.Identity.IsAuthenticated)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> @Model.LastSeen.ToString("MMMM dd, yyyy")</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.LastSeen.ToString("MMMM dd, yyyy")</time></li>
                     }
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> <a href="mailto:@Model.Email">@Model.Email</a></li>
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Blog</strong></span> <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = Model.Username })" id="blog_title">@(string.IsNullOrEmpty(Model.BlogTitle) ? string.Format("{0}'s Blog", Model.Username) : Model.BlogTitle)</a></li>
@@ -182,12 +182,14 @@
                                     <button class="btn btn-lg" type="reset"><i class="glyphicon glyphicon-repeat"></i> Reset</button>
                                 </div>
                             </div>
+                            <!-- Upload Settings -->
+                            <!-- Paste Settings -->
                         </form>
                     </div><!--/tab-pane-->
                     <div class="tab-pane" id="privacy">
                         <div class="row">
                             <div class="col-sm-12 text-center">
-                                <iframe style="border: 0; width: 100%;" src="https://stats.teknik.io/index.php?module=CoreAdminHome&action=optOut&language=en"></iframe>
+                                <!-- Privacy Settings Here -->
                             </div>
                         </div>
                     </div>

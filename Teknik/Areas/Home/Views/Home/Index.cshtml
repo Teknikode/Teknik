@@ -150,7 +150,7 @@
                                                     <a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
                                                 </h2>
                                                 <p class="blog-post-meta-sm text-left text-muted">
-                                                    Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
+                                                    Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
                                                 </p>
                                             </div>
                                         </div>
@@ -201,7 +201,7 @@
                                                     <a href="@Url.SubRouteUrl("podcast", "Podcast.View", new { username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
                                                 </h2>
                                                 <p class="blog-post-meta-sm text-left text-muted">
-                                                    Posted on @post.DatePosted.ToString("MMMM dd, yyyy")
+                                                    Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time>
                                                 </p>
                                             </div>
                                         </div>
@@ -251,7 +251,7 @@
                                                 <h2 class="blog-post-title-sm text-left"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
                                                 </h2>
                                                 <p class="blog-post-meta-sm text-left text-muted">
-                                                    Posted on @post.DatePosted.ToString("MMMM dd, yyyy") by <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
+                                                    Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
                                                 </p>
                                             </div>
                                         </div>

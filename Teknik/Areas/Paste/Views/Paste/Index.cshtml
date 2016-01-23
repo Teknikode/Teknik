@@ -26,7 +26,7 @@
                 </div>
                 <div class="form-group">
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Syntax</label>
-                    <div class="col-sm-2">
+                    <div class="col-sm-4">
                         <select class="form-control" name="Syntax" id="syntax">
                             <option value="auto-select">Auto Select</option>
                             @foreach (KeyValuePair<string, string> format in Constants.HIGHLIGHTFORMATS)
@@ -38,7 +38,7 @@
                 </div>
                 <div class="form-group">
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Expires</label>
-                    <div class="col-sm-1">
+                    <div class="col-sm-2">
                         <input type="number" min="1" step="1" class="form-control" name="ExpireLength" id="expirelength" placeholder="1">
                     </div>
                     <div class="col-sm-2">

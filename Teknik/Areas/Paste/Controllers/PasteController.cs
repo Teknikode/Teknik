@@ -32,6 +32,7 @@ namespace Teknik.Areas.Paste.Controllers
             Models.Paste paste = db.Pastes.Where(p => p.Url == url).FirstOrDefault();
             if (paste != null)
             {
+                ViewBag.Title = ((string.IsNullOrEmpty(paste.Title)) ? string.Empty : paste.Title + " - ") + Config.Title + " Paste";
                 // Increment Views
                 paste.Views += 1;
                 db.Entry(paste).State = EntityState.Modified;
@@ -79,7 +80,7 @@ namespace Teknik.Areas.Paste.Controllers
                     case "simple":
                         return View("~/Areas/Paste/Views/Paste/Simple.cshtml", model);
                     case "raw":
-                        return Content(model.Content, "text/plain");
+                        return Content(model.Content, "application/octet-stream");
                     case "download":
                         //Create File
                         var cd = new System.Net.Mime.ContentDisposition
