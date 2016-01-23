@@ -26,13 +26,30 @@
                 </div>
                 <div class="form-group">
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Syntax</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-2">
                         <select class="form-control" name="Syntax" id="syntax">
                             <option value="auto-select">Auto Select</option>
                             @foreach (KeyValuePair<string, string> format in Constants.HIGHLIGHTFORMATS)
                             {
                                 <option value="@format.Value">@format.Key</option>
                             }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Expires</label>
+                    <div class="col-sm-1">
+                        <input type="number" min="1" step="1" class="form-control" name="ExpireLength" id="expirelength" placeholder="1">
+                    </div>
+                    <div class="col-sm-2">
+                        <select class="form-control" name="ExpireUnit" id="expireunit">
+                            <option value="never">Never</option>
+                            <option value="view">Views</option>
+                            <option value="minute">Minutes</option>
+                            <option value="hour">Hours</option>
+                            <option value="day">Days</option>
+                            <option value="month">Months</option>
+                            <option value="year">Years</option>
                         </select>
                     </div>
                 </div>
@@ -46,7 +63,7 @@
                     <div class="col-sm-offset-3 col-sm-6">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" name="Hide" id="hide"> Hide from Public List
+                                <input type="checkbox" name="Hide" id="hide" value="true"> Hide from Public List
                             </label>
                         </div>
                     </div>

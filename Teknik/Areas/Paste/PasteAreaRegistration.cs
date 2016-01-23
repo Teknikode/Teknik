@@ -34,14 +34,14 @@ namespace Teknik.Areas.Paste
                  "Paste.Raw", // Route name
                  new List<string>() { "dev", "paste", "p" },
                  "Raw/{url}/{password}",    // URL with parameters 
-                 new { controller = "Paste", action = "Raw", password = UrlParameter.Optional },  // Parameter defaults 
+                 new { controller = "Paste", action = "ViewPaste", type = "Raw", password = UrlParameter.Optional },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Paste.Download", // Route name
                  new List<string>() { "dev", "paste", "p" },
                  "Download/{url}/{password}",    // URL with parameters 
-                 new { controller = "Paste", action = "Download", password = UrlParameter.Optional },  // Parameter defaults 
+                 new { controller = "Paste", action = "ViewPaste", type = "Download", password = UrlParameter.Optional },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
             context.MapSubdomainRoute(

@@ -25,6 +25,8 @@ namespace Teknik.Areas.Paste.Models
 
         public string Syntax { get; set; }
 
+        public DateTime? ExpireDate { get; set; }
+
         public string HashedPassword { get; set; }
 
         public string Key { get; set; }
@@ -36,5 +38,9 @@ namespace Teknik.Areas.Paste.Models
         public int BlockSize { get; set; }
 
         public bool Hide { get; set; }
+
+        public int MaxViews { get; set; }
+
+        public int Views { get; set; }
     }
 }

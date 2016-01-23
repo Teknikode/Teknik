@@ -18,6 +18,11 @@ namespace Teknik.Areas.Paste.ViewModels
 
         public string Syntax { get; set; }
 
+        [Range(1, int.MaxValue)]
+        public int? ExpireLength { get; set; }
+
+        public string ExpireUnit { get; set; }
+
         public string Password { get; set; }
 
         public bool Hide { get; set; }

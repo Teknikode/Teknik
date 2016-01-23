@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -31,6 +32,19 @@ namespace Teknik.Areas.Paste.Controllers
             Models.Paste paste = db.Pastes.Where(p => p.Url == url).FirstOrDefault();
             if (paste != null)
             {
+                // Increment Views
+                paste.Views += 1;
+                db.Entry(paste).State = EntityState.Modified;
+                db.SaveChanges();
+
+                // Check Expiration
+                if (CheckExpiration(paste))
+                {
+                    db.Pastes.Remove(paste);
+                    db.SaveChanges();
+                    return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                }
+
                 PasteViewModel model = new PasteViewModel();
                 model.Url = url;
                 model.Content = paste.Content;
@@ -38,37 +52,7 @@ namespace Teknik.Areas.Paste.Controllers
                 model.Syntax = paste.Syntax;
                 model.DatePosted = paste.DatePosted;
 
-                // The paste has a password set
-                if (!string.IsNullOrEmpty(paste.HashedPassword))
-                {
-                    if (string.IsNullOrEmpty(password) || Helpers.SHA384.Hash(paste.Key, password) != paste.HashedPassword)
-                    {
-                        PasswordViewModel passModel = new PasswordViewModel();
-                        passModel.Url = url;
-                        passModel.CallingAction = Url.SubRouteUrl("paste", "Paste.View");
-                        // Redirect them to the password request page
-                        return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
-                    }
-                    // Now we decrypt the content
-                    byte[] data = Encoding.Unicode.GetBytes(paste.Content);
-                    byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
-                    byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
-                    byte[] encData = AES.Decrypt(data, keyBytes, ivBytes);
-                    model.Content = Encoding.Unicode.GetString(encData);
-                }
-
-                return View("~/Areas/Paste/Views/Paste/" + type + ".cshtml", model);
-            }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
-        }
-
-        [AllowAnonymous]
-        public ActionResult Raw(string url, string password)
-        {
-            Models.Paste paste = db.Pastes.Where(p => p.Url == url).FirstOrDefault();
-            if (paste != null)
-            {
-                string content = paste.Content;
+                byte[] data = Encoding.Unicode.GetBytes(paste.Content);
 
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
@@ -77,59 +61,39 @@ namespace Teknik.Areas.Paste.Controllers
                     {
                         PasswordViewModel passModel = new PasswordViewModel();
                         passModel.Url = url;
-                        passModel.CallingAction = Url.SubRouteUrl("paste", "Paste.Raw");
+                        passModel.CallingAction = Url.SubRouteUrl("paste", "Paste.View", new { type = type });
                         // Redirect them to the password request page
                         return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
                     }
                     // Now we decrypt the content
-                    byte[] data = Encoding.Unicode.GetBytes(paste.Content);
                     byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
                     byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
-                    byte[] encData = AES.Decrypt(data, keyBytes, ivBytes);
-                    content = Encoding.Unicode.GetString(encData);
+                    data = AES.Decrypt(data, keyBytes, ivBytes);
+                    model.Content = Encoding.Unicode.GetString(data);
                 }
 
-                return Content(content, "text/plain");
-            }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
-        }
-
-        [AllowAnonymous]
-        public ActionResult Download(string url, string password)
-        {
-            Models.Paste paste = db.Pastes.Where(p => p.Url == url).FirstOrDefault();
-            if (paste != null)
-            {
-                byte[] fileData = Encoding.Unicode.GetBytes(paste.Content);
-
-                // The paste has a password set
-                if (!string.IsNullOrEmpty(paste.HashedPassword))
+                switch (type.ToLower())
                 {
-                    if (string.IsNullOrEmpty(password) || Helpers.SHA384.Hash(paste.Key, password) != paste.HashedPassword)
-                    {
-                        PasswordViewModel passModel = new PasswordViewModel();
-                        passModel.Url = url;
-                        passModel.CallingAction = Url.SubRouteUrl("paste", "Paste.Download");
-                        // Redirect them to the password request page
-                        return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
-                    }
-                    // Now we decrypt the content
-                    byte[] data = Encoding.Unicode.GetBytes(paste.Content);
-                    byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
-                    byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
-                    fileData = AES.Decrypt(data, keyBytes, ivBytes);
+                    case "full":
+                        return View("~/Areas/Paste/Views/Paste/Full.cshtml", model);
+                    case "simple":
+                        return View("~/Areas/Paste/Views/Paste/Simple.cshtml", model);
+                    case "raw":
+                        return Content(model.Content, "text/plain");
+                    case "download":
+                        //Create File
+                        var cd = new System.Net.Mime.ContentDisposition
+                        {
+                            FileName = url,
+                            Inline = true
+                        };
+
+                        Response.AppendHeader("Content-Disposition", cd.ToString());
+
+                        return File(data, "text/plain");
+                    default:
+                        return View("~/Areas/Paste/Views/Paste/Full.cshtml", model);
                 }
-
-                //Create File
-                var cd = new System.Net.Mime.ContentDisposition
-                {
-                    FileName = url,
-                    Inline = true
-                };
-
-                Response.AppendHeader("Content-Disposition", cd.ToString());
-
-                return File(fileData, "text/plain");
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
@@ -137,7 +101,7 @@ namespace Teknik.Areas.Paste.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Paste([Bind(Include = "Content, Title, Syntax, Password, Hide")]PasteCreateViewModel model)
+        public ActionResult Paste([Bind(Include = "Content, Title, Syntax, ExpireLength, ExpireUnit, Password, Hide")]PasteCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -146,6 +110,38 @@ namespace Teknik.Areas.Paste.Controllers
                     Models.Paste paste = db.Pastes.Create();
                     paste.DatePosted = DateTime.Now;
                     paste.Url = Utility.RandomString(Config.PasteConfig.UrlLength);
+                    paste.MaxViews = 0;
+                    paste.Views = -1;
+
+                    // Figure out the expire date (null if 'never' or 'visit')
+                    if (model.ExpireLength.HasValue || model.ExpireUnit == "never")
+                    {
+                        switch (model.ExpireUnit)
+                        {
+                            case "never":
+                                break;
+                            case "view":
+                                paste.MaxViews = model.ExpireLength ?? 0;
+                                break;
+                            case "minute":
+                                paste.ExpireDate = paste.DatePosted.AddMinutes(model.ExpireLength ?? 1);
+                                break;
+                            case "hour":
+                                paste.ExpireDate = paste.DatePosted.AddHours(model.ExpireLength ?? 1);
+                                break;
+                            case "day":
+                                paste.ExpireDate = paste.DatePosted.AddDays(model.ExpireLength ?? 1);
+                                break;
+                            case "month":
+                                paste.ExpireDate = paste.DatePosted.AddMonths(model.ExpireLength ?? 1);
+                                break;
+                            case "year":
+                                paste.ExpireDate = paste.DatePosted.AddYears(model.ExpireLength ?? 1);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
 
                     // Set the hashed password if one is provided and encrypt stuff
                     if (!string.IsNullOrEmpty(model.Password))
@@ -175,7 +171,7 @@ namespace Teknik.Areas.Paste.Controllers
                     db.Pastes.Add(paste);
                     db.SaveChanges();
 
-                    return Redirect(Url.SubRouteUrl("paste", "Paste.View", new { url = paste.Url, password = model.Password }));
+                    return Redirect(Url.SubRouteUrl("paste", "Paste.View", new { type = "Full", url = paste.Url, password = model.Password }));
                 }
                 catch (Exception ex)
                 {
@@ -183,6 +179,16 @@ namespace Teknik.Areas.Paste.Controllers
                 }
             }
             return View("~/Areas/Paste/Views/Paste/Index.cshtml", model);
+        }
+
+        private bool CheckExpiration(Models.Paste paste)
+        {
+            if (paste.ExpireDate != null && DateTime.Now >= paste.ExpireDate)
+                return true;
+            if (paste.MaxViews > 0 && paste.Views > paste.MaxViews)
+                return true;
+
+            return false;
         }
     }
 }
