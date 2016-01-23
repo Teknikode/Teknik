@@ -19,14 +19,11 @@ namespace Teknik.Configuration
         private string          _Host;
         private SMTPConfig      _SMTPConfig;
         private UploadConfig    _UploadConfig;
+        private PasteConfig     _PasteConfig;
         private BlogConfig      _BlogConfig;
         private ApiConfig       _ApiConfig;
         private string          _SupportEmail;
         private string          _BitcoinAddress;
-        private string          _BlogTitle;
-        private string          _BlogDescription;
-        private int             _PostsToLoad;
-        private int             _CommentsToLoad;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
 
@@ -46,10 +43,13 @@ namespace Teknik.Configuration
         public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
 
         // Blog Information
-        public BlogConfig BlogConfig        { get { return _BlogConfig; }       set { _BlogConfig = value; } }
+        public BlogConfig   BlogConfig      { get { return _BlogConfig; }       set { _BlogConfig = value; } }
 
         // Upload Configuration
         public UploadConfig UploadConfig    { get { return _UploadConfig; }     set { _UploadConfig = value; } }
+
+        // Paste Configuration
+        public PasteConfig  PasteConfig     { get { return _PasteConfig; }      set { _PasteConfig = value; } }
 
         // Upload Configuration
         public ApiConfig    ApiConfig       { get { return _ApiConfig; }        set { _ApiConfig = value; } }
@@ -74,6 +74,7 @@ namespace Teknik.Configuration
             SMTPConfig      = new SMTPConfig();
             BlogConfig      = new BlogConfig();
             UploadConfig    = new UploadConfig();
+            PasteConfig     = new PasteConfig();
             ApiConfig       = new ApiConfig();
             SupportEmail    = string.Empty;
             BitcoinAddress  = string.Empty;

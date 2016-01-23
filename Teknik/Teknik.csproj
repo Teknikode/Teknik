@@ -172,6 +172,7 @@
     <Compile Include="Areas\Paste\Controllers\PasteController.cs" />
     <Compile Include="Areas\Paste\Models\Paste.cs" />
     <Compile Include="Areas\Paste\PasteAreaRegistration.cs" />
+    <Compile Include="Areas\Paste\ViewModels\PasswordViewModel.cs" />
     <Compile Include="Areas\Paste\ViewModels\PasteViewModel.cs" />
     <Compile Include="Areas\Privacy\Controllers\PrivacyController.cs" />
     <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="Configuration\BlogConfig.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
+    <Compile Include="Configuration\PasteConfig.cs" />
     <Compile Include="Configuration\SMTPConfig.cs" />
     <Compile Include="Configuration\UploadConfig.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
@@ -389,6 +391,9 @@
     <Content Include="Areas\Paste\Views\web.config" />
     <Content Include="Areas\Paste\Views\Paste\Index.cshtml" />
     <Content Include="Areas\Paste\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Paste\Views\Paste\ViewPaste.cshtml" />
+    <Content Include="Areas\Paste\Views\Paste\PasswordNeeded.cshtml" />
+    <Content Include="Areas\Error\Views\Error\Http403.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />

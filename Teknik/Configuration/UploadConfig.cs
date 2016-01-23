@@ -31,7 +31,7 @@ namespace Teknik.Configuration
             MaxUploadSize = 100000000;
             UploadDirectory = string.Empty;
             FileExtension = "enc";
-            UrlLength = 6;
+            UrlLength = 5;
             DeleteKeyLength = 24;
             KeySize = 256;
             BlockSize = 128;

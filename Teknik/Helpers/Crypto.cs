@@ -59,5 +59,13 @@ namespace Teknik.Helpers
 
             return cipher.DoFinal(data);
         }
+
+        public static byte[] CreateKey(string password, string iv, int keySize = 256)
+        {
+            const int Iterations = 300;
+            byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
+            var keyGenerator = new Rfc2898DeriveBytes(password, ivBytes, Iterations);
+            return keyGenerator.GetBytes(keySize / 8);
+        }
     }
 }

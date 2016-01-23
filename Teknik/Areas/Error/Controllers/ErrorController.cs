@@ -38,6 +38,20 @@ namespace Teknik.Areas.Error.Controllers
         }
 
         [AllowAnonymous]
+        public ActionResult Http403(Exception exception)
+        {
+            ViewBag.Title = "403 - " + Config.Title;
+            ViewBag.Message = "Access Denied";
+
+            Response.StatusCode = 404;
+
+            ErrorViewModel model = new ErrorViewModel();
+            model.Exception = exception;
+
+            return View(model);
+        }
+
+        [AllowAnonymous]
         public ActionResult Http404(Exception exception)
         {
             ViewBag.Title = "404 - " + Config.Title;

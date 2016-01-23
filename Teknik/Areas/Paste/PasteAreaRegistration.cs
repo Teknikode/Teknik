@@ -27,7 +27,7 @@ namespace Teknik.Areas.Paste
                  "Paste.View", // Route name
                  new List<string>() { "dev", "paste", "p" },
                  "{id}",    // URL with parameters 
-                 new { controller = "Paste", action = "View" },  // Parameter defaults 
+                 new { controller = "Paste", action = "ViewPaste" },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
             context.MapSubdomainRoute(
@@ -48,7 +48,7 @@ namespace Teknik.Areas.Paste
                  "Paste.Action", // Route name
                  new List<string>() { "dev", "paste", "p" },
                  "Action/{action}",    // URL with parameters 
-                 new { controller = "Paste", action = "Paste" },  // Parameter defaults 
+                 new { controller = "Paste", action = string.Empty },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
 

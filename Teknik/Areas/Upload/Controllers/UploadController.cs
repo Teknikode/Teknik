@@ -96,7 +96,7 @@ namespace Teknik.Areas.Upload.Controllers
                     }
                 }
             }
-            return RedirectToRoute("*.Error.Http404");
+            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
 
         [HttpPost]
@@ -130,7 +130,7 @@ namespace Teknik.Areas.Upload.Controllers
                     return File(buffer, System.Net.Mime.MediaTypeNames.Application.Octet, file);
                 }
             }
-            RedirectToAction("Http404", "Error", new { area = "Errors", exception = new Exception("File Not Found") });
+            Redirect(Url.SubRouteUrl("error", "Error.Http404"));
             return null;
         }
 
@@ -164,7 +164,7 @@ namespace Teknik.Areas.Upload.Controllers
                 }
                 return View(model);
             }
-            return RedirectToRoute("*.Error.Http404");
+            return RedirectToRoute("Error.Http404");
         }
 
         [HttpPost]
