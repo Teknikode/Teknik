@@ -38,10 +38,10 @@
                 </div>
                 <div class="form-group">
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Expires</label>
-                    <div class="col-sm-2">
-                        <input type="number" min="1" step="1" class="form-control" name="ExpireLength" id="expirelength" placeholder="1">
+                    <div class="col-sm-2 hidden" id="length-div">
+                        <input type="number" min="1" step="1" class="form-control" name="ExpireLength" id="expirelength" value="1">
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-4" id="unit-div">
                         <select class="form-control" name="ExpireUnit" id="expireunit">
                             <option value="never">Never</option>
                             <option value="view">Views</option>
@@ -72,3 +72,18 @@
         </div>
     </div>
 </div>
+
+<script>
+    $("select[name='ExpireUnit']").change(function () {
+        if ($(this).val() == "never") {
+            $('#length-div').addClass("hidden");
+            $('#unit-div').removeClass("col-sm-2");
+            $('#unit-div').addClass("col-sm-4");
+        }
+        else {
+            $('#length-div').removeClass("hidden");
+            $('#unit-div').removeClass("col-sm-4");
+            $('#unit-div').addClass("col-sm-2");
+        }
+    });
+</script>
