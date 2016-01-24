@@ -13,7 +13,7 @@
 <div class="container">
     <div class="row text-center">
         <div class="col-sm-12 text-center">
-            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Posted on <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt")</time> - Format: @Model.Syntax</small></h2>
+            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Posted on <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage">@Model.Syntax</b></small></h2>
         </div>
     </div>
     <hr />
@@ -39,9 +39,11 @@
 <script>
     addEventListener('load', function () {
         var code = document.querySelector('#code');
+        var language = document.querySelector('#syntaxLanguage');
         var worker = new Worker('@Scripts.Url("~/bundles/syntaxWorker")');
         worker.onmessage = function (event) {
-            code.innerHTML = event.data;
+            code.innerHTML = event.data.value;
+            language.innerText = event.data.language;
         }
         var obj = {
             script: '@Scripts.Url("~/bundles/highlight")',

@@ -28,7 +28,7 @@
             var code = document.querySelector('#code');
             var worker = new Worker('@Scripts.Url("~/bundles/syntaxWorker")');
             worker.onmessage = function (event) {
-                code.innerHTML = event.data;
+                code.innerHTML = event.data.value;
             }
             var obj = {
                 script: '@Scripts.Url("~/bundles/highlight")',
