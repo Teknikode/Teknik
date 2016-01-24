@@ -171,6 +171,7 @@
     <Compile Include="Areas\Home\ViewModels\HomeViewModel.cs" />
     <Compile Include="Areas\Paste\Controllers\PasteController.cs" />
     <Compile Include="Areas\Paste\Models\Paste.cs" />
+    <Compile Include="Areas\Paste\PasteHelper.cs" />
     <Compile Include="Areas\Paste\ViewModels\PasteCreateViewModel.cs" />
     <Compile Include="Areas\Paste\PasteAreaRegistration.cs" />
     <Compile Include="Areas\Paste\ViewModels\PasswordViewModel.cs" />

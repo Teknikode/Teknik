@@ -12,6 +12,7 @@ using Teknik.Controllers;
 using Teknik.Helpers;
 using Teknik.Models;
 
+
 namespace Teknik.Areas.Paste.Controllers
 {
     public class PasteController : DefaultController
@@ -39,7 +40,7 @@ namespace Teknik.Areas.Paste.Controllers
                 db.SaveChanges();
 
                 // Check Expiration
-                if (CheckExpiration(paste))
+                if (PasteHelper.CheckExpiration(paste))
                 {
                     db.Pastes.Remove(paste);
                     db.SaveChanges();
@@ -108,66 +109,7 @@ namespace Teknik.Areas.Paste.Controllers
             {
                 try
                 {
-                    Models.Paste paste = db.Pastes.Create();
-                    paste.DatePosted = DateTime.Now;
-                    paste.Url = Utility.RandomString(Config.PasteConfig.UrlLength);
-                    paste.MaxViews = 0;
-                    paste.Views = -1;
-
-                    // Figure out the expire date (null if 'never' or 'visit')
-                    if (model.ExpireLength.HasValue || model.ExpireUnit == "never")
-                    {
-                        switch (model.ExpireUnit)
-                        {
-                            case "never":
-                                break;
-                            case "view":
-                                paste.MaxViews = model.ExpireLength ?? 0;
-                                break;
-                            case "minute":
-                                paste.ExpireDate = paste.DatePosted.AddMinutes(model.ExpireLength ?? 1);
-                                break;
-                            case "hour":
-                                paste.ExpireDate = paste.DatePosted.AddHours(model.ExpireLength ?? 1);
-                                break;
-                            case "day":
-                                paste.ExpireDate = paste.DatePosted.AddDays(model.ExpireLength ?? 1);
-                                break;
-                            case "month":
-                                paste.ExpireDate = paste.DatePosted.AddMonths(model.ExpireLength ?? 1);
-                                break;
-                            case "year":
-                                paste.ExpireDate = paste.DatePosted.AddYears(model.ExpireLength ?? 1);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-
-                    // Set the hashed password if one is provided and encrypt stuff
-                    if (!string.IsNullOrEmpty(model.Password))
-                    {
-                        string key = Utility.RandomString(Config.PasteConfig.KeySize / 8);
-                        string iv = Utility.RandomString(Config.PasteConfig.BlockSize / 8);
-                        paste.HashedPassword = Helpers.SHA384.Hash(key, model.Password);
-
-                        // Encrypt Content
-                        byte[] data = Encoding.Unicode.GetBytes(model.Content);
-                        byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
-                        byte[] keyBytes = AES.CreateKey(model.Password, ivBytes, Config.PasteConfig.KeySize);
-                        byte[] encData = AES.Encrypt(data, keyBytes, ivBytes);
-                        model.Content = Encoding.Unicode.GetString(encData);
-
-                        paste.Key = key;
-                        paste.KeySize = Config.PasteConfig.KeySize;
-                        paste.IV = iv;
-                        paste.BlockSize = Config.PasteConfig.BlockSize;
-                    }
-
-                    paste.Content = model.Content;
-                    paste.Title = model.Title;
-                    paste.Syntax = model.Syntax;
-                    paste.Hide = model.Hide;
+                    Models.Paste paste = PasteHelper.CreatePaste(model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password, model.Hide);
 
                     db.Pastes.Add(paste);
                     db.SaveChanges();
@@ -180,16 +122,6 @@ namespace Teknik.Areas.Paste.Controllers
                 }
             }
             return View("~/Areas/Paste/Views/Paste/Index.cshtml", model);
-        }
-
-        private bool CheckExpiration(Models.Paste paste)
-        {
-            if (paste.ExpireDate != null && DateTime.Now >= paste.ExpireDate)
-                return true;
-            if (paste.MaxViews > 0 && paste.Views > paste.MaxViews)
-                return true;
-
-            return false;
         }
     }
 }

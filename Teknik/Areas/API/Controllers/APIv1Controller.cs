@@ -6,9 +6,11 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Upload;
+using Teknik.Areas.Paste;
 using Teknik.Controllers;
 using Teknik.Helpers;
 using Teknik.Models;
+using System.Text;
 
 namespace Teknik.Areas.API.Controllers
 {
@@ -114,6 +116,33 @@ namespace Teknik.Areas.API.Controllers
                 return Json(new { error = new { message = "Invalid Upload Request" } });
             }
             catch(Exception ex)
+            {
+                return Json(new { error = new { message = "Exception: " + ex.Message } });
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult Paste(string content, string title = "", string syntax = "auto", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
+        {
+            try
+            {
+                Paste.Models.Paste paste = PasteHelper.CreatePaste(content, title, syntax, expireUnit, expireLength, password, hide);
+
+                db.Pastes.Add(paste);
+                db.SaveChanges();
+                
+                return Json(new { result = new {
+                        id = paste.Url,
+                        url = Url.SubRouteUrl("paste", "Paste.View", new { type = "Full", url = paste.Url, password = password }),
+                        title = paste.Title,
+                        syntax = paste.Syntax,
+                        expiration = paste.ExpireDate,
+                        password = password
+                    }
+                });
+            }
+            catch (Exception ex)
             {
                 return Json(new { error = new { message = "Exception: " + ex.Message } });
             }

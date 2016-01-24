@@ -32,6 +32,13 @@ namespace Teknik.Areas.API
                  new { controller = "APIv1", action = "Upload" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
+            context.MapSubdomainRoute(
+                 "API.v1.Paste", // Route name
+                 new List<string>() { "dev", "api" },
+                 "v1/Paste",    // URL with parameters 
+                 new { controller = "APIv1", action = "Paste" },  // Parameter defaults 
+                 new[] { typeof(Controllers.APIv1Controller).Namespace }
+             );
             #endregion
 
             // Default Routing
