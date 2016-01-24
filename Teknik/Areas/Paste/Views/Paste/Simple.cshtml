@@ -19,13 +19,23 @@
     <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon" />
 
     @Styles.Render("~/Content/paste")
-    @Scripts.Render("~/bundles/highlight")
 
 </head>
 <body data-twttr-rendered="true">
-    <pre><code class="@syntax">@Model.Content</code></pre>
+    <pre><code class="@syntax" id="code">@Model.Content</code></pre>
     <script>
-        hljs.initHighlightingOnLoad();
+        addEventListener('load', function () {
+            var code = document.querySelector('#code');
+            var worker = new Worker('@Scripts.Url("~/bundles/syntaxWorker")');
+            worker.onmessage = function (event) {
+                code.innerHTML = event.data;
+            }
+            var obj = {
+                script: '@Scripts.Url("~/bundles/highlight")',
+                code: code.textContent
+            };
+            worker.postMessage(obj);
+        })
 
         function pageloadStopTimer() { }
     </script>

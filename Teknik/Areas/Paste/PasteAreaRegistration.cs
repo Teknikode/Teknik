@@ -63,6 +63,8 @@ namespace Teknik.Areas.Paste
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/paste").Include(
                       "~/Scripts/Highlight/highlight.pack.js",
                       "~/Areas/Paste/Scripts/Paste.js"));
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/syntaxWorker").Include(
+                      "~/Areas/Paste/Scripts/SyntaxWorker.js"));
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/highlight").Include(
                       "~/Scripts/Highlight/highlight.pack.js"));
             // Register Style Bundles
