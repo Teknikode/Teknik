@@ -80,7 +80,7 @@ namespace Teknik.Areas.Paste.Controllers
                     case "simple":
                         return View("~/Areas/Paste/Views/Paste/Simple.cshtml", model);
                     case "raw":
-                        return Content(model.Content, "application/octet-stream");
+                        return Content(model.Content, "text/plain");
                     case "download":
                         //Create File
                         var cd = new System.Net.Mime.ContentDisposition
@@ -91,7 +91,7 @@ namespace Teknik.Areas.Paste.Controllers
 
                         Response.AppendHeader("Content-Disposition", cd.ToString());
 
-                        return File(data, "text/plain");
+                        return File(data, "application/octet-stream");
                     default:
                         return View("~/Areas/Paste/Views/Paste/Full.cshtml", model);
                 }
