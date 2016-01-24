@@ -399,6 +399,7 @@
     <Content Include="Areas\Paste\Views\Paste\PasswordNeeded.cshtml" />
     <Content Include="Areas\Error\Views\Error\Http403.cshtml" />
     <Content Include="Areas\Paste\Views\Paste\Simple.cshtml" />
+    <Content Include="Areas\Help\Views\Help\API\v1\Paste.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />

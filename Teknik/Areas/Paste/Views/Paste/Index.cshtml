@@ -33,7 +33,7 @@
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Syntax</label>
                     <div class="col-sm-4">
                         <select class="form-control" name="Syntax" id="syntax">
-                            <option value="auto-select">Auto Select</option>
+                            <option value="auto-detect">Auto Detect</option>
                             @foreach (KeyValuePair<string, string> format in Constants.HIGHLIGHTFORMATS)
                             {
                                 <option value="@format.Value">@format.Key</option>

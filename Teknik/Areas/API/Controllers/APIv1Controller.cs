@@ -123,11 +123,11 @@ namespace Teknik.Areas.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Paste(string content, string title = "", string syntax = "auto", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
+        public ActionResult Paste(string code, string title = "", string syntax = "auto", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
         {
             try
             {
-                Paste.Models.Paste paste = PasteHelper.CreatePaste(content, title, syntax, expireUnit, expireLength, password, hide);
+                Paste.Models.Paste paste = PasteHelper.CreatePaste(code, title, syntax, expireUnit, expireLength, password, hide);
 
                 db.Pastes.Add(paste);
                 db.SaveChanges();

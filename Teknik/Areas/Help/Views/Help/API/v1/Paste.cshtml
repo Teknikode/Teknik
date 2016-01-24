@@ -1,0 +1,219 @@
+﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
+
+@using Teknik.Helpers
+
+@Styles.Render("~/Content/help");
+
+<div class="container">
+    <div class="row api">
+        <h2><b>Paste</b></h2>
+        <hr>
+        <p>This is a description of the API commands available for the Paste service.</p>
+        <h3>Submit a Paste</h3>
+        <pre><code>POST @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
+        <h4>Parameters</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>code</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>NULL</var>
+                    </td>
+                    <td>
+                        <strong>Required</strong>
+                        The text that will be submitted as the paste content.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>title</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>NULL</var>
+                    </td>
+                    <td>
+                        The title for the paste.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>syntax</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        auto-detect
+                    </td>
+                    <td>
+                        The syntax of the pasted code.
+                        <br />
+                        This can be one of the following:
+                        <select name="format" class="selectpicker">
+                            @foreach (KeyValuePair<string, string> format in Constants.HIGHLIGHTFORMATS)
+                            {
+                                <option value="@format.Value">@format.Key</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>expireUnit</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>never</var>
+                    </td>
+                    <td>
+                        The expiration type for the paste.  Possible values are <code>view</code> (Number of Views) or a date value <code>minute</code>, <code>hour</code>, <code>day</code>, <code>month</code>, <code>year</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>expireLength</code>
+                    </td>
+                    <td>
+                        <code>int</code>
+                    </td>
+                    <td>
+                        <var>1</var>
+                    </td>
+                    <td>
+                        The length of whatever unit you choose before the paste is deleted.  
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>password</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>NULL</var>
+                    </td>
+                    <td>
+                        Specify a password to encrypt and lock the paste with.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>hide</code>
+                    </td>
+                    <td>
+                        <code>bool</code>
+                    </td>
+                    <td>
+                        <var>false</var>
+                    </td>
+                    <td>
+                        If the paste should be visible in the most recent pastes list.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>Response</h4>
+        <pre><code>{"result":{"id":<var>id</var> "url":"<var>url</var>", "title":"<var>title</var>", "syntax":"<var>auto-detect</var>", "expiration":"<var>datetime</var>", "password":"<var>password</var>"}}}</code></pre>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>id</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The id of the paste.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>url</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The direct url to the paste.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>title</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The title of the paste.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>syntax</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The syntax of the pasted code.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>expiration</code>
+                    </td>
+                    <td>
+                        <code>datetime</code>
+                    </td>
+                    <td>
+                        The date of expiration of the paste.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>password</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The password of the paste.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>Example</h4>
+        <pre><code>$ curl --data "title=Paste%20Title&expireUnit=view&expireLength=3" --data-urlencode "code=This%20is%20my%20test%20code." @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
+        <p>
+            This will submit the paste with a title and expiration when the paste has viewed 3 times.
+        </p>
+    </div>
+</div>
