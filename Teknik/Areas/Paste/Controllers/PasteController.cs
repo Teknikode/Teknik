@@ -111,6 +111,11 @@ namespace Teknik.Areas.Paste.Controllers
                 {
                     Models.Paste paste = PasteHelper.CreatePaste(model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password, model.Hide);
 
+                    if (model.ExpireUnit == "view")
+                    {
+                        paste.Views = -1;
+                    }
+
                     db.Pastes.Add(paste);
                     db.SaveChanges();
 

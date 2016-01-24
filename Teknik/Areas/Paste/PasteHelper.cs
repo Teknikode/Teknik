@@ -13,12 +13,20 @@ namespace Teknik.Areas.Paste
     {
         public static Models.Paste CreatePaste(string content, string title = "", string syntax = "auto-detect", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
         {
+            TeknikEntities db = new TeknikEntities();
             Config config = Config.Load();
-            Models.Paste paste = new Models.Paste();
+            Models.Paste paste = db.Pastes.Create();
             paste.DatePosted = DateTime.Now;
-            paste.Url = Utility.RandomString(config.PasteConfig.UrlLength);
             paste.MaxViews = 0;
-            paste.Views = -1;
+            paste.Views = 0;
+
+            // Generate random url
+            string url = Utility.RandomString(config.PasteConfig.UrlLength);
+            while (db.Pastes.Where(p => p.Url == url) != null)
+            {
+                url = Utility.RandomString(config.PasteConfig.UrlLength);
+            }
+            paste.Url = url;
 
             // Figure out the expire date (null if 'never' or 'visit')
             switch (expireUnit.ToLower())
