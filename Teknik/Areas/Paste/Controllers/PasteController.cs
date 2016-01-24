@@ -63,7 +63,7 @@ namespace Teknik.Areas.Paste.Controllers
                     {
                         PasswordViewModel passModel = new PasswordViewModel();
                         passModel.Url = url;
-                        passModel.CallingAction = Url.SubRouteUrl("paste", "Paste.View", new { type = type });
+                        passModel.Type = type;
                         // Redirect them to the password request page
                         return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
                     }
