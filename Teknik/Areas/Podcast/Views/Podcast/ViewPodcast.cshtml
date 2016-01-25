@@ -1,9 +1,33 @@
 ﻿@model Teknik.Areas.Podcast.ViewModels.PodcastViewModel
     
+<script>
+    // We need to define the action URLs for the script
+
+    var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
+
+    var getPodcastsURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcasts" })';
+    var getPodcastEpisodeURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastEpisode" })';
+    var getPodcastTitleURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastTitle" })';
+    var getPodcastDescriptionURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastDescription" })';
+    var publishPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "PublishPodcast" })';
+    var addPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "CreatePodcast" })';
+    var editPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "EditPodcast" })';
+    var deletePodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "DeletePodcast" })';
+
+    var getCommentsURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetComments" })';
+    var getCommentArticleURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetCommentArticle" })';
+    var addCommentURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "CreateComment" })';
+    var editCommentURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "EditComment" })';
+    var deleteCommentURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "DeleteComment" })';
+</script>
+
+@Styles.Render("~/Content/podcast")
+@Scripts.Render("~/bundles/podcast")
+
 <div class="container">
     @if (!Model.Error)
     {
-        @if (User.IsInRole("Admin"))
+        if (User.IsInRole("Podcast"))
         {
             <div class="modal fade" id="editPodcast" tabindex="-1" role="dialog" aria-labelledby="editPodcastLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -15,6 +39,12 @@
                             </div>
                             <div class="modal-body">
                                 <input name="edit_podcast_postid" id="edit_podcast_postid" type="hidden" />
+                                <div class="row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="edit_podcast_episode"><h4>Episode Number</h4></label>
+                                        <input class="form-control" name="edit_podcast_episode" id="edit_podcast_episode" placeholder="1" title="enter an episode number for the podcast" type="number" />
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="form-group col-sm-12">
                                         <label for="edit_podcast_title"><h4>Title</h4></label>
@@ -50,7 +80,7 @@
         <div class="podcast-main" id="@Model.PodcastId">
             @Html.Partial("Podcast", Model)
         </div>
-        @if (User.IsInRole("Admin"))
+        if (User.Identity.IsAuthenticated)
         {
             <div class="row">
                 <div class="col-sm-10 col-sm-offset-1">

@@ -31,6 +31,13 @@ namespace Teknik.Areas.Podcast
                  new[] { typeof(Controllers.PodcastController).Namespace }
              );
             context.MapSubdomainRoute(
+                 "Podcast.Download", // Route name
+                 new List<string>() { "dev", "podcast" }, // Subdomains
+                 "File/{episode}/{fileName}",    // URL with parameters 
+                 new { controller = "Podcast", action = "Download" },  // Parameter defaults 
+                 new[] { typeof(Controllers.PodcastController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Podcast.Action", // Route name
                  new List<string>() { "dev", "podcast" }, // Subdomains
                  "Action/{controller}/{action}",    // URL with parameters 
@@ -43,7 +50,7 @@ namespace Teknik.Areas.Podcast
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Scripts/PageDown/Markdown.Converter.js",
                       "~/Scripts/PageDown/Markdown.Sanitizer.js",
-                      "~/Scripts/bootstrap-markdown.js",
+                      //"~/Scripts/bootstrap-markdown.js", Uneeded?
                       "~/Scripts/jquery-ui.widgets.js",
                       "~/Scripts/jquery.iframe-transport.js",
                       "~/Scripts/audioplayer.min.js",

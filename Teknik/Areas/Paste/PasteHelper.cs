@@ -22,7 +22,7 @@ namespace Teknik.Areas.Paste
 
             // Generate random url
             string url = Utility.RandomString(config.PasteConfig.UrlLength);
-            while (db.Pastes.Where(p => p.Url == url) != null)
+            while (db.Pastes.Where(p => p.Url == url).FirstOrDefault() != null)
             {
                 url = Utility.RandomString(config.PasteConfig.UrlLength);
             }

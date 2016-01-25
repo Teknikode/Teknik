@@ -341,7 +341,6 @@
     <Content Include="Global.asax" />
     <Content Include="Content\teknik.css" />
     <Content Include="Images\Icon.png" />
-    <Content Include="App_Data\Config.json" />
     <Content Include="ConnectionStrings.config" />
     <Content Include="Areas\Blog\Views\web.config" />
     <Content Include="Areas\Blog\Views\Blog\Blog.cshtml" />
@@ -422,6 +421,7 @@
     <Content Include="Areas\Podcast\Views\Podcast\Comment.cshtml" />
     <Content Include="Areas\Podcast\Views\Podcast\Comments.cshtml" />
     <Content Include="Areas\Podcast\Views\Podcast\ViewPodcast.cshtml" />
+    <Content Include="App_Data\Config.json" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />

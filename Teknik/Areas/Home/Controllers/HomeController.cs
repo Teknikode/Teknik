@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.Areas.Podcast.Models;
 using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Home.ViewModels;
 using Teknik.Controllers;
@@ -31,7 +32,10 @@ namespace Teknik.Areas.Home.Controllers
             if (foundPosts != null)
                 lastPosts = foundPosts.ToList();
             // Grab the latest podcasts
-            List<BlogPost> lastPods = new List<BlogPost>();
+            List<Podcast.Models.Podcast> lastPods = new List<Podcast.Models.Podcast>();
+            var foundPods = db.Podcasts.OrderBy(post => post.DatePosted).Where(p => p.Published).Take(10);
+            if (foundPods != null)
+                lastPods = foundPods.ToList();
 
             model.SitePosts = lastSite;
             model.Podcasts = lastPods;

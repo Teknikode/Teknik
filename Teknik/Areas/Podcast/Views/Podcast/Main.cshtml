@@ -6,8 +6,9 @@
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
 
     var getPodcastsURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcasts" })';
+    var getPodcastEpisodeURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastEpisode" })';
     var getPodcastTitleURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastTitle" })';
-    var getPodcastArticleURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastArticle" })';
+    var getPodcastDescriptionURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastDescription" })';
     var publishPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "PublishPodcast" })';
     var addPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "CreatePodcast" })';
     var editPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "EditPodcast" })';
@@ -37,7 +38,7 @@
             </p>
         </div>
     </div>
-    @if (User.IsInRole("Admin") || User.IsInRole("Podcast"))
+    @if (User.IsInRole("Podcast"))
     { 
     <div class="row">
         <div class="col-sm-12 text-center">
@@ -47,12 +48,18 @@
     <div class="modal fade" id="newPodcast" tabindex="-1" role="dialog" aria-labelledby="newPodcastLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="##" method="post" id="publishPodcast">
+                <form class="form" action="##" method="post" id="publishPodcast" enctype="multipart/form-data">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
                         <h4 class="modal-title" id="newPodcastLabel">Create a New Podcast</h4>
                     </div>
                     <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="podcast_episode"><h4>Episode Number</h4></label>
+                                <input class="form-control" name="podcast_episode" id="podcast_episode" placeholder="1" title="enter an episode number for the podcast" type="number" />
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="form-group col-sm-12">
                                 <label for="podcast_title"><h4>Title</h4></label>
@@ -68,7 +75,7 @@
                         <div class="row">
                             <div class="form-group col-sm-12">
                                 <label for="files"><h4>Upload Podcast</h4></label>
-                                <input id="files" name="files" type="file" placeholder="podcast.ogg" title="select the podcast file." multiple="multiple" />
+                                <input id="podcast_files" name="podcast_files" type="file" placeholder="podcast.ogg" title="select the podcast file." multiple>
                             </div>
                         </div>
                         <div class="row">
@@ -94,6 +101,12 @@
                     </div>
                     <div class="modal-body">
                         <input name="edit_podcast_podcastId" id="edit_podcast_podcastId" type="hidden" />
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="edit_podcast_episode"><h4>Episode Number</h4></label>
+                                <input class="form-control" name="edit_podcast_episode" id="edit_podcast_episode" placeholder="1" title="enter an episode number for the podcast" type="number" />
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="form-group col-sm-12">
                                 <label for="edit_podcast_title"><h4>Title</h4></label>

@@ -11,10 +11,10 @@
 <div class="row">
     <div class="col-sm-10 col-sm-offset-1">
         <div class="podcast-post">
-            <h2 class="podcast-post-title text-center"><a href="@Url.SubRouteUrl("podcast", "Podcast.View", new { episode = Model.Episode })" id="title_@Model.PodcastId">@Model.Title</a></h2>
+            <h2 class="podcast-post-title text-center"><a href="@Url.SubRouteUrl("podcast", "Podcast.View", new { episode = Model.Episode })" id="title_@Model.PodcastId">Episode @Model.Episode - @Model.Title</a></h2>
             <p class="podcast-post-meta text-center text-muted">
                 Posted on <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("MMMM dd, yyyy")</time>
-                @if (User.IsInRole("Admin") || User.IsInRole("Podcast"))
+                @if (User.IsInRole("Podcast"))
                 {
                 <br />
                 <button type="button" class="btn btn-info edit_post" id="@Model.PodcastId" data-toggle="modal" data-target="#editPodcast">Edit</button>
@@ -26,24 +26,30 @@
                     {
                         <button type="button" class="btn btn-success publish_podcast" id="@Model.PodcastId">Publish</button>
                     }
-                <button type="button" class="btn btn-danger delete_post" id="@Model.PodcastId">Delete</button>
+                <button type="button" class="btn btn-danger delete_podcast" id="@Model.PodcastId">Delete</button>
                 }
             </p>
+            @if (Model.Files != null)
+            {
             <div class="text-center">
                 <audio preload="none" controls>
                     @foreach (PodcastFile file in Model.Files)
                     {
-                        <source src="@file.Path" type="@file.ContentType" />
+                        <source src="@Url.SubRouteUrl("podcast", "Podcast.Download", new { episode = Model.Episode, fileName = file.FileName })" type="@file.ContentType" />
                     }
                 </audio>
             </div>
+            }
             <br />
             <p id="podcast_@Model.PodcastId">@Model.Description</p>
-            @foreach (PodcastFile file in Model.Files)
+            @if (Model.Files != null)
             {
-                <div class="row text-center">
-                    <a href="@Url.SubRouteUrl("podcast", "Podcast.Download", new { file = file.FileName })">Direct Download - @file.ContentType</a>
-                </div>
+                foreach (PodcastFile file in Model.Files)
+                {
+                    <div class="row text-center">
+                        <a href="@Url.SubRouteUrl("podcast", "Podcast.Download", new { episode = Model.Episode, fileName = file.FileName })">Direct Download - @file.ContentType</a>
+                    </div>
+                }
             }
         </div>
     </div>

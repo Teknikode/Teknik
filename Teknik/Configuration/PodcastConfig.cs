@@ -11,6 +11,7 @@ namespace Teknik.Configuration
         public string Description { get; set; }
         public int PodcastsToLoad { get; set; }
         public int CommentsToLoad { get; set; }
+        public string PodcastDirectory { get; set; }
 
         public PodcastConfig()
         {
@@ -23,6 +24,7 @@ namespace Teknik.Configuration
             Description = string.Empty;
             PodcastsToLoad = 10;
             CommentsToLoad = 10;
+            PodcastDirectory = string.Empty;
         }
     }
 }

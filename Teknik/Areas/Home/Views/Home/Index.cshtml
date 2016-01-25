@@ -1,6 +1,7 @@
 ﻿@model Teknik.Areas.Home.ViewModels.HomeViewModel
 
 @using Teknik.Areas.Blog.Models
+@using Teknik.Areas.Podcast.Models
 
 @Styles.Render("~/Content/home")
 @Scripts.Render("~/bundles/home")
@@ -133,21 +134,21 @@
                     <ul class="list-group">
                         @if (Model.SitePosts.Any())
                         {
-                            foreach (Post post in Model.SitePosts)
+                            foreach (BlogPost post in Model.SitePosts)
                             {
                                 <script>
                                     var converter = new Markdown.getSanitizingConverter();
                                     // Title Conversion
-                                    var old_post = $("#title_@post.PostId").text();
+                                    var old_post = $("#title_@post.BlogPostId").text();
                                     var new_post = converter.makeHtml(old_post);
-                                    $("#title_@post.PostId").html(new_post);
+                                    $("#title_@post.BlogPostId").html(new_post);
                                 </script>
                                 <li class="list-group-item">
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <div class="blog-post-sm">
                                                 <h2 class="blog-post-title-sm text-left">
-                                                    <a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
+                                                    <a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId })" id="title_@post.BlogPostId">@post.Title</a>
                                                 </h2>
                                                 <p class="blog-post-meta-sm text-left text-muted">
                                                     Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
@@ -184,24 +185,24 @@
                     <ul class="list-group">
                         @if (Model.Podcasts.Any())
                         {
-                            foreach (Post post in Model.Podcasts)
+                            foreach (Podcast podcast in Model.Podcasts)
                             {
                                 <script>
-                                        var converter = new Markdown.getSanitizingConverter();
-                                        // Title Conversion
-                                        var old_post = $("#title_@post.PostId").text();
-                                        var new_post = converter.makeHtml(old_post);
-                                        $("#title_@post.PostId").html(new_post);
+                                    var converter = new Markdown.getSanitizingConverter();
+                                    // Title Conversion
+                                    var old_post = $("#title_@podcast.PodcastId").text();
+                                    var new_post = converter.makeHtml(old_post);
+                                    $("#title_@podcast.PodcastId").html(new_post);
                                 </script>
                                 <li class="list-group-item">
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <div class="blog-post-sm">
                                                 <h2 class="blog-post-title-sm text-left">
-                                                    <a href="@Url.SubRouteUrl("podcast", "Podcast.View", new { username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
+                                                    <a href="@Url.SubRouteUrl("podcast", "Podcast.View", new { episode = podcast.Episode })" id="title_@podcast.PodcastId">@podcast.Title</a>
                                                 </h2>
                                                 <p class="blog-post-meta-sm text-left text-muted">
-                                                    Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time>
+                                                    Posted on <time datetime="@podcast.DatePosted.ToString("o")">@podcast.DatePosted.ToString("MMMM dd, yyyy")</time>
                                                 </p>
                                             </div>
                                         </div>
@@ -235,20 +236,20 @@
                     <ul class="list-group">
                         @if (Model.BlogPosts.Any())
                         {
-                            foreach (Post post in Model.BlogPosts)
+                            foreach (BlogPost post in Model.BlogPosts)
                             {
                                 <script>
                                     var converter = new Markdown.getSanitizingConverter();
                                     // Title Conversion
-                                    var old_post = $("#title_@post.PostId").text();
+                                    var old_post = $("#title_@post.BlogPostId").text();
                                     var new_post = converter.makeHtml(old_post);
-                                    $("#title_@post.PostId").html(new_post);
+                                    $("#title_@post.BlogPostId").html(new_post);
                                 </script>
                                 <li class="list-group-item">
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <div class="blog-post-sm">
-                                                <h2 class="blog-post-title-sm text-left"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.PostId })" id="title_@post.PostId">@post.Title</a>
+                                                <h2 class="blog-post-title-sm text-left"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId })" id="title_@post.BlogPostId">@post.Title</a>
                                                 </h2>
                                                 <p class="blog-post-meta-sm text-left text-muted">
                                                     Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>

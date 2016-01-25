@@ -1,31 +1,55 @@
 ﻿$(document).ready(function () {
     $("#podcast_submit").click(function () {
         $('#newPodcast').modal('hide');
+        var fd = new FormData();
+        var fileInput = document.getElementById('podcast_files');
+        for (i = 0; i < fileInput.files.length; i++) {
+            //Appending each file to FormData object
+            fd.append(fileInput.files[i].name, fileInput.files[i]);
+        }
+        episode = $("#podcast_episode").val();
         title = $("#podcast_title").val();
-        post = $("#podcast_description").val();
-        files = $("#podcast_files").val();
-        $.ajax({
-            type: "POST",
-            url: addPodcastURL,
-            data: AddAntiForgeryToken({ title: title, description: post, files: files }),
-            success: function (html) {
-                if (html.result) {
+        description = $("#podcast_description").val();
+
+        fd.append("episode", episode);
+        fd.append("title", title);
+        fd.append("description", description);
+        fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', addPodcastURL);
+        xhr.send(fd);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                obj = JSON.parse(xhr.responseText);
+                if (obj.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + obj.error + '</div>');
                 }
             }
-        });
+        }
         return false;
     });
 
     $('#editPodcast').on('show.bs.modal', function (e) {
+        $("#edit_podcast_episode").val("");
         $("#edit_podcast_title").val("");
         $("#edit_podcast_description").val("");
         podcastId = $(e.relatedTarget).attr("id");
-        $("#edit_podcast_podcastid").val(podcastId);
+        $("#edit_podcast_podcastId").val(podcastId);
+        $.ajax({
+            type: "POST",
+            url: getPodcastEpisodeURL,
+            data: { podcastID: podcastId },
+            success: function (html) {
+                if (html.result) {
+                    $("#edit_podcast_episode").val(html.result);
+                }
+            }
+        });
         $.ajax({
             type: "POST",
             url: getPodcastTitleURL,
@@ -51,12 +75,13 @@
     $("#edit_submit").click(function () {
         $('#editPodcast').modal('hide');
         podcastId = $("#edit_podcast_podcastId").val();
+        episode = $("#edit_podcast_episode").val();
         title = $("#edit_podcast_title").val();
         description = $("#edit_podcast_description").val();
         $.ajax({
             type: "POST",
             url: editPodcastURL,
-            data: AddAntiForgeryToken({ podcastId: podcastId, title: title, description: description }),
+            data: AddAntiForgeryToken({ podcastId: podcastId, episode: episode, title: title, description: description }),
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -138,9 +163,9 @@ function loadMorePodcasts(start, count) {
         success: function (html) {
             if (html) {
                 $(".podcast-main").append(html);
-                linkPostDelete('.delete_podcast');
-                linkPostPublish('.publish_podcast');
-                linkPostUnpublish('.unpublish_podcast');
+                linkPodcastDelete('.delete_podcast');
+                linkPodcastPublish('.publish_podcast');
+                linkPodcastUnpublish('.unpublish_podcast');
                 linkAudioPlayer('audio');
                 $(window).bind('scroll', bindScrollPosts);
             }
