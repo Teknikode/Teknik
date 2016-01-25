@@ -1,0 +1,80 @@
+﻿
+/*
+ * Podcast name and description
+ */
+
+.podcast-header {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.podcast-title {
+  margin-top: 30px;
+  margin-bottom: 0;
+  font-size: 60px;
+  font-weight: normal;
+}
+.podcast-description {
+  font-size: 20px;
+}
+
+/*
+ * Main column and sidebar layout
+ */
+
+.podcast-main {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+/*
+ * Podcasts
+ */
+
+.podcast-post {
+  margin-bottom: 60px;
+}
+.podcast-post-sm {
+  margin-bottom: 5;
+}
+.podcast-post-title {
+  margin-bottom: 5px;
+  font-size: 40px;
+}
+.podcast-post-title-sm {
+  margin-bottom: 5px;
+  font-size: 18px;
+  line-height: 1;
+}
+.podcast-post-meta {
+  margin-bottom: 20px;
+}
+.podcast-post-meta-sm {
+  margin-bottom: 5;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/*
+ * Comment Styling
+ */
+.post-comment {
+  margin-bottom: 20px;
+}
+.post-comment-title {
+  margin-bottom: 5px;
+  font-size: 40px;
+}
+
+.post-comment-meta {
+  margin-bottom: 20px;
+}
+
+/*
+ * Markdown Edits
+ */
+ 
+ blockquote { 
+  border-left: 2px dotted #888; 
+  padding-left: 5px; 
+  background: #d0f0ff; 
+}

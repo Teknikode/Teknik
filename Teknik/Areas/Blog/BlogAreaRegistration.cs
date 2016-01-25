@@ -43,7 +43,7 @@ namespace Teknik.Areas.Blog
                       "~/Scripts/ocupload/1.1.2/ocupload.js",
                       "~/Scripts/PageDown/Markdown.Converter.js",
                       "~/Scripts/PageDown/Markdown.Sanitizer.js",
-                      "~/Scripts/bootstrap/markdown/bootstrap-markdown.js",
+                      "~/Scripts/bootstrap-markdown.js",
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Areas/Blog/Scripts/Blog.js"));
             // Register Style Bundles

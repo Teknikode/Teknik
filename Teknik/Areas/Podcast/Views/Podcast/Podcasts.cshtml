@@ -1,0 +1,6 @@
+﻿@model List<Teknik.Areas.Podcast.ViewModels.PodcastViewModel>
+
+@foreach (var podcast in Model)
+{
+    @Html.Partial("Podcast", podcast)
+}

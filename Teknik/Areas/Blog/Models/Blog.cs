@@ -16,6 +16,6 @@ namespace Teknik.Areas.Blog.Models
 
         public User User { get; set; }
 
-        public List<Post> Posts { get; set; }
+        public List<BlogPost> BlogPosts { get; set; }
     }
 }

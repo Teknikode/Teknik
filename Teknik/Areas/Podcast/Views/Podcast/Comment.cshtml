@@ -1,0 +1,30 @@
+﻿@model Teknik.Areas.Blog.ViewModels.CommentViewModel
+
+<script>
+    var converter = new Markdown.getSanitizingConverter();
+    // Title Conversion
+    var old_post = $("#title_@Model.CommentId").text();
+    var new_post = converter.makeHtml(old_post);
+    $("#title_@Model.CommentId").html(new_post);
+    // Post Conversion
+    var old_post = $("#comment_@Model.CommentId").text();
+    var new_post = converter.makeHtml(old_post);
+    $("#comment_@Model.CommentId").html(new_post);
+</script>
+<hr>
+<div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+        <div class="post-comment">
+            <p class="post-comment-meta text-muted">
+                <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = Model.User.Username })">@Model.User.Username</a> replied at <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("HH:mm:ss tt") on @Model.DatePosted.ToString("MMMM dd, yyyy")</time>
+                @if (Model.User.Username == User.Identity.Name || User.IsInRole("Admin"))
+                {
+                    <br />
+                    <button type="button" class="btn btn-info edit_comment" id="@Model.CommentId" data-toggle="modal" data-target="#editComment">Edit</button>
+                    <button type="button" class="btn btn-danger delete_comment" id="@Model.CommentId">Delete</button>
+                }
+            </p>
+            <p id="comment_@Model.CommentId">@Model.Article</p>
+        </div>
+    </div>
+</div>

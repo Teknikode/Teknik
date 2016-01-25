@@ -28,8 +28,8 @@ namespace Teknik.Areas.Blog.Controllers
             if (string.IsNullOrEmpty(username))
             {
                 ViewBag.Title = "Teknik Blog - " + Config.Title;
-                var foundPosts = (User.IsInRole("Admin")) ? db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.System))
-                                                            : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.System && p.Published));
+                var foundPosts = (User.IsInRole("Admin")) ? db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.System))
+                                                            : db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.System && p.Published));
                 model = new BlogViewModel();
                 model.BlogId = Constants.SERVERBLOGID;
 
@@ -54,8 +54,8 @@ namespace Teknik.Areas.Blog.Controllers
                 // find the blog specified
                 if (blog != null)
                 {
-                    var foundPosts = (User.IsInRole("Admin")) ? db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blog.BlogId && !p.System))
-                                                                : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blog.BlogId && !p.System) &&
+                    var foundPosts = (User.IsInRole("Admin")) ? db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blog.BlogId && !p.System))
+                                                                : db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blog.BlogId && !p.System) &&
                                                                                                                             (p.Published || p.Blog.User.Username == User.Identity.Name));
                     model = new BlogViewModel();
                     model.BlogId = blog.BlogId;
@@ -82,8 +82,8 @@ namespace Teknik.Areas.Blog.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             // find the post specified
-            var posts = (User.IsInRole("Admin"))    ? db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.Blog.User.Username == username && p.PostId == id))
-                                                    : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.Blog.User.Username == username && p.PostId == id) && 
+            var posts = (User.IsInRole("Admin"))    ? db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.Blog.User.Username == username && p.BlogPostId == id))
+                                                    : db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.Blog.User.Username == username && p.BlogPostId == id) && 
                                                                                 (p.Published || p.Blog.User.Username == User.Identity.Name));
             if (posts != null && posts.Any())
             {
@@ -99,13 +99,13 @@ namespace Teknik.Areas.Blog.Controllers
         [AllowAnonymous]
         public ActionResult GetPosts(int blogID, int startPostID, int count)
         {
-            var posts = (User.IsInRole("Admin"))    ? db.Posts.Include("Blog").Include("Blog.User").Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == Constants.SERVERBLOGID))).OrderByDescending(p => p.DatePosted).Skip(startPostID).Take(count).ToList()
-                                                    : db.Posts.Include("Blog").Include("Blog.User").Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == Constants.SERVERBLOGID)) && (p.Published || p.Blog.User.Username == User.Identity.Name)
+            var posts = (User.IsInRole("Admin"))    ? db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == Constants.SERVERBLOGID))).OrderByDescending(p => p.DatePosted).Skip(startPostID).Take(count).ToList()
+                                                    : db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == Constants.SERVERBLOGID)) && (p.Published || p.Blog.User.Username == User.Identity.Name)
                                                                                                         ).OrderByDescending(p => p.DatePosted).Skip(startPostID).Take(count).ToList();
             List<PostViewModel> postViews = new List<PostViewModel>();
             if (posts != null)
             {
-                foreach (Post post in posts)
+                foreach (BlogPost post in posts)
                 {
                     postViews.Add(new PostViewModel(post));
                 }
@@ -118,8 +118,8 @@ namespace Teknik.Areas.Blog.Controllers
         public ActionResult GetPostTitle(int postID)
         {
             string title = string.Empty;
-            Post post = (User.IsInRole("Admin"))    ? db.Posts.Find(postID) 
-                                                    : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.PostId == postID) && (p.Published || p.Blog.User.Username == User.Identity.Name)).First();
+            BlogPost post = (User.IsInRole("Admin"))    ? db.BlogPosts.Find(postID) 
+                                                    : db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.BlogPostId == postID) && (p.Published || p.Blog.User.Username == User.Identity.Name)).First();
             if (post != null)
             {
                 return Json(new { result = post.Title });
@@ -132,7 +132,7 @@ namespace Teknik.Areas.Blog.Controllers
         public ActionResult GetPostArticle(int postID)
         {
             string title = string.Empty;
-            Post post = (User.IsInRole("Admin")) ? db.Posts.Find(postID) : db.Posts.Include("Blog").Include("Blog.User").Where(p => (p.PostId == postID) && 
+            BlogPost post = (User.IsInRole("Admin")) ? db.BlogPosts.Find(postID) : db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.BlogPostId == postID) && 
                                                                                                                                     (p.Published || p.Blog.User.Username == User.Identity.Name)).First();
             if (post != null)
             {
@@ -156,7 +156,7 @@ namespace Teknik.Areas.Blog.Controllers
                         blogID = user.First().BlogId;
                     }
                 }
-                Post post = db.Posts.Create();
+                BlogPost post = db.BlogPosts.Create();
                 post.BlogId = blogID;
                 post.Title = title;
                 post.Article = article;
@@ -164,7 +164,7 @@ namespace Teknik.Areas.Blog.Controllers
                 post.DatePosted = DateTime.Now;
                 post.DatePublished = DateTime.Now;
 
-                db.Posts.Add(post);
+                db.BlogPosts.Add(post);
                 db.SaveChanges();
                 return Json(new { result = true });
             }
@@ -177,7 +177,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                Post post = db.Posts.Find(postID);
+                BlogPost post = db.BlogPosts.Find(postID);
                 if (post != null)
                 {
                     post.Title = title;
@@ -196,7 +196,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                Post post = db.Posts.Find(postID);
+                BlogPost post = db.BlogPosts.Find(postID);
                 if (post != null)
                 {
                     post.Published = publish;
@@ -216,10 +216,10 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                Post post = db.Posts.Find(postID);
+                BlogPost post = db.BlogPosts.Find(postID);
                 if (post != null)
                 {
-                    db.Posts.Remove(post);
+                    db.BlogPosts.Remove(post);
                     db.SaveChanges();
                     return Json(new { result = true });
                 }
@@ -233,11 +233,11 @@ namespace Teknik.Areas.Blog.Controllers
         [AllowAnonymous]
         public ActionResult GetComments(int postID, int startCommentID, int count)
         {
-            var comments = db.BlogComments.Include("Post").Include("Post.Blog").Include("Post.Blog.User").Where(p => (p.PostId == postID)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
+            var comments = db.BlogComments.Include("Post").Include("Post.Blog").Include("Post.Blog.User").Where(p => (p.BlogPostId == postID)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
             List<CommentViewModel> commentViews = new List<CommentViewModel>();
             if (comments != null)
             {
-                foreach (Comment comment in comments)
+                foreach (BlogPostComment comment in comments)
                 {
                     commentViews.Add(new CommentViewModel(comment));
                 }
@@ -249,7 +249,7 @@ namespace Teknik.Areas.Blog.Controllers
         [AllowAnonymous]
         public ActionResult GetCommentArticle(int commentID)
         {
-            Comment comment = db.BlogComments.Include("Post").Include("Post.Blog").Include("Post.Blog.User").Where(p => (p.CommentId == commentID)).First();
+            BlogPostComment comment = db.BlogComments.Include("Post").Include("Post.Blog").Include("Post.Blog.User").Where(p => (p.BlogPostCommentId == commentID)).First();
             if (comment != null)
             {
                 return Json(new { result = comment.Article });
@@ -263,8 +263,8 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                Comment comment = db.BlogComments.Create();
-                comment.PostId = postID;
+                BlogPostComment comment = db.BlogComments.Create();
+                comment.BlogPostId = postID;
                 comment.UserId = db.Users.Where(u => u.Username == User.Identity.Name).First().UserId;
                 comment.Article = article;
                 comment.DatePosted = DateTime.Now;
@@ -282,7 +282,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                Comment comment = db.BlogComments.Find(commentID);
+                BlogPostComment comment = db.BlogComments.Find(commentID);
                 if (comment != null)
                 {
                     comment.Article = article;
@@ -300,7 +300,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                Comment comment = db.BlogComments.Find(commentID);
+                BlogPostComment comment = db.BlogComments.Find(commentID);
                 if (comment != null)
                 {
                     db.BlogComments.Remove(comment);

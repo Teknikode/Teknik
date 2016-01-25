@@ -10,8 +10,8 @@ namespace Teknik.Areas.Home.ViewModels
 {
     public class HomeViewModel : ViewModelBase
     {
-        public List<Post> SitePosts { get; set; }
-        public List<Post> Podcasts { get; set; }
-        public List<Post> BlogPosts { get; set; }
+        public List<BlogPost> SitePosts { get; set; }
+        public List<BlogPost> Podcasts { get; set; }
+        public List<BlogPost> BlogPosts { get; set; }
     }
 }

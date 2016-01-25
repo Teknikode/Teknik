@@ -151,7 +151,7 @@
     <Compile Include="Areas\API\Controllers\APIController.cs" />
     <Compile Include="Areas\API\Controllers\APIv1Controller.cs" />
     <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
-    <Compile Include="Areas\Blog\Models\Comment.cs" />
+    <Compile Include="Areas\Blog\Models\BlogPostComment.cs" />
     <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
     <Compile Include="Areas\Blog\ViewModels\CommentViewModel.cs" />
     <Compile Include="Areas\Blog\ViewModels\PostViewModel.cs" />
@@ -176,6 +176,14 @@
     <Compile Include="Areas\Paste\PasteAreaRegistration.cs" />
     <Compile Include="Areas\Paste\ViewModels\PasswordViewModel.cs" />
     <Compile Include="Areas\Paste\ViewModels\PasteViewModel.cs" />
+    <Compile Include="Areas\Podcast\Controllers\PodcastController.cs" />
+    <Compile Include="Areas\Podcast\Models\PodcastComment.cs" />
+    <Compile Include="Areas\Podcast\Models\Podcast.cs" />
+    <Compile Include="Areas\Podcast\Models\PodcastFile.cs" />
+    <Compile Include="Areas\Podcast\PodcastAreaRegistration.cs" />
+    <Compile Include="Areas\Podcast\ViewModels\CommentViewModel.cs" />
+    <Compile Include="Areas\Podcast\ViewModels\MainViewModel.cs" />
+    <Compile Include="Areas\Podcast\ViewModels\PodcastViewModel.cs" />
     <Compile Include="Areas\Privacy\Controllers\PrivacyController.cs" />
     <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
     <Compile Include="Areas\Privacy\ViewModels\PrivacyViewModel.cs" />
@@ -191,6 +199,7 @@
     <Compile Include="Areas\Upload\ViewModels\DownloadViewModel.cs" />
     <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
     <Compile Include="Configuration\ApiConfig.cs" />
+    <Compile Include="Configuration\PodcastConfig.cs" />
     <Compile Include="Configuration\BlogConfig.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
@@ -207,7 +216,7 @@
     <Compile Include="Areas\Profile\Models\Group.cs" />
     <Compile Include="Areas\Profile\Models\PermissionTarget.cs" />
     <Compile Include="Areas\Profile\Models\PermissionType.cs" />
-    <Compile Include="Areas\Blog\Models\Post.cs" />
+    <Compile Include="Areas\Blog\Models\BlogPost.cs" />
     <Compile Include="Areas\Profile\Models\Role.cs" />
     <Compile Include="Helpers\UrlExtensions.cs" />
     <Compile Include="Helpers\Utility.cs" />
@@ -233,8 +242,11 @@
     <Content Include="Areas\Paste\Content\Paste.css" />
     <Content Include="Areas\Paste\Scripts\Paste.js" />
     <Content Include="Areas\Paste\Scripts\SyntaxWorker.js" />
+    <Content Include="Areas\Podcast\Content\Podcast.css" />
+    <Content Include="Areas\Podcast\Scripts\Podcast.js" />
     <Content Include="Areas\Profile\Scripts\Profile.js" />
     <Content Include="Areas\Upload\Scripts\Download.js" />
+    <Content Include="Content\audioplayer.css" />
     <Content Include="Content\Highlight\agate.css" />
     <Content Include="Content\Highlight\androidstudio.css" />
     <Content Include="Content\Highlight\arduino-light.css" />
@@ -305,7 +317,9 @@
     <Content Include="Content\Highlight\xcode.css" />
     <Content Include="Content\Highlight\zenburn.css" />
     <Content Include="Content\jquery.tocify.css" />
+    <Content Include="Scripts\audioplayer.min.js" />
     <Content Include="Scripts\Blob.js" />
+    <Content Include="Scripts\bootstrap-markdown.js" />
     <Content Include="Scripts\Crypto-js\aes.js" />
     <Content Include="Areas\Upload\Scripts\EncryptionWorker.js" />
     <Content Include="Areas\Upload\Scripts\Upload.js" />
@@ -400,6 +414,14 @@
     <Content Include="Areas\Error\Views\Error\Http403.cshtml" />
     <Content Include="Areas\Paste\Views\Paste\Simple.cshtml" />
     <Content Include="Areas\Help\Views\Help\API\v1\Paste.cshtml" />
+    <Content Include="Areas\Podcast\Views\web.config" />
+    <Content Include="Areas\Podcast\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Podcast\Views\Podcast\Main.cshtml" />
+    <Content Include="Areas\Podcast\Views\Podcast\Podcast.cshtml" />
+    <Content Include="Areas\Podcast\Views\Podcast\Podcasts.cshtml" />
+    <Content Include="Areas\Podcast\Views\Podcast\Comment.cshtml" />
+    <Content Include="Areas\Podcast\Views\Podcast\Comments.cshtml" />
+    <Content Include="Areas\Podcast\Views\Podcast\ViewPodcast.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />
@@ -422,6 +444,8 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui.widgets.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
+    <Content Include="Scripts\jquery.fileupload.js" />
+    <Content Include="Scripts\jquery.iframe-transport.js" />
     <Content Include="Scripts\jquery.tocify.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -474,6 +498,7 @@
     <Folder Include="Areas\Home\Models\" />
     <Folder Include="Areas\Home\Views\Shared\" />
     <Folder Include="Areas\Paste\Views\Shared\" />
+    <Folder Include="Areas\Podcast\Views\Shared\" />
     <Folder Include="Areas\Privacy\Models\" />
     <Folder Include="Areas\Privacy\Views\Shared\" />
     <Folder Include="Areas\Profile\Views\Shared\" />

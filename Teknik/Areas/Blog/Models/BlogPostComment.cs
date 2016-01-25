@@ -6,13 +6,13 @@ using Teknik.Areas.Profile.Models;
 
 namespace Teknik.Areas.Blog.Models
 {
-    public class Comment
+    public class BlogPostComment
     {
-        public int CommentId { get; set; }
+        public int BlogPostCommentId { get; set; }
 
-        public int PostId { get; set; }
+        public int BlogPostId { get; set; }
 
-        public Post Post { get; set; }
+        public BlogPost BlogPost { get; set; }
 
         public int? UserId { get; set; }
 

@@ -22,6 +22,7 @@ namespace Teknik.Configuration
         private PasteConfig     _PasteConfig;
         private BlogConfig      _BlogConfig;
         private ApiConfig       _ApiConfig;
+        private PodcastConfig   _PodcastConfig;
         private string          _SupportEmail;
         private string          _BitcoinAddress;
 
@@ -33,26 +34,29 @@ namespace Teknik.Configuration
         public string       Author          { get { return _Author; }           set { _Author = value; } }
         public string       Host            { get { return _Host; }             set { _Host = value; } }
 
-        // Mail Server Information
-        public SMTPConfig   SMTPConfig      { get { return _SMTPConfig; }       set { _SMTPConfig = value; } }
+        // Mail Server Configuration
+        public SMTPConfig       SMTPConfig      { get { return _SMTPConfig; }       set { _SMTPConfig = value; } }
 
-        // Contact Information
-        public string       SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
+        // Contact Configuration
+        public string           SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
 
-        // About Information
-        public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
+        // About Configuration
+        public string           BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
 
-        // Blog Information
-        public BlogConfig   BlogConfig      { get { return _BlogConfig; }       set { _BlogConfig = value; } }
+        // Blog Configuration
+        public BlogConfig       BlogConfig      { get { return _BlogConfig; }       set { _BlogConfig = value; } }
 
         // Upload Configuration
-        public UploadConfig UploadConfig    { get { return _UploadConfig; }     set { _UploadConfig = value; } }
+        public UploadConfig     UploadConfig    { get { return _UploadConfig; }     set { _UploadConfig = value; } }
 
         // Paste Configuration
-        public PasteConfig  PasteConfig     { get { return _PasteConfig; }      set { _PasteConfig = value; } }
+        public PasteConfig      PasteConfig     { get { return _PasteConfig; }      set { _PasteConfig = value; } }
 
-        // Upload Configuration
-        public ApiConfig    ApiConfig       { get { return _ApiConfig; }        set { _ApiConfig = value; } }
+        // API Configuration
+        public ApiConfig        ApiConfig       { get { return _ApiConfig; }        set { _ApiConfig = value; } }
+
+        // Podcast Configuration
+        public PodcastConfig    PodcastConfig   { get { return _PodcastConfig; }    set { _PodcastConfig = value; } }
 
         public Config()
         {
@@ -76,6 +80,7 @@ namespace Teknik.Configuration
             UploadConfig    = new UploadConfig();
             PasteConfig     = new PasteConfig();
             ApiConfig       = new ApiConfig();
+            PodcastConfig   = new PodcastConfig();
             SupportEmail    = string.Empty;
             BitcoinAddress  = string.Empty;
         }

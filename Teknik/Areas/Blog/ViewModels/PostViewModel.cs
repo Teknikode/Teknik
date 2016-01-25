@@ -30,12 +30,12 @@ namespace Teknik.Areas.Blog.ViewModels
 
         public List<string> Tags { get; set; }
 
-        public List<Comment> Comments { get; set; }
+        public List<BlogPostComment> Comments { get; set; }
 
-        public PostViewModel(Post post)
+        public PostViewModel(BlogPost post)
         {
             BlogId = post.BlogId;
-            PostId = post.PostId;
+            PostId = post.BlogPostId;
             Blog = post.Blog;
             System = post.System;
             DatePosted = post.DatePosted;

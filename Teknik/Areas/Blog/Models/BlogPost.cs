@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Teknik.Areas.Blog.Models
 {
-    public class Post
+    public class BlogPost
     {
-        public int PostId { get; set; }
+        public int BlogPostId { get; set; }
 
         public int BlogId { get; set; }
 
@@ -26,6 +26,6 @@ namespace Teknik.Areas.Blog.Models
 
         public List<string> Tags { get; set; }
 
-        public List<Comment> Comments { get; set; }
+        public List<BlogPostComment> Comments { get; set; }
     }
 }

@@ -1,0 +1,138 @@
+﻿@model Teknik.Areas.Podcast.ViewModels.MainViewModel
+
+<script>
+    // We need to define the action URLs for the script
+
+    var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
+
+    var getPodcastsURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcasts" })';
+    var getPodcastTitleURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastTitle" })';
+    var getPodcastArticleURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastArticle" })';
+    var publishPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "PublishPodcast" })';
+    var addPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "CreatePodcast" })';
+    var editPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "EditPodcast" })';
+    var deletePodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "DeletePodcast" })';
+
+    var getCommentsURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetComments" })';
+    var getCommentArticleURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetCommentArticle" })';
+    var addCommentURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "CreateComment" })';
+    var editCommentURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "EditComment" })';
+    var deleteCommentURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "DeleteComment" })';
+</script>
+
+@Styles.Render("~/Content/podcast")
+@Scripts.Render("~/bundles/podcast")
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 podcast-heading">
+            <h1 class="podcast-title text-center">@Model.Title</h1>
+            <p class="lead podcast-description text-center text-muted">@Model.Description</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 text-center">
+            <p>
+                <a href="@Url.SubRouteUrl("rss", "RSS.Podcast")"><i class="fa fa-rss fa-2x fa-border"></i></a>
+            </p>
+        </div>
+    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Podcast"))
+    { 
+    <div class="row">
+        <div class="col-sm-12 text-center">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newPodcast">Create Podcast</button>
+        </div>
+    </div>
+    <div class="modal fade" id="newPodcast" tabindex="-1" role="dialog" aria-labelledby="newPodcastLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="##" method="post" id="publishPodcast">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+                        <h4 class="modal-title" id="newPodcastLabel">Create a New Podcast</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="podcast_title"><h4>Title</h4></label>
+                                <input class="form-control" name="podcast_title" id="podcast_title" placeholder="Awesome Podcast Title" title="enter a title for the podcast." type="text" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="podcast_description"><h4>Podcast Description</h4></label>
+                                <textarea class="form-control wmd-input" name="podcast_description" id="podcast_description" placeholder="We talked about awesome stuff." title="enter what the podcast was about." data-provide="markdown" rows="10"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="files"><h4>Upload Podcast</h4></label>
+                                <input id="files" name="files" type="file" placeholder="podcast.ogg" title="select the podcast file." multiple="multiple" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12" id="uploadedPodcasts"></div>
+                            <input name="podcast_file" id="podcast_file" type="hidden" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="podcast_submit">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editPodcast" tabindex="-1" role="dialog" aria-labelledby="editPodcastLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="##" method="post" id="editPodcastForm">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+                        <h4 class="modal-title" id="editPodcastLabel">Edit The Podcast</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input name="edit_podcast_podcastId" id="edit_podcast_podcastId" type="hidden" />
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="edit_podcast_title"><h4>Title</h4></label>
+                                <input class="form-control" name="edit_podcast_title" id="edit_podcast_title" placeholder="Awesome Podcast Title" title="enter a title for the podcast." type="text" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="edit_podcast_description"><h4>Podcast Description</h4></label>
+                                <textarea class="form-control wmd-input" name="edit_podcast_description" id="edit_podcast_description" placeholder="We talked about awesome stuff." title="enter what the podcast was about." data-provide="markdown" rows="10"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="edit_submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (!Model.Error)
+    {
+    <div class="podcast-main"></div>
+    <script>
+        var podcasts = @Model.Config.PodcastConfig.PodcastsToLoad;
+        var startPodcast = 0;
+        loadMorePodcasts(startPodcast, podcasts);
+        startPodcast = startPodcast + podcasts;
+    </script>
+    }
+    else
+    {
+    <div class="row">
+        <div class="col-sm-12 text-center">
+            <h2>@Model.ErrorMessage</h2>
+        </div>
+    </div>
+    }
+</div>
