@@ -25,7 +25,8 @@ namespace Teknik.Areas.Podcast.Controllers
             try
             {
                 ViewBag.Title = "Teknikast - " + Config.Title;
-                var foundPodcasts = (User.IsInRole("Podcast")) ? db.Podcasts.FirstOrDefault() : db.Podcasts.Where(p => (p.Published)).FirstOrDefault();
+                bool editor = User.IsInRole("Podcast");
+                var foundPodcasts = db.Podcasts.Where(p => (p.Published || editor)).FirstOrDefault();
                 if (foundPodcasts != null)
                 {
                     model.HasPodcasts = (foundPodcasts != null);
@@ -53,7 +54,8 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             PodcastViewModel model = new PodcastViewModel();
             // find the podcast specified
-            var foundPodcast = (User.IsInRole("Podcast")) ? db.Podcasts.Include("Files").Where(p => p.Episode == episode).FirstOrDefault() : db.Podcasts.Include("Files").Where(p => (p.Published && p.Episode == episode)).FirstOrDefault();
+            bool editor = User.IsInRole("Podcast");
+            var foundPodcast = db.Podcasts.Include("Files").Where(p => ((p.Published || editor) && p.Episode == episode)).FirstOrDefault();
             if (foundPodcast != null)
             {
                 model.PodcastId = foundPodcast.PodcastId;
@@ -74,7 +76,7 @@ namespace Teknik.Areas.Podcast.Controllers
         public ActionResult Download(int episode, string fileName)
         {
             // find the podcast specified
-            var foundPodcast = (User.IsInRole("Podcast")) ? db.Podcasts.Include("Files").Where(p => p.Episode == episode).FirstOrDefault() : db.Podcasts.Include("Files").Where(p => (p.Published && p.Episode == episode)).FirstOrDefault();
+            var foundPodcast = db.Podcasts.Include("Files").Where(p => (p.Published && p.Episode == episode)).FirstOrDefault();
             if (foundPodcast != null)
             {
                 PodcastFile file = foundPodcast.Files.Where(f => f.FileName == fileName).FirstOrDefault();
@@ -105,8 +107,8 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetPodcasts(int startPodcastID, int count)
         {
-            var podcasts = (User.IsInRole("Podcast")) ? db.Podcasts.Include("Files").OrderByDescending(p => p.DatePosted).Skip(startPodcastID).Take(count).ToList()
-                                                    : db.Podcasts.Include("Files").Where(p => p.Published).OrderByDescending(p => p.DatePosted).Skip(startPodcastID).Take(count).ToList();
+            bool editor = User.IsInRole("Podcast");
+            var podcasts = db.Podcasts.Include("Files").Where(p => p.Published || editor).OrderByDescending(p => p.DatePosted).Skip(startPodcastID).Take(count).ToList();
             List<PodcastViewModel> podcastViews = new List<PodcastViewModel>();
             if (podcasts != null)
             {
@@ -122,7 +124,8 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetPodcastEpisode(int podcastId)
         {
-            var foundPodcast = (User.IsInRole("Podcast")) ? db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault() : db.Podcasts.Where(p => (p.Published && p.PodcastId == podcastId)).FirstOrDefault();
+            bool editor = User.IsInRole("Podcast");
+            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
             if (foundPodcast != null)
             {
                 return Json(new { result = foundPodcast.Episode });
@@ -134,7 +137,8 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetPodcastTitle(int podcastId)
         {
-            var foundPodcast = (User.IsInRole("Podcast")) ? db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault() : db.Podcasts.Where(p => (p.Published && p.PodcastId == podcastId)).FirstOrDefault();
+            bool editor = User.IsInRole("Podcast");
+            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
             if (foundPodcast != null)
             {
                 return Json(new { result = foundPodcast.Title });
@@ -146,7 +150,8 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetPodcastDescription(int podcastId)
         {
-            var foundPodcast = (User.IsInRole("Podcast")) ? db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault() : db.Podcasts.Where(p => (p.Published && p.PodcastId == podcastId)).FirstOrDefault();
+            bool editor = User.IsInRole("Podcast");
+            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
             if (foundPodcast != null)
             {
                 return Json(new { result = foundPodcast.Description });
