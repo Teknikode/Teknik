@@ -1,5 +1,7 @@
 ﻿@model Teknik.Areas.Profile.ViewModels.ProfileViewModel
 
+@using Teknik.Helpers
+
 <script>
     var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
     var editUserURL = '@Url.SubRouteUrl("profile", "Profile.Action", new { action = "Edit" })';
@@ -69,51 +71,7 @@
                     @if (!string.IsNullOrEmpty(Model.About))
                     {
                     <div class="tab-pane @((!OwnProfile) ? " active" : string.Empty)" id="about">
-                        <script>
-                            $(document).ready(function () {
-                                var converter = new Markdown.getSanitizingConverter();
-                                @if (!string.IsNullOrEmpty(Model.BlogTitle))
-                                {
-                                    <text>
-                                    // Blog Title Conversion
-                                    var old_html = $("#blog_title").text();
-                                    var new_html = converter.makeHtml(old_html);
-                                    $("#blog_title").html(new_html);
-                                    </text>
-                                }
-
-                                @if (!string.IsNullOrEmpty(Model.Website))
-                                {
-                                    <text>
-                                    // Website Conversion
-                                    var old_html = $("#website").text();
-                                    var new_html = converter.makeHtml(old_html);
-                                    $("#website").html(new_html);
-                                    </text>
-                                }
-
-                                @if (!string.IsNullOrEmpty(Model.Quote))
-                                {
-                                    <text>
-                                    // Quote Conversion
-                                    var old_html = $("#quote").text();
-                                    var new_html = converter.makeHtml(old_html);
-                                    $("#quote").html(new_html);
-                                    </text>
-                                }
-
-                                @if (!string.IsNullOrEmpty(Model.About))
-                                {
-                                    <text>
-                                    // About Conversion
-                                    var old_about = $("#markdown_body").text();
-                                    var new_about = converter.makeHtml(old_about);
-                                    $("#markdown_body").html(new_about);
-                                    </text>
-                                }
-                            });
-                        </script>
-                        <div class="col-sm-12" id="markdown_body">@Model.About</div>
+                        <div class="col-sm-12" id="markdown_body">@Html.Markdown(@Model.About)</div>
                     </div><!--/tab-pane-->
                     }
                     @if (OwnProfile)

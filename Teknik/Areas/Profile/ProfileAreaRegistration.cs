@@ -55,9 +55,6 @@ namespace Teknik.Areas.Profile
             // Register Script Bundle
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/profile").Include(
                       "~/Scripts/bootbox/bootbox.min.js",
-                      "~/Scripts/PageDown/Markdown.Converter.js",
-                      "~/Scripts/PageDown/Markdown.Sanitizer.js",
-                      "~/Scripts/bootstrap/markdown/bootstrap-markdown.js",
                       "~/Scripts/jquery.blockUI.js",
                       "~/Areas/Profile/Scripts/Profile.js"));
         }
