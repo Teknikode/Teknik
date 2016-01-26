@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -29,7 +30,7 @@ namespace Teknik.Configuration
         public void SetDefaults()
         {
             MaxUploadSize = 100000000;
-            UploadDirectory = string.Empty;
+            UploadDirectory = Directory.GetCurrentDirectory();
             FileExtension = "enc";
             UrlLength = 5;
             DeleteKeyLength = 24;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -24,7 +25,7 @@ namespace Teknik.Configuration
             Description = string.Empty;
             PodcastsToLoad = 10;
             CommentsToLoad = 10;
-            PodcastDirectory = string.Empty;
+            PodcastDirectory = Directory.GetCurrentDirectory();
         }
     }
 }
