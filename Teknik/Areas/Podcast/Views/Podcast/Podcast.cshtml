@@ -1,13 +1,8 @@
 ﻿@model Teknik.Areas.Podcast.ViewModels.PodcastViewModel
 
 @using Teknik.Areas.Podcast.Models
+@using Teknik.Helpers
 
-<script>
-        var converter = new Markdown.getSanitizingConverter();
-        var old_post = $("#podcast_@Model.PodcastId").text();
-        var new_post = converter.makeHtml(old_post);
-        $("#podcast_@Model.PodcastId").html(new_post);
-</script>
 <div class="row">
     <div class="col-sm-10 col-sm-offset-1">
         <div class="podcast-post">
@@ -41,7 +36,7 @@
             </div>
             }
             <br />
-            <p id="podcast_@Model.PodcastId">@Model.Description</p>
+            <p id="podcast_@Model.PodcastId">@Html.Markdown(@Model.Description)</p>
             @if (Model.Files != null)
             {
                 foreach (PodcastFile file in Model.Files)

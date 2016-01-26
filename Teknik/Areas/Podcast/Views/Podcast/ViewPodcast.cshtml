@@ -149,9 +149,9 @@
             });
 
             var comments = @Model.Config.PodcastConfig.CommentsToLoad;
-            var start = 0;
-            loadMoreComments(start_post, posts);
-            start_post = start_post + posts;
+            var startComment = 0;
+            loadMoreComments(startComment, comments);
+            startComment = start_post + comments;
         </script>
     }
     else

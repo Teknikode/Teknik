@@ -48,11 +48,7 @@ namespace Teknik.Areas.Podcast
             // Register Script Bundles
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/podcast").Include(
                       "~/Scripts/bootbox/bootbox.min.js",
-                      "~/Scripts/PageDown/Markdown.Converter.js",
-                      "~/Scripts/PageDown/Markdown.Sanitizer.js",
-                      //"~/Scripts/bootstrap-markdown.js", Uneeded?
-                      "~/Scripts/jquery-ui.widgets.js",
-                      "~/Scripts/jquery.iframe-transport.js",
+                      "~/Scripts/bootstrap-markdown.js",
                       "~/Scripts/audioplayer.min.js",
                       "~/Areas/Podcast/Scripts/Podcast.js"));
             // Register Style Bundles
