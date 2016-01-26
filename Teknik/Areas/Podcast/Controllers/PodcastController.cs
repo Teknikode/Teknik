@@ -307,7 +307,7 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetComments(int podcastId, int startCommentID, int count)
         {
-            var comments = db.PodcastComments.Include("Podcast").Where(p => (p.PodcastId == podcastId)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
+            var comments = db.PodcastComments.Where(p => (p.PodcastId == podcastId)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
             List<CommentViewModel> commentViews = new List<CommentViewModel>();
             if (comments != null)
             {
@@ -323,7 +323,7 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetCommentArticle(int commentID)
         {
-            Models.PodcastComment comment = db.PodcastComments.Include("Podcast").Where(p => (p.PodcastCommentId == commentID)).First();
+            Models.PodcastComment comment = db.PodcastComments.Where(p => (p.PodcastCommentId == commentID)).First();
             if (comment != null)
             {
                 return Json(new { result = comment.Article });

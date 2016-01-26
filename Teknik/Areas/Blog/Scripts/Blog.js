@@ -126,26 +126,6 @@
         });
         return false;
     });
-
-    var imageUpload = $('#upload_image').upload({
-        name: 'file',
-        action: uploadURL,
-        enctype: 'multipart/form-data',
-        params: {},
-        autoSubmit: true,
-        onSubmit: function () {
-            $("#image_url").val('Uploading Image...');
-        },
-        onComplete: function (filename) {
-            obj = JSON.parse(filename);
-            if (!obj.error) {
-                $("#image_url").val(obj.results.file.name);
-            }
-            else {
-                $("#image_url").val('Error Uploading');
-            }
-        }
-    });
 });
 
 function loadMorePosts(start, count) {

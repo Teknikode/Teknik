@@ -133,16 +133,6 @@
     <a name="replies"></a>
     <div class="post-comments" id="@Model.PostId"></div>
     <script>
-            var converter = new Markdown.getSanitizingConverter();
-            // Title Conversion
-            var old_post = $("#title_@Model.PostId").text();
-            var new_post = converter.makeHtml(old_post);
-            $("#title_@Model.PostId").html(new_post);
-            // Post Conversion
-            var old_post = $("#post_@Model.PostId").text();
-            var new_post = converter.makeHtml(old_post);
-            $("#post_@Model.PostId").html(new_post);
-
             linkPostDelete('.delete_post');
             linkPostPublish('.publish_post');
             linkPostUnpublish('.unpublish_post');

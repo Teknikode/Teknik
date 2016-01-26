@@ -40,16 +40,11 @@ namespace Teknik.Areas.Blog
 
             // Register Script Bundles
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/blog").Include(
-                      "~/Scripts/ocupload/1.1.2/ocupload.js",
-                      "~/Scripts/PageDown/Markdown.Converter.js",
-                      "~/Scripts/PageDown/Markdown.Sanitizer.js",
-                      //"~/Scripts/bootstrap-markdown.js", Uneeded?
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Areas/Blog/Scripts/Blog.js"));
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/blog").Include(
-                      "~/Areas/Blog/Content/Blog.css",
-                      "~/Content/bootstrap-markdown.min.css"));
+                      "~/Areas/Blog/Content/Blog.css"));
         }
     }
 }

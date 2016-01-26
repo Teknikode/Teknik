@@ -1,20 +1,11 @@
 ﻿@model Teknik.Areas.Blog.ViewModels.PostViewModel
 
-<script>
-    var converter = new Markdown.getSanitizingConverter();
-    // Title Conversion
-    var old_post = $("#title_@Model.PostId").text();
-    var new_post = converter.makeHtml(old_post);
-    $("#title_@Model.PostId").html(new_post);
-    // Post Conversion
-    var old_post = $("#post_@Model.PostId").text();
-    var new_post = converter.makeHtml(old_post);
-    $("#post_@Model.PostId").html(new_post);
-</script>
+@using Teknik.Helpers
+
 <div class="row">
     <div class="col-sm-10 col-sm-offset-1">
         <div class="blog-post">
-            <h2 class="blog-post-title text-center"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = Model.Blog.User.Username, id = Model.PostId })" id="title_@Model.PostId">@Model.Title</a></h2>
+            <h2 class="blog-post-title text-center"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = Model.Blog.User.Username, id = Model.PostId })" id="title_@Model.PostId">@Html.Markdown(@Model.Title)</a></h2>
             <p class="blog-post-meta text-center text-muted">
                 Posted on <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = Model.Blog.User.Username })">@Model.Blog.User.Username</a>
                 @if (Model.Blog.User.Username == User.Identity.Name || User.IsInRole("Admin"))
@@ -32,7 +23,7 @@
                     <button type="button" class="btn btn-danger delete_post" id="@Model.PostId">Delete</button>
                 }
             </p>
-            <p id="post_@Model.PostId">@Model.Article</p>
+            <p id="post_@Model.PostId">@Html.Markdown(@Model.Article)</p>
         </div>
     </div>
 </div>

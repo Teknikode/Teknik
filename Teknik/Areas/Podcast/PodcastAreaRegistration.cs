@@ -48,13 +48,11 @@ namespace Teknik.Areas.Podcast
             // Register Script Bundles
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/podcast").Include(
                       "~/Scripts/bootbox/bootbox.min.js",
-                      "~/Scripts/bootstrap-markdown.js",
                       "~/Scripts/audioplayer.min.js",
                       "~/Areas/Podcast/Scripts/Podcast.js"));
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/podcast").Include(
                       "~/Content/audioplayer.css",
-                      "~/Content/bootstrap-markdown.min.css",
                       "~/Areas/Podcast/Content/Podcast.css"));
         }
     }
