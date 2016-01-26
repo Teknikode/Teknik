@@ -27,6 +27,8 @@ namespace Teknik.Areas.Podcast.ViewModels
 
         public DateTime DatePublished { get; set; }
 
+        public DateTime DateEdited { get; set; }
+
         public PodcastViewModel() { }
 
         public PodcastViewModel(Models.Podcast podcast)
@@ -40,6 +42,7 @@ namespace Teknik.Areas.Podcast.ViewModels
             DatePosted = podcast.DatePosted;
             Published = podcast.Published;
             DatePublished = podcast.DatePublished;
+            DateEdited = podcast.DateEdited;
         }
     }
 }

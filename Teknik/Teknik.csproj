@@ -90,6 +90,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -194,6 +195,8 @@
     <Compile Include="Areas\Profile\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Profile\ProfileAreaRegistration.cs" />
     <Compile Include="Areas\Profile\ViewModels\ProfileViewModel.cs" />
+    <Compile Include="Areas\RSS\Controllers\RSSController.cs" />
+    <Compile Include="Areas\RSS\RSSAreaRegistration.cs" />
     <Compile Include="Areas\Upload\Controllers\UploadController.cs" />
     <Compile Include="Areas\Upload\Models\FileModel.cs" />
     <Compile Include="Areas\Upload\Models\Upload.cs" />
@@ -223,6 +226,7 @@
     <Compile Include="Areas\Blog\Models\BlogPost.cs" />
     <Compile Include="Areas\Profile\Models\Role.cs" />
     <Compile Include="Helpers\MarkdownHelper.cs" />
+    <Compile Include="Helpers\RSSFeedResult.cs" />
     <Compile Include="Helpers\UrlExtensions.cs" />
     <Compile Include="Helpers\Utility.cs" />
     <Compile Include="Migrations\Configuration.cs" />
@@ -427,6 +431,7 @@
     <Content Include="Areas\Podcast\Views\Podcast\Comments.cshtml" />
     <Content Include="Areas\Podcast\Views\Podcast\ViewPodcast.cshtml" />
     <Content Include="App_Data\Config.json" />
+    <Content Include="Areas\RSS\Views\web.config" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />
@@ -516,6 +521,10 @@
     <Folder Include="Areas\Privacy\Models\" />
     <Folder Include="Areas\Privacy\Views\Shared\" />
     <Folder Include="Areas\Profile\Views\Shared\" />
+    <Folder Include="Areas\RSS\Models\" />
+    <Folder Include="Areas\RSS\ViewModels\" />
+    <Folder Include="Areas\RSS\Views\RSS\" />
+    <Folder Include="Areas\RSS\Views\Shared\" />
     <Folder Include="Areas\Upload\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>

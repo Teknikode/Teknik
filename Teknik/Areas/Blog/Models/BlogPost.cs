@@ -17,7 +17,9 @@ namespace Teknik.Areas.Blog.Models
         public DateTime DatePosted { get; set; }
         
         public DateTime DatePublished { get; set; }
-        
+
+        public DateTime DateEdited { get; set; }
+
         public bool Published { get; set; }
 
         public string Title { get; set; }

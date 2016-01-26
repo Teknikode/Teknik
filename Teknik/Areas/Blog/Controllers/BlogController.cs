@@ -162,6 +162,7 @@ namespace Teknik.Areas.Blog.Controllers
                     post.System = system;
                     post.DatePosted = DateTime.Now;
                     post.DatePublished = DateTime.Now;
+                    post.DateEdited = DateTime.Now;
 
                     db.BlogPosts.Add(post);
                     db.SaveChanges();
@@ -185,6 +186,7 @@ namespace Teknik.Areas.Blog.Controllers
                     {
                         post.Title = title;
                         post.Article = article;
+                        post.DateEdited = DateTime.Now;
                         db.Entry(post).State = EntityState.Modified;
                         db.SaveChanges();
                         return Json(new { result = true });
@@ -286,6 +288,7 @@ namespace Teknik.Areas.Blog.Controllers
                     comment.UserId = db.Users.Where(u => u.Username == User.Identity.Name).First().UserId;
                     comment.Article = article;
                     comment.DatePosted = DateTime.Now;
+                    comment.DateEdited = DateTime.Now;
 
                     db.BlogComments.Add(comment);
                     db.SaveChanges();
@@ -308,6 +311,7 @@ namespace Teknik.Areas.Blog.Controllers
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
                     {
                         comment.Article = article;
+                        comment.DateEdited = DateTime.Now;
                         db.Entry(comment).State = EntityState.Modified;
                         db.SaveChanges();
                         return Json(new { result = true });

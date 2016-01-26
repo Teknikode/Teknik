@@ -19,6 +19,7 @@ namespace Teknik.Areas.Blog.Models
         public User User { get; set; }
 
         public DateTime DatePosted { get; set; }
+        public DateTime DateEdited { get; set; }
 
         public string Article { get; set; }
     }

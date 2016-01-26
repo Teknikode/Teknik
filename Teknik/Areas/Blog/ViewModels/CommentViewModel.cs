@@ -16,6 +16,7 @@ namespace Teknik.Areas.Blog.ViewModels
         public int? UserId { get; set; }
         public User User { get; set; }
         public DateTime DatePosted { get; set; }
+        public DateTime DateEdited { get; set; }
         public string Article { get; set; }
 
         public CommentViewModel(BlogPostComment comment)
@@ -26,6 +27,7 @@ namespace Teknik.Areas.Blog.ViewModels
             UserId = comment.UserId;
             User = comment.User;
             DatePosted = comment.DatePosted;
+            DateEdited = comment.DateEdited;
             Article = comment.Article;
         }
     }

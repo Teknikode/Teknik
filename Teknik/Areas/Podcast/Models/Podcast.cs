@@ -25,6 +25,8 @@ namespace Teknik.Areas.Podcast.Models
 
         public DateTime DatePublished { get; set; }
 
+        public DateTime DateEdited { get; set; }
+
         public List<PodcastComment> Comments { get; set; }
     }
 }

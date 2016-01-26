@@ -58,11 +58,7 @@ namespace Teknik.Areas.Podcast.Controllers
             var foundPodcast = db.Podcasts.Include("Files").Where(p => ((p.Published || editor) && p.Episode == episode)).FirstOrDefault();
             if (foundPodcast != null)
             {
-                model.PodcastId = foundPodcast.PodcastId;
-                model.Episode = foundPodcast.Episode;
-                model.Title = foundPodcast.Title;
-                model.Description = foundPodcast.Description;
-                model.Files = foundPodcast.Files;
+                model = new PodcastViewModel(foundPodcast);
 
                 ViewBag.Title = model.Title + " - Teknikast - " + Config.Title;
                 return View("~/Areas/Podcast/Views/Podcast/ViewPodcast.cshtml", model);
@@ -180,6 +176,7 @@ namespace Teknik.Areas.Podcast.Controllers
                             podcast.Description = description;
                             podcast.DatePosted = DateTime.Now;
                             podcast.DatePublished = DateTime.Now;
+                            podcast.DateEdited = DateTime.Now;
 
                             // Handle saving of files
                             for (int i = 0; i < Request.Files.Count; i++)
@@ -188,7 +185,6 @@ namespace Teknik.Areas.Podcast.Controllers
                                                                             //Use the following properties to get file's name, size and MIMEType
                                 int fileSize = file.ContentLength;
                                 string fileName = file.FileName;
-                                string mimeType = file.ContentType;
                                 string fileExt = Path.GetExtension(fileName);
                                 if (!Directory.Exists(Config.PodcastConfig.PodcastDirectory))
                                 {
@@ -205,7 +201,8 @@ namespace Teknik.Areas.Podcast.Controllers
                                 PodcastFile podFile = new PodcastFile();
                                 podFile.Path = fullPath;
                                 podFile.FileName = newName;
-                                podFile.ContentType = mimeType;
+                                podFile.ContentType = file.ContentType;
+                                podFile.ContentLength = file.ContentLength;
                                 podcast.Files = new List<PodcastFile>();
                                 podcast.Files.Add(podFile);
 
@@ -241,6 +238,7 @@ namespace Teknik.Areas.Podcast.Controllers
                             podcast.Episode = episode;
                             podcast.Title = title;
                             podcast.Description = description;
+                            podcast.DateEdited = DateTime.Now;
                             db.Entry(podcast).State = EntityState.Modified;
                             db.SaveChanges();
                             return Json(new { result = true });
@@ -344,6 +342,7 @@ namespace Teknik.Areas.Podcast.Controllers
                     comment.UserId = db.Users.Where(u => u.Username == User.Identity.Name).First().UserId;
                     comment.Article = article;
                     comment.DatePosted = DateTime.Now;
+                    comment.DateEdited = DateTime.Now;
 
                     db.PodcastComments.Add(comment);
                     db.SaveChanges();
@@ -366,6 +365,7 @@ namespace Teknik.Areas.Podcast.Controllers
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
                     {
                         comment.Article = article;
+                        comment.DateEdited = DateTime.Now;
                         db.Entry(comment).State = EntityState.Modified;
                         db.SaveChanges();
                         return Json(new { result = true });

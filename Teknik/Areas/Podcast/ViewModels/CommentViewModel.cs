@@ -14,6 +14,7 @@ namespace Teknik.Areas.Podcast.ViewModels
         public Models.Podcast Podcast { get; set; }
         public User User { get; set; }
         public DateTime DatePosted { get; set; }
+        public DateTime DateEdited { get; set; }
         public string Article { get; set; }
 
         public CommentViewModel(Models.PodcastComment comment)
@@ -23,6 +24,7 @@ namespace Teknik.Areas.Podcast.ViewModels
             Podcast = comment.Podcast;
             User = comment.User;
             DatePosted = comment.DatePosted;
+            DateEdited = comment.DateEdited;
             Article = comment.Article;
         }
     }
