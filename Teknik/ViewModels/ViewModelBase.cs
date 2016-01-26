@@ -29,6 +29,7 @@ namespace Teknik.ViewModels
         public ViewModelBase()
         {
             Error = false;
+            ErrorMessage = string.Empty;
         }
     }
 }

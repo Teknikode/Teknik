@@ -125,5 +125,31 @@ namespace Teknik
             else
                 return string.Empty;
         }
+
+        public static string GetSubdomain(this UrlHelper url)
+        {
+            string host = url.RequestContext.HttpContext.Request.Url.Authority;
+            // Grab the sub from parameters if it exists
+            string subParam = url.RequestContext.HttpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname unless on dev
+            if (string.IsNullOrEmpty(subParam))
+            {
+                // If we are on dev and no subparam, we need to set the subparam to the specified sub
+                subParam = host.GetSubdomain();
+            }
+            return subParam;
+        }
+
+        public static string GetActive(this UrlHelper url, params string[] subs)
+        {
+            string curSub = url.GetSubdomain();
+            foreach (string sub in subs)
+            {
+                if (curSub == sub)
+                {
+                    return "active";
+                }
+            }
+            return string.Empty;
+        }
     }
 }
