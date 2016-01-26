@@ -311,7 +311,7 @@ namespace Teknik.Areas.Podcast.Controllers
             List<CommentViewModel> commentViews = new List<CommentViewModel>();
             if (comments != null)
             {
-                foreach (Models.PodcastComment comment in comments)
+                foreach (PodcastComment comment in comments)
                 {
                     commentViews.Add(new CommentViewModel(comment));
                 }
@@ -323,7 +323,7 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetCommentArticle(int commentID)
         {
-            Models.PodcastComment comment = db.PodcastComments.Where(p => (p.PodcastCommentId == commentID)).First();
+            PodcastComment comment = db.PodcastComments.Where(p => (p.PodcastCommentId == commentID)).First();
             if (comment != null)
             {
                 return Json(new { result = comment.Article });
@@ -339,7 +339,7 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 if (db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault() != null)
                 {
-                    Models.PodcastComment comment = db.PodcastComments.Create();
+                    PodcastComment comment = db.PodcastComments.Create();
                     comment.PodcastId = podcastId;
                     comment.UserId = db.Users.Where(u => u.Username == User.Identity.Name).First().UserId;
                     comment.Article = article;
@@ -360,7 +360,7 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             if (ModelState.IsValid)
             {
-                Models.PodcastComment comment = db.PodcastComments.Find(commentID);
+                PodcastComment comment = db.PodcastComments.Find(commentID);
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
@@ -383,7 +383,7 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             if (ModelState.IsValid)
             {
-                Models.PodcastComment comment = db.PodcastComments.Find(commentID);
+                PodcastComment comment = db.PodcastComments.Find(commentID);
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))

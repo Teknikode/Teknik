@@ -166,7 +166,6 @@ function loadMorePodcasts(start, count) {
                 linkPodcastDelete('.delete_podcast');
                 linkPodcastPublish('.publish_podcast');
                 linkPodcastUnpublish('.unpublish_podcast');
-                linkAudioPlayer('audio');
                 $(window).bind('scroll', bindScrollPosts);
             }
         }
@@ -294,12 +293,5 @@ function linkCommentDelete(selector) {
                 });
             }
         });
-    });
-}
-
-function linkAudioPlayer(selector) {
-    $(selector).audioPlayer(
-    {
-        classPrefix: 'audioplayer'
     });
 }

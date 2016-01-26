@@ -143,15 +143,10 @@
         <a name="replies"></a>
         <div class="post-comments" id="@Model.PodcastId"></div>
         <script>
-            $( function()
-            {
-                linkAudioPlayer('audio');
-            });
-
             var comments = @Model.Config.PodcastConfig.CommentsToLoad;
             var startComment = 0;
             loadMoreComments(startComment, comments);
-            startComment = start_post + comments;
+            startComment = startComment + comments;
         </script>
     }
     else
