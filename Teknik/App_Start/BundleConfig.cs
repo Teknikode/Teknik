@@ -15,7 +15,7 @@ namespace Teknik
             bundles.Add(new StyleBundle("~/Content/Common").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/font-awesome.css",
-                      "~/Content/teknik.css"));
+                      "~/Content/common.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/common").Include(
                         "~/Scripts/jquery-{version}.js",

@@ -19,6 +19,12 @@ namespace Teknik.Areas.Profile.Models
 
         public string Quote { get; set; }
 
+        public virtual User User { get; set; }
+
+        public virtual BlogSettings BlogSettings { get; set; }
+
+        public virtual UploadSettings UploadSettings { get; set; }
+
         public UserSettings()
         {
             About = string.Empty;

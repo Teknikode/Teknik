@@ -17,6 +17,12 @@ namespace Teknik.Areas.Profile.Models
 
         public bool ServerSideEncrypt { get; set; }
 
+        public virtual User User { get; set; }
+
+        public virtual BlogSettings BlogSettings { get; set; }
+
+        public virtual UserSettings UserSettings { get; set; }
+
         public UploadSettings()
         {
             SaveKey = false;

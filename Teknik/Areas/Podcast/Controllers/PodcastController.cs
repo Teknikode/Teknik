@@ -305,7 +305,7 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetComments(int podcastId, int startCommentID, int count)
         {
-            var comments = db.PodcastComments.Where(p => (p.PodcastId == podcastId)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
+            var comments = db.PodcastComments.Include("BlogPost").Include("BlogPost.Blog").Include("BlogPost.Blog.User").Include("User").Where(p => (p.PodcastId == podcastId)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
             List<CommentViewModel> commentViews = new List<CommentViewModel>();
             if (comments != null)
             {
@@ -321,7 +321,7 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetCommentArticle(int commentID)
         {
-            PodcastComment comment = db.PodcastComments.Where(p => (p.PodcastCommentId == commentID)).First();
+            PodcastComment comment = db.PodcastComments.Where(p => (p.PodcastCommentId == commentID)).FirstOrDefault();
             if (comment != null)
             {
                 return Json(new { result = comment.Article });
@@ -359,7 +359,7 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             if (ModelState.IsValid)
             {
-                PodcastComment comment = db.PodcastComments.Find(commentID);
+                PodcastComment comment = db.PodcastComments.Include("User").Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
@@ -383,7 +383,7 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             if (ModelState.IsValid)
             {
-                PodcastComment comment = db.PodcastComments.Find(commentID);
+                PodcastComment comment = db.PodcastComments.Include("User").Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))

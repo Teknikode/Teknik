@@ -8,7 +8,6 @@ namespace Teknik.Areas.Profile.Models
 {
     public class User
     {
-        [Key]
         public int UserId { get; set; }
         
         public string Username { get; set; }
@@ -21,13 +20,10 @@ namespace Teknik.Areas.Profile.Models
 
         public List<Group> Groups { get; set; }
         
-        [Required]
         public virtual UserSettings UserSettings { get; set; }
-
-        [Required]
+        
         public virtual BlogSettings BlogSettings { get; set; }
         
-        [Required]
         public virtual UploadSettings UploadSettings { get; set; }
 
         public User()

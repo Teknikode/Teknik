@@ -118,8 +118,8 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
-                var foundUser = db.Users.Where(b => b.Username == model.Username);
-                if (foundUser.Any())
+                var foundUser = db.Users.Where(b => b.Username == model.Username).FirstOrDefault();
+                if (foundUser != null)
                 {
                     return Json(new { error = "That username already exists." });
                 }
@@ -134,6 +134,9 @@ namespace Teknik.Areas.Profile.Controllers
                     newUser.JoinDate = DateTime.Now;
                     newUser.Username = model.Username;
                     newUser.HashedPassword = SHA384.Hash(model.Username, model.Password);
+                    newUser.UserSettings = new UserSettings();
+                    newUser.BlogSettings = new BlogSettings();
+                    newUser.UploadSettings = new UploadSettings();
                     db.Users.Add(newUser);
                     db.SaveChanges();
 
@@ -201,9 +204,20 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Delete Blogs
+                Blog.Models.Blog blog = db.Blogs.Include("BlogPosts").Include("User").Where(u => u.User.Username == User.Identity.Name).FirstOrDefault();
+                if (blog != null)
+                {
+                    db.Blogs.Remove(blog);
+                    db.SaveChanges();
+                }
+
                 User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
                 if (user != null)
                 {
+                    user.UserSettings = db.UserSettings.Find(user.UserId);
+                    user.BlogSettings = db.BlogSettings.Find(user.UserId);
+                    user.UploadSettings = db.UploadSettings.Find(user.UserId);
                     db.Users.Remove(user);
                     db.SaveChanges();
                     FormsAuthentication.SignOut();

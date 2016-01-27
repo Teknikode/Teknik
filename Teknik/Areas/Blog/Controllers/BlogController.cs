@@ -246,7 +246,7 @@ namespace Teknik.Areas.Blog.Controllers
         [AllowAnonymous]
         public ActionResult GetComments(int postID, int startCommentID, int count)
         {
-            var comments = db.BlogComments.Where(p => (p.BlogPostId == postID)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
+            var comments = db.BlogComments.Include("BlogPost").Include("BlogPost.Blog").Include("BlogPost.Blog.User").Include("User").Where(p => (p.BlogPostId == postID)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
             List<CommentViewModel> commentViews = new List<CommentViewModel>();
             if (comments != null)
             {
@@ -300,7 +300,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                BlogPostComment comment = db.BlogComments.Find(commentID);
+                BlogPostComment comment = db.BlogComments.Include("User").Where(c => c.BlogPostCommentId == commentID).FirstOrDefault();
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
@@ -324,7 +324,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                BlogPostComment comment = db.BlogComments.Find(commentID);
+                BlogPostComment comment = db.BlogComments.Include("User").Where(c => c.BlogPostCommentId == commentID).FirstOrDefault();
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))

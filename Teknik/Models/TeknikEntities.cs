@@ -40,13 +40,24 @@ namespace Teknik.Models
         {
             modelBuilder.Entity<User>()
                 .HasRequired(a => a.UserSettings)
-                .WithRequiredPrincipal();
+                .WithRequiredPrincipal(a => a.User);
             modelBuilder.Entity<User>()
                 .HasRequired(a => a.BlogSettings)
-                .WithRequiredPrincipal();
+                .WithRequiredPrincipal(a => a.User);
             modelBuilder.Entity<User>()
                 .HasRequired(a => a.UploadSettings)
-                .WithRequiredPrincipal();
+                .WithRequiredPrincipal(a => a.User);
+
+            modelBuilder.Entity<UserSettings>()
+                .HasRequired(a => a.BlogSettings)
+                .WithRequiredPrincipal(a => a.UserSettings);
+            modelBuilder.Entity<UserSettings>()
+                .HasRequired(a => a.UploadSettings)
+                .WithRequiredPrincipal(a => a.UserSettings);
+            
+            modelBuilder.Entity<BlogSettings>()
+                .HasRequired(a => a.UploadSettings)
+                .WithRequiredPrincipal(a => a.BlogSettings);
 
             // Users
             modelBuilder.Entity<User>().ToTable("Users");

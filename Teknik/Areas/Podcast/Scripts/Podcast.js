@@ -118,7 +118,7 @@
 
     $('#editComment').on('show.bs.modal', function (e) {
         $("#edit_comment_post").val("");
-        commentID = encodeURIComponent($(e.relatedTarget).attr("id"));
+        commentID = $(e.relatedTarget).attr("id");
         $("#edit_comment_id").val(commentID);
         $.ajax({
             type: "POST",
@@ -134,8 +134,8 @@
 
     $("#edit_comment_submit").click(function () {
         $('#editComment').modal('hide');
-        postID = encodeURIComponent($("#edit_comment_id").val());
-        post = encodeURIComponent($("#edit_comment_post").val());
+        postID = $("#edit_comment_id").val();
+        post = $("#edit_comment_post").val();
         $.ajax({
             type: "POST",
             url: editCommentURL,

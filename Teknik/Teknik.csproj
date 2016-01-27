@@ -351,7 +351,7 @@
     <Content Include="Images\logo-blue-io.svg" />
     <Content Include="Images\logo-blue.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\teknik.css" />
+    <Content Include="Content\commono.css" />
     <Content Include="Images\Icon.png" />
     <Content Include="ConnectionStrings.config" />
     <Content Include="Areas\Blog\Views\web.config" />
