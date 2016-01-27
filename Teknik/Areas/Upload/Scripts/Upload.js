@@ -160,44 +160,49 @@ function encryptFile(file, callback) {
             var keyStr = randomString((keySize / 8), '#aA');
             var ivStr = randomString((blockSize / 8), '#aA');
 
-            var worker = new Worker(encScriptSrc);
-
-            worker.addEventListener('message', function (e) {
-                switch (e.data.cmd)
-                {
-                    case 'progress':
-                        var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
-                        $("#progress-" + fileID).children('.progress-bar').css('width', (percentComplete * (2 / 5)) + 20 + '%');
-                        $("#progress-" + fileID).children('.progress-bar').html(percentComplete + '% Encrypted');
-                        break;
-                    case 'finish':
-                        if (callback != null) {
-                            // Finish 
-                            callback(e.data.buffer, keyStr, ivStr, filetype, fileID);
-                        }
-                        break;
-                }
-            });
-
-            worker.onerror = function (err) {
-                // An error occured
-                $("#progress-" + fileID).children('.progress-bar').css('width', '100%');
-                $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
-                $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-danger');
-                $("#progress-" + fileID).children('.progress-bar').html('Error Occured');
+            // Encrypt on the server side if they ask for it
+            if (serverSideEncrypt) {
+                callback(e.target.result, keyStr, ivStr, filetype, fileID);
             }
+            else {
+                var worker = new Worker(encScriptSrc);
 
-            // Execute worker with data
-            var objData =
-                {
-                    cmd: 'encrypt',
-                    script: aesScriptSrc,
-                    key: keyStr,
-                    iv: ivStr,
-                    chunkSize: chunkSize,
-                    file: e.target.result
-                };
-            worker.postMessage(objData, [objData.file]);
+                worker.addEventListener('message', function (e) {
+                    switch (e.data.cmd) {
+                        case 'progress':
+                            var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
+                            $("#progress-" + fileID).children('.progress-bar').css('width', (percentComplete * (2 / 5)) + 20 + '%');
+                            $("#progress-" + fileID).children('.progress-bar').html(percentComplete + '% Encrypted');
+                            break;
+                        case 'finish':
+                            if (callback != null) {
+                                // Finish 
+                                callback(e.data.buffer, keyStr, ivStr, filetype, fileID);
+                            }
+                            break;
+                    }
+                });
+
+                worker.onerror = function (err) {
+                    // An error occured
+                    $("#progress-" + fileID).children('.progress-bar').css('width', '100%');
+                    $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
+                    $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-danger');
+                    $("#progress-" + fileID).children('.progress-bar').html('Error Occured');
+                }
+
+                // Execute worker with data
+                var objData =
+                    {
+                        cmd: 'encrypt',
+                        script: aesScriptSrc,
+                        key: keyStr,
+                        iv: ivStr,
+                        chunkSize: chunkSize,
+                        file: e.target.result
+                    };
+                worker.postMessage(objData, [objData.file]);
+            }
         };
     })(callback);
 
@@ -221,10 +226,15 @@ function uploadFile(data, key, iv, filetype, fileID)
     // Now we need to upload the file
     var fd = new FormData();
     fd.append('fileType', filetype);
+    if (saveKey)
+    {
+        fd.append('key', key);
+    }
     fd.append('iv', iv);
     fd.append('keySize', keySize);
     fd.append('blockSize', blockSize);
     fd.append('data', blob);
+    fd.append('encrypt', serverSideEncrypt);
     fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
 
     var xhr = new XMLHttpRequest();
@@ -248,14 +258,26 @@ function uploadComplete(fileID, key, evt) {
     obj = JSON.parse(evt.target.responseText);
     var name = obj.result.name;
     var fullName = obj.result.url;
+    if (!saveKey && !serverSideEncrypt) {
+        fullName = fullName + '#' + key;
+    }
     $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
     $('#progress-' + fileID).children('.progress-bar').html('Complete');
-    $('#upload-link-' + fileID).html('<p><a href="' + fullName + '#' + key + '" target="_blank" class="alert-link">' + fullName + '#' + key + '</a></p>');
+    $('#upload-link-' + fileID).html('<p><a href="' + fullName + '" target="_blank" class="alert-link">' + fullName + '</a></p>');
+    var keyBtn = '<div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
+                    <button type="button" class="btn btn-default btn-sm" id="save-key-link-' + fileID + '">Save Key On Server</button> \
+                </div>';
+    if (saveKey) {
+        keyBtn = '<div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
+                    <button type="button" class="btn btn-default btn-sm" id="remove-key-link-' + fileID + '">Remove Key From Server</button> \
+                </div>';
+    }
+    if (!saveKey && serverSideEncrypt) {
+        keyBtn = '';
+    }
     $('#link-footer-' + fileID).html(' \
                     <div class="row"> \
-                        <div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
-                            <button type="button" class="btn btn-default btn-sm" id="save-key-link-' + fileID + '">Save Key On Server</button> \
-                        </div> \
+                        ' + keyBtn + ' \
                         <div class="col-sm-4 text-center"> \
                             <button type="button" class="btn btn-default btn-sm" id="generate-delete-link-' + fileID + '">Generate Deletion URL</button> \
                         </div> \
@@ -264,7 +286,14 @@ function uploadComplete(fileID, key, evt) {
                         </div> \
                     </div> \
               ');
-    linkSaveKey('#save-key-link-' + fileID + '', name, key, fileID);
+    if (saveKey) {
+        linkRemoveKey('#remove-key-link-' + fileID + '', name, key, fileID);
+    }
+    else {
+        if (!serverSideEncrypt) {
+            linkSaveKey('#save-key-link-' + fileID + '', name, key, fileID);
+        }
+    }
     linkUploadDelete('#generate-delete-link-' + fileID + '', name);
     linkRemove('#remove-link-' + fileID + '', fileID);
 }

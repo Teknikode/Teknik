@@ -1,6 +1,8 @@
 ﻿@model Teknik.Areas.Upload.ViewModels.UploadViewModel
 
 <script>
+    var saveKey = @(Model.SaveKey ? "true" : "false");
+    var serverSideEncrypt = @(Model.ServerSideEncrypt ? "true" : "false");
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
     var generateDeleteKeyURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action= "GenerateDeleteKey" })';

@@ -24,13 +24,25 @@ namespace Teknik.Areas.Upload.Controllers
         public ActionResult Index()
         {
             ViewBag.Title = "Teknik Upload - End to End Encryption";
-            return View(new UploadViewModel());
+            UploadViewModel model = new UploadViewModel();
+            Areas.Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+            if (user != null)
+            {
+                model.SaveKey = user.UploadSettings.SaveKey;
+                model.ServerSideEncrypt = user.UploadSettings.ServerSideEncrypt;
+            }
+            else
+            {
+                model.SaveKey = false;
+                model.ServerSideEncrypt = false;
+            }
+            return View(model);
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Upload(string fileType, string iv, int keySize, int blockSize, HttpPostedFileWrapper data)
+        public ActionResult Upload(string fileType, string iv, int keySize, int blockSize, bool encrypt, HttpPostedFileWrapper data, string key = null)
         {
             if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
             {
@@ -41,7 +53,22 @@ namespace Teknik.Areas.Upload.Controllers
                 {
                     fileData = binaryReader.ReadBytes(data.ContentLength);
                 }
-                Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, iv, null, keySize, blockSize);
+                // if they want us to encrypt it, we do so here
+                if (encrypt)
+                {
+                    // Generate key and iv if empty
+                    if (string.IsNullOrEmpty(key))
+                    {
+                        key = Utility.RandomString(keySize / 8);
+                    }
+
+                    fileData = AES.Encrypt(fileData, key, iv);
+                    if (fileData == null || fileData.Length <= 0)
+                    {
+                        return Json(new { error = new { message = "Unable to encrypt file" } });
+                    }
+                }
+                Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, iv, key, keySize, blockSize);
                 if (upload != null)
                 {
                     return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }) } }, "text/plain");
