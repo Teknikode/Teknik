@@ -42,7 +42,7 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Upload(string fileType, string iv, int keySize, int blockSize, bool encrypt, HttpPostedFileWrapper data, string key = null)
+        public ActionResult Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, HttpPostedFileWrapper data, string key = null)
         {
             if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
             {
@@ -68,7 +68,7 @@ namespace Teknik.Areas.Upload.Controllers
                         return Json(new { error = new { message = "Unable to encrypt file" } });
                     }
                 }
-                Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, iv, key, keySize, blockSize);
+                Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, key, keySize, blockSize);
                 if (upload != null)
                 {
                     if (User.Identity.IsAuthenticated)

@@ -96,6 +96,11 @@ function randomString(length, chars) {
     return result;
 }
 
+function getFileExtension(fileName) {
+    var index = fileName.lastIndexOf('.');
+    return '.' + fileName.substr(index + 1);
+}
+
 
 /***************************** TIMER Page Load *******************************/
 var loopTime;

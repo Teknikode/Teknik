@@ -35,6 +35,7 @@ namespace Teknik.Areas.API.Controllers
                     {
                         // convert file to bytes
                         byte[] fileData = null;
+                        string fileExt = Path.GetExtension(file.FileName);
                         int contentLength = file.ContentLength;
                         using (var binaryReader = new BinaryReader(file.InputStream))
                         {
@@ -75,7 +76,7 @@ namespace Teknik.Areas.API.Controllers
                         }
 
                         // Save the file data
-                        Upload.Models.Upload upload = Uploader.SaveFile((encrypt) ? data : fileData, contentType, contentLength, iv, (saveKey) ? key : null, keySize, blockSize);
+                        Upload.Models.Upload upload = Uploader.SaveFile((encrypt) ? data : fileData, contentType, contentLength, fileExt, iv, (saveKey) ? key : null, keySize, blockSize);
 
                         if (upload != null)
                         {

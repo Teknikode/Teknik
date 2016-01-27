@@ -12,20 +12,24 @@ namespace Teknik.Areas.Upload
     {
         public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength)
         {
-            return SaveFile(file, contentType, contentLength, null, null, 256, 128);
+            return SaveFile(file, contentType, contentLength, string.Empty, null, null, 256, 128);
         }
-
-        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string iv)
+        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string defaultExtension)
         {
-            return SaveFile(file, contentType, contentLength, iv, null, 256, 128);
+            return SaveFile(file, contentType, contentLength, defaultExtension, null, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string iv, string key)
+        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string defaultExtension, string iv)
         {
-            return SaveFile(file, contentType, contentLength, iv, key, 256, 128);
+            return SaveFile(file, contentType, contentLength, defaultExtension, iv, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string iv, string key, int keySize, int blockSize)
+        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string defaultExtension, string iv, string key)
+        {
+            return SaveFile(file, contentType, contentLength, defaultExtension, iv, key, 256, 128);
+        }
+
+        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string defaultExtension, string iv, string key, int keySize, int blockSize)
         {
             Config config = Config.Load();
             TeknikEntities db = new TeknikEntities();
@@ -42,7 +46,7 @@ namespace Teknik.Areas.Upload
             File.WriteAllBytes(fileName, file);
 
             // Generate a unique url
-            string extension = (config.UploadConfig.IncludeExtension) ? Utility.GetDefaultExtension(contentType) : string.Empty;
+            string extension = (config.UploadConfig.IncludeExtension) ? Utility.GetDefaultExtension(contentType, defaultExtension) : string.Empty;
             string url = Utility.RandomString(config.UploadConfig.UrlLength) + extension;
             while (db.Uploads.Where(u => u.Url == url).FirstOrDefault() != null)
             {

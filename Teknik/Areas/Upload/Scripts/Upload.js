@@ -152,6 +152,7 @@ var dropZone = new Dropzone(document.body, {
 function encryptFile(file, callback) {
     var filetype = file.type;
     var fileID = file.ID;
+    var fileExt = getFileExtension(file.name);
 
     // Get session settings
     var saveKey = $('#saveKey').is(':checked');
@@ -169,7 +170,7 @@ function encryptFile(file, callback) {
 
             // Encrypt on the server side if they ask for it
             if (serverSideEncrypt) {
-                callback(e.target.result, keyStr, ivStr, filetype, fileID, saveKey, serverSideEncrypt);
+                callback(e.target.result, keyStr, ivStr, filetype, fileExt, fileID, saveKey, serverSideEncrypt);
             }
             else {
                 var worker = new Worker(encScriptSrc);
@@ -184,7 +185,7 @@ function encryptFile(file, callback) {
                         case 'finish':
                             if (callback != null) {
                                 // Finish 
-                                callback(e.data.buffer, keyStr, ivStr, filetype, fileID, saveKey, serverSideEncrypt);
+                                callback(e.data.buffer, keyStr, ivStr, filetype, fileExt, fileID, saveKey, serverSideEncrypt);
                             }
                             break;
                     }
@@ -226,13 +227,14 @@ function encryptFile(file, callback) {
     reader.readAsArrayBuffer(blob);
 }
 
-function uploadFile(data, key, iv, filetype, fileID, saveKey, serverSideEncrypt)
+function uploadFile(data, key, iv, filetype, fileExt, fileID, saveKey, serverSideEncrypt)
 {
     $('#key-' + fileID).val(key);
     var blob = new Blob([data]);
     // Now we need to upload the file
     var fd = new FormData();
     fd.append('fileType', filetype);
+    fd.append('fileExt', fileExt);
     if (saveKey)
     {
         fd.append('key', key);

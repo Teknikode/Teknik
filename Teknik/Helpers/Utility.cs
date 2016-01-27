@@ -88,7 +88,7 @@ namespace Teknik
             return string.Empty;
         }
 
-        public static string GetDefaultExtension(string mimeType)
+        public static string GetDefaultExtension(string mimeType, string defaultExtension = "")
         {
             string result;
             RegistryKey key;
@@ -96,7 +96,7 @@ namespace Teknik
 
             key = Registry.ClassesRoot.OpenSubKey(@"MIME\Database\Content Type\" + mimeType, false);
             value = key != null ? key.GetValue("Extension", null) : null;
-            result = value != null ? value.ToString() : string.Empty;
+            result = value != null ? value.ToString() : defaultExtension;
 
             return result;
         }
