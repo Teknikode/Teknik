@@ -34,12 +34,12 @@ namespace Teknik.Areas.RSS.Controllers
             bool isSystem = string.IsNullOrEmpty(username);
             if (isSystem)
             {
-                blog = db.Blogs.Include("BlogPosts").Include("User").Include("BlogSettings").Where(b => b.BlogId == Constants.SERVERBLOGID).FirstOrDefault();
+                blog = db.Blogs.Include("BlogPosts").Include("User").Where(b => b.BlogId == Constants.SERVERBLOGID).FirstOrDefault();
                 blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
             }
             else
             {
-                blog = db.Blogs.Include("BlogPosts").Include("User").Include("BlogSettings").Where(b => b.User.Username == username).FirstOrDefault();
+                blog = db.Blogs.Include("BlogPosts").Include("User").Where(b => b.User.Username == username).FirstOrDefault();
                 blogUrl = Url.SubRouteUrl("blog", "Blog.Blog", new { username = username });
             }
             if (blog != null)
