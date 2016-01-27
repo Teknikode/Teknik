@@ -1,25 +1,20 @@
 ﻿@model Teknik.Areas.Profile.ViewModels.ProfileViewModel
 
 @using Teknik.Helpers
-
-<script>
-    var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
-    var editUserURL = '@Url.SubRouteUrl("profile", "Profile.Action", new { action = "Edit" })';
-    var deleteUserURL = '@Url.SubRouteUrl("profile", "Profile.Action", new { action = "Delete" })';
-</script>
-
-@Scripts.Render("~/bundles/profile")
+@using Teknik.Areas.Paste
+@using Teknik.Areas.Upload
 
 <div class="container">
     @if (!Model.Error)
     {
         bool OwnProfile = (Model.Username == User.Identity.Name || User.IsInRole("Admin"));
 
-        <div class="row">
-            <div class="col-sm-3@((string.IsNullOrEmpty(Model.UserSettings.About) && !OwnProfile) ? " col-sm-offset-4" : string.Empty)"><h1>@Model.Username</h1></div>
+        <div class="row text-center">
+            <div class="col-sm-3"><h1>@Model.Username</h1></div>
         </div>
         <div class="row">
-            <div class="col-sm-3@((string.IsNullOrEmpty(Model.UserSettings.About) && !OwnProfile) ? " col-sm-offset-4" : string.Empty)"><!--left col-->
+            <!-- Left Info Box -->
+            <div class="col-sm-3"><!--left col-->
                 <ul class="list-group">
                     <li class="list-group-item text-muted">Profile</li>
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.JoinDate.ToString("MMMM dd, yyyy")</time></li>
@@ -30,10 +25,6 @@
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> <a href="mailto:@Model.Email">@Model.Email</a></li>
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Blog</strong></span> <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = Model.Username })" id="blog_title">@(string.IsNullOrEmpty(Model.BlogSettings.Title) ? string.Format("{0}'s Blog", Model.Username) : Model.BlogSettings.Title)</a></li>
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Git</strong></span> <a href="@Url.SubRouteUrl("git", "Git.Index", new { username = Model.Username })">Public Repos</a></li>
-                    @if (OwnProfile)
-                    {
-                        <li class="list-group-item text-center"><button type="button" class="btn btn-danger" id="delete_account">Delete Account</button></li>
-                    }
                 </ul>
                 @if (!string.IsNullOrEmpty(Model.UserSettings.Website))
                 {
@@ -50,132 +41,99 @@
                 </div>
                 }
             </div><!--/col-3-->
+            <!-- Right Content Area -->
             <div class="col-sm-9">
-                @if (!string.IsNullOrEmpty(Model.UserSettings.About) && OwnProfile)
+                @if (OwnProfile)
                 {
                 <ul class="nav nav-tabs" id="myTab">
-                    @if (!string.IsNullOrEmpty(Model.UserSettings.About))
-                    {
-                    <li @((OwnProfile) ? string.Empty : "class=\"active\"")>
-                        <a href="#about" data-toggle="tab"> About Myself </a>
-                    </li>
-                    }
-                    @if (OwnProfile)
-                    {
-                    <li class="active"><a href="#settings" data-toggle="tab">Settings</a></li>
-                    <li><a href="#privacy" data-toggle="tab">Privacy</a></li>
-                    }
+                    <li><a href="#about" data-toggle="tab"> About Myself </a></li>
+                    <li><a href="#uploads" data-toggle="tab"> Uploads </a></li>
+                    <li><a href="#pastes" data-toggle="tab"> Pastes </a></li>
                 </ul>
-                }
                 <div class="tab-content">
-                    @if (!string.IsNullOrEmpty(Model.UserSettings.About))
-                    {
-                    <div class="tab-pane @((!OwnProfile) ? " active" : string.Empty)" id="about">
+                    <div class="tab-pane active" id="about">
                         <div class="col-sm-12" id="markdown_body">@Html.Markdown(@Model.UserSettings.About)</div>
                     </div><!--/tab-pane-->
-                    }
                     @if (OwnProfile)
                     {
-                    <div class="tab-pane active" id="settings">
-                        <form class="form" action="##" method="post" id="updateForm">
-                            <input name="update_userid" id="update_userid" type="hidden" value="@Model.UserID" />
-                            <!-- Profile Settings -->
-                            <div class="row">
-                                <div class="col-sm-12 text-center">
-                                    <h3>Profile Settings</h3>
+                    <div class="tab-pane" id="uploads">
+                        @foreach (Teknik.Areas.Upload.Models.Upload upload in Model.Uploads)
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading text-center">
+                                    <a href="@Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url })">@Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url })</a>
                                 </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="form-group col-sm-4">
-                                    <label for="update_password_current"><h4>Current Password</h4></label>
-                                    <input class="form-control" name="update_password_current" id="update_password_current" placeholder="current password" title="enter your current password." type="password" />
-                                </div>
-                                <div class="form-group col-sm-4">
-                                    <label for="update_password"><h4>New Password</h4></label>
-                                    <input class="form-control" name="update_password" id="update_password" placeholder="new password" title="enter your password." type="password" />
-                                </div>
-                                <div class="form-group col-sm-4">
-                                    <label for="update_password_confirm"><h4>Verify New Password</h4></label>
-                                    <input class="form-control" name="update_password_confirm" id="update_password_confirm" placeholder="new password confirmed" title="enter your password again." type="password" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-sm-6">
-                                    <label for="update_website"><h4>Website</h4></label>
-                                    <input class="form-control" id="update_website" name="update_website" placeholder="http://www.noneofyourbusiness.com/" title="enter your website" type="text" value="@Model.UserSettings.Website" />
-                                </div>
-                                <div class="form-group col-sm-6">
-                                    <label for="update_quote"><h4>Quote</h4></label>
-                                    <input class="form-control" id="update_quote" name="update_quote" placeholder="I have a dream!" title="enter a memorable quote" type="text" value="@Model.UserSettings.Quote" maxlength="140" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-sm-12">
-                                    <label for="update_about"><h4>About Yourself</h4></label>
-                                    <textarea class="form-control" name="update_about" id="update_about" placeholder="I'm awesome" title="enter any information you want to share with the world." data-provide="markdown" rows="10">@Model.UserSettings.About</textarea>
-                                </div>
-                            </div>
-                            <!-- Blog Settings -->
-                            <div class="row">
-                                <div class="col-sm-12 text-center">
-                                    <h3>Blog Settings</h3>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="form-group col-sm-6">
-                                    <label for="update_blog_title"><h4>Title</h4></label>
-                                    <input class="form-control" id="update_blog_title" name="update_blog_title" placeholder="click bait" title="enter your blog's title" type="text" value="@Model.BlogSettings.Title" />
-                                </div>
-                                <div class="form-group col-sm-6">
-                                    <label for="update_blog_description"><h4>Description</h4></label>
-                                    <input class="form-control" id="update_blog_description" name="update_blog_description" placeholder="This blog is not worth reading." title="enter your blog's description" type="text" value="@Model.BlogSettings.Description" />
-                                </div>
-                            </div>
-                            <!-- Upload Settings -->
-                            <div class="row">
-                                <div class="col-sm-12 text-center">
-                                    <h3>Upload Settings</h3>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input id="update_upload_saveKey" name="update_upload_saveKey" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.UploadSettings.SaveKey ? "checked=\"checked\"" : "") /> Save Key on Server
-                                        </label>
+                                <div class="panel-body">
+                                    <div class="col-sm-2 text-center">
+                                        <label for="size">Size</label>
+                                        <p id="size">@Utility.GetBytesReadable(upload.ContentLength)</p>
+                                    </div>
+                                    <div class="col-sm-3 text-center">
+                                        <label for="type">Type</label>
+                                        <p id="type">@upload.ContentType</p>
+                                    </div>
+                                    <div class="col-sm-3 text-center">
+                                        <label for="dateUploaded">Date Uploaded</label>
+                                        <p id="dateUploaded"><time datetime="@upload.DateUploaded.ToString("o")">@upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="downloads">Downloads</label>
+                                        <p id="downloads">@upload.Downloads</p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="deleteKey">Deletion Key</label>
+                                        <p id="deleteKey">@upload.DeleteKey</p>
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input id="update_upload_serverSideEncrypt" name="update_upload_serverSideEncrypt" title="whether the file should be encrypted server side or client side" type="checkbox" value="true" @(Model.UploadSettings.ServerSideEncrypt ? "checked=\"checked\"" : "") /> Encrypt on Server Side
-                                        </label>
-                                    </div>
-                                </div>     
-                            </div>     
-                            <!-- Save Settings -->
-                            <div class="row">
-                                <div class="form-group col-sm-12">
-                                    <br />
-                                    <button class="btn btn-lg btn-success" id="update_submit" type="submit"><i class="glyphicon glyphicon-ok-sign"></i> Save</button>
-                                    <button class="btn btn-lg" type="reset"><i class="glyphicon glyphicon-repeat"></i> Reset</button>
-                                </div>
                             </div>
-                        </form>
+                        }
                     </div><!--/tab-pane-->
-                    <div class="tab-pane" id="privacy">
-                        <div class="row">
-                            <div class="col-sm-12 text-center">
-                                <!-- Privacy Settings Here -->
+                    <div class="tab-pane" id="pastes">
+                        @foreach (Teknik.Areas.Paste.Models.Paste paste in Model.Pastes)
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading text-center">
+                                    <a href="@Url.SubRouteUrl("paste", "Paste.View", new { url = paste.Url })">@paste.Title</a>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="col-sm-2 text-center">
+                                        <label for="syntax">Syntax</label>
+                                        <p id="syntax">@paste.Syntax</p>
+                                    </div>
+                                    <div class="col-sm-3 text-center">
+                                        <label for="datePosted">Date Posted</label>
+                                        <p id="datePosted"><time datetime="@paste.DatePosted.ToString("o")">@paste.DatePosted.ToString("MMMM dd, yyyy")</time></p>
+                                    </div>
+                                    <div class="col-sm-3 text-center">
+                                        <label for="expireDate">Expire Date</label>
+                                        @{ 
+                                            string expireDate = "Never";
+                                            if (paste.ExpireDate != null)
+                                            {
+                                                expireDate = "<time datetime=\"" + paste.ExpireDate.Value.ToString("o") + "\">" + paste.ExpireDate.Value.ToString("MMMM dd, yyyy") + "</time>";
+                                            }
+                                        }
+                                        <p id="expireDate">@expireDate</p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="maxViews">Max Views</label>
+                                        <p id="maxViews">@paste.MaxViews</p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="views">Views</label>
+                                        <p id="views">@paste.Views</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                     }
                 </div><!--/tab-content-->
-
+                }
+                else
+                {
+                    @Html.Markdown(@Model.UserSettings.About)
+                }
             </div><!--/col-9-->
         </div><!--/row-->
     }
@@ -183,7 +141,7 @@
     {
         <div class="row">
             <div class="col-sm-12 text-center">
-                <h2>Sorry, but I couldn't find that user.</h2>
+                <h2>@Model.ErrorMessage</h2>
             </div>
         </div>
     }

@@ -116,6 +116,15 @@ namespace Teknik.Areas.Paste.Controllers
                         paste.Views = -1;
                     }
 
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                        if (user != null)
+                        {
+                            paste.UserId = user.UserId;
+                        }
+                    }
+
                     db.Pastes.Add(paste);
                     db.SaveChanges();
 

@@ -38,6 +38,13 @@ namespace Teknik.Areas.Profile
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
             context.MapSubdomainRoute(
+                 "Profile.Settings", // Route name
+                 new List<string>() { "dev", "profile" }, // Subdomains
+                 "Settings",    // URL with parameters 
+                 new { controller = "Profile", action = "Settings" },  // Parameter defaults 
+                 new[] { typeof(Controllers.ProfileController).Namespace }
+            );
+            context.MapSubdomainRoute(
                  "Profile.Index", // Route name
                  new List<string>() { "dev", "profile" }, // Subdomains
                  "{username}",    // URL with parameters 

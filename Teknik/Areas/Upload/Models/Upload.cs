@@ -33,5 +33,7 @@ namespace Teknik.Areas.Upload.Models
         public int BlockSize { get; set; }
 
         public string DeleteKey { get; set; }
+
+        public int Downloads { get; set; }
     }
 }

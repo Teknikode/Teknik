@@ -71,6 +71,16 @@ namespace Teknik.Areas.Upload.Controllers
                 Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, iv, key, keySize, blockSize);
                 if (upload != null)
                 {
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                        if (user != null)
+                        {
+                            upload.UserId = user.UserId;
+                            db.Entry(upload).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
                     return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }) } }, "text/plain");
                 }
                 return Json(new { error = "Unable to upload file" });
@@ -90,6 +100,9 @@ namespace Teknik.Areas.Upload.Controllers
             Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
             if (upload != null)
             {
+                upload.Downloads += 1;
+                db.Entry(upload).State = EntityState.Modified;
+                db.SaveChanges();
                 // We don't have the key, so we need to decrypt it client side
                 if (string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                 {

@@ -51,10 +51,48 @@ namespace Teknik.Areas.Profile.Controllers
                 model.BlogSettings = user.BlogSettings;
                 model.UploadSettings = user.UploadSettings;
 
+                model.Uploads = db.Uploads.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DateUploaded).ToList();
+
+                model.Pastes = db.Pastes.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DatePosted).ToList();
+
                 return View(model);
             }
             model.Error = true;
             return View(model);
+        }
+
+        // GET: Profile/Profile
+        [AllowAnonymous]
+        public ActionResult Settings()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                string username = User.Identity.Name;
+
+                SettingsViewModel model = new SettingsViewModel();
+                ViewBag.Title = "User Does Not Exist - " + Config.Title;
+                ViewBag.Message = "The User does not exist";
+
+                User user = db.Users.Where(u => u.Username == username).FirstOrDefault();
+
+                if (user != null)
+                {
+                    ViewBag.Title = "Settings - " + Config.Title;
+                    ViewBag.Message = "Your " + Config.Title + " Settings";
+
+                    model.UserID = user.UserId;
+                    model.Username = user.Username;
+
+                    model.UserSettings = user.UserSettings;
+                    model.BlogSettings = user.BlogSettings;
+                    model.UploadSettings = user.UploadSettings;
+
+                    return View(model);
+                }
+                model.Error = true;
+                return View(model);
+            }
+            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
         }
 
         [HttpGet]

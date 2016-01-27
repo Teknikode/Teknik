@@ -12,6 +12,9 @@
             <li>
                 <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })">Blog</a>
             </li>
+            <li>
+                <a href="@Url.SubRouteUrl("profile", "Profile.Settings")">Settings</a>
+            </li>
             @if (User.IsInRole("Admin"))
             {
             <li>
