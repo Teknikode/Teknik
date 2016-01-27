@@ -8,6 +8,7 @@ using Teknik.Migrations;
 using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Paste.Models;
 using Teknik.Areas.Podcast.Models;
+using Teknik.Areas.Transparency.Models;
 
 namespace Teknik.Models
 {
@@ -35,6 +36,8 @@ namespace Teknik.Models
         public DbSet<Podcast> Podcasts { get; set; }
         public DbSet<PodcastFile> PodcastFiles { get; set; }
         public DbSet<PodcastComment> PodcastComments { get; set; }
+        // Transparency
+        public DbSet<Transaction> Transactions { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -81,6 +84,8 @@ namespace Teknik.Models
             modelBuilder.Entity<Podcast>().ToTable("Podcasts");
             modelBuilder.Entity<PodcastFile>().ToTable("PodcastFiles");
             modelBuilder.Entity<PodcastComment>().ToTable("PodcastComments");
+            // Transparency
+            modelBuilder.Entity<Transaction>().ToTable("Transactions");
 
             base.OnModelCreating(modelBuilder);
         }

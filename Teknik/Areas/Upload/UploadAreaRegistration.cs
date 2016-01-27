@@ -49,6 +49,7 @@ namespace Teknik.Areas.Upload
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/upload").Include(
                       "~/Scripts/Dropzone/dropzone.js",
                       "~/Areas/Upload/Scripts/Upload.js",
+                      "~/Scripts/bootstrap-switch.js",
                       "~/Scripts/bootbox/bootbox.min.js"));
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/download").Include(
                       "~/Scripts/Blob.js",
@@ -66,6 +67,7 @@ namespace Teknik.Areas.Upload
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/upload").Include(
                       "~/Content/dropzone.css",
+                      "~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css",
                       "~/Areas/Upload/Content/Upload.css"));
         }
     }

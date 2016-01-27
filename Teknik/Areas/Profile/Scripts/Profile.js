@@ -1,4 +1,7 @@
 ﻿$(document).ready(function () {
+    $("[name='update_upload_saveKey']").bootstrapSwitch();
+    $("[name='update_upload_serverSideEncrypt']").bootstrapSwitch();
+
     $('#delete_account').click(function () {
         bootbox.confirm("Are you sure you want to delete your account?", function (result) {
             if (result) {

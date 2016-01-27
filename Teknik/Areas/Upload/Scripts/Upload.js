@@ -1,6 +1,9 @@
 ﻿$(document).ready(function () {
     $("#upload-links").css('display', 'none', 'important');
     $("#upload-links").html('');
+
+    $("[name='saveKey']").bootstrapSwitch();
+    $("[name='serverSideEncrypt']").bootstrapSwitch();
 });
 
 function linkSaveKey(selector, uploadID, key, fileID) {
@@ -150,6 +153,10 @@ function encryptFile(file, callback) {
     var filetype = file.type;
     var fileID = file.ID;
 
+    // Get session settings
+    var saveKey = $('#saveKey').is(':checked');
+    var serverSideEncrypt = $('#serverSideEncrypt').is(':checked');
+
     // Start the file reader
     var reader = new FileReader();
 
@@ -162,7 +169,7 @@ function encryptFile(file, callback) {
 
             // Encrypt on the server side if they ask for it
             if (serverSideEncrypt) {
-                callback(e.target.result, keyStr, ivStr, filetype, fileID);
+                callback(e.target.result, keyStr, ivStr, filetype, fileID, saveKey, serverSideEncrypt);
             }
             else {
                 var worker = new Worker(encScriptSrc);
@@ -177,7 +184,7 @@ function encryptFile(file, callback) {
                         case 'finish':
                             if (callback != null) {
                                 // Finish 
-                                callback(e.data.buffer, keyStr, ivStr, filetype, fileID);
+                                callback(e.data.buffer, keyStr, ivStr, filetype, fileID, saveKey, serverSideEncrypt);
                             }
                             break;
                     }
@@ -219,7 +226,7 @@ function encryptFile(file, callback) {
     reader.readAsArrayBuffer(blob);
 }
 
-function uploadFile(data, key, iv, filetype, fileID)
+function uploadFile(data, key, iv, filetype, fileID, saveKey, serverSideEncrypt)
 {
     $('#key-' + fileID).val(key);
     var blob = new Blob([data]);
@@ -239,7 +246,7 @@ function uploadFile(data, key, iv, filetype, fileID)
 
     var xhr = new XMLHttpRequest();
     xhr.upload.addEventListener("progress", uploadProgress.bind(null, fileID), false);
-    xhr.addEventListener("load", uploadComplete.bind(null, fileID, key), false);
+    xhr.addEventListener("load", uploadComplete.bind(null, fileID, key, saveKey, serverSideEncrypt), false);
     xhr.addEventListener("error", uploadFailed.bind(null, fileID), false);
     xhr.addEventListener("abort", uploadCanceled.bind(null, fileID), false);
     xhr.open("POST", uploadFileURL);
@@ -254,7 +261,7 @@ function uploadProgress(fileID, evt) {
     }
 }
 
-function uploadComplete(fileID, key, evt) {
+function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
     obj = JSON.parse(evt.target.responseText);
     var name = obj.result.name;
     var fullName = obj.result.url;

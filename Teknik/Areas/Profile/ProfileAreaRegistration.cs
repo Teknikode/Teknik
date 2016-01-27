@@ -63,7 +63,12 @@ namespace Teknik.Areas.Profile
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/profile").Include(
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Scripts/jquery.blockUI.js",
+                      "~/Scripts/bootstrap-switch.js",
                       "~/Areas/Profile/Scripts/Profile.js"));
+
+            // Register Style Bundles
+            BundleTable.Bundles.Add(new StyleBundle("~/Content/profile").Include(
+                      "~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css"));
         }
     }
 }

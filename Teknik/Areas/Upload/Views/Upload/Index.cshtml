@@ -1,8 +1,6 @@
 ﻿@model Teknik.Areas.Upload.ViewModels.UploadViewModel
 
 <script>
-    var saveKey = @(Model.SaveKey ? "true" : "false");
-    var serverSideEncrypt = @(Model.ServerSideEncrypt ? "true" : "false");
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
     var generateDeleteKeyURL = '@Url.SubRouteUrl("upload", "Upload.Action", new { action= "GenerateDeleteKey" })';
@@ -37,6 +35,20 @@
                             <h3>Your Choice</h3>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="row">
+                <div class="col-sm-12">
+                    <label for="saveKey">Save Key</label>
+                    <input type="checkbox" name="saveKey" id="saveKey" @(Model.SaveKey ? "checked" : string.Empty) />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <label for="serverSideEncrypt">Encrypt Server Side</label>
+                    <input type="checkbox" name="serverSideEncrypt" id="serverSideEncrypt" @(Model.ServerSideEncrypt ? "checked" : string.Empty) ; />
                 </div>
             </div>
         </div>

@@ -8,6 +8,7 @@
     var deleteUserURL = '@Url.SubRouteUrl("profile", "Profile.Action", new { action = "Delete" })';
 </script>
 
+@Styles.Render("~/Content/profile")
 @Scripts.Render("~/bundles/profile")
 
 <div class="container">
@@ -82,14 +83,16 @@
                         <div class="col-sm-6">
                             <div class="checkbox">
                                 <label>
-                                    <input id="update_upload_saveKey" name="update_upload_saveKey" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.UploadSettings.SaveKey ? "checked=\"checked\"" : "") /> Save Key on Server
+                                    <label for="update_upload_saveKey"><h4>Save Key on Server</h4></label>
+                                    <input id="update_upload_saveKey" name="update_upload_saveKey" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.UploadSettings.SaveKey ? "checked" : string.Empty) />
                                 </label>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="checkbox">
                                 <label>
-                                    <input id="update_upload_serverSideEncrypt" name="update_upload_serverSideEncrypt" title="whether the file should be encrypted server side or client side" type="checkbox" value="true" @(Model.UploadSettings.ServerSideEncrypt ? "checked=\"checked\"" : "") /> Encrypt on Server Side
+                                    <label for="update_upload_serverSideEncrypt"><h4>Encrypt on Server Side</h4></label>
+                                    <input id="update_upload_serverSideEncrypt" name="update_upload_serverSideEncrypt" title="whether the file should be encrypted server side or client side" type="checkbox" value="true" @(Model.UploadSettings.ServerSideEncrypt ? "checked" : string.Empty) />
                                 </label>
                             </div>
                         </div>
