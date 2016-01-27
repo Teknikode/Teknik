@@ -6,11 +6,15 @@
         @{
             Assembly assembly = ViewContext.Controller.GetType().Assembly;
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            string version = fileVersionInfo.ProductVersion;
+            string fullVersion = fileVersionInfo.ProductVersion;
+            string verNum = fullVersion.Split('+')[0];
+            string commitStr = fullVersion.Split('+')[1];
+            string commitVer = commitStr.Split('.')[0];
+            string commitHash = commitStr.Split('.').Last();
         }
         <div class="row">
             <div class="col-md-6 text-left text-muted">
-                &copy; Teknik 2013-2016 | <a href="@Url.SubRouteUrl("privacy", "Privacy.Index")">Privacy</a> | <a href="@Url.SubRouteUrl("transparency", "Transparency.Index")">Transparency</a> | <a href="@Url.SubRouteUrl("server", "Server.Index")">Server</a>
+                &copy; Teknik 2013-2016 | <a href="@Url.SubRouteUrl("privacy", "Privacy.Index")">Privacy</a> | <a href="@Url.SubRouteUrl("transparency", "Transparency.Index")">Transparency</a>
             </div>
             <div class="col-md-6 text-right text-muted">
                 <div id="pagetime" style="display:none;">
@@ -20,7 +24,7 @@
         </div>
         <div class="row">
             <div class="col-md-12 text-center text-muted">
-                Version: @string.Format("{0}", version)
+                Version: @string.Format("{0}.{1} - Hash: {2}", verNum, commitVer, commitHash)
             </div>
         </div>
     </div>
