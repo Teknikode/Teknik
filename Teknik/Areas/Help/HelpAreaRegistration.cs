@@ -66,6 +66,13 @@ namespace Teknik.Areas.Help
                  new[] { typeof(Controllers.HelpController).Namespace }
              );
             context.MapSubdomainRoute(
+                 "Help.RSS", // Route name
+                 new List<string>() { "dev", "help" }, // Subdomains
+                 "RSS",    // URL with parameters 
+                 new { controller = "Help", action = "RSS" },  // Parameter defaults 
+                 new[] { typeof(Controllers.HelpController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Help.Upload", // Route name
                  new List<string>() { "dev", "help" }, // Subdomains
                  "Upload",    // URL with parameters 

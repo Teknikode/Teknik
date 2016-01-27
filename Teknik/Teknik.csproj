@@ -453,6 +453,7 @@
     <Content Include="Areas\Transparency\Views\web.config" />
     <Content Include="Areas\Transparency\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Transparency\Views\Transparency\Index.cshtml" />
+    <Content Include="Areas\Help\Views\Help\RSS.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />

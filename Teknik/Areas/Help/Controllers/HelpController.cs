@@ -77,6 +77,14 @@ namespace Teknik.Areas.Help.Controllers
         }
 
         [AllowAnonymous]
+        public ActionResult RSS()
+        {
+            ViewBag.Title = "RSS Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/RSS.cshtml", model);
+        }
+
+        [AllowAnonymous]
         public ActionResult Upload()
         {
             ViewBag.Title = "Upload Service Help - " + Config.Title;

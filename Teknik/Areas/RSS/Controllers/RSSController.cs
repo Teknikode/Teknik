@@ -20,7 +20,9 @@ namespace Teknik.Areas.RSS.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            return View();
+            SyndicationFeed feed = new SyndicationFeed("Teknik RSS", "RSS feeds for the Teknik Services.", new Uri(Url.SubRouteUrl("help", "Help.RSS")));
+
+            return new RssResult(feed);
         }
 
         [AllowAnonymous]
@@ -28,7 +30,7 @@ namespace Teknik.Areas.RSS.Controllers
         {
             // If empty, grab the main blog
             Blog.Models.Blog blog = null;
-            string blogUrl = string.Empty;
+            string blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
             string title = string.Empty;
             string description = string.Empty;
             bool isSystem = string.IsNullOrEmpty(username);
@@ -75,7 +77,9 @@ namespace Teknik.Areas.RSS.Controllers
 
                 return new RssResult(feed);
             }
-            return Json(new { error = "Blog Not Found" }, JsonRequestBehavior.AllowGet);
+            SyndicationFeed badFeed = new SyndicationFeed("No Blog Available", "The specified blog does not exist", new Uri(blogUrl));
+
+            return new RssResult(badFeed);
         }
 
         [AllowAnonymous]
