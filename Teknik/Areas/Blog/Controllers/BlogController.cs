@@ -44,16 +44,11 @@ namespace Teknik.Areas.Blog.Controllers
             }
             else // A user specific blog
             {
-                Models.Blog blog = null;
-                var blogs = db.Blogs.Include("User").Where(p => p.User.Username == username);
-                if (blogs.Any())
-                {
-                    blog = blogs.First();
-                    ViewBag.Title = blog.User.Username + "'s Blog - " + Config.Title;
-                }
+                Models.Blog blog = db.Blogs.Include("User").Where(p => p.User.Username == username && p.BlogId != Constants.SERVERBLOGID).FirstOrDefault();
                 // find the blog specified
                 if (blog != null)
                 {
+                    ViewBag.Title = blog.User.Username + "'s Blog - " + Config.Title;
                     bool isAuth = User.IsInRole("Admin");
                     var foundPosts = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blog.BlogId && !p.System) && 
                                                                                                     (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
@@ -61,8 +56,8 @@ namespace Teknik.Areas.Blog.Controllers
                     model.BlogId = blog.BlogId;
                     model.UserId = blog.UserId;
                     model.User = blog.User;
-                    model.Title = blog.Title;
-                    model.Description = blog.Description;
+                    model.Title = blog.User.BlogSettings.Title;
+                    model.Description = blog.User.BlogSettings.Description;
                     model.HasPosts = (foundPosts != null);
 
                     return View(model);
@@ -179,7 +174,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                BlogPost post = db.BlogPosts.Find(postID);
+                BlogPost post = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => p.BlogPostId == postID).FirstOrDefault();
                 if (post != null)
                 {
                     if (User.IsInRole("Admin") || post.Blog.User.Username == User.Identity.Name)
@@ -204,7 +199,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                BlogPost post = db.BlogPosts.Find(postID);
+                BlogPost post = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => p.BlogPostId == postID).FirstOrDefault();
                 if (post != null)
                 {
                     if (User.IsInRole("Admin") || post.Blog.User.Username == User.Identity.Name)
@@ -229,7 +224,7 @@ namespace Teknik.Areas.Blog.Controllers
         {
             if (ModelState.IsValid)
             {
-                BlogPost post = db.BlogPosts.Find(postID);
+                BlogPost post = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => p.BlogPostId == postID).FirstOrDefault();
                 if (post != null)
                 {
                     if (User.IsInRole("Admin") || post.Blog.User.Username == User.Identity.Name)

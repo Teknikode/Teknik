@@ -29,19 +29,32 @@ namespace Teknik.Areas.RSS.Controllers
             // If empty, grab the main blog
             Blog.Models.Blog blog = null;
             string blogUrl = string.Empty;
+            string title = string.Empty;
+            string description = string.Empty;
             bool isSystem = string.IsNullOrEmpty(username);
-            if (string.IsNullOrEmpty(username))
+            if (isSystem)
             {
-                blog = db.Blogs.Include("BlogPosts").Include("User").Where(b => b.BlogId == Constants.SERVERBLOGID).FirstOrDefault();
+                blog = db.Blogs.Include("BlogPosts").Include("User").Include("BlogSettings").Where(b => b.BlogId == Constants.SERVERBLOGID).FirstOrDefault();
                 blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
             }
             else
             {
-                blog = db.Blogs.Include("BlogPosts").Include("User").Where(b => b.User.Username == username).FirstOrDefault();
+                blog = db.Blogs.Include("BlogPosts").Include("User").Include("BlogSettings").Where(b => b.User.Username == username).FirstOrDefault();
                 blogUrl = Url.SubRouteUrl("blog", "Blog.Blog", new { username = username });
             }
             if (blog != null)
             {
+                if (isSystem)
+                {
+                    title = Config.BlogConfig.Title;
+                    description = Config.BlogConfig.Description;
+                }
+                else
+                {
+                    title = blog.User.BlogSettings.Title;
+                    description = blog.User.BlogSettings.Description;
+                }
+
                 List<SyndicationItem> items = new List<SyndicationItem>();
 
                 foreach (BlogPost post in blog.BlogPosts)
@@ -58,7 +71,7 @@ namespace Teknik.Areas.RSS.Controllers
                     }
                 }
 
-                SyndicationFeed feed = new SyndicationFeed(blog.Title, blog.Description, new Uri(blogUrl), items);
+                SyndicationFeed feed = new SyndicationFeed(title, description, new Uri(blogUrl), items);
 
                 return new RssResult(feed);
             }

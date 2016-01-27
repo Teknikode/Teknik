@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Teknik.Areas.Profile.Models;
 using Teknik.ViewModels;
 
 namespace Teknik.Areas.Profile.ViewModels
@@ -18,14 +19,10 @@ namespace Teknik.Areas.Profile.ViewModels
 
         public DateTime LastSeen { get; set; }
 
-        public string About { get; set; }
+        public UserSettings UserSettings { get; set; }
 
-        public string Website { get; set; }
+        public BlogSettings BlogSettings { get; set; }
 
-        public string Quote { get; set; }
-
-        public string BlogTitle { get; set; }
-
-        public string BlogDescription { get; set; }
+        public UploadSettings UploadSettings { get; set; }
     }
 }

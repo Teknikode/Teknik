@@ -32,6 +32,8 @@
         about = $("#update_about").val();
         blog_title = $("#update_blog_title").val();
         blog_desc = $("#update_blog_description").val();
+        upload_saveKey = $("#update_upload_saveKey").is(":checked");
+        upload_serverSideEncrypt = $("#update_upload_serverSideEncrypt").is(":checked");
         $.ajax({
             type: "POST",
             url: editUserURL,
@@ -43,7 +45,9 @@
                 quote: quote,
                 about: about,
                 blogTitle: blog_title,
-                blogDesc: blog_desc
+                blogDesc: blog_desc,
+                saveKey: upload_saveKey,
+                serverSideEncrypt: upload_serverSideEncrypt
             }),
             success: function (html) {
                 if (html.result) {

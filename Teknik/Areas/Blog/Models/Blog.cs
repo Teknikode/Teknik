@@ -10,10 +10,6 @@ namespace Teknik.Areas.Blog.Models
 
         public int UserId { get; set; }
 
-        public string Title { get; set; }
-
-        public string Description { get; set; }
-
         public User User { get; set; }
 
         public List<BlogPost> BlogPosts { get; set; }

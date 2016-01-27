@@ -34,11 +34,10 @@ namespace Teknik.Areas.Profile.Controllers
             ViewBag.Title = "User Does Not Exist - " + Config.Title;
             ViewBag.Message = "The User does not exist";
 
-            var userQuery = db.Users.Where(u => u.Username == username);
+            User user = db.Users.Where(u => u.Username == username).FirstOrDefault();
 
-            if (userQuery != null && userQuery.Any())
+            if (user != null)
             {
-                Models.User user = userQuery.First();
                 ViewBag.Title = username + "'s Profile - " + Config.Title;
                 ViewBag.Message = "Viewing " + username + "'s Profile";
                 
@@ -47,18 +46,11 @@ namespace Teknik.Areas.Profile.Controllers
                 model.Email = string.Format("{0}@{1}", user.Username, Config.Host);
                 model.JoinDate = user.JoinDate;
                 model.LastSeen = user.LastSeen;
-                model.About = user.About;
-                model.Website = user.Website;
-                model.Quote = user.Quote;
 
-                // fill in Blog details
-                var blog = db.Blogs.Where(b => b.UserId == user.UserId);
-                if (blog != null && blog.Any())
-                {
-                    Blog.Models.Blog foundBlog = blog.First();
-                    model.BlogTitle = foundBlog.Title;
-                    model.BlogDescription = foundBlog.Description;
-                }
+                model.UserSettings = user.UserSettings;
+                model.BlogSettings = user.BlogSettings;
+                model.UploadSettings = user.UploadSettings;
+
                 return View(model);
             }
             model.Error = true;
@@ -162,47 +154,45 @@ namespace Teknik.Areas.Profile.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string website, string quote, string about, string blogTitle, string blogDesc)
+        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
         {
             if (ModelState.IsValid)
             {
                 User user = db.Users.Where(u => u.Username == User.Identity.Name).First();
                 if (user != null)
                 {
-                    var foundBlog = db.Blogs.Where(b => b.UserId == user.UserId);
-                    if (foundBlog != null && foundBlog.Any())
+                    // Changing Password?
+                    if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
                     {
-                        Blog.Models.Blog blog = foundBlog.First();
-                        // Changing Password?
-                        if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
+                        // Old Password Valid?
+                        if (SHA384.Hash(User.Identity.Name, curPass) != user.HashedPassword)
                         {
-                            // Old Password Valid?
-                            if (SHA384.Hash(User.Identity.Name, curPass) != user.HashedPassword)
-                            {
-                                return Json(new { error = "Invalid Original Password." });
-                            }
-                            // The New Password Match?
-                            if (newPass != newPassConfirm)
-                            {
-                                return Json(new { error = "New Password Must Match." });
-                            }
-                            user.HashedPassword = SHA384.Hash(User.Identity.Name, newPass);
+                            return Json(new { error = "Invalid Original Password." });
                         }
-                        user.Website = website;
-                        user.Quote = quote;
-                        user.About = about;
-
-                        blog.Title = blogTitle;
-                        blog.Description = blogDesc;
-
-                        db.Entry(blog).State = EntityState.Modified;
-                        db.Entry(user).State = EntityState.Modified;
-                        db.SaveChanges();
-                        return Json(new { result = true });
+                        // The New Password Match?
+                        if (newPass != newPassConfirm)
+                        {
+                            return Json(new { error = "New Password Must Match." });
+                        }
+                        user.HashedPassword = SHA384.Hash(User.Identity.Name, newPass);
                     }
+                    user.UserSettings.Website = website;
+                    user.UserSettings.Quote = quote;
+                    user.UserSettings.About = about;
+
+                    user.BlogSettings.Title = blogTitle;
+                    user.BlogSettings.Description = blogDesc;
+
+                    user.UploadSettings.SaveKey = saveKey;
+                    user.UploadSettings.ServerSideEncrypt = serverSideEncrypt;
+
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return Json(new { result = true });
                 }
+                return Json(new { error = "User does not exist" });
             }
-            return Json(new { error = "Unable to save profile." });
+            return Json(new { error = "Invalid Parameters" });
         }
 
         [HttpPost]
@@ -211,17 +201,16 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = db.Users.Where(u => u.Username == User.Identity.Name);
-                if (user != null && user.Any())
+                User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                if (user != null)
                 {
-                    Models.User foundUser = user.First();
-                    db.Users.Remove(foundUser);
+                    db.Users.Remove(user);
                     db.SaveChanges();
                     FormsAuthentication.SignOut();
                     return Json(new { result = true });
                 }
             }
-            return Json(new { error = "Unable to delete user." });
+            return Json(new { error = "Unable to delete user" });
         }
     }
 }

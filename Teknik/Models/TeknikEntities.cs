@@ -17,6 +17,10 @@ namespace Teknik.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Role> Roles { get; set; }
+        // User Settings
+        public DbSet<UserSettings> UserSettings { get; set; }
+        public DbSet<BlogSettings> BlogSettings { get; set; }
+        public DbSet<UploadSettings> UploadSettings { get; set; }
         // Blogs
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
@@ -34,15 +38,35 @@ namespace Teknik.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .HasRequired(a => a.UserSettings)
+                .WithRequiredPrincipal();
+            modelBuilder.Entity<User>()
+                .HasRequired(a => a.BlogSettings)
+                .WithRequiredPrincipal();
+            modelBuilder.Entity<User>()
+                .HasRequired(a => a.UploadSettings)
+                .WithRequiredPrincipal();
+
+            // Users
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Group>().ToTable("Groups");
             modelBuilder.Entity<Role>().ToTable("Roles");
+            // User Settings
+            modelBuilder.Entity<UserSettings>().ToTable("Users");
+            modelBuilder.Entity<BlogSettings>().ToTable("Users");
+            modelBuilder.Entity<UploadSettings>().ToTable("Users");
+            // Blogs
             modelBuilder.Entity<Blog>().ToTable("Blogs");
             modelBuilder.Entity<BlogPost>().ToTable("BlogPosts");
             modelBuilder.Entity<PodcastComment>().ToTable("BlogComments");
+            // Contact
             modelBuilder.Entity<Contact>().ToTable("Contact");
+            // Uploads
             modelBuilder.Entity<Upload>().ToTable("Uploads");
+            // Pastes
             modelBuilder.Entity<Paste>().ToTable("Pastes");
+            // Podcasts
             modelBuilder.Entity<Podcast>().ToTable("Podcasts");
             modelBuilder.Entity<PodcastFile>().ToTable("PodcastFiles");
             modelBuilder.Entity<PodcastComment>().ToTable("PodcastComments");
