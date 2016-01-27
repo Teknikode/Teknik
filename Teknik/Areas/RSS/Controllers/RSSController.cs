@@ -75,7 +75,7 @@ namespace Teknik.Areas.RSS.Controllers
 
                 return new RssResult(feed);
             }
-            return Json(new { error = "Blog Not Found" });
+            return Json(new { error = "Blog Not Found" }, JsonRequestBehavior.AllowGet);
         }
 
         [AllowAnonymous]
