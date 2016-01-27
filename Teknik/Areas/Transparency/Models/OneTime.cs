@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Teknik.Areas.Transparency.Models
 {
-    public class Single : Transaction
+    public class OneTime : Transaction
     {
+        public string Recipient { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace Teknik.Areas.Transparency.Models
     {
         public int TransactionId { get; set; }
 
-        public int Amount { get; set; }
+        public double Amount { get; set; }
 
         public string Currency { get; set; }
 

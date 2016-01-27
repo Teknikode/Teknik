@@ -38,6 +38,7 @@ namespace Teknik.Models
         public DbSet<PodcastComment> PodcastComments { get; set; }
         // Transparency
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Takedown> Takedowns { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -86,6 +87,7 @@ namespace Teknik.Models
             modelBuilder.Entity<PodcastComment>().ToTable("PodcastComments");
             // Transparency
             modelBuilder.Entity<Transaction>().ToTable("Transactions");
+            modelBuilder.Entity<Takedown>().ToTable("Takedowns");
 
             base.OnModelCreating(modelBuilder);
         }

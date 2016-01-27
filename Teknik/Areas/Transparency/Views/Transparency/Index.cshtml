@@ -1,5 +1,8 @@
 ﻿@model Teknik.Areas.Transparency.ViewModels.TransparencyViewModel
 
+@using Teknik.Helpers
+@using Teknik.Areas.Transparency.Models
+
 <div class="container">
     <div class="row">
         <div class="col-sm-10 col-sm-offset-1">
@@ -20,22 +23,18 @@
             <div class="row">
                 <div class="col-sm-6">
                     <h3>Uploads</h3>
-                    <p>Number of Uploads: <?php echo count($upload_list); ?></p>
-                    <p>Total Size: <?php echo bytesToSize($total_size['TotalSize']); ?></p>
+                    <p>Number of Uploads: @Model.UploadCount</p>
+                    <p>Total Size: @Utility.GetBytesReadable(Model.UploadSize)</p>
                 </div>
                 <div class="col-sm-6">
                     <h3>Pastes</h3>
-                    <p>Number of Pastes: <?php echo $paste_list[0]['pid']; ?></p>
+                    <p>Number of Pastes: @Model.PasteCount</p>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6">
                     <h3>Users</h3>
-                    <p>Number of Users: <?php echo count($user_list); ?></p>
-                </div>
-                <div class="col-sm-6">
-                    <h3>Usage</h3>
-                    <p>No Usage Reports</p>
+                    <p>Number of Users: @Model.UserCount</p>
                 </div>
             </div>
             <br />
@@ -45,318 +44,208 @@
             <div class="row">
                 <div class="col-sm-3 text-center">
                     <h4>Donations</h4>
-                    <?php
-                    foreach ($total_donation_list as $total)
+                    @foreach (var val in Model.TotalDonations)
                     {
-                    echo "<p>
-                        ".round($total['TotalAmount'], 2)." ".$total['currency'];
-                        }
-                        ?>
+                        <p>@Math.Round(val.Value, 2) @val.Key</p>
+                    }
                 </div>
                 <div class="col-sm-3 text-center">
                     <h4>Bills</h4>
-                    <?php
-                    foreach ($total_bill_list as $total)
+                    @foreach (var val in Model.TotalBills)
                     {
-                    echo "<p>
-                        ".round($total['TotalAmount'], 2)." ".$total['currency'];
-                        }
-                        ?>
+                        <p>@Math.Round(val.Value, 2) @val.Key</p>
+                    }
                 </div>
                 <div class="col-sm-3 text-center">
                     <h4>One-Time Payments</h4>
-                    <?php
-                    foreach ($total_one_time_list as $total)
+                    @foreach (var val in Model.TotalOneTimes)
                     {
-                    echo "<p>
-                        ".round($total['TotalAmount'], 2)." ".$total['currency'];
-                        }
-                        ?>
+                        <p>@Math.Round(val.Value, 2) @val.Key</p>
+                    }
                 </div>
                 <div class="col-sm-3 text-center">
                     <h4>Net Profit</h4>
-                    <?php
-                    foreach ($total_net_list as $total)
+                    @foreach (var val in Model.TotalNet)
                     {
-                    echo "<p>
-                        ".round($total['TotalAmount'], 2)." ".$total['currency'];
-                        }
-                        ?>
+                        <p>@Math.Round(val.Value, 2) @val.Key</p>
+                    }
                 </div>
             </div>
-            <?php
-            if ($transactions_bills)
+            @if (Model.Bills != null && Model.Bills.Any())
             {
-            ?>
-            <h3>Bills</h3>
-            <?php
-            $current_month = null;
-            $first_event = true;
-            foreach ($transaction_bill_list as $transaction)
-            {
-            $transaction_date = (isset($transaction['date_posted'])) ? $transaction['date_posted'] : "";
-            $transaction_reason = (isset($transaction['reason'])) ? $transaction['reason'] : "";
-            $transaction_amount = (isset($transaction['amount'])) ? $transaction['amount'] : "";
-            $transaction_currency = (isset($transaction['currency'])) ? $transaction['currency'] : "";
-
-            $new_month_tag = false;
-            if ($current_month != date("F",strtotime($transaction_date)) || $current_year != date("Y",strtotime($transaction_date)))
-            {
-            $new_month_tag = true;
+                <h3>Bills</h3>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#bills-section">View Bills</button>
+                    </div>
+                </div>
+                <br />
+                <div id="bills-section" class="collapse">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <h4><strong>Date</strong></h4>
+                        </div>
+                        <div class="col-sm-2">
+                            <h4><strong>Amount</strong></h4>
+                        </div>
+                        <div class="col-sm-8">
+                            <h4><strong>Description</strong></h4>
+                        </div>
+                    </div>
+                    @foreach (Bill bill in Model.Bills)
+                    {
+                        <div class="row">
+                            <div class="col-sm-2">
+                                @bill.DateSent.ToString("MMMM dd, yyyy")
+                            </div>
+                            <div class="col-sm-2">
+                                @bill.Amount <var>@bill.Currency</var>
+                            </div>
+                            <div class="col-sm-8">
+                                @bill.Reason
+                            </div>
+                        </div>
+                    }
+                </div>
             }
-            $current_month = date("F",strtotime($transaction_date));
-            $current_year = date("Y",strtotime($transaction_date));
-            ?>
-            <?php if (!$first_event && $new_month_tag) { ?>
-        </div>
-        <?php } ?>
-        <?php if ($new_month_tag) { ?>
-        <div class="row">
-            <div class="col-sm-12">
-                <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#bills-<?php echo $current_month.'-'.$current_year; ?>"><?php echo $current_month.', '.$current_year; ?></button>
-            </div>
-        </div>
-        <br />
-        <div id="bills-<?php echo $current_month.'-'.$current_year; ?>" class="collapse">
-            <div class="row">
-                <div class="col-sm-2">
-                    <h4><strong>Date</strong></h4>
+            @if (Model.OneTimes != null && Model.OneTimes.Any())
+            {
+                <h3>One Time Payments</h3>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#oneTime-section">View Payments</button>
+                    </div>
                 </div>
-                <div class="col-sm-2">
-                    <h4><strong>Amount</strong></h4>
+                <br />
+                <div id="oneTime-section" class="collapse">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <h4><strong>Date</strong></h4>
+                        </div>
+                        <div class="col-sm-2">
+                            <h4><strong>Amount</strong></h4>
+                        </div>
+                        <div class="col-sm-8">
+                            <h4><strong>Reason for Payment</strong></h4>
+                        </div>
+                    </div>
+                    @foreach (OneTime oneTime in Model.OneTimes)
+                    {
+                        <div class="row">
+                            <div class="col-sm-2">
+                                @oneTime.DateSent.ToString("MMMM dd, yyyy")
+                            </div>
+                            <div class="col-sm-2">
+                                @oneTime.Amount <var>@oneTime.Currency</var>
+                            </div>
+                            <div class="col-sm-8">
+                                @oneTime.Reason
+                            </div>
+                        </div>
+                    }
                 </div>
-                <div class="col-sm-8">
-                    <h4><strong>Reason for Transaction</strong></h4>
+            }
+            @if (Model.Donations != null && Model.Donations.Any())
+            {
+                <h3>Donations</h3>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#donations-section">View Donations</button>
+                    </div>
                 </div>
-            </div>
-            <?php } ?>
-            <div class="row">
-                <div class="col-sm-2">
-                    <?php echo $transaction_date; ?>
+                <br />
+                <div id="donations-section" class="collapse">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <h4><strong>Date</strong></h4>
+                        </div>
+                        <div class="col-sm-2">
+                            <h4><strong>Amount</strong></h4>
+                        </div>
+                        <div class="col-sm-2">
+                            <h4><strong>Donor</strong></h4>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4><strong>Reason for Donation</strong></h4>
+                        </div>
+                    </div>
+                    @foreach (Donation donation in Model.Donations)
+                    {
+                        <div class="row">
+                            <div class="col-sm-2">
+                                @donation.DateSent.ToString("MMMM dd, yyyy")
+                            </div>
+                            <div class="col-sm-2">
+                                @donation.Amount <var>@donation.Currency</var>
+                            </div>
+                            <div class="col-sm-2">
+                                @donation.Sender
+                            </div>
+                            <div class="col-sm-6">
+                                @donation.Reason
+                            </div>
+                        </div>
+                    }
                 </div>
-                <div class="col-sm-2">
-                    <?php echo $transaction_amount." <var>".$transaction_currency."</var>"; ?>
-                </div>
-                <div class="col-sm-8">
-                    <?php echo $transaction_reason; ?>
-                </div>
-            </div>
+            }
             <br />
-            <?php
-            $first_event = false;
-            }
-            ?>
-        </div>
-        <?php
-        }
-
-        if ($transactions_one_time)
-        {
-        ?>
-        <h3>One-Time Payments</h3>
-        <?php
-        $current_month = null;
-        $first_event = true;
-        foreach ($transaction_one_time_list as $transaction)
-        {
-        $transaction_date = (isset($transaction['date_posted'])) ? $transaction['date_posted'] : "";
-        $transaction_reason = (isset($transaction['reason'])) ? $transaction['reason'] : "";
-        $transaction_amount = (isset($transaction['amount'])) ? $transaction['amount'] : "";
-        $transaction_currency = (isset($transaction['currency'])) ? $transaction['currency'] : "";
-
-        $new_month_tag = false;
-        if ($current_month != date("F",strtotime($transaction_date)) || $current_year != date("Y",strtotime($transaction_date)))
-        {
-        $new_month_tag = true;
-        }
-        $current_month = date("F",strtotime($transaction_date));
-        $current_year = date("Y",strtotime($transaction_date));
-        ?>
-        <?php if (!$first_event && $new_month_tag) { ?>
-    </div>
-    <?php } ?>
-    <?php if ($new_month_tag) { ?>
-    <div class="row">
-        <div class="col-sm-12">
-            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#One-Time-<?php echo $current_month.'-'.$current_year; ?>"><?php echo $current_month.' - '.$current_year; ?></button>
-        </div>
-    </div>
-    <br />
-    <div id="One-Time-<?php echo $current_month.'-'.$current_year; ?>" class="collapse">
-        <div class="row">
-            <div class="col-sm-2">
-                <h4><strong>Date</strong></h4>
-            </div>
-            <div class="col-sm-2">
-                <h4><strong>Amount</strong></h4>
-            </div>
-            <div class="col-sm-8">
-                <h4><strong>Reason for Transaction</strong></h4>
-            </div>
-        </div>
-        <?php } ?>
-        <div class="row">
-            <div class="col-sm-2">
-                <?php echo $transaction_date; ?>
-            </div>
-            <div class="col-sm-2">
-                <?php echo $transaction_amount." <var>".$transaction_currency."</var>"; ?>
-            </div>
-            <div class="col-sm-8">
-                <?php echo $transaction_reason; ?>
-            </div>
-        </div>
-        <br />
-        <?php
-        $first_event = false;
-        }
-        ?>
-    </div>
-    <?php
-    }
-
-    if ($transactions_donations)
-    {
-    ?>
-    <h3>Donations</h3>
-    <?php
-    $current_month = null;
-    $first_event = true;
-    foreach ($transaction_donation_list as $transaction)
-    {
-    $transaction_date = (isset($transaction['date_posted'])) ? $transaction['date_posted'] : "";
-    $transaction_reason = (isset($transaction['reason'])) ? $transaction['reason'] : "";
-    $transaction_amount = (isset($transaction['amount'])) ? $transaction['amount'] : "";
-    $transaction_currency = (isset($transaction['currency'])) ? $transaction['currency'] : "";
-
-    $new_month_tag = false;
-    if ($current_month != date("F",strtotime($transaction_date)) || $current_year != date("Y",strtotime($transaction_date)))
-    {
-    $new_month_tag = true;
-    }
-    $current_month = date("F",strtotime($transaction_date));
-    $current_year = date("Y",strtotime($transaction_date));
-    ?>
-    <?php if (!$first_event && $new_month_tag) { ?>
-</div>
-            <?php } ?>
-            <?php if ($new_month_tag) { ?>
-<div class="row">
-    <div class="col-sm-12">
-        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#donations-<?php echo $current_month.'-'.$current_year; ?>"><?php echo $current_month.' - '.$current_year; ?></button>
-    </div>
-</div>
-<br />
-<div id="donations-<?php echo $current_month.'-'.$current_year; ?>" class="collapse">
-    <div class="row">
-        <div class="col-sm-2">
-            <h4><strong>Date</strong></h4>
-        </div>
-        <div class="col-sm-2">
-            <h4><strong>Amount</strong></h4>
-        </div>
-        <div class="col-sm-8">
-            <h4><strong>Reason for Transaction</strong></h4>
-        </div>
-    </div>
-    <?php } ?>
-    <div class="row">
-        <div class="col-sm-2">
-            <?php echo $transaction_date; ?>
-        </div>
-        <div class="col-sm-2">
-            <?php echo $transaction_amount." <var>".$transaction_currency."</var>"; ?>
-        </div>
-        <div class="col-sm-8">
-            <?php echo $transaction_reason; ?>
-        </div>
-    </div>
-    <br />
-    <?php
-    $first_event = false;
-    }
-    ?>
-</div>
-            <?php
-        }
-        ?>
-<br />
-<h2 class="text-center"><b>Takedowns</b></h2>
-<hr>
-       <?php
-        if ($takedown_list)
-        {
-            $current_month = date("F",time())+1;
-            $first_event = true;
-            foreach ($takedown_list as $takedown)
+            <h2 class="text-center"><b>Takedowns</b></h2>
+            <hr>
+            @if (Model.Takedowns != null && Model.Takedowns.Any())
             {
-              $takedown_date = (isset($takedown['date_requested'])) ? $takedown['date_requested'] : "";
-              $takedown_requester = (isset($takedown['requester'])) ? $takedown['requester'] : "";
-              $takedown_reason = (isset($takedown['reason'])) ? $takedown['reason'] : "";
-              $takedown_action = (isset($takedown['action'])) ? $takedown['action'] : "";
-
-              $new_month_tag = false;
-              if ($current_month != date("F",strtotime($takedown_date)))
-              {
-                $new_month_tag = true;
-              }
-              $current_month = date("F",strtotime($takedown_date));
-              $current_year = date("Y",strtotime($takedown_date));
-            ?>
-            <?php if (!$first_event && $new_month_tag) { ?>
-              </div>
-            <?php } ?>
-            <?php if ($new_month_tag) { ?>
-<div class="row">
-    <div class="col-sm-12">
-        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#donations-<?php echo $current_month.'-'.$current_year; ?>"><?php echo $current_month.' - '.$current_year; ?></button>
+                <h3>Takedowns</h3>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#takedowns-section">View Takedowns</button>
+                    </div>
+                </div>
+                <br />
+                <div id="takedowns-section" class="collapse">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <h4><strong>Requester</strong></h4>
+                        </div>
+                        <div class="col-sm-2">
+                            <h4><strong>Contact</strong></h4>
+                        </div>
+                        <div class="col-sm-2">
+                            <h4><strong>Reason</strong></h4>
+                        </div>
+                        <div class="col-sm-2">
+                            <h4><strong>Action Taken</strong></h4>
+                        </div>
+                        <div class="col-sm-2">
+                            <h4><strong>Date Requested</strong></h4>
+                        </div>
+                        <div class="col-sm-2">
+                            <h4><strong>Date Of Action</strong></h4>
+                        </div>
+                    </div>
+                    @foreach (Takedown takedown in Model.Takedowns)
+                    {
+                        <div class="row">
+                            <div class="col-sm-2">
+                                @takedown.Requester
+                            </div>
+                            <div class="col-sm-2">
+                                @takedown.RequesterContact
+                            </div>
+                            <div class="col-sm-2">
+                                @takedown.Reason
+                            </div>
+                            <div class="col-sm-2">
+                                @takedown.ActionTaken
+                            </div>
+                            <div class="col-sm-2">
+                                @takedown.DateRequested.ToString("MMMM dd, YYYY")
+                            </div>
+                            <div class="col-sm-2">
+                                @takedown.DateActionTaken.ToString("MMMM dd, YYYY")
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
     </div>
-</div>
-<br />
-<div id="donations-<?php echo $current_month.'-'.$current_year; ?>" class="collapse">
-    <div class="row">
-        <div class="col-sm-2">
-            <h4><strong>Date</strong></h4>
-        </div>
-        <div class="col-sm-2">
-            <h4><strong>Requester</strong></h4>
-        </div>
-        <div class="col-sm-2">
-            <h4><strong>Action Taken</strong></h4>
-        </div>
-        <div class="col-sm-6">
-            <h4><strong>Takedown Reason</strong></h4>
-        </div>
-    </div>
-    <?php } ?>
-    <div class="row">
-        <div class="col-sm-2">
-            <p><?php echo $takedown_date; ?></p>
-        </div>
-        <div class="col-sm-2">
-            <p><?php echo $takedown_requester; ?></p>
-        </div>
-        <div class="col-sm-2">
-            <p><?php echo $takedown_action; ?></p>
-        </div>
-        <div class="col-sm-6">
-            <?php echo $takedown_reason; ?>
-        </div>
-    </div>
-    <br />
-    <?php
-    $first_event = false;
-    }
-    ?>
-</div>
-            <?php
-        }
-        else
-        {
-          echo "<h3 class='text-center'>No Takedowns Requested</h3>";
-        }
-        ?>
-<br />
-    </div>
-  </div>
 </div>

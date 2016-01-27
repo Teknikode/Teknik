@@ -204,7 +204,9 @@
     <Compile Include="Areas\Transparency\Controllers\TransparencyController.cs" />
     <Compile Include="Areas\Transparency\Models\Bill.cs" />
     <Compile Include="Areas\Transparency\Models\Donation.cs" />
-    <Compile Include="Areas\Transparency\Models\Single.cs" />
+    <Compile Include="Areas\Transparency\Models\MonthYearGroup.cs" />
+    <Compile Include="Areas\Transparency\Models\OneTime.cs" />
+    <Compile Include="Areas\Transparency\Models\Takedown.cs" />
     <Compile Include="Areas\Transparency\Models\Transaction.cs" />
     <Compile Include="Areas\Transparency\TransparencyAreaRegistration.cs" />
     <Compile Include="Areas\Transparency\ViewModels\TransparencyViewModel.cs" />

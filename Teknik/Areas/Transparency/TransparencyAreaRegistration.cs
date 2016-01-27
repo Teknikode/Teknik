@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace Teknik.Areas.Transparency
 {
@@ -12,13 +13,15 @@ namespace Teknik.Areas.Transparency
             }
         }
 
-        public override void RegisterArea(AreaRegistrationContext context) 
+        public override void RegisterArea(AreaRegistrationContext context)
         {
-            context.MapRoute(
-                "Transparency_default",
-                "Transparency/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
-            );
+            context.MapSubdomainRoute(
+                 "Transparency.Index",
+                 new List<string>() { "dev", "transparency" }, // Subdomains
+                 "",
+                 new { controller = "Transparency", action = "Index" },
+                 new[] { typeof(Controllers.TransparencyController).Namespace }
+             );
         }
     }
 }
