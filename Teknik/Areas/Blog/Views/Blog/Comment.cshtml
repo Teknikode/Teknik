@@ -7,7 +7,7 @@
     <div class="col-sm-8 col-sm-offset-2">
         <div class="post-comment">
             <p class="post-comment-meta text-muted">
-                <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = Model.Post.Blog.User.Username })">@Model.Post.Blog.User.Username</a> replied at <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("HH:mm:ss tt") on @Model.DatePosted.ToString("MMMM dd, yyyy")</time>
+                <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = Model.Post.Blog.User.Username })">@Model.Post.Blog.User.Username</a> replied at <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("hh:mm:ss tt") on @Model.DatePosted.ToString("MMMM dd, yyyy")</time>
                 @if (Model.Post.Blog.User.Username == User.Identity.Name || User.IsInRole("Admin"))
                 {
                     <br />

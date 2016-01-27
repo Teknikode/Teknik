@@ -42,6 +42,7 @@ namespace Teknik.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            // User Settings Mappings
             modelBuilder.Entity<User>()
                 .HasRequired(a => a.UserSettings)
                 .WithRequiredPrincipal(a => a.User);
@@ -62,6 +63,25 @@ namespace Teknik.Models
             modelBuilder.Entity<BlogSettings>()
                 .HasRequired(a => a.UploadSettings)
                 .WithRequiredPrincipal(a => a.BlogSettings);
+
+            // User Mappings
+            modelBuilder.Entity<User>()
+                .HasMany<Upload>(u => u.Uploads)
+                .WithOptional(u => u.User)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<User>()
+                .HasMany<Paste>(u => u.Pastes)
+                .WithOptional(u => u.User)
+                .WillCascadeOnDelete(false);
+
+            // Upload Mappings
+            modelBuilder.Entity<Upload>()
+                .HasOptional(u => u.User);
+
+            // Paste Mappings
+            modelBuilder.Entity<Paste>()
+                .HasOptional(u => u.User);
 
             // Users
             modelBuilder.Entity<User>().ToTable("Users");

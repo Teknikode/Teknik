@@ -242,14 +242,56 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Update uploads
+                List<Upload.Models.Upload> uploads = db.Uploads.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
+                if (uploads != null)
+                {
+                    foreach (Upload.Models.Upload upload in uploads)
+                    {
+                        upload.UserId = null;
+                        db.Entry(upload).State = EntityState.Modified;
+                    }
+                }
+
+                // Update pastes
+                List<Paste.Models.Paste> pastes = db.Pastes.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
+                if (pastes != null)
+                {
+                    foreach (Paste.Models.Paste paste in pastes)
+                    {
+                        paste.UserId = null;
+                        db.Entry(paste).State = EntityState.Modified;
+                    }
+                }
+
                 // Delete Blogs
-                Blog.Models.Blog blog = db.Blogs.Include("BlogPosts").Include("User").Where(u => u.User.Username == User.Identity.Name).FirstOrDefault();
+                Blog.Models.Blog blog = db.Blogs.Include("BlogPosts").Include("BlogPosts.Comments").Include("User").Where(u => u.User.Username == User.Identity.Name).FirstOrDefault();
                 if (blog != null)
                 {
                     db.Blogs.Remove(blog);
-                    db.SaveChanges();
                 }
 
+                // Delete post comments
+                List<BlogPostComment> postComments = db.BlogComments.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
+                if (postComments != null)
+                {
+                    foreach (BlogPostComment postComment in postComments)
+                    {
+                        db.BlogComments.Remove(postComment);
+                    }
+                }
+
+                // Delete post comments
+                List<Podcast.Models.PodcastComment> podComments = db.PodcastComments.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
+                if (podComments != null)
+                {
+                    foreach (Podcast.Models.PodcastComment podComment in podComments)
+                    {
+                        db.PodcastComments.Remove(podComment);
+                    }
+                }
+
+                // Delete User
                 User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
                 if (user != null)
                 {

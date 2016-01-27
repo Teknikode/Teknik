@@ -26,6 +26,10 @@ namespace Teknik.Areas.Profile.Models
         
         public virtual UploadSettings UploadSettings { get; set; }
 
+        public List<Upload.Models.Upload> Uploads { get; set; }
+
+        public List<Paste.Models.Paste> Pastes { get; set; }
+
         public User()
         {
             Username = String.Empty;
