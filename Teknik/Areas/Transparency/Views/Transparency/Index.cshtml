@@ -82,26 +82,26 @@
                 <br />
                 <div id="bills-section" class="collapse">
                     <div class="row">
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <h4><strong>Date</strong></h4>
                         </div>
                         <div class="col-sm-2">
                             <h4><strong>Amount</strong></h4>
                         </div>
-                        <div class="col-sm-8">
+                        <div class="col-sm-7">
                             <h4><strong>Description</strong></h4>
                         </div>
                     </div>
                     @foreach (Bill bill in Model.Bills)
                     {
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 @bill.DateSent.ToString("MMMM dd, yyyy")
                             </div>
                             <div class="col-sm-2">
                                 @bill.Amount <var>@bill.Currency</var>
                             </div>
-                            <div class="col-sm-8">
+                            <div class="col-sm-7">
                                 @bill.Reason
                             </div>
                         </div>
@@ -119,13 +119,13 @@
                 <br />
                 <div id="oneTime-section" class="collapse">
                     <div class="row">
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <h4><strong>Date</strong></h4>
                         </div>
                         <div class="col-sm-2">
                             <h4><strong>Amount</strong></h4>
                         </div>
-                        <div class="col-sm-8">
+                        <div class="col-sm-7">
                             <h4><strong>Reason for Payment</strong></h4>
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                 <br />
                 <div id="donations-section" class="collapse">
                     <div class="row">
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <h4><strong>Date</strong></h4>
                         </div>
                         <div class="col-sm-2">
@@ -165,14 +165,14 @@
                         <div class="col-sm-2">
                             <h4><strong>Donor</strong></h4>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-5">
                             <h4><strong>Reason for Donation</strong></h4>
                         </div>
                     </div>
                     @foreach (Donation donation in Model.Donations)
                     {
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 @donation.DateSent.ToString("MMMM dd, yyyy")
                             </div>
                             <div class="col-sm-2">
@@ -181,7 +181,7 @@
                             <div class="col-sm-2">
                                 @donation.Sender
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-5">
                                 @donation.Reason
                             </div>
                         </div>
