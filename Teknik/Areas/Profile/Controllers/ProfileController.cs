@@ -205,10 +205,12 @@ namespace Teknik.Areas.Profile.Controllers
                             // Add gogs user
                             using (var client = new WebClient())
                             {
-                                var obj = new { source_id = 1, username = model.Username, email = email, password = model.Password };
+                                var obj = new { username = model.Username, email = email, password = model.Password };
+                                string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                                 client.Headers[HttpRequestHeader.ContentType] = "application/json";
                                 Uri baseUri = new Uri(Config.GitConfig.Host);
-                                string result = client.UploadString(new Uri(baseUri, "admin/users").ToString(), "POST", Newtonsoft.Json.JsonConvert.SerializeObject(obj));
+                                Uri finalUri = new Uri(baseUri, "admin/users?token=" + Config.GitConfig.AccessToken);
+                                string result = client.UploadString(finalUri, "POST", json);
                             }
                         }
 
@@ -283,9 +285,11 @@ namespace Teknik.Areas.Profile.Controllers
                             using (var client = new WebClient())
                             {
                                 var obj = new { source_id = 1, email = email, password = newPass };
+                                string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                                 client.Headers[HttpRequestHeader.ContentType] = "application/json";
                                 Uri baseUri = new Uri(Config.GitConfig.Host);
-                                string result = client.UploadString(new Uri(baseUri, "admin/users/" + User.Identity.Name).ToString(), "PATCH", Newtonsoft.Json.JsonConvert.SerializeObject(obj));
+                                Uri finalUri = new Uri(baseUri, "admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
+                                string result = client.UploadString(finalUri, "PATCH", json);
                             }
                         }
                     }
@@ -327,7 +331,8 @@ namespace Teknik.Areas.Profile.Controllers
                 if (Config.GitConfig.Enabled)
                 {
                     Uri baseUri = new Uri(Config.GitConfig.Host);
-                    WebRequest request = WebRequest.Create(new Uri(baseUri, "admin/users/" + User.Identity.Name).ToString());
+                    Uri finalUri = new Uri(baseUri, "admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
+                    WebRequest request = WebRequest.Create(finalUri);
                     request.Method = "DELETE";
 
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
