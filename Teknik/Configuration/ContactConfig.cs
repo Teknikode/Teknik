@@ -7,7 +7,7 @@ using System.Net.Mail;
 
 namespace Teknik.Configuration
 {
-    public class SMTPConfig
+    public class ContactConfig
     {
         public string Host { get; set; }
         public int Port { get; set; }
@@ -15,7 +15,7 @@ namespace Teknik.Configuration
         public string Password { get; set; }
         public bool SSL { get; set; }
 
-        public SMTPConfig()
+        public ContactConfig()
         {
             SetDefaults();
         }

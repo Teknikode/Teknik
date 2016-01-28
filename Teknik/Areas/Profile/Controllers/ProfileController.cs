@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -14,6 +15,7 @@ using Teknik.Controllers;
 using Teknik.Helpers;
 using Teknik.Models;
 using Teknik.ViewModels;
+using System.Windows;
 
 namespace Teknik.Areas.Profile.Controllers
 {
@@ -167,6 +169,32 @@ namespace Teknik.Areas.Profile.Controllers
                 }
                 try
                 {
+                    // Connect to hmailserver COM
+                    if (!Config.DevEnvironment)
+                    {
+                        string email = string.Format("{0}@{1}", model.Username, Config.Host);
+                        var app = new hMailServer.Application();
+                        app.Connect();
+                        app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
+
+                        var domain = app.Domains.ItemByName[Config.Host];
+                        try
+                        {
+                            var account = domain.Accounts.ItemByAddress[email];
+                            return Json(new { error = "That email already exists." });
+                        }
+                        catch { }
+
+                        // If we got an exception, then the email doesnt exist and we continue on!
+                        var newAccount = domain.Accounts.Add();
+                        newAccount.Address = email;
+                        newAccount.Password = model.Password;
+                        newAccount.Active = true;
+                        newAccount.MaxSize = Config.EmailConfig.MaxSize;
+
+                        newAccount.Save();
+                    }
+
                     // Add User
                     User newUser = db.Users.Create();
                     newUser.JoinDate = DateTime.Now;
@@ -217,6 +245,16 @@ namespace Teknik.Areas.Profile.Controllers
                         }
                         user.HashedPassword = SHA384.Hash(User.Identity.Name, newPass);
                     }
+
+                    // Update Email Pass
+                    var app = new hMailServer.Application();
+                    app.Connect();
+                    app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
+                    var domain = app.Domains.ItemByName[Config.Host];
+                    var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}",User.Identity.Name, Config.Host)];
+                    account.Password = newPass;
+                    account.Save();
+
                     user.UserSettings.Website = website;
                     user.UserSettings.Quote = quote;
                     user.UserSettings.About = about;
@@ -242,6 +280,14 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Delete Email
+                var app = new hMailServer.Application();
+                app.Connect();
+                app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
+                var domain = app.Domains.ItemByName[Config.Host];
+                var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.Host)];
+                account.Delete();
+
                 // Update uploads
                 List<Upload.Models.Upload> uploads = db.Uploads.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
                 if (uploads != null)

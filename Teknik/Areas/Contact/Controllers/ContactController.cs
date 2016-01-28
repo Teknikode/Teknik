@@ -46,12 +46,12 @@ namespace Teknik.Areas.Contact.Controllers
 
                     // Let's also email the message to support
                     SmtpClient client = new SmtpClient();
-                    client.Host = Config.SMTPConfig.Host;
-                    client.Port = Config.SMTPConfig.Port;
-                    client.EnableSsl = Config.SMTPConfig.SSL;
+                    client.Host = Config.ContactConfig.Host;
+                    client.Port = Config.ContactConfig.Port;
+                    client.EnableSsl = Config.ContactConfig.SSL;
                     client.DeliveryMethod = SmtpDeliveryMethod.Network;
                     client.UseDefaultCredentials = true;
-                    client.Credentials = new System.Net.NetworkCredential(Config.SMTPConfig.Username, Config.SMTPConfig.Password);
+                    client.Credentials = new System.Net.NetworkCredential(Config.ContactConfig.Username, Config.ContactConfig.Password);
                     client.Timeout = 5000;
 
                     MailMessage mail = new MailMessage(Config.SupportEmail, Config.SupportEmail);

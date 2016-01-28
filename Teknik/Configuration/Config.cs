@@ -17,7 +17,8 @@ namespace Teknik.Configuration
         private string          _Description;
         private string          _Author;
         private string          _Host;
-        private SMTPConfig      _SMTPConfig;
+        private ContactConfig      _ContactConfig;
+        private EmailConfig     _EmailConfig;
         private UploadConfig    _UploadConfig;
         private PasteConfig     _PasteConfig;
         private BlogConfig      _BlogConfig;
@@ -34,8 +35,11 @@ namespace Teknik.Configuration
         public string       Author          { get { return _Author; }           set { _Author = value; } }
         public string       Host            { get { return _Host; }             set { _Host = value; } }
 
+        // Contact Configuration
+        public ContactConfig    ContactConfig   { get { return _ContactConfig; }    set { _ContactConfig = value; } }
+
         // Mail Server Configuration
-        public SMTPConfig       SMTPConfig      { get { return _SMTPConfig; }       set { _SMTPConfig = value; } }
+        public EmailConfig      EmailConfig     { get { return _EmailConfig; }      set { _EmailConfig = value; } }
 
         // Contact Configuration
         public string           SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
@@ -75,7 +79,8 @@ namespace Teknik.Configuration
             Description     = string.Empty;
             Author          = string.Empty;
             Host            = string.Empty;
-            SMTPConfig      = new SMTPConfig();
+            EmailConfig     = new EmailConfig();
+            ContactConfig   = new ContactConfig();
             BlogConfig      = new BlogConfig();
             UploadConfig    = new UploadConfig();
             PasteConfig     = new PasteConfig();
