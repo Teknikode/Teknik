@@ -93,7 +93,7 @@ namespace Teknik.Areas.API.Controllers
                             string fullUrl = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url });
                             var returnData = new
                             {
-                                url = (saveKey && !string.IsNullOrEmpty(key)) ? fullUrl : fullUrl + "#" + key,
+                                url = (saveKey || string.IsNullOrEmpty(key)) ? fullUrl : fullUrl + "#" + key,
                                 fileName = upload.Url,
                                 contentType = contentType,
                                 contentLength = contentLength,
