@@ -44,51 +44,55 @@ namespace Teknik.Areas.Upload.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, HttpPostedFileWrapper data, string key = null)
         {
-            if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
+            if (Config.UploadConfig.UploadEnabled)
             {
-                // convert file to bytes
-                byte[] fileData = null;
-                int contentLength = data.ContentLength;
-                using (var binaryReader = new BinaryReader(data.InputStream))
+                if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
                 {
-                    fileData = binaryReader.ReadBytes(data.ContentLength);
-                }
-                // if they want us to encrypt it, we do so here
-                if (encrypt)
-                {
-                    // Generate key and iv if empty
-                    if (string.IsNullOrEmpty(key))
+                    // convert file to bytes
+                    byte[] fileData = null;
+                    int contentLength = data.ContentLength;
+                    using (var binaryReader = new BinaryReader(data.InputStream))
                     {
-                        key = Utility.RandomString(keySize / 8);
+                        fileData = binaryReader.ReadBytes(data.ContentLength);
                     }
-
-                    fileData = AES.Encrypt(fileData, key, iv);
-                    if (fileData == null || fileData.Length <= 0)
+                    // if they want us to encrypt it, we do so here
+                    if (encrypt)
                     {
-                        return Json(new { error = new { message = "Unable to encrypt file" } });
-                    }
-                }
-                Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, key, keySize, blockSize);
-                if (upload != null)
-                {
-                    if (User.Identity.IsAuthenticated)
-                    {
-                        Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
-                        if (user != null)
+                        // Generate key and iv if empty
+                        if (string.IsNullOrEmpty(key))
                         {
-                            upload.UserId = user.UserId;
-                            db.Entry(upload).State = EntityState.Modified;
-                            db.SaveChanges();
+                            key = Utility.RandomString(keySize / 8);
+                        }
+
+                        fileData = AES.Encrypt(fileData, key, iv);
+                        if (fileData == null || fileData.Length <= 0)
+                        {
+                            return Json(new { error = new { message = "Unable to encrypt file" } });
                         }
                     }
-                    return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }) } }, "text/plain");
+                    Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, key, keySize, blockSize);
+                    if (upload != null)
+                    {
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                            if (user != null)
+                            {
+                                upload.UserId = user.UserId;
+                                db.Entry(upload).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                        }
+                        return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }) } }, "text/plain");
+                    }
+                    return Json(new { error = "Unable to upload file" });
                 }
-                return Json(new { error = "Unable to upload file" });
+                else
+                {
+                    return Json(new { error = "File Too Large" });
+                }
             }
-            else
-            {
-                return Json(new { error = "File Too Large" });
-            }
+            return Json(new { error = "Uploads are disabled" });
         }
 
         // User did not supply key
@@ -96,52 +100,56 @@ namespace Teknik.Areas.Upload.Controllers
         [AllowAnonymous]
         public ActionResult Download(string file)
         {
-            ViewBag.Title = "Teknik Download - " + file;
-            Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
-            if (upload != null)
+            if (Config.UploadConfig.DownloadEnabled)
             {
-                upload.Downloads += 1;
-                db.Entry(upload).State = EntityState.Modified;
-                db.SaveChanges();
-                // We don't have the key, so we need to decrypt it client side
-                if (string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
+                ViewBag.Title = "Teknik Download - " + file;
+                Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
+                if (upload != null)
                 {
-                    DownloadViewModel model = new DownloadViewModel();
-                    model.FileName = file;
-                    model.ContentType = upload.ContentType;
-                    model.ContentLength = upload.ContentLength;
-                    model.IV = upload.IV;
-
-                    return View(model);
-                }
-                else // We have the key, so that means server side decryption
-                {
-                    if (System.IO.File.Exists(upload.FileName))
+                    upload.Downloads += 1;
+                    db.Entry(upload).State = EntityState.Modified;
+                    db.SaveChanges();
+                    // We don't have the key, so we need to decrypt it client side
+                    if (string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                     {
-                        // Read in the file
-                        byte[] data = System.IO.File.ReadAllBytes(upload.FileName);
+                        DownloadViewModel model = new DownloadViewModel();
+                        model.FileName = file;
+                        model.ContentType = upload.ContentType;
+                        model.ContentLength = upload.ContentLength;
+                        model.IV = upload.IV;
 
-                        // If the IV is set, and Key is set, then decrypt it
-                        if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
+                        return View(model);
+                    }
+                    else // We have the key, so that means server side decryption
+                    {
+                        if (System.IO.File.Exists(upload.FileName))
                         {
-                            // Decrypt the data
-                            data = AES.Decrypt(data, upload.Key, upload.IV);
+                            // Read in the file
+                            byte[] data = System.IO.File.ReadAllBytes(upload.FileName);
+
+                            // If the IV is set, and Key is set, then decrypt it
+                            if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
+                            {
+                                // Decrypt the data
+                                data = AES.Decrypt(data, upload.Key, upload.IV);
+                            }
+
+                            // Create content disposition
+                            var cd = new System.Net.Mime.ContentDisposition
+                            {
+                                FileName = upload.Url,
+                                Inline = true
+                            };
+
+                            Response.AppendHeader("Content-Disposition", cd.ToString());
+
+                            return File(data, upload.ContentType);
                         }
-
-                        // Create content disposition
-                        var cd = new System.Net.Mime.ContentDisposition
-                        {
-                            FileName = upload.Url,
-                            Inline = true
-                        };
-
-                        Response.AppendHeader("Content-Disposition", cd.ToString());
-
-                        return File(data, upload.ContentType);
                     }
                 }
+                return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
         }
 
         [HttpPost]
@@ -149,33 +157,38 @@ namespace Teknik.Areas.Upload.Controllers
         [ValidateAntiForgeryToken]
         public FileResult DownloadData(string file)
         {
-            Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
-            if (upload != null)
+            if (Config.UploadConfig.DownloadEnabled)
             {
-                string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, upload.FileName);
-                if (System.IO.File.Exists(filePath))
+                Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
+                if (upload != null)
                 {
-                    byte[] buffer;
-                    FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                    try
+                    string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, upload.FileName);
+                    if (System.IO.File.Exists(filePath))
                     {
-                        int length = (int)fileStream.Length;  // get file length
-                        buffer = new byte[length];            // create buffer
-                        int count;                            // actual number of bytes read
-                        int sum = 0;                          // total number of bytes read
+                        byte[] buffer;
+                        FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                        try
+                        {
+                            int length = (int)fileStream.Length;  // get file length
+                            buffer = new byte[length];            // create buffer
+                            int count;                            // actual number of bytes read
+                            int sum = 0;                          // total number of bytes read
 
-                        // read until Read method returns 0 (end of the stream has been reached)
-                        while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
-                            sum += count;  // sum is a buffer offset for next reading
+                            // read until Read method returns 0 (end of the stream has been reached)
+                            while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
+                                sum += count;  // sum is a buffer offset for next reading
+                        }
+                        finally
+                        {
+                            fileStream.Close();
+                        }
+                        return File(buffer, System.Net.Mime.MediaTypeNames.Application.Octet, file);
                     }
-                    finally
-                    {
-                        fileStream.Close();
-                    }
-                    return File(buffer, System.Net.Mime.MediaTypeNames.Application.Octet, file);
                 }
+                Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                return null;
             }
-            Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            Redirect(Url.SubRouteUrl("error", "Error.Http403"));
             return null;
         }
 

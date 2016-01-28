@@ -8,6 +8,8 @@ namespace Teknik.Configuration
 {
     public class UploadConfig
     {
+        public bool UploadEnabled { get; set; }
+        public bool DownloadEnabled { get; set; }
         // Max upload size in bytes
         public int MaxUploadSize { get; set; }
         // Location of the upload directory
@@ -29,6 +31,8 @@ namespace Teknik.Configuration
 
         public void SetDefaults()
         {
+            UploadEnabled = true;
+            DownloadEnabled = true;
             MaxUploadSize = 100000000;
             UploadDirectory = Directory.GetCurrentDirectory();
             FileExtension = "enc";

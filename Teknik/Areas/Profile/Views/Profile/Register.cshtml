@@ -1,5 +1,7 @@
 ﻿@model Teknik.Areas.Profile.ViewModels.RegisterViewModel
 
+@if (Model.Config.UserConfig.RegistrationEnabled)
+{
 <form role="form" id="registrationForm" action="@Url.SubRouteUrl("profile", "Profile.Register")" method="post" accept-charset="UTF-8">
     @Html.AntiForgeryToken()
     <input name="ReturnUrl" id="ReturnUrl" type="hidden" value="@Model.ReturnUrl" />
@@ -16,3 +18,8 @@
         <button class="btn btn-primary" id="reg_submit" type="submit" name="submit">Sign Up</button>
     </div>
 </form>
+}
+else
+{
+<h3>Registration has been disabled</h3>
+}

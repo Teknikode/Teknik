@@ -107,33 +107,37 @@ namespace Teknik.Areas.Paste.Controllers
         {
             if (ModelState.IsValid)
             {
-                try
+                if (Config.PasteConfig.Enabled)
                 {
-                    Models.Paste paste = PasteHelper.CreatePaste(model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password, model.Hide);
-
-                    if (model.ExpireUnit == "view")
+                    try
                     {
-                        paste.Views = -1;
-                    }
+                        Models.Paste paste = PasteHelper.CreatePaste(model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password, model.Hide);
 
-                    if (User.Identity.IsAuthenticated)
-                    {
-                        Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
-                        if (user != null)
+                        if (model.ExpireUnit == "view")
                         {
-                            paste.UserId = user.UserId;
+                            paste.Views = -1;
                         }
+
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                            if (user != null)
+                            {
+                                paste.UserId = user.UserId;
+                            }
+                        }
+
+                        db.Pastes.Add(paste);
+                        db.SaveChanges();
+
+                        return Redirect(Url.SubRouteUrl("paste", "Paste.View", new { type = "Full", url = paste.Url, password = model.Password }));
                     }
-
-                    db.Pastes.Add(paste);
-                    db.SaveChanges();
-
-                    return Redirect(Url.SubRouteUrl("paste", "Paste.View", new { type = "Full", url = paste.Url, password = model.Password }));
+                    catch (Exception ex)
+                    {
+                        return Redirect(Url.SubRouteUrl("error", "Error.500", new { exception = ex }));
+                    }
                 }
-                catch (Exception ex)
-                {
-                    return Redirect(Url.SubRouteUrl("error", "Error.500", new { exception = ex }));
-                }
+                Redirect(Url.SubRouteUrl("error", "Error.Http403"));
             }
             return View("~/Areas/Paste/Views/Paste/Index.cshtml", model);
         }

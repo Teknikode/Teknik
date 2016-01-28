@@ -9,6 +9,7 @@ namespace Teknik.Configuration
 {
     public class ContactConfig
     {
+        public bool Enabled { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }
         public string Username { get; set; }
@@ -22,6 +23,7 @@ namespace Teknik.Configuration
 
         public void SetDefaults()
         {
+            Enabled = true;
             Host = string.Empty;
             Port = 25;
             Username = string.Empty;

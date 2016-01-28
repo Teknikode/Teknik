@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 namespace Teknik.Configuration
 {
-    public class ApiConfig
+    public class GitConfig
     {
         public bool Enabled { get; set; }
 
-        public int Version { get; set; }
+        public string Host { get; set; }
 
-        public ApiConfig()
+        public int SourceId { get; set; }
+
+        public GitConfig()
         {
             Enabled = true;
-            Version = 1;
+            Host = string.Empty;
+            SourceId = 1;
         }
     }
 }

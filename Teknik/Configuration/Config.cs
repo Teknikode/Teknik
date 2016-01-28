@@ -17,8 +17,10 @@ namespace Teknik.Configuration
         private string          _Description;
         private string          _Author;
         private string          _Host;
-        private ContactConfig      _ContactConfig;
+        private UserConfig      _UserConfig;
+        private ContactConfig   _ContactConfig;
         private EmailConfig     _EmailConfig;
+        private GitConfig       _GitConfig;
         private UploadConfig    _UploadConfig;
         private PasteConfig     _PasteConfig;
         private BlogConfig      _BlogConfig;
@@ -34,6 +36,11 @@ namespace Teknik.Configuration
         public string       Description     { get { return _Description; }      set { _Description = value; } }
         public string       Author          { get { return _Author; }           set { _Author = value; } }
         public string       Host            { get { return _Host; }             set { _Host = value; } }
+        public string       SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
+        public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
+
+        // User Configuration
+        public UserConfig       UserConfig      { get { return _UserConfig; }       set { _UserConfig = value; } }
 
         // Contact Configuration
         public ContactConfig    ContactConfig   { get { return _ContactConfig; }    set { _ContactConfig = value; } }
@@ -41,11 +48,8 @@ namespace Teknik.Configuration
         // Mail Server Configuration
         public EmailConfig      EmailConfig     { get { return _EmailConfig; }      set { _EmailConfig = value; } }
 
-        // Contact Configuration
-        public string           SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
-
-        // About Configuration
-        public string           BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
+        // Git Service Configuration
+        public GitConfig        GitConfig       { get { return _GitConfig; }        set { _GitConfig = value; } }
 
         // Blog Configuration
         public BlogConfig       BlogConfig      { get { return _BlogConfig; }       set { _BlogConfig = value; } }
@@ -79,8 +83,10 @@ namespace Teknik.Configuration
             Description     = string.Empty;
             Author          = string.Empty;
             Host            = string.Empty;
+            UserConfig      = new UserConfig();
             EmailConfig     = new EmailConfig();
             ContactConfig   = new ContactConfig();
+            GitConfig       = new GitConfig();
             BlogConfig      = new BlogConfig();
             UploadConfig    = new UploadConfig();
             PasteConfig     = new PasteConfig();

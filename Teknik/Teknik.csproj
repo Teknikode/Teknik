@@ -220,6 +220,7 @@
     <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
     <Compile Include="Configuration\ApiConfig.cs" />
     <Compile Include="Configuration\EmailConfig.cs" />
+    <Compile Include="Configuration\GitConfig.cs" />
     <Compile Include="Configuration\PodcastConfig.cs" />
     <Compile Include="Configuration\BlogConfig.cs" />
     <Compile Include="Configuration\Config.cs" />
@@ -227,6 +228,7 @@
     <Compile Include="Configuration\PasteConfig.cs" />
     <Compile Include="Configuration\ContactConfig.cs" />
     <Compile Include="Configuration\UploadConfig.cs" />
+    <Compile Include="Configuration\UserConfig.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Areas\Dev\Controllers\DevController.cs" />
     <Compile Include="Global.asax.cs">

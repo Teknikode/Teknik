@@ -1,5 +1,7 @@
 ﻿@model Teknik.Areas.Profile.ViewModels.LoginViewModel
 
+@if (Model.Config.UserConfig.LoginEnabled)
+{
 <form role="form" id="loginForm" action="@Url.SubRouteUrl("profile", "Profile.Login")" method="post" accept-charset="UTF-8">
     @Html.AntiForgeryToken()
     <input name="ReturnUrl" id="ReturnUrl" type="hidden" value="@Model.ReturnUrl" />
@@ -18,3 +20,8 @@
         <button class="btn btn-primary" id="login_submit" type="submit" name="submit">Sign In</button>
     </div>
 </form>
+}
+else
+{
+    <h3>User logins have been disabled</h3>
+}

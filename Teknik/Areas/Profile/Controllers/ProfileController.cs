@@ -16,6 +16,7 @@ using Teknik.Helpers;
 using Teknik.Models;
 using Teknik.ViewModels;
 using System.Windows;
+using System.Net;
 
 namespace Teknik.Areas.Profile.Controllers
 {
@@ -158,65 +159,83 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
-                var foundUser = db.Users.Where(b => b.Username == model.Username).FirstOrDefault();
-                if (foundUser != null)
+                if (Config.UserConfig.RegistrationEnabled)
                 {
-                    return Json(new { error = "That username already exists." });
-                }
-                if (model.Password != model.ConfirmPassword)
-                {
-                    return Json(new { error = "Passwords must match." });
-                }
-                try
-                {
-                    // Connect to hmailserver COM
-                    if (!Config.DevEnvironment)
+                    var foundUser = db.Users.Where(b => b.Username == model.Username).FirstOrDefault();
+                    if (foundUser != null)
+                    {
+                        return Json(new { error = "That username already exists." });
+                    }
+                    if (model.Password != model.ConfirmPassword)
+                    {
+                        return Json(new { error = "Passwords must match." });
+                    }
+                    try
                     {
                         string email = string.Format("{0}@{1}", model.Username, Config.EmailConfig.Domain);
-                        var app = new hMailServer.Application();
-                        app.Connect();
-                        app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-
-                        var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
-                        try
+                        // If Email Server is enabled
+                        if (Config.EmailConfig.Enabled)
                         {
-                            var account = domain.Accounts.ItemByAddress[email];
-                            return Json(new { error = "That email already exists." });
+                            // Connect to hmailserver COM
+                            var app = new hMailServer.Application();
+                            app.Connect();
+                            app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
+
+                            var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
+                            try
+                            {
+                                var account = domain.Accounts.ItemByAddress[email];
+                                return Json(new { error = "That email already exists." });
+                            }
+                            catch { }
+
+                            // If we got an exception, then the email doesnt exist and we continue on!
+                            var newAccount = domain.Accounts.Add();
+                            newAccount.Address = email;
+                            newAccount.Password = model.Password;
+                            newAccount.Active = true;
+                            newAccount.MaxSize = Config.EmailConfig.MaxSize;
+
+                            newAccount.Save();
                         }
-                        catch { }
 
-                        // If we got an exception, then the email doesnt exist and we continue on!
-                        var newAccount = domain.Accounts.Add();
-                        newAccount.Address = email;
-                        newAccount.Password = model.Password;
-                        newAccount.Active = true;
-                        newAccount.MaxSize = Config.EmailConfig.MaxSize;
+                        // If Git is enabled
+                        if (Config.GitConfig.Enabled)
+                        {
+                            // Add gogs user
+                            using (var client = new WebClient())
+                            {
+                                var obj = new { source_id = 1, username = model.Username, email = email, password = model.Password };
+                                client.Headers[HttpRequestHeader.ContentType] = "application/json";
+                                Uri baseUri = new Uri(Config.GitConfig.Host);
+                                string result = client.UploadString(new Uri(baseUri, "admin/users").ToString(), "POST", Newtonsoft.Json.JsonConvert.SerializeObject(obj));
+                            }
+                        }
 
-                        newAccount.Save();
+                        // Add User
+                        User newUser = db.Users.Create();
+                        newUser.JoinDate = DateTime.Now;
+                        newUser.Username = model.Username;
+                        newUser.HashedPassword = SHA384.Hash(model.Username, model.Password);
+                        newUser.UserSettings = new UserSettings();
+                        newUser.BlogSettings = new BlogSettings();
+                        newUser.UploadSettings = new UploadSettings();
+                        db.Users.Add(newUser);
+                        db.SaveChanges();
+
+                        // Generate blog for the user
+                        var newBlog = db.Blogs.Create();
+                        newBlog.UserId = db.Users.Where(u => u.Username == model.Username).Select(u => u.UserId).First();
+                        db.Blogs.Add(newBlog);
+                        db.SaveChanges();
                     }
-
-                    // Add User
-                    User newUser = db.Users.Create();
-                    newUser.JoinDate = DateTime.Now;
-                    newUser.Username = model.Username;
-                    newUser.HashedPassword = SHA384.Hash(model.Username, model.Password);
-                    newUser.UserSettings = new UserSettings();
-                    newUser.BlogSettings = new BlogSettings();
-                    newUser.UploadSettings = new UploadSettings();
-                    db.Users.Add(newUser);
-                    db.SaveChanges();
-
-                    // Generate blog for the user
-                    var newBlog = db.Blogs.Create();
-                    newBlog.UserId = db.Users.Where(u => u.Username == model.Username).Select(u => u.UserId).First();
-                    db.Blogs.Add(newBlog);
-                    db.SaveChanges();
+                    catch (Exception ex)
+                    {
+                        return Json(new { error = "Unable to create the user." });
+                    }
+                    return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false, ReturnUrl = model.ReturnUrl });
                 }
-                catch (Exception ex)
-                {
-                    return Json(new { error = "Unable to create the user." });
-                }
-                return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false, ReturnUrl = model.ReturnUrl });
+                return Json(new { error = "User Registration is Disabled" });
             }
             return Json(new { error = "You must include all fields." });
         }
@@ -230,6 +249,7 @@ namespace Teknik.Areas.Profile.Controllers
                 User user = db.Users.Where(u => u.Username == User.Identity.Name).First();
                 if (user != null)
                 {
+                    string email = string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain);
                     // Changing Password?
                     if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
                     {
@@ -244,16 +264,31 @@ namespace Teknik.Areas.Profile.Controllers
                             return Json(new { error = "New Password Must Match." });
                         }
                         user.HashedPassword = SHA384.Hash(User.Identity.Name, newPass);
-                    }
 
-                    // Update Email Pass
-                    var app = new hMailServer.Application();
-                    app.Connect();
-                    app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-                    var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
-                    var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}",User.Identity.Name, Config.EmailConfig.Domain)];
-                    account.Password = newPass;
-                    account.Save();
+                        // Update Email Pass
+                        if (Config.EmailConfig.Enabled)
+                        {
+                            var app = new hMailServer.Application();
+                            app.Connect();
+                            app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
+                            var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
+                            var account = domain.Accounts.ItemByAddress[email];
+                            account.Password = newPass;
+                            account.Save();
+                        }                        
+
+                        // Update Git Pass
+                        if (Config.GitConfig.Enabled)
+                        {
+                            using (var client = new WebClient())
+                            {
+                                var obj = new { source_id = 1, email = email, password = newPass };
+                                client.Headers[HttpRequestHeader.ContentType] = "application/json";
+                                Uri baseUri = new Uri(Config.GitConfig.Host);
+                                string result = client.UploadString(new Uri(baseUri, "admin/users/" + User.Identity.Name).ToString(), "PATCH", Newtonsoft.Json.JsonConvert.SerializeObject(obj));
+                            }
+                        }
+                    }
 
                     user.UserSettings.Website = website;
                     user.UserSettings.Quote = quote;
@@ -287,6 +322,16 @@ namespace Teknik.Areas.Profile.Controllers
                 var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
                 var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain)];
                 account.Delete();
+
+                // Delete Git
+                if (Config.GitConfig.Enabled)
+                {
+                    Uri baseUri = new Uri(Config.GitConfig.Host);
+                    WebRequest request = WebRequest.Create(new Uri(baseUri, "admin/users/" + User.Identity.Name).ToString());
+                    request.Method = "DELETE";
+
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                }
 
                 // Update uploads
                 List<Upload.Models.Upload> uploads = db.Uploads.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
