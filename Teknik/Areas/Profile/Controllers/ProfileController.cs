@@ -46,7 +46,10 @@ namespace Teknik.Areas.Profile.Controllers
                 
                 model.UserID = user.UserId;
                 model.Username = user.Username;
-                model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                if (Config.EmailConfig.Enabled)
+                {
+                    model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                }
                 model.JoinDate = user.JoinDate;
                 model.LastSeen = user.LastSeen;
 
