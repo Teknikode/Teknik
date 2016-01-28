@@ -11,12 +11,15 @@ namespace Teknik.Configuration
 
         public string Password { get; set; }
 
+        public string Domain { get; set; }
+
         public int MaxSize { get; set; }
 
         public EmailConfig()
         {
             Username = string.Empty;
             Password = string.Empty;
+            Domain = string.Empty;
             MaxSize = 1000;
         }
     }

@@ -172,12 +172,12 @@ namespace Teknik.Areas.Profile.Controllers
                     // Connect to hmailserver COM
                     if (!Config.DevEnvironment)
                     {
-                        string email = string.Format("{0}@{1}", model.Username, Config.Host);
+                        string email = string.Format("{0}@{1}", model.Username, Config.EmailConfig.Domain);
                         var app = new hMailServer.Application();
                         app.Connect();
                         app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
 
-                        var domain = app.Domains.ItemByName[Config.Host];
+                        var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
                         try
                         {
                             var account = domain.Accounts.ItemByAddress[email];
@@ -250,8 +250,8 @@ namespace Teknik.Areas.Profile.Controllers
                     var app = new hMailServer.Application();
                     app.Connect();
                     app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-                    var domain = app.Domains.ItemByName[Config.Host];
-                    var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}",User.Identity.Name, Config.Host)];
+                    var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
+                    var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}",User.Identity.Name, Config.EmailConfig.Domain)];
                     account.Password = newPass;
                     account.Save();
 
@@ -284,8 +284,8 @@ namespace Teknik.Areas.Profile.Controllers
                 var app = new hMailServer.Application();
                 app.Connect();
                 app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-                var domain = app.Domains.ItemByName[Config.Host];
-                var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.Host)];
+                var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
+                var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain)];
                 account.Delete();
 
                 // Update uploads
