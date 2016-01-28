@@ -13,6 +13,8 @@ namespace Teknik.Configuration
 
         public string Domain { get; set; }
 
+        public string MailHost { get; set; }
+
         public int MaxSize { get; set; }
 
         public EmailConfig()
@@ -20,6 +22,7 @@ namespace Teknik.Configuration
             Username = string.Empty;
             Password = string.Empty;
             Domain = string.Empty;
+            MailHost = string.Empty;
             MaxSize = 1000;
         }
     }
