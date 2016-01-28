@@ -12,7 +12,7 @@ namespace Teknik.Areas.Transparency.ViewModels
     {
         public int UploadCount { get; set; }
 
-        public int UploadSize { get; set; }
+        public long UploadSize { get; set; }
 
         public int PasteCount { get; set; }
 

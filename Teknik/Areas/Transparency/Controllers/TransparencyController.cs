@@ -21,7 +21,7 @@ namespace Teknik.Areas.Transparency.Controllers
 
             Upload.Models.Upload upload = db.Uploads.OrderByDescending(u => u.UploadId).FirstOrDefault();
             model.UploadCount = (upload != null) ? upload.UploadId : 0;
-            model.UploadSize = (upload != null) ? db.Uploads.Sum(u => u.ContentLength) : 0;
+            model.UploadSize = (upload != null) ? db.Uploads.Sum(u => (long)u.ContentLength) : 0;
 
             Paste.Models.Paste paste = db.Pastes.OrderByDescending(p => p.PasteId).FirstOrDefault();
             model.PasteCount = (paste != null) ? paste.PasteId : 0;
