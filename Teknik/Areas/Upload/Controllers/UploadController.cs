@@ -119,11 +119,16 @@ namespace Teknik.Areas.Upload.Controllers
                     if (System.IO.File.Exists(upload.FileName))
                     {
                         // Read in the file
-                        byte[] encData = System.IO.File.ReadAllBytes(upload.FileName);
-                        // Decrypt the data
-                        byte[] data = AES.Decrypt(encData, upload.Key, upload.IV);
+                        byte[] data = System.IO.File.ReadAllBytes(upload.FileName);
 
-                        // Create File
+                        // If the IV is set, and Key is set, then decrypt it
+                        if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
+                        {
+                            // Decrypt the data
+                            data = AES.Decrypt(data, upload.Key, upload.IV);
+                        }
+
+                        // Create content disposition
                         var cd = new System.Net.Mime.ContentDisposition
                         {
                             FileName = upload.Url,
