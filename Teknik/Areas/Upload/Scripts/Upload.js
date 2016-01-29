@@ -243,6 +243,7 @@ function uploadFile(data, key, iv, filetype, fileExt, fileID, saveKey, serverSid
     fd.append('keySize', keySize);
     fd.append('blockSize', blockSize);
     fd.append('data', blob);
+    fd.append('saveKey', saveKey);
     fd.append('encrypt', serverSideEncrypt);
     fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
 
@@ -267,7 +268,9 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
     obj = JSON.parse(evt.target.responseText);
     var name = obj.result.name;
     var fullName = obj.result.url;
-    if (!saveKey && !serverSideEncrypt) {
+    if (obj.result.key != null)
+        key = obj.result.key;
+    if (!saveKey) {
         fullName = fullName + '#' + key;
     }
     $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
@@ -280,9 +283,6 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
         keyBtn = '<div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
                     <button type="button" class="btn btn-default btn-sm" id="remove-key-link-' + fileID + '">Remove Key From Server</button> \
                 </div>';
-    }
-    if (!saveKey && serverSideEncrypt) {
-        keyBtn = '';
     }
     $('#link-footer-' + fileID).html(' \
                     <div class="row"> \
@@ -299,9 +299,7 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
         linkRemoveKey('#remove-key-link-' + fileID + '', name, key, fileID);
     }
     else {
-        if (!serverSideEncrypt) {
-            linkSaveKey('#save-key-link-' + fileID + '', name, key, fileID);
-        }
+        linkSaveKey('#save-key-link-' + fileID + '', name, key, fileID);
     }
     linkUploadDelete('#generate-delete-link-' + fileID + '', name);
     linkRemove('#remove-link-' + fileID + '', fileID);
