@@ -40,10 +40,11 @@ namespace Teknik.Areas.Upload
             }
 
             // Generate a unique file name that does not currently exist
-            string fileName = Utility.GenerateUniqueFileName(config.UploadConfig.UploadDirectory, config.UploadConfig.FileExtension, 10);
+            string filePath = Utility.GenerateUniqueFileName(config.UploadConfig.UploadDirectory, config.UploadConfig.FileExtension, 10);
+            string fileName = Path.GetFileName(filePath);
 
             // once we have the filename, lets save the file
-            File.WriteAllBytes(fileName, file);
+            File.WriteAllBytes(filePath, file);
 
             // Generate a unique url
             string extension = (config.UploadConfig.IncludeExtension) ? Utility.GetDefaultExtension(contentType, defaultExtension) : string.Empty;

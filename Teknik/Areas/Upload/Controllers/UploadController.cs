@@ -109,6 +109,7 @@ namespace Teknik.Areas.Upload.Controllers
                     upload.Downloads += 1;
                     db.Entry(upload).State = EntityState.Modified;
                     db.SaveChanges();
+
                     // We don't have the key, so we need to decrypt it client side
                     if (string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                     {
@@ -122,11 +123,12 @@ namespace Teknik.Areas.Upload.Controllers
                     }
                     else // We have the key, so that means server side decryption
                     {
-                        if (System.IO.File.Exists(upload.FileName))
+                        string subDir = upload.FileName[0].ToString();
+                        string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, upload.FileName);
+                        if (System.IO.File.Exists(filePath))
                         {
                             // Read in the file
-                            byte[] data = System.IO.File.ReadAllBytes(upload.FileName);
-
+                            byte[] data = System.IO.File.ReadAllBytes(filePath);
                             // If the IV is set, and Key is set, then decrypt it
                             if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                             {
@@ -162,7 +164,8 @@ namespace Teknik.Areas.Upload.Controllers
                 Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
                 if (upload != null)
                 {
-                    string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, upload.FileName);
+                    string subDir = upload.FileName[0].ToString();
+                    string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, upload.FileName);
                     if (System.IO.File.Exists(filePath))
                     {
                         byte[] buffer;

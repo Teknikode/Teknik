@@ -63,30 +63,51 @@ namespace Teknik.Helpers
 
     public class AES
     {
+        public static byte[] Decrypt(byte[] data, byte[] key, byte[] iv)
+        {
+            return Decrypt(data, key, iv, "CTR", "NoPadding");
+        }
         public static byte[] Decrypt(byte[] data, string key, string iv)
         {
             byte[] keyBytes = Encoding.UTF8.GetBytes(key);
             byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-            return Decrypt(data, keyBytes, ivBytes);
+            return Decrypt(data, keyBytes, ivBytes, "CTR", "NoPadding");
         }
-        public static byte[] Decrypt(byte[] data, byte[] key, byte[] iv)
+        public static byte[] DecryptCBC(byte[] data, string key, string iv)
         {
-            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/CTR/NoPadding");
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
+            return Decrypt(data, keyBytes, ivBytes, "CBC", "PKCS5PADDING");
+        }
+        public static byte[] Decrypt(byte[] data, byte[] key, byte[] iv, string mode, string padding)
+        {
+            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/" + mode + "/" + padding);
 
             cipher.Init(false, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
 
             return cipher.DoFinal(data);
         }
 
+
+        public static byte[] Encrypt(byte[] data, byte[] key, byte[] iv)
+        {
+            return Encrypt(data, key, iv, "CTR", "NoPadding");
+        }
         public static byte[] Encrypt(byte[] data, string key, string iv)
         {
             byte[] keyBytes = Encoding.UTF8.GetBytes(key);
             byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-            return Encrypt(data, keyBytes, ivBytes);
+            return Encrypt(data, keyBytes, ivBytes, "CTR", "NoPadding");
         }
-        public static byte[] Encrypt(byte[] data, byte[] key, byte[] iv)
+        public static byte[] EncryptCBC(byte[] data, string key, string iv)
         {
-            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/CTR/NoPadding");
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
+            return Encrypt(data, keyBytes, ivBytes, "CBC", "PKCS5PADDING");
+        }
+        public static byte[] Encrypt(byte[] data, byte[] key, byte[] iv, string mode, string padding)
+        {
+            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/" + mode + "/" + padding);
 
             cipher.Init(true, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
 
