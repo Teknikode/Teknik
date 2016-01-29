@@ -4,14 +4,14 @@ using SecurityDriven.Inferno.Mac;
 using System.IO;
 using System.Security.Cryptography;
 using Teknik.Configuration;
-using Org.BouncyCastle.Crypto; 
-using Org.BouncyCastle.Crypto.Engines; 
-using Org.BouncyCastle.Crypto.Modes; 
-using Org.BouncyCastle.Crypto.Paddings; 
-using Org.BouncyCastle.Crypto.Parameters; 
-using Org.BouncyCastle.Security; 
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Crypto.Modes;
+using Org.BouncyCastle.Crypto.Paddings;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.Encoders;
-
+using System;
 
 namespace Teknik.Helpers
 {
@@ -32,13 +32,32 @@ namespace Teknik.Helpers
     {
         public static string Hash(string value, string salt1, string salt2)
         {
-            string dataStr = salt1 + value + salt2;
-            byte[] dataStrBytes = Encoding.ASCII.GetBytes(dataStr);
-            SHA1 sha = new SHA1CryptoServiceProvider();
-            byte[] valueBytes = sha.ComputeHash(dataStrBytes);
-            byte[] result = new HMAC2(HashFactories.SHA256).ComputeHash(valueBytes);
-
-            return Encoding.ASCII.GetString(result);
+            SHA256Managed hash = new SHA256Managed();
+            SHA1 sha1 = new SHA1Managed();
+            // gen salt2 hash
+            byte[] dataSalt2 = Encoding.UTF8.GetBytes(salt2);
+            byte[] salt2Bytes = hash.ComputeHash(dataSalt2);
+            string salt2Str = string.Empty;
+            foreach (byte x in salt2Bytes)
+            {
+                salt2Str += String.Format("{0:x2}", x);
+            }
+            string dataStr = salt1 + value + salt2Str;
+            byte[] dataStrBytes = Encoding.UTF8.GetBytes(dataStr);
+            byte[] shaBytes = sha1.ComputeHash(dataStrBytes);
+            string sha1Str = string.Empty;
+            foreach (byte x in shaBytes)
+            {
+                sha1Str += String.Format("{0:x2}", x);
+            }
+            byte[] sha1Bytes = Encoding.UTF8.GetBytes(sha1Str);
+            byte[] valueBytes = hash.ComputeHash(sha1Bytes);
+            string hashString = string.Empty;
+            foreach (byte x in valueBytes)
+            {
+                hashString += String.Format("{0:x2}", x);
+            }
+            return hashString;
         }
     }
 
