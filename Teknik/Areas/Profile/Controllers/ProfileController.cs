@@ -121,21 +121,36 @@ namespace Teknik.Areas.Profile.Controllers
             {
                 string username = model.Username;
                 string password = SHA384.Hash(model.Username, model.Password);
-                bool userValid = db.Users.Any(b => b.Username == username && b.HashedPassword == password);
-                if (userValid)
+                User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
+                if (user != null)
                 {
-                    FormsAuthentication.SetAuthCookie(model.Username, model.RememberMe);
-                    if (string.IsNullOrEmpty(model.ReturnUrl))
+                    if (user.TransferAccount)
                     {
-                        return Json(new { result = "true" });
+                        password = SHA256.Hash(model.Password, Config.Salt1, Config.Salt2);
                     }
-                    else
+                    bool userValid = db.Users.Any(b => b.Username == username && b.HashedPassword == password);
+                    if (userValid)
                     {
-                        return Redirect(model.ReturnUrl);
+                        if (user.TransferAccount)
+                        {
+                            user.HashedPassword = SHA384.Hash(model.Username, model.Password);
+                            user.TransferAccount = false;
+                            db.Entry(user).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        FormsAuthentication.SetAuthCookie(model.Username, model.RememberMe);
+                        if (string.IsNullOrEmpty(model.ReturnUrl))
+                        {
+                            return Json(new { result = "true" });
+                        }
+                        else
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
                     }
                 }
             }
-            return Json(new { error = "Invalid User name or Password." });
+            return Json(new { error = "Invalid Username or Password." });
         }
 
         public ActionResult Logout()

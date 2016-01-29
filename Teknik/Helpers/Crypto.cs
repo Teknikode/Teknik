@@ -28,6 +28,20 @@ namespace Teknik.Helpers
         }
     }
 
+    public class SHA256
+    {
+        public static string Hash(string value, string salt1, string salt2)
+        {
+            string dataStr = salt1 + value + salt2;
+            byte[] dataStrBytes = Encoding.ASCII.GetBytes(dataStr);
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            byte[] valueBytes = sha.ComputeHash(dataStrBytes);
+            byte[] result = new HMAC2(HashFactories.SHA256).ComputeHash(valueBytes);
+
+            return Encoding.ASCII.GetString(result);
+        }
+    }
+
     public class AES
     {
         public static byte[] Decrypt(byte[] data, string key, string iv)

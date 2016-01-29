@@ -14,6 +14,8 @@ namespace Teknik.Areas.Profile.Models
 
         public string HashedPassword { get; set; }
 
+        public bool TransferAccount { get; set; }
+
         public DateTime JoinDate { get; set; }
 
         public DateTime LastSeen { get; set; }

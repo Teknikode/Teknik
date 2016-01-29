@@ -17,6 +17,10 @@ namespace Teknik.Configuration
         private string          _Description;
         private string          _Author;
         private string          _Host;
+        private string          _SupportEmail;
+        private string          _BitcoinAddress;
+        private string          _Salt1;
+        private string          _Salt2;
         private UserConfig      _UserConfig;
         private ContactConfig   _ContactConfig;
         private EmailConfig     _EmailConfig;
@@ -26,8 +30,6 @@ namespace Teknik.Configuration
         private BlogConfig      _BlogConfig;
         private ApiConfig       _ApiConfig;
         private PodcastConfig   _PodcastConfig;
-        private string          _SupportEmail;
-        private string          _BitcoinAddress;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
 
@@ -38,6 +40,8 @@ namespace Teknik.Configuration
         public string       Host            { get { return _Host; }             set { _Host = value; } }
         public string       SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
         public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
+        public string       Salt1           { get { return _Salt1; }            set { _Salt1 = value; } }
+        public string       Salt2           { get { return _Salt2; }            set { _Salt2 = value; } }
 
         // User Configuration
         public UserConfig       UserConfig      { get { return _UserConfig; }       set { _UserConfig = value; } }
@@ -83,6 +87,10 @@ namespace Teknik.Configuration
             Description     = string.Empty;
             Author          = string.Empty;
             Host            = string.Empty;
+            SupportEmail    = string.Empty;
+            BitcoinAddress  = string.Empty;
+            Salt1           = string.Empty;
+            Salt2           = string.Empty;
             UserConfig      = new UserConfig();
             EmailConfig     = new EmailConfig();
             ContactConfig   = new ContactConfig();
@@ -92,8 +100,6 @@ namespace Teknik.Configuration
             PasteConfig     = new PasteConfig();
             ApiConfig       = new ApiConfig();
             PodcastConfig   = new PodcastConfig();
-            SupportEmail    = string.Empty;
-            BitcoinAddress  = string.Empty;
         }
 
         public static Config Deserialize(string text)
