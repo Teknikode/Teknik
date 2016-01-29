@@ -9,7 +9,7 @@ namespace Teknik.Helpers
     public static class Constants
     {
         // Blog Constants
-        public static int SERVERBLOGID = 1;
+        public static int SERVERBLOGID = 0;
 
         // Paste Constants
         public static Dictionary<string, string> HIGHLIGHTFORMATS = new Dictionary<string, string>()

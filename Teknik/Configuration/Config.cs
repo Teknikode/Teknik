@@ -30,6 +30,7 @@ namespace Teknik.Configuration
         private BlogConfig      _BlogConfig;
         private ApiConfig       _ApiConfig;
         private PodcastConfig   _PodcastConfig;
+        private DatabaseConfig  _DatabaseConfig;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
 
@@ -70,6 +71,9 @@ namespace Teknik.Configuration
         // Podcast Configuration
         public PodcastConfig    PodcastConfig   { get { return _PodcastConfig; }    set { _PodcastConfig = value; } }
 
+        // Database Configuration
+        public DatabaseConfig   DatabaseConfig  { get { return _DatabaseConfig; }   set { _DatabaseConfig = value; } }
+
         public Config()
         {
             _ConfigRWLock               = new ReaderWriterLockSlim();
@@ -100,6 +104,7 @@ namespace Teknik.Configuration
             PasteConfig     = new PasteConfig();
             ApiConfig       = new ApiConfig();
             PodcastConfig   = new PodcastConfig();
+            DatabaseConfig  = new DatabaseConfig();
         }
 
         public static Config Deserialize(string text)
