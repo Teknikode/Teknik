@@ -77,6 +77,9 @@ namespace Teknik.Migrations
 
             if (config.DatabaseConfig.Migrate && !config.DevEnvironment)
             {
+                config.DatabaseConfig.Migrate = false;
+                Config.Save(config);
+
                 // Convert legacy MySQL DB to new MS SQL DB
                 MysqlDatabase db = new MysqlDatabase(config.DatabaseConfig);
                 db.MysqlErrorEvent += Db_MysqlErrorEvent;

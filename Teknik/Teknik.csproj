@@ -465,6 +465,7 @@
     <Content Include="Areas\Transparency\Views\Transparency\Index.cshtml" />
     <Content Include="Areas\Help\Views\Help\RSS.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
+    <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\bootbox\bootbox.min.js" />
     <Content Include="Scripts\bootstrap-select.js" />

@@ -123,14 +123,20 @@ namespace Teknik.Configuration
             string path = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
             if (!File.Exists(Path.Combine(path, "Config.json")))
             {
-                Config.Save(Path.Combine(path, "Config.json"), config);
+                Save(Path.Combine(path, "Config.json"), config);
             }
             else
             {
                 string configContents = File.ReadAllText(Path.Combine(path, "Config.json"));
-                config = Config.Deserialize(configContents);
+                config = Deserialize(configContents);
             }
             return config;
+        }
+
+        public static void Save(Config config)
+        {
+            string path = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
+            Save(Path.Combine(path, "Config.json"), config);
         }
 
         public static void Save(string path, Config config)
