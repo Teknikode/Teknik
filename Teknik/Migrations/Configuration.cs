@@ -1,12 +1,15 @@
 namespace Teknik.Migrations
 {
     using Areas.Paste;
+    using Areas.Upload;
     using Helpers;
     using System;
     using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
+    using System.IO;
     using System.Linq;
+    using System.Net;
     using Teknik.Configuration;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Models.TeknikEntities>
@@ -195,7 +198,7 @@ namespace Teknik.Migrations
                 }
 
                 // Transfer Blog Comments
-                var commentRet = db.Query("SELECT * FROM `comments` WHERE `service` = 'blog'");
+                var commentRet = db.Query("SELECT * FROM `comments` WHERE `service` = {0}", new object[] { "blog" });
                 foreach (var comment in commentRet)
                 {
                     int postId = Int32.Parse(comment["reply_id"].ToString());
@@ -233,6 +236,47 @@ namespace Teknik.Migrations
                         }
                         context.Pastes.AddOrUpdate(newPaste);
                         context.SaveChanges();
+                    }
+                }
+
+                // Transfer Uploads
+                var uploadRet = db.Query("SELECT * FROM `uploads`");
+                foreach (var upload in uploadRet)
+                {
+                    string url = upload["url"].ToString();
+                    string fileType = upload["type"].ToString();
+                    int contentLength = Int32.Parse(upload["filesize"].ToString());
+                    string deleteKey = upload["delete_key"].ToString();
+                    int userId = Int32.Parse(upload["user_id"].ToString());
+                    DateTime uploadDate = DateTime.Parse(upload["upload_date"].ToString());
+                    string fullUrl = string.Format("https://u.teknik.io/{0}", url);
+                    string fileExt = Path.GetExtension(fullUrl);
+
+                    // Download the old file and re-upload it
+                    using (WebClient client = new WebClient())
+                    {
+                        try
+                        {
+                            byte[] fileData = client.DownloadData(fullUrl);
+                            // Generate key and iv if empty
+                            string key = Utility.RandomString(config.UploadConfig.KeySize / 8);
+                            string iv = Utility.RandomString(config.UploadConfig.BlockSize / 8);
+
+                            fileData = AES.Encrypt(fileData, key, iv);
+                            if (fileData == null || fileData.Length <= 0)
+                            {
+                                continue;
+                            }
+                            Areas.Upload.Models.Upload up = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, key, config.UploadConfig.KeySize, config.UploadConfig.BlockSize);
+                            if (userMapping.ContainsKey(userId))
+                                up.UserId = userMapping[userId];
+                            if (!string.IsNullOrEmpty(deleteKey))
+                                up.DeleteKey = deleteKey;
+                            up.Url = url;
+                            context.Uploads.Add(up);
+                            context.SaveChanges();
+                        }
+                        catch { }
                     }
                 }
             }
