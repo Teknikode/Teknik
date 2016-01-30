@@ -37,7 +37,7 @@
         <div class="row">
             <div class="col-sm-12 text-center">
                 <p>
-                    <a href="@Url.SubRouteUrl("rss", "RSS.Blog", new { username = (Model.BlogId == Constants.SERVERBLOGID) ? string.Empty : Model.User.Username })"><i class="fa fa-rss fa-2x fa-border"></i></a>
+                    <a href="@Url.SubRouteUrl("rss", "RSS.Blog", new { username = (Model.BlogId == Model.Config.BlogConfig.ServerBlogId) ? string.Empty : Model.User.Username })"><i class="fa fa-rss fa-2x fa-border"></i></a>
                 </p>
             </div>
         </div>

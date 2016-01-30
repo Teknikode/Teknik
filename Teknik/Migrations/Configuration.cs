@@ -146,10 +146,6 @@ namespace Teknik.Migrations
                     {
                         newUser.Groups.Add(adminGroup);
                     }
-                    else
-                    {
-                        newUser.Groups.Add(memberGroup);
-                    }
                     context.Users.AddOrUpdate(newUser);
                     context.SaveChanges();
                     int oldUserId = Int32.Parse(user["id"].ToString());
@@ -190,7 +186,7 @@ namespace Teknik.Migrations
                             }
                             newPost.DatePublished = publishDate;
                             newPost.DateEdited = publishDate;
-                            newPost.Published = (post["published"].ToString() == "1");
+                            newPost.Published = (post["published"].ToString() == "True");
                             newPost.Title = post["title"].ToString();
                             newPost.Article = post["post"].ToString();
                             context.BlogPosts.AddOrUpdate(newPost);
