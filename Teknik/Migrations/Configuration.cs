@@ -22,43 +22,64 @@ namespace Teknik.Migrations
             Config config = Config.Load();
             // Pre-populate with the default stuff
 
-            // Create server blog
-            Areas.Blog.Models.Blog serverBlog = new Areas.Blog.Models.Blog();
-            context.Blogs.Add(serverBlog);
+            // Create system blog
+            Areas.Profile.Models.User systemUser = new Areas.Profile.Models.User();
+            systemUser.Username = Constants.SERVERUSER;
+            systemUser.JoinDate = DateTime.Now;
+            systemUser.LastSeen = DateTime.Now;
+            systemUser.UserSettings = new Areas.Profile.Models.UserSettings();
+            systemUser.BlogSettings = new Areas.Profile.Models.BlogSettings();
+            systemUser.UploadSettings = new Areas.Profile.Models.UploadSettings();
+            context.Users.AddOrUpdate(systemUser);
+            context.SaveChanges();
+
+            Areas.Blog.Models.Blog systemBlog = new Areas.Blog.Models.Blog();
+            systemBlog.UserId = systemUser.UserId;
+            systemBlog.BlogId = config.BlogConfig.ServerBlogId;
+            context.Blogs.AddOrUpdate(systemBlog);
             context.SaveChanges();
 
             // Create roles and groups
             Areas.Profile.Models.Role adminRole = new Areas.Profile.Models.Role();
             adminRole.Name = "Admin";
             adminRole.Description = "Allows complete access to user specific actions";
-            context.Roles.Add(adminRole);
+            context.Roles.AddOrUpdate(adminRole);
 
             Areas.Profile.Models.Role podcastRole = new Areas.Profile.Models.Role();
             podcastRole.Name = "Podcast";
             podcastRole.Description = "Allows create/edit/delete access to podcasts";
-            context.Roles.Add(podcastRole);
+            context.Roles.AddOrUpdate(podcastRole);
 
             Areas.Profile.Models.Group adminGroup = new Areas.Profile.Models.Group();
             adminGroup.Name = "Administrators";
             adminGroup.Description = "System Administrators with full access";
+            adminGroup.Roles = new List<Areas.Profile.Models.Role>();
             adminGroup.Roles.Add(adminRole);
             adminGroup.Roles.Add(podcastRole);
+            context.Groups.AddOrUpdate(adminGroup);
 
             Areas.Profile.Models.Group podcastGroup = new Areas.Profile.Models.Group();
             podcastGroup.Name = "Podcast";
             podcastGroup.Description = "Podcast team members";
+            podcastGroup.Roles = new List<Areas.Profile.Models.Role>();
             podcastGroup.Roles.Add(podcastRole);
+            context.Groups.AddOrUpdate(podcastGroup);
+
+            Areas.Profile.Models.Group memberGroup = new Areas.Profile.Models.Group();
+            memberGroup.Name = "Member";
+            memberGroup.Description = "The default member group with basic permissions";
+            context.Groups.AddOrUpdate(memberGroup);
 
             context.SaveChanges();
-
 
             if (config.DatabaseConfig.Migrate && !config.DevEnvironment)
             {
                 // Convert legacy MySQL DB to new MS SQL DB
                 MysqlDatabase db = new MysqlDatabase(config.DatabaseConfig);
+                db.MysqlErrorEvent += Db_MysqlErrorEvent;
 
                 // Transfer transactions
-                var transRet = db.Query("SELECT * FROM transactions");
+                var transRet = db.Query("SELECT * FROM `transactions`");
                 foreach (var tran in transRet)
                 {
                     switch (tran["trans_type"].ToString())
@@ -66,29 +87,29 @@ namespace Teknik.Migrations
                         case "One-Time":
                             Areas.Transparency.Models.OneTime tr = new Areas.Transparency.Models.OneTime();
                             tr.DateSent = DateTime.Parse(tran["date_posted"].ToString());
-                            tr.Amount = Int32.Parse(tran["amount"].ToString());
+                            tr.Amount = Double.Parse(tran["amount"].ToString());
                             tr.Currency = tran["currency"].ToString();
                             tr.Recipient = tran["recipient"].ToString();
                             tr.Reason = tran["reason"].ToString();
-                            context.Transactions.Add(tr);
+                            context.Transactions.AddOrUpdate(tr);
                             break;
                         case "Bill":
                             Areas.Transparency.Models.Bill bill = new Areas.Transparency.Models.Bill();
                             bill.DateSent = DateTime.Parse(tran["date_posted"].ToString());
-                            bill.Amount = Int32.Parse(tran["amount"].ToString());
+                            bill.Amount = Double.Parse(tran["amount"].ToString());
                             bill.Currency = tran["currency"].ToString();
                             bill.Recipient = tran["recipient"].ToString();
                             bill.Reason = tran["reason"].ToString();
-                            context.Transactions.Add(bill);
+                            context.Transactions.AddOrUpdate(bill);
                             break;
                         case "Donation":
                             Areas.Transparency.Models.Donation don = new Areas.Transparency.Models.Donation();
                             don.DateSent = DateTime.Parse(tran["date_posted"].ToString());
-                            don.Amount = Int32.Parse(tran["amount"].ToString());
+                            don.Amount = Double.Parse(tran["amount"].ToString());
                             don.Currency = tran["currency"].ToString();
                             don.Sender = tran["sender"].ToString();
                             don.Reason = tran["reason"].ToString();
-                            context.Transactions.Add(don);
+                            context.Transactions.AddOrUpdate(don);
                             break;
                     }
                 }
@@ -97,7 +118,7 @@ namespace Teknik.Migrations
                 // Transfer Users and Blogs/Posts
                 Dictionary<int, int> userMapping = new Dictionary<int, int>();
                 Dictionary<int, int> postMapping = new Dictionary<int, int>();
-                var userRet = db.Query("SELECT * FROM users");
+                var userRet = db.Query("SELECT * FROM `users`");
                 foreach (var user in userRet)
                 {
                     // Create User
@@ -109,26 +130,36 @@ namespace Teknik.Migrations
                     newUser.Username = user["username"].ToString();
                     newUser.HashedPassword = user["password"].ToString();
                     newUser.JoinDate = DateTime.Parse(user["join_date"].ToString());
-                    newUser.LastSeen = DateTime.Parse(user["last_seen"].ToString());
+                    newUser.LastSeen = DateTime.Parse(user["join_date"].ToString());
                     newUser.UserSettings.About = user["about"].ToString();
                     newUser.UserSettings.Website = user["website"].ToString();
                     newUser.UserSettings.Quote = user["quote"].ToString();
                     newUser.BlogSettings.Title = user["blog_title"].ToString();
                     newUser.BlogSettings.Description = user["blog_desc"].ToString();
-                    context.Users.Add(newUser);
+                    if (user["site_admin"].ToString() == "1")
+                    {
+                        newUser.Groups.Add(adminGroup);
+                    }
+                    else
+                    {
+                        newUser.Groups.Add(memberGroup);
+                    }
+                    context.Users.AddOrUpdate(newUser);
                     context.SaveChanges();
+                    int oldUserId = Int32.Parse(user["id"].ToString());
                     int userId = newUser.UserId;
 
-                    userMapping.Add(Int32.Parse(user["id"].ToString()), userId);
+                    userMapping.Add(oldUserId, userId);
 
                     // Create Blog for user
                     Areas.Blog.Models.Blog newBlog = new Areas.Blog.Models.Blog();
                     newBlog.UserId = userId;
+                    context.Blogs.AddOrUpdate(newBlog);
                     context.SaveChanges();
                     int blogId = newBlog.BlogId;
 
                     // Transfer Blog Posts
-                    var postRet = db.Query("SELECT * FROM blog WHERE author_id={0}", new object[] { userId });
+                    var postRet = db.Query("SELECT * FROM `blog` WHERE `author_id` = {0}", new object[] { oldUserId });
                     if (postRet != null)
                     {
                         foreach (var post in postRet)
@@ -137,7 +168,7 @@ namespace Teknik.Migrations
                             Areas.Blog.Models.BlogPost newPost = new Areas.Blog.Models.BlogPost();
                             if (post["user_id"].ToString() == "0")
                             {
-                                newPost.BlogId = 0;
+                                newPost.BlogId = config.BlogConfig.ServerBlogId;
                                 newPost.System = true;
                             }
                             else
@@ -145,12 +176,18 @@ namespace Teknik.Migrations
                                 newPost.BlogId = blogId;
                             }
                             newPost.DatePosted = DateTime.Parse(post["date_posted"].ToString());
-                            newPost.DatePublished = DateTime.Parse(post["date_published"].ToString());
-                            newPost.DateEdited = DateTime.Parse(post["date_published"].ToString());
+                            DateTime publishDate = DateTime.Now;
+                            DateTime.TryParse(post["date_published"].ToString(), out publishDate);
+                            if (publishDate < newPost.DatePosted)
+                            {
+                                publishDate = newPost.DatePosted;
+                            }
+                            newPost.DatePublished = publishDate;
+                            newPost.DateEdited = publishDate;
                             newPost.Published = (post["published"].ToString() == "1");
                             newPost.Title = post["title"].ToString();
                             newPost.Article = post["post"].ToString();
-                            context.BlogPosts.Add(newPost);
+                            context.BlogPosts.AddOrUpdate(newPost);
                             context.SaveChanges();
                             postMapping.Add(Int32.Parse(post["id"].ToString()), newPost.BlogPostId);
                         }
@@ -158,7 +195,7 @@ namespace Teknik.Migrations
                 }
 
                 // Transfer Blog Comments
-                var commentRet = db.Query("SELECT * FROM comments WHERE service = 'blog'");
+                var commentRet = db.Query("SELECT * FROM `comments` WHERE `service` = 'blog'");
                 foreach (var comment in commentRet)
                 {
                     int postId = Int32.Parse(comment["reply_id"].ToString());
@@ -171,13 +208,13 @@ namespace Teknik.Migrations
                         newComment.Article = comment["post"].ToString();
                         newComment.DatePosted = DateTime.Parse(comment["date_posted"].ToString());
                         newComment.DateEdited = DateTime.Parse(comment["date_posted"].ToString());
-                        context.BlogComments.Add(newComment);
+                        context.BlogComments.AddOrUpdate(newComment);
                         context.SaveChanges();
                     }
                 }
 
                 // Transfer Pastes
-                var pasteRet = db.Query("SELECT * FROM paste");
+                var pasteRet = db.Query("SELECT * FROM `paste`");
                 foreach (var paste in pasteRet)
                 {
                     // If it's a password protected paste, we just skip it
@@ -194,11 +231,16 @@ namespace Teknik.Migrations
                         {
                             newPaste.UserId = userMapping[userId];
                         }
-                        context.Pastes.Add(newPaste);
+                        context.Pastes.AddOrUpdate(newPaste);
                         context.SaveChanges();
                     }
                 }
             }
+        }
+
+        private void Db_MysqlErrorEvent(object sender, string e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

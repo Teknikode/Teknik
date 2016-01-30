@@ -31,7 +31,7 @@ namespace Teknik.Areas.Blog.Controllers
                 bool isAuth = User.IsInRole("Admin");
                 var foundPosts = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => ((p.System || isAuth) && p.Published));
                 model = new BlogViewModel();
-                model.BlogId = Constants.SERVERBLOGID;
+                model.BlogId = Config.BlogConfig.ServerBlogId;
 
                 User user = (User.IsInRole("Admin")) ? db.Users.Where(u => u.Username == User.Identity.Name).First() : null;
                 model.UserId = (user != null) ? user.UserId : 0;
@@ -44,7 +44,7 @@ namespace Teknik.Areas.Blog.Controllers
             }
             else // A user specific blog
             {
-                Models.Blog blog = db.Blogs.Include("User").Where(p => p.User.Username == username && p.BlogId != Constants.SERVERBLOGID).FirstOrDefault();
+                Models.Blog blog = db.Blogs.Include("User").Where(p => p.User.Username == username && p.BlogId != Config.BlogConfig.ServerBlogId).FirstOrDefault();
                 // find the blog specified
                 if (blog != null)
                 {
@@ -94,7 +94,7 @@ namespace Teknik.Areas.Blog.Controllers
         public ActionResult GetPosts(int blogID, int startPostID, int count)
         {
             bool isAuth = User.IsInRole("Admin");
-            var posts = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == Constants.SERVERBLOGID)) && 
+            var posts = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == Config.BlogConfig.ServerBlogId)) && 
                                                                                         (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).OrderByDescending(p => p.DatePosted).Skip(startPostID).Take(count).ToList();
             List<PostViewModel> postViews = new List<PostViewModel>();
             if (posts != null)
@@ -141,7 +141,7 @@ namespace Teknik.Areas.Blog.Controllers
             {
                 if (User.IsInRole("Admin") || db.Blogs.Where(b => b.User.Username == User.Identity.Name).FirstOrDefault() != null)
                 {
-                    bool system = (blogID == Constants.SERVERBLOGID);
+                    bool system = (blogID == Config.BlogConfig.ServerBlogId);
                     if (system)
                     {
                         var user = db.Blogs.Include("User").Where(b => b.User.Username == User.Identity.Name);

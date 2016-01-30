@@ -128,7 +128,7 @@ namespace Teknik.Helpers
             {
                 if (config.Server != string.Empty && config.Database != string.Empty && config.Username != string.Empty && config.Password != string.Empty)
                 {
-                    string strCon = string.Format("Server={0}; database={1}; user={2}; password={3}; port={4}; charset=utf8", config.Server, config.Database, config.Username, config.Password, config.Port);
+                    string strCon = string.Format("Server={0}; database={1}; user={2}; password={3}; port={4}; charset=utf8; Allow Zero Datetime=true;", config.Server, config.Database, config.Username, config.Password, config.Port);
                     Connection = new MySqlConnection(strCon);
                     try
                     {

@@ -12,6 +12,7 @@ namespace Teknik.Configuration
         public string Description { get; set; }
         public int PostsToLoad { get; set; }
         public int CommentsToLoad { get; set; }
+        public int ServerBlogId { get; set; }
 
         public BlogConfig()
         {
@@ -25,6 +26,7 @@ namespace Teknik.Configuration
             Description = string.Empty;
             PostsToLoad = 10;
             CommentsToLoad = 10;
+            ServerBlogId = 1;
         }
     }
 }

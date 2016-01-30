@@ -227,7 +227,7 @@ namespace Teknik.Areas.Profile.Controllers
                                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                                 client.Headers[HttpRequestHeader.ContentType] = "application/json";
                                 Uri baseUri = new Uri(Config.GitConfig.Host);
-                                Uri finalUri = new Uri(baseUri, "admin/users?token=" + Config.GitConfig.AccessToken);
+                                Uri finalUri = new Uri(baseUri, "api/v1/admin/users?token=" + Config.GitConfig.AccessToken);
                                 string result = client.UploadString(finalUri, "POST", json);
                             }
                         }
@@ -245,7 +245,7 @@ namespace Teknik.Areas.Profile.Controllers
 
                         // Generate blog for the user
                         var newBlog = db.Blogs.Create();
-                        newBlog.UserId = db.Users.Where(u => u.Username == model.Username).Select(u => u.UserId).First();
+                        newBlog.UserId = newUser.UserId;
                         db.Blogs.Add(newBlog);
                         db.SaveChanges();
                     }
@@ -306,7 +306,7 @@ namespace Teknik.Areas.Profile.Controllers
                                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                                 client.Headers[HttpRequestHeader.ContentType] = "application/json";
                                 Uri baseUri = new Uri(Config.GitConfig.Host);
-                                Uri finalUri = new Uri(baseUri, "admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
+                                Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
                                 string result = client.UploadString(finalUri, "PATCH", json);
                             }
                         }
@@ -349,7 +349,7 @@ namespace Teknik.Areas.Profile.Controllers
                 if (Config.GitConfig.Enabled)
                 {
                     Uri baseUri = new Uri(Config.GitConfig.Host);
-                    Uri finalUri = new Uri(baseUri, "admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
+                    Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
                     WebRequest request = WebRequest.Create(finalUri);
                     request.Method = "DELETE";
 

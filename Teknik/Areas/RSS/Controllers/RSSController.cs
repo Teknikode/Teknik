@@ -36,7 +36,7 @@ namespace Teknik.Areas.RSS.Controllers
             bool isSystem = string.IsNullOrEmpty(username);
             if (isSystem)
             {
-                blog = db.Blogs.Include("BlogPosts").Include("User").Where(b => b.BlogId == Constants.SERVERBLOGID).FirstOrDefault();
+                blog = db.Blogs.Include("BlogPosts").Include("User").Where(b => b.BlogId == Config.BlogConfig.ServerBlogId).FirstOrDefault();
                 blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
             }
             else
