@@ -102,7 +102,6 @@ namespace Teknik.Areas.Paste.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public ActionResult Paste([Bind(Include = "Content, Title, Syntax, ExpireLength, ExpireUnit, Password, Hide")]PasteCreateViewModel model)
         {
             if (ModelState.IsValid)
@@ -130,7 +129,7 @@ namespace Teknik.Areas.Paste.Controllers
                         db.Pastes.Add(paste);
                         db.SaveChanges();
 
-                        return Redirect(Url.SubRouteUrl("paste", "Paste.View", new { type = "Full", url = paste.Url, password = model.Password }));
+                        return Redirect(Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url, password = model.Password }));
                     }
                     catch (Exception ex)
                     {

@@ -81,7 +81,7 @@
         $.ajax({
             type: "POST",
             url: editPodcastURL,
-            data: AddAntiForgeryToken({ podcastId: podcastId, episode: episode, title: title, description: description }),
+            data: { podcastId: podcastId, episode: episode, title: title, description: description },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -102,7 +102,7 @@
         $.ajax({
             type: "POST",
             url: addCommentURL,
-            data: AddAntiForgeryToken({ podcastId: postID, article: post }),
+            data: { podcastId: postID, article: post },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -139,7 +139,7 @@
         $.ajax({
             type: "POST",
             url: editCommentURL,
-            data: AddAntiForgeryToken({ commentID: postID, article: post }),
+            data: { commentID: postID, article: post },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -211,7 +211,7 @@ function linkPodcastUnpublish(selector) {
         $.ajax({
             type: "POST",
             url: publishPodcastURL,
-            data: AddAntiForgeryToken({ podcastId: podcastId, publish: false }),
+            data: { podcastId: podcastId, publish: false },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -232,7 +232,7 @@ function linkPodcastPublish(selector) {
         $.ajax({
             type: "POST",
             url: publishPodcastURL,
-            data: AddAntiForgeryToken({ podcastId: podcastId, publish: true }),
+            data: { podcastId: podcastId, publish: true },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -255,7 +255,7 @@ function linkPodcastDelete(selector) {
                 $.ajax({
                     type: "POST",
                     url: deletePodcastURL,
-                    data: AddAntiForgeryToken({ podcastId: podcastId }),
+                    data: { podcastId: podcastId },
                     success: function (html) {
                         if (html.result) {
                             window.location.reload();
@@ -280,7 +280,7 @@ function linkCommentDelete(selector) {
                 $.ajax({
                     type: "POST",
                     url: deleteCommentURL,
-                    data: AddAntiForgeryToken({ commentID: post_id }),
+                    data: { commentID: post_id },
                     success: function (html) {
                         if (html.result) {
                             window.location.reload();

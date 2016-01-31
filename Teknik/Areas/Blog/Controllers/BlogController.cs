@@ -134,7 +134,6 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult CreatePost(int blogID, string title, string article)
         {
             if (ModelState.IsValid)
@@ -169,7 +168,6 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult EditPost(int postID, string title, string article)
         {
             if (ModelState.IsValid)
@@ -194,7 +192,6 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult PublishPost(int postID, bool publish)
         {
             if (ModelState.IsValid)
@@ -219,7 +216,6 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult DeletePost(int postID)
         {
             if (ModelState.IsValid)
@@ -271,7 +267,6 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult CreateComment(int postID, string article)
         {
             if (ModelState.IsValid)
@@ -295,7 +290,6 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult EditComment(int commentID, string article)
         {
             if (ModelState.IsValid)
@@ -319,7 +313,6 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult DeleteComment(int commentID)
         {
             if (ModelState.IsValid)

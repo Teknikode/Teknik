@@ -8,7 +8,7 @@
                 $.ajax({
                     type: "POST",
                     url: deleteUserURL,
-                    data: AddAntiForgeryToken({}),
+                    data: {},
                     success: function (html) {
                         if (html.result) {
                             window.location.replace(homeUrl);
@@ -40,7 +40,7 @@
         $.ajax({
             type: "POST",
             url: editUserURL,
-            data: AddAntiForgeryToken({
+            data: {
                 curPass: current_password,
                 newPass: password,
                 newPassConfirm: password_confirm,
@@ -51,7 +51,7 @@
                 blogDesc: blog_desc,
                 saveKey: upload_saveKey,
                 serverSideEncrypt: upload_serverSideEncrypt
-            }),
+            },
             success: function (html) {
                 if (html.result) {
                     $.unblockUI();

@@ -41,11 +41,6 @@
                     </div>
                 </div>
             </noscript>
-            <!-- Global AntiForgery Token -->
-            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
-            {
-                @Html.AntiForgeryToken()
-            }
 
             @RenderBody()
         </div> 

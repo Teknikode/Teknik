@@ -22,10 +22,11 @@ namespace Teknik.Migrations
 
         protected override void Seed(Models.TeknikEntities context)
         {
-            Config config = Config.Load();
             // Pre-populate with the default stuff
 
             // Create system blog
+            /*
+            Config config = Config.Load();
             Areas.Profile.Models.User systemUser = new Areas.Profile.Models.User();
             systemUser.Username = Constants.SERVERUSER;
             systemUser.JoinDate = DateTime.Now;
@@ -74,15 +75,14 @@ namespace Teknik.Migrations
             context.Groups.AddOrUpdate(memberGroup);
 
             context.SaveChanges();
-
             if (config.DatabaseConfig.Migrate && !config.DevEnvironment)
             {
-                config.DatabaseConfig.Migrate = false;
-                Config.Save(config);
 
                 // Convert legacy MySQL DB to new MS SQL DB
                 MysqlDatabase db = new MysqlDatabase(config.DatabaseConfig);
                 db.MysqlErrorEvent += Db_MysqlErrorEvent;
+                config.DatabaseConfig.Migrate = false;
+                Config.Save(config);
 
                 // Transfer transactions
                 var transRet = db.Query("SELECT * FROM `transactions`");
@@ -120,7 +120,6 @@ namespace Teknik.Migrations
                     }
                 }
                 context.SaveChanges();
-
                 // Transfer Users and Blogs/Posts
                 Dictionary<int, int> userMapping = new Dictionary<int, int>();
                 Dictionary<int, int> postMapping = new Dictionary<int, int>();
@@ -146,13 +145,18 @@ namespace Teknik.Migrations
                     {
                         newUser.Groups.Add(adminGroup);
                     }
+                    
                     context.Users.AddOrUpdate(newUser);
                     context.SaveChanges();
-                    int oldUserId = Int32.Parse(user["id"].ToString());
-                    int userId = newUser.UserId;
+                    string oldUsername = user["username"].ToString();
+                    Areas.Profile.Models.User newUser = context.Users.Where(u => u.Username == oldUsername).FirstOrDefault();
+                    if (newUser != null)
+                    {
+                        int oldUserId = Int32.Parse(user["id"].ToString());
+                        int userId = newUser.UserId;
 
-                    userMapping.Add(oldUserId, userId);
-
+                        userMapping.Add(oldUserId, userId);
+                    }
                     // Create Blog for user
                     Areas.Blog.Models.Blog newBlog = new Areas.Blog.Models.Blog();
                     newBlog.UserId = userId;
@@ -195,7 +199,7 @@ namespace Teknik.Migrations
                         }
                     }
                 }
-
+                
                 // Transfer Blog Comments
                 var commentRet = db.Query("SELECT * FROM `comments` WHERE `service` = {0}", new object[] { "blog" });
                 foreach (var comment in commentRet)
@@ -214,13 +218,14 @@ namespace Teknik.Migrations
                         context.SaveChanges();
                     }
                 }
-
+                
                 // Transfer Pastes
                 var pasteRet = db.Query("SELECT * FROM `paste`");
                 foreach (var paste in pasteRet)
                 {
+                    string pass = paste["password"].ToString();
                     // If it's a password protected paste, we just skip it
-                    if (paste["password"] == null)
+                    if (string.IsNullOrEmpty(pass) || pass == "EMPTY")
                     {
                         string content = paste["code"].ToString();
                         string title = paste["title"].ToString();
@@ -237,53 +242,57 @@ namespace Teknik.Migrations
                         context.SaveChanges();
                     }
                 }
-
                 // Transfer Uploads
                 var uploadRet = db.Query("SELECT * FROM `uploads`");
                 foreach (var upload in uploadRet)
                 {
                     string url = upload["url"].ToString();
-                    string fileType = upload["type"].ToString();
-                    int contentLength = Int32.Parse(upload["filesize"].ToString());
-                    string deleteKey = upload["delete_key"].ToString();
-                    int userId = Int32.Parse(upload["user_id"].ToString());
-                    DateTime uploadDate = DateTime.Parse(upload["upload_date"].ToString());
-                    string fullUrl = string.Format("https://u.teknik.io/{0}", url);
-                    string fileExt = Path.GetExtension(fullUrl);
-
-                    // Download the old file and re-upload it
-                    using (WebClient client = new WebClient())
+                    Areas.Upload.Models.Upload upFound = context.Uploads.Where(u => u.Url == url).FirstOrDefault();
+                    if (upFound == null)
                     {
-                        try
-                        {
-                            byte[] fileData = client.DownloadData(fullUrl);
-                            // Generate key and iv if empty
-                            string key = Utility.RandomString(config.UploadConfig.KeySize / 8);
-                            string iv = Utility.RandomString(config.UploadConfig.BlockSize / 8);
+                        string fileType = upload["type"].ToString();
+                        int contentLength = Int32.Parse(upload["filesize"].ToString());
+                        string deleteKey = upload["delete_key"].ToString();
+                        int userId = Int32.Parse(upload["user_id"].ToString());
+                        DateTime uploadDate = DateTime.Parse(upload["upload_date"].ToString());
+                        string fullUrl = string.Format("https://u.teknik.io/{0}", url);
+                        string fileExt = Path.GetExtension(fullUrl);
 
-                            fileData = AES.Encrypt(fileData, key, iv);
-                            if (fileData == null || fileData.Length <= 0)
+                        // Download the old file and re-upload it
+                        using (WebClient client = new WebClient())
+                        {
+                            try
                             {
-                                continue;
+                                byte[] fileData = client.DownloadData(fullUrl);
+                                // Generate key and iv if empty
+                                string key = Utility.RandomString(config.UploadConfig.KeySize / 8);
+                                string iv = Utility.RandomString(config.UploadConfig.BlockSize / 8);
+
+                                fileData = AES.Encrypt(fileData, key, iv);
+                                if (fileData == null || fileData.Length <= 0)
+                                {
+                                    continue;
+                                }
+                                Areas.Upload.Models.Upload up = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, key, config.UploadConfig.KeySize, config.UploadConfig.BlockSize);
+                                if (userMapping.ContainsKey(userId))
+                                    up.UserId = userMapping[userId];
+                                if (!string.IsNullOrEmpty(deleteKey))
+                                    up.DeleteKey = deleteKey;
+                                up.Url = url;
+                                context.Uploads.Add(up);
+                                context.SaveChanges();
                             }
-                            Areas.Upload.Models.Upload up = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, key, config.UploadConfig.KeySize, config.UploadConfig.BlockSize);
-                            if (userMapping.ContainsKey(userId))
-                                up.UserId = userMapping[userId];
-                            if (!string.IsNullOrEmpty(deleteKey))
-                                up.DeleteKey = deleteKey;
-                            up.Url = url;
-                            context.Uploads.Add(up);
-                            context.SaveChanges();
+                            catch { }
                         }
-                        catch { }
                     }
                 }
             }
+                */
         }
 
         private void Db_MysqlErrorEvent(object sender, string e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

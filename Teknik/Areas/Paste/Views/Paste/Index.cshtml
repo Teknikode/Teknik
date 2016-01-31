@@ -14,7 +14,6 @@
     <div class="row">
         <div class="col-sm-12">
             <form class="form-horizontal" name="editor" method="post" action="@Url.SubRouteUrl("paste", "Paste.Action", new { action = "Paste" })">
-                @Html.AntiForgeryToken()
                 <div class="form-group">
                     <div class="col-sm-10 col-sm-offset-1">
                         <textarea class="form-control" name="Content" id="content" rows="20"></textarea>

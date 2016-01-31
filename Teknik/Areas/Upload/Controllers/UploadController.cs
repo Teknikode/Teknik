@@ -41,7 +41,6 @@ namespace Teknik.Areas.Upload.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public ActionResult Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, bool saveKey, HttpPostedFileWrapper data, string key = null)
         {
             if (Config.UploadConfig.UploadEnabled)
@@ -83,7 +82,7 @@ namespace Teknik.Areas.Upload.Controllers
                                 db.SaveChanges();
                             }
                         }
-                        return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url }), key = key } }, "text/plain");
+                        return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), key = key } }, "text/plain");
                     }
                     return Json(new { error = "Unable to upload file" });
                 }
@@ -156,7 +155,6 @@ namespace Teknik.Areas.Upload.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public FileResult DownloadData(string file)
         {
             if (Config.UploadConfig.DownloadEnabled)
@@ -230,7 +228,6 @@ namespace Teknik.Areas.Upload.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public ActionResult GenerateDeleteKey(string file)
         {
             Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
@@ -247,7 +244,6 @@ namespace Teknik.Areas.Upload.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public ActionResult SaveFileKey(string file, string key)
         {
             Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
@@ -263,7 +259,6 @@ namespace Teknik.Areas.Upload.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public ActionResult RemoveFileKey(string file, string key)
         {
             Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();

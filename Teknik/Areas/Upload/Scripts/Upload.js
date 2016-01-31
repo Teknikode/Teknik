@@ -11,7 +11,7 @@ function linkSaveKey(selector, uploadID, key, fileID) {
         $.ajax({
             type: "POST",
             url: saveKeyToServerURL,
-            data: AddAntiForgeryToken({ file: uploadID, key: key }),
+            data: { file: uploadID, key: key },
             success: function (html) {
                 if (html.result) {
                     $('#key-link-' + fileID).html('<button type="button" class="btn btn-default btn-sm" id="remove-key-link-' + fileID + '">Remove Key From Server</button>');
@@ -33,7 +33,7 @@ function linkRemoveKey(selector, uploadID, key, fileID) {
         $.ajax({
             type: "POST",
             url: removeKeyFromServerURL,
-            data: AddAntiForgeryToken({ file: uploadID, key: key }),
+            data: { file: uploadID, key: key },
             success: function (html) {
                 if (html.result) {
                     $('#key-link-' + fileID).html('<button type="button" class="btn btn-default btn-sm" id="save-key-link-' + fileID + '">Save Key To Server</button>');
@@ -55,7 +55,7 @@ function linkUploadDelete(selector, uploadID) {
         $.ajax({
             type: "POST",
             url: generateDeleteKeyURL,
-            data: AddAntiForgeryToken({ file: uploadID }),
+            data: { file: uploadID },
             success: function (html) {
                 if (html.result) {
                     bootbox.dialog({

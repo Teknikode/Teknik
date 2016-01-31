@@ -114,7 +114,6 @@ namespace Teknik.Areas.Profile.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public ActionResult Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -138,7 +137,12 @@ namespace Teknik.Areas.Profile.Controllers
                             db.Entry(user).State = EntityState.Modified;
                             db.SaveChanges();
                         }
-                        FormsAuthentication.SetAuthCookie(model.Username, model.RememberMe);
+                        HttpCookie authcookie = FormsAuthentication.GetAuthCookie(model.Username, model.RememberMe);
+                        authcookie.Domain = string.Format(".{0}", Config.Host);
+                        authcookie.HttpOnly = true;
+                        authcookie.Secure = true;
+                        Response.AppendCookie(authcookie);
+
                         if (string.IsNullOrEmpty(model.ReturnUrl))
                         {
                             return Json(new { result = "true" });
@@ -172,7 +176,6 @@ namespace Teknik.Areas.Profile.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -261,7 +264,6 @@ namespace Teknik.Areas.Profile.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
         {
             if (ModelState.IsValid)
@@ -332,7 +334,6 @@ namespace Teknik.Areas.Profile.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Delete()
         {
             if (ModelState.IsValid)

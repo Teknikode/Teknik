@@ -1,9 +1,4 @@
 ﻿$(document).ready(function () {
-    AddAntiForgeryToken = function (data) {
-        data.__RequestVerificationToken = $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val();
-        return data;
-    };
-
     $("#top_msg").css('display', 'none', 'important');
 
     $("#login_dropdown").click(function () {

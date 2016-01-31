@@ -17,21 +17,21 @@ namespace Teknik.Areas.Error
         {
             context.MapSubdomainRoute(
                  "Error.Http404", // Route name
-                 new List<string>() { "*" }, // Subdomains
+                 new List<string>() { "*", "error" }, // Subdomains
                  "404",    // URL with parameters 
                  new { controller = "Error", action = "Http404" },  // Parameter defaults 
                  new[] { typeof(Controllers.ErrorController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Error.Http403", // Route name
-                 new List<string>() { "*" }, // Subdomains
+                 new List<string>() { "*", "error" }, // Subdomains
                  "403",    // URL with parameters 
                  new { controller = "Error", action = "Http403" },  // Parameter defaults 
                  new[] { typeof(Controllers.ErrorController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Error.Http500", // Route name
-                 new List<string>() { "*" }, // Subdomains
+                 new List<string>() { "*", "error" }, // Subdomains
                  "500",    // URL with parameters 
                  new { controller = "Error", action = "Http500" },  // Parameter defaults 
                  new[] { typeof(Controllers.ErrorController).Namespace }

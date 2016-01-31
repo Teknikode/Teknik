@@ -7,7 +7,7 @@
         $.ajax({
             type: "POST",
             url: addPostURL,
-            data: AddAntiForgeryToken({ blogID: blogID, title: title, article: post }),
+            data: { blogID: blogID, title: title, article: post },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -55,7 +55,7 @@
         $.ajax({
             type: "POST",
             url: editPostURL,
-            data: AddAntiForgeryToken({ postID: postID, title: title, article: post }),
+            data: { postID: postID, title: title, article: post },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -76,7 +76,7 @@
         $.ajax({
             type: "POST",
             url: addCommentURL,
-            data: AddAntiForgeryToken({ postID: postID, article: post }),
+            data: { postID: postID, article: post },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -113,7 +113,7 @@
         $.ajax({
             type: "POST",
             url: editCommentURL,
-            data: AddAntiForgeryToken({ commentID: postID, article: post }),
+            data: { commentID: postID, article: post },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -185,7 +185,7 @@ function linkPostUnpublish(selector) {
         $.ajax({
             type: "POST",
             url: publishPostURL,
-            data: AddAntiForgeryToken({ postID: post_id, publish: false }),
+            data: { postID: post_id, publish: false },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -206,7 +206,7 @@ function linkPostPublish(selector) {
         $.ajax({
             type: "POST",
             url: publishPostURL,
-            data: AddAntiForgeryToken({postID: post_id, publish: true }),
+            data: {postID: post_id, publish: true },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -229,7 +229,7 @@ function linkPostDelete(selector) {
                 $.ajax({
                     type: "POST",
                     url: deletePostURL,
-                    data: AddAntiForgeryToken({ postID: post_id }),
+                    data: { postID: post_id },
                     success: function (html) {
                         if (html.result) {
                             window.location.reload();
@@ -254,7 +254,7 @@ function linkCommentDelete(selector) {
                 $.ajax({
                     type: "POST",
                     url: deleteCommentURL,
-                    data: AddAntiForgeryToken({ commentID: post_id }),
+                    data: { commentID: post_id },
                     success: function (html) {
                         if (html.result) {
                             window.location.reload();

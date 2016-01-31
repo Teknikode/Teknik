@@ -23,17 +23,17 @@ namespace Teknik.Areas.Home.Controllers
             HomeViewModel model = new HomeViewModel();
             // Grab the latest site blog posts
             List<BlogPost> lastSite = new List<BlogPost>();
-            var foundSite = db.BlogPosts.Include("Blog").Include("Blog.User").OrderBy(post => post.DatePosted).Where(p => p.Published && p.System).Take(10);
+            var foundSite = db.BlogPosts.Include("Blog").Include("Blog.User").OrderByDescending(post => post.DatePosted).Where(p => p.Published && p.System).Take(5);
             if (foundSite != null)
                 lastSite = foundSite.ToList();
             // Grab the latest user blog posts
             List<BlogPost> lastPosts = new List<BlogPost>();
-            var foundPosts = db.BlogPosts.Include("Blog").Include("Blog.User").OrderBy(post => post.DatePosted).Where(p => p.Published && !p.System).Take(10);
+            var foundPosts = db.BlogPosts.Include("Blog").Include("Blog.User").OrderByDescending(post => post.DatePosted).Where(p => p.Published && !p.System).Take(5);
             if (foundPosts != null)
                 lastPosts = foundPosts.ToList();
             // Grab the latest podcasts
             List<Podcast.Models.Podcast> lastPods = new List<Podcast.Models.Podcast>();
-            var foundPods = db.Podcasts.OrderBy(post => post.DatePosted).Where(p => p.Published).Take(10);
+            var foundPods = db.Podcasts.OrderByDescending(post => post.DatePosted).Where(p => p.Published).Take(5);
             if (foundPods != null)
                 lastPods = foundPods.ToList();
 

@@ -156,7 +156,6 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult CreatePodcast(int episode, string title, string description)
         {
             if (ModelState.IsValid)
@@ -223,7 +222,6 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult EditPodcast(int podcastId, int episode, string title, string description)
         {
             if (ModelState.IsValid)
@@ -253,7 +251,6 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult PublishPodcast(int podcastId, bool publish)
         {
             if (ModelState.IsValid)
@@ -278,7 +275,6 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult DeletePodcast(int podcastId)
         {
             if (ModelState.IsValid)
@@ -330,7 +326,6 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult CreateComment(int podcastId, string article)
         {
             if (ModelState.IsValid)
@@ -354,7 +349,6 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult EditComment(int commentID, string article)
         {
             if (ModelState.IsValid)
@@ -378,7 +372,6 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult DeleteComment(int commentID)
         {
             if (ModelState.IsValid)

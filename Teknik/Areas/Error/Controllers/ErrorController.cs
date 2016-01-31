@@ -29,9 +29,6 @@ namespace Teknik.Areas.Error.Controllers
         {
             ViewBag.Title = "Http Exception - " + Config.Title;
 
-            if (Response != null)
-                Response.StatusCode = (exception as HttpException).GetHttpCode();
-
             ErrorViewModel model = new ErrorViewModel();
             model.Description = exception.Message;
             model.Exception = exception;
@@ -45,9 +42,6 @@ namespace Teknik.Areas.Error.Controllers
             ViewBag.Title = "403 - " + Config.Title;
             ViewBag.Message = "Access Denied";
 
-            if (Response != null)
-                Response.StatusCode = 403;
-
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
@@ -59,9 +53,6 @@ namespace Teknik.Areas.Error.Controllers
         {
             ViewBag.Title = "404 - " + Config.Title;
             ViewBag.Message = "Uh Oh, can't find it!";
-            
-            if (Response != null)
-                Response.StatusCode = 404;
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
@@ -74,9 +65,6 @@ namespace Teknik.Areas.Error.Controllers
         {
             ViewBag.Title = "500 - " + Config.Title;
             ViewBag.Message = "Something Borked";
-
-            if (Response != null)
-                Response.StatusCode = 500;
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
