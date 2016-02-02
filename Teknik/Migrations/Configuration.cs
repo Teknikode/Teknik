@@ -24,9 +24,9 @@ namespace Teknik.Migrations
         {
             // Pre-populate with the default stuff
 
-            // Create system blog
             /*
             Config config = Config.Load();
+            // Create system blog
             Areas.Profile.Models.User systemUser = new Areas.Profile.Models.User();
             systemUser.Username = Constants.SERVERUSER;
             systemUser.JoinDate = DateTime.Now;
@@ -199,7 +199,6 @@ namespace Teknik.Migrations
                         }
                     }
                 }
-                
                 // Transfer Blog Comments
                 var commentRet = db.Query("SELECT * FROM `comments` WHERE `service` = {0}", new object[] { "blog" });
                 foreach (var comment in commentRet)
@@ -243,56 +242,91 @@ namespace Teknik.Migrations
                     }
                 }
                 // Transfer Uploads
-                var uploadRet = db.Query("SELECT * FROM `uploads`");
-                foreach (var upload in uploadRet)
-                {
+            var uploadRet = db.Query("SELECT * FROM `uploads`");
+            var curUploads = context.Uploads.ToList();
+            if (curUploads == null)
+                curUploads = new List<Areas.Upload.Models.Upload>();
+            int curUpload = 0;
+            int curFinished = 0;
+            //int curDeleted = 0;
+            foreach (var upload in uploadRet)
+            {
+                curUpload++;
+                try {
                     string url = upload["url"].ToString();
-                    Areas.Upload.Models.Upload upFound = context.Uploads.Where(u => u.Url == url).FirstOrDefault();
-                    if (upFound == null)
+                    //Areas.Upload.Models.Upload upFound = curUploads.Find(u => u.Url == url);
+                    //if (upFound != null)
+                    //{
+                    //    string subDir = upFound.FileName[0].ToString();
+                    //    string filePath = Path.Combine(config.UploadConfig.UploadDirectory, subDir, upFound.FileName);
+                    //    if (File.Exists(filePath))
+                    //    {
+                    //        continue;
+                    //    }
+                    //    else
+                    //    {
+                    //        curDeleted++;
+                    //        context.Uploads.Remove(upFound);
+                    //        context.SaveChanges();
+                    //    }
+                    //}
+                    string fileType = upload["type"].ToString();
+                    int contentLength = Int32.Parse(upload["filesize"].ToString());
+                    string deleteKey = upload["delete_key"].ToString();
+                    int userId = Int32.Parse(upload["user_id"].ToString());
+                    DateTime uploadDate = DateTime.Parse(upload["upload_date"].ToString());
+                    string fullUrl = string.Format("https://u.teknik.io/{0}", url);
+                    string fileExt = Path.GetExtension(fullUrl);
+                    if (!File.Exists(Path.Combine("Z:\\Uploads_Old", upload["filename"].ToString())))
                     {
-                        string fileType = upload["type"].ToString();
-                        int contentLength = Int32.Parse(upload["filesize"].ToString());
-                        string deleteKey = upload["delete_key"].ToString();
-                        int userId = Int32.Parse(upload["user_id"].ToString());
-                        DateTime uploadDate = DateTime.Parse(upload["upload_date"].ToString());
-                        string fullUrl = string.Format("https://u.teknik.io/{0}", url);
-                        string fileExt = Path.GetExtension(fullUrl);
-
-                        // Download the old file and re-upload it
-                        using (WebClient client = new WebClient())
+                        continue;
+                    }
+                    // Download the old file and re-upload it
+                    using (WebDownload client = new WebDownload(10000))
+                    {
+                        byte[] fileData;
+                        try
                         {
-                            try
-                            {
-                                byte[] fileData = client.DownloadData(fullUrl);
-                                // Generate key and iv if empty
-                                string key = Utility.RandomString(config.UploadConfig.KeySize / 8);
-                                string iv = Utility.RandomString(config.UploadConfig.BlockSize / 8);
+                            fileData = client.DownloadData(fullUrl);
+                        }
+                        catch (Exception ex) {
+                            continue;
+                        }
+                        try
+                        {
+                            // Generate key and iv if empty
+                            string key = Utility.RandomString(config.UploadConfig.KeySize / 8);
+                            string iv = Utility.RandomString(config.UploadConfig.BlockSize / 8);
 
-                                fileData = AES.Encrypt(fileData, key, iv);
-                                if (fileData == null || fileData.Length <= 0)
-                                {
-                                    continue;
-                                }
-                                Areas.Upload.Models.Upload up = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, key, config.UploadConfig.KeySize, config.UploadConfig.BlockSize);
-                                if (userMapping.ContainsKey(userId))
-                                    up.UserId = userMapping[userId];
-                                if (!string.IsNullOrEmpty(deleteKey))
-                                    up.DeleteKey = deleteKey;
-                                up.Url = url;
-                                context.Uploads.Add(up);
-                                context.SaveChanges();
+                            fileData = AES.Encrypt(fileData, key, iv);
+                            if (fileData == null || fileData.Length <= 0)
+                            {
+                                continue;
                             }
-                            catch { }
+                            Areas.Upload.Models.Upload up = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, key, config.UploadConfig.KeySize, config.UploadConfig.BlockSize);
+                            if (userMapping.ContainsKey(userId))
+                                up.UserId = userMapping[userId];
+                            if (!string.IsNullOrEmpty(deleteKey))
+                                up.DeleteKey = deleteKey;
+                            up.Url = url;
+                            context.Entry(up).State = EntityState.Modified;
+                            context.SaveChanges();
+                            curFinished++;
+                        }
+                        catch (Exception ex) {
                         }
                     }
                 }
+                catch (Exception ex) {
+                }
             }
-                */
+            //}
+            */
         }
 
-        private void Db_MysqlErrorEvent(object sender, string e)
-        {
-            //throw new NotImplementedException();
-        }
+        //private void Db_MysqlErrorEvent(object sender, string e)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

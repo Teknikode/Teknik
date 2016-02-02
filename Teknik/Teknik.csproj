@@ -251,6 +251,9 @@
     <Compile Include="Helpers\RSSFeedResult.cs" />
     <Compile Include="Helpers\UrlExtensions.cs" />
     <Compile Include="Helpers\Utility.cs" />
+    <Compile Include="Helpers\WebClientExtension.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\TeknikEntities.cs" />
     <Compile Include="Areas\Profile\Models\User.cs" />
