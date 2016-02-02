@@ -1,0 +1,24 @@
+﻿@model Teknik.Areas.Stream.ViewModels.StreamViewModel
+
+<div class="container">
+    @if (Model.Config.StreamConfig.Enabled)
+    {
+        foreach (string src in Model.Config.StreamConfig.Sources)
+        {
+        <div class="row">
+            <div class="col-ms-12">
+                <div class="thumbnail" width="330" height="250">
+                    <img src="@src">
+                </div>
+            </div>
+        </div>
+        }
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-ms-12">Streams are currently disabled.</div>
+        </div>
+    }
+</div>
+

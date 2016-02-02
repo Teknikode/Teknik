@@ -193,3 +193,4 @@ ModelManifest.xml
 /.vs/config/applicationhost.config
 /Teknik/TransformWebConfig/assist/Web.config
 /Teknik/Properties/PublishProfiles/IIS.pubxml
+/Teknik/App_Data/ConnectionStrings.config

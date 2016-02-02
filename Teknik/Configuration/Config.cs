@@ -30,6 +30,7 @@ namespace Teknik.Configuration
         private BlogConfig      _BlogConfig;
         private ApiConfig       _ApiConfig;
         private PodcastConfig   _PodcastConfig;
+        private StreamConfig    _StreamConfig;
         private DatabaseConfig  _DatabaseConfig;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
@@ -71,6 +72,9 @@ namespace Teknik.Configuration
         // Podcast Configuration
         public PodcastConfig    PodcastConfig   { get { return _PodcastConfig; }    set { _PodcastConfig = value; } }
 
+        // Stream Configuration
+        public StreamConfig     StreamConfig    { get { return _StreamConfig; }     set { _StreamConfig = value; } }
+
         // Database Configuration
         public DatabaseConfig   DatabaseConfig  { get { return _DatabaseConfig; }   set { _DatabaseConfig = value; } }
 
@@ -104,6 +108,7 @@ namespace Teknik.Configuration
             PasteConfig     = new PasteConfig();
             ApiConfig       = new ApiConfig();
             PodcastConfig   = new PodcastConfig();
+            StreamConfig    = new StreamConfig();
             DatabaseConfig  = new DatabaseConfig();
         }
 
