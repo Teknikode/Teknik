@@ -33,8 +33,8 @@ namespace Teknik.Areas.Upload.Controllers
             }
             else
             {
-                model.SaveKey = false;
-                model.ServerSideEncrypt = false;
+                model.SaveKey = true;
+                model.ServerSideEncrypt = true;
             }
             return View(model);
         }

@@ -25,8 +25,8 @@ namespace Teknik.Areas.Profile.Models
 
         public UploadSettings()
         {
-            SaveKey = false;
-            ServerSideEncrypt = false;
+            SaveKey = true;
+            ServerSideEncrypt = true;
         }
     }
 }
