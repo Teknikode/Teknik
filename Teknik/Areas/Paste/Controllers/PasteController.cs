@@ -54,7 +54,7 @@ namespace Teknik.Areas.Paste.Controllers
                 model.Syntax = paste.Syntax;
                 model.DatePosted = paste.DatePosted;
 
-                byte[] data = Encoding.Unicode.GetBytes(paste.Content);
+                byte[] data = Convert.FromBase64String(paste.Content);
 
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
@@ -71,7 +71,7 @@ namespace Teknik.Areas.Paste.Controllers
                     byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
                     byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
                     data = AES.Decrypt(data, keyBytes, ivBytes);
-                    model.Content = Convert.ToBase64String(data);
+                    model.Content = Encoding.Unicode.GetString(data);
                 }
 
                 switch (type.ToLower())

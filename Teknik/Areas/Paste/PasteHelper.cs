@@ -59,7 +59,7 @@ namespace Teknik.Areas.Paste
             if (!string.IsNullOrEmpty(password))
             {
                 string key = Utility.RandomString(config.PasteConfig.KeySize / 8);
-                string iv = Utility.RandomString(config.PasteConfig.BlockSize / 8);
+                string iv = Utility.RandomString(config.PasteConfig.BlockSize / 16);
                 paste.HashedPassword = Helpers.SHA384.Hash(key, password);
 
                 // Encrypt Content
@@ -67,7 +67,7 @@ namespace Teknik.Areas.Paste
                 byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
                 byte[] keyBytes = AES.CreateKey(password, ivBytes, config.PasteConfig.KeySize);
                 byte[] encData = AES.Encrypt(data, keyBytes, ivBytes);
-                content = Encoding.Unicode.GetString(encData);
+                content = Convert.ToBase64String(encData);
 
                 paste.Key = key;
                 paste.KeySize = config.PasteConfig.KeySize;
