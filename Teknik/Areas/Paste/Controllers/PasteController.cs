@@ -71,7 +71,7 @@ namespace Teknik.Areas.Paste.Controllers
                     byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
                     byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
                     data = AES.Decrypt(data, keyBytes, ivBytes);
-                    model.Content = Encoding.Unicode.GetString(data);
+                    model.Content = Convert.ToBase64String(data);
                 }
 
                 switch (type.ToLower())
