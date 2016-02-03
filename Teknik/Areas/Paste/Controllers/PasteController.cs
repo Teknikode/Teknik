@@ -54,7 +54,7 @@ namespace Teknik.Areas.Paste.Controllers
                 model.Syntax = paste.Syntax;
                 model.DatePosted = paste.DatePosted;
 
-                byte[] data = Convert.FromBase64String(paste.Content);
+                byte[] data = Encoding.UTF8.GetBytes(paste.Content);
 
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
@@ -67,6 +67,8 @@ namespace Teknik.Areas.Paste.Controllers
                         // Redirect them to the password request page
                         return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
                     }
+
+                    data = Convert.FromBase64String(paste.Content);
                     // Now we decrypt the content
                     byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
                     byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
