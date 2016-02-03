@@ -139,8 +139,8 @@ namespace Teknik.Areas.Profile.Controllers
                         }
                         HttpCookie authcookie = FormsAuthentication.GetAuthCookie(model.Username, model.RememberMe);
                         authcookie.Name = ".TeknikAuth";
-                        authcookie.Domain = "." + Config.Host;
-                        Response.Cookies.Add(authcookie);
+                        authcookie.Domain = Config.Host;
+                        Response.AppendCookie(authcookie);
 
                         if (string.IsNullOrEmpty(model.ReturnUrl))
                         {
