@@ -15,6 +15,7 @@ using System.ComponentModel;
 using Teknik.Areas.Error.Controllers;
 using System.Web.Helpers;
 using System.Diagnostics;
+using System.Collections.Specialized;
 
 namespace Teknik
 {
@@ -54,6 +55,11 @@ namespace Teknik
             string elapsedTime = String.Format("{0} seconds", ts.TotalSeconds);
 
             context.Response.AppendHeader("GenerationTime", elapsedTime);
+
+            // Allow this domain
+            string origin = context.Request.Headers.Get("Origin");
+            if (!string.IsNullOrEmpty(origin))
+                context.Response.AppendHeader("Access-Control-Allow-Origin", origin);
         }
 
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)

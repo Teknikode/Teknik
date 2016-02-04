@@ -12,6 +12,9 @@
             type: "POST",
             url: form.attr('action'),
             data: form.serialize(),
+            xhrFields: {
+                withCredentials: true
+            },
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
