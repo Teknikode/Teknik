@@ -138,10 +138,11 @@ namespace Teknik.Areas.Profile.Controllers
                             db.SaveChanges();
                         }
                         HttpCookie authcookie = FormsAuthentication.GetAuthCookie(model.Username, model.RememberMe);
-                        authcookie.Name = ".TeknikAuth";
-                        authcookie.Domain = Config.Host;
+                        authcookie.Name = "TeknikAuth";
+                        authcookie.HttpOnly = true;
                         authcookie.Secure = true;
-                        Response.AppendCookie(authcookie);
+                        authcookie.Domain = string.Format(".{0}", Config.Host);
+                        Response.Cookies.Add(authcookie);
 
                         if (string.IsNullOrEmpty(model.ReturnUrl))
                         {

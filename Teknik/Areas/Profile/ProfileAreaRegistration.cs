@@ -18,21 +18,21 @@ namespace Teknik.Areas.Profile
         {
             context.MapSubdomainRoute(
                  "Profile.Login", // Route name
-                 new List<string>() { "dev", "profile" }, // Subdomains
+                 new List<string>() { "dev", "profile", "www", string.Empty }, // Subdomains
                  "Login",    // URL with parameters 
                  new { controller = "Profile", action = "Login" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
             context.MapSubdomainRoute(
                  "Profile.Logout", // Route name
-                 new List<string>() { "dev", "profile" }, // Subdomains
+                 new List<string>() { "dev", "profile", "www", string.Empty }, // Subdomains
                  "Logout",    // URL with parameters 
                  new { controller = "Profile", action = "Logout" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }
             );
             context.MapSubdomainRoute(
                  "Profile.Register", // Route name
-                 new List<string>() { "dev", "profile" }, // Subdomains
+                 new List<string>() { "dev", "profile", "www", string.Empty }, // Subdomains
                  "Register",    // URL with parameters 
                  new { controller = "Profile", action = "Register" },  // Parameter defaults 
                  new[] { typeof(Controllers.ProfileController).Namespace }

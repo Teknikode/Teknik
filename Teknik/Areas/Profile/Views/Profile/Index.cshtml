@@ -22,7 +22,10 @@
                     {
                         <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.LastSeen.ToString("MMMM dd, yyyy")</time></li>
                     }
+                    @if (!string.IsNullOrEmpty(Model.Email))
+                    {
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> <a href="mailto:@Model.Email">@Model.Email</a></li>
+                    }
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Blog</strong></span> <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = Model.Username })" id="blog_title">@(string.IsNullOrEmpty(Model.BlogSettings.Title) ? string.Format("{0}'s Blog", Model.Username) : Model.BlogSettings.Title)</a></li>
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Git</strong></span> <a href="@Url.SubRouteUrl("git", "Git.Index", new { username = Model.Username })">Public Repos</a></li>
                 </ul>
