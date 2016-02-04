@@ -227,7 +227,7 @@ namespace Teknik.Areas.Profile.Controllers
                             // Add gogs user
                             using (var client = new WebClient())
                             {
-                                var obj = new { username = model.Username, email = email, password = model.Password };
+                                var obj = new { source_id = Config.GitConfig.SourceId, username = model.Username, email = email, password = model.Password };
                                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                                 client.Headers[HttpRequestHeader.ContentType] = "application/json";
                                 Uri baseUri = new Uri(Config.GitConfig.Host);
@@ -305,7 +305,7 @@ namespace Teknik.Areas.Profile.Controllers
                         {
                             using (var client = new WebClient())
                             {
-                                var obj = new { source_id = 1, email = email, password = newPass };
+                                var obj = new { source_id = Config.GitConfig.SourceId, email = email, password = newPass };
                                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                                 client.Headers[HttpRequestHeader.ContentType] = "application/json";
                                 Uri baseUri = new Uri(Config.GitConfig.Host);

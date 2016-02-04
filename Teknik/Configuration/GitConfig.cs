@@ -14,11 +14,14 @@ namespace Teknik.Configuration
 
         public string AccessToken { get; set; }
 
+        public int SourceId { get; set; }
+
         public GitConfig()
         {
             Enabled = true;
             Host = string.Empty;
             AccessToken = string.Empty;
+            SourceId = 1;
         }
     }
 }
