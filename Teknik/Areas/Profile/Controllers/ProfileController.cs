@@ -339,13 +339,16 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Delete Email
-                var app = new hMailServer.Application();
-                app.Connect();
-                app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-                var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
-                var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain)];
-                account.Delete();
+                if (Config.EmailConfig.Enabled)
+                {
+                    // Delete Email
+                    var app = new hMailServer.Application();
+                    app.Connect();
+                    app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
+                    var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
+                    var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain)];
+                    account.Delete();
+                }
 
                 // Delete Git
                 if (Config.GitConfig.Enabled)
