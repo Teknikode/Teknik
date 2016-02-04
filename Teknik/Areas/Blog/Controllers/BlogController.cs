@@ -83,7 +83,14 @@ namespace Teknik.Areas.Blog.Controllers
             {
                 PostViewModel model = new PostViewModel(post);
 
-                ViewBag.Title = model.Title + " - " + username + "'s Blog - " + Config.Title;
+                if (post.System)
+                {
+                    ViewBag.Title = model.Title + " - Teknik Blog - " + Config.Title;
+                }
+                else
+                {
+                    ViewBag.Title = model.Title + " - " + username + "'s Blog - " + Config.Title;
+                }
                 return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
             }
             return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", null);
