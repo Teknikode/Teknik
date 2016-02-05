@@ -1,5 +1,6 @@
 ﻿$(document).ready(function () {
     $("#podcast_submit").click(function () {
+        $.blockUI({ message: '<div class="text-center"><h3>Saving...</h3></div>' });
         $('#newPodcast').modal('hide');
         var fd = new FormData();
         var fileInput = document.getElementById('podcast_files');
@@ -22,12 +23,16 @@
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 obj = JSON.parse(xhr.responseText);
+                $.unblockUI();
                 if (obj.result) {
                     window.location.reload();
                 }
                 else {
+                    var error = obj;
+                    if (obj.error)
+                        error = obj.error;
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + obj.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + error + '</div>');
                 }
             }
         }

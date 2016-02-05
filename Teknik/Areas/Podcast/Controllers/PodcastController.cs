@@ -166,53 +166,19 @@ namespace Teknik.Areas.Podcast.Controllers
                     Models.Podcast lastPod = db.Podcasts.Where(p => p.Episode == episode).FirstOrDefault();
                     if (lastPod == null)
                     {
-                        if (Request.Files.Count > 0)
-                        {
-                            // Create the podcast object
-                            Models.Podcast podcast = db.Podcasts.Create();
-                            podcast.Episode = episode;
-                            podcast.Title = title;
-                            podcast.Description = description;
-                            podcast.DatePosted = DateTime.Now;
-                            podcast.DatePublished = DateTime.Now;
-                            podcast.DateEdited = DateTime.Now;
+                        // Create the podcast object
+                        Models.Podcast podcast = db.Podcasts.Create();
+                        podcast.Episode = episode;
+                        podcast.Title = title;
+                        podcast.Description = description;
+                        podcast.DatePosted = DateTime.Now;
+                        podcast.DatePublished = DateTime.Now;
+                        podcast.DateEdited = DateTime.Now;
+                        podcast.Files = SaveFiles(Request.Files, episode);
 
-                            // Handle saving of files
-                            for (int i = 0; i < Request.Files.Count; i++)
-                            {
-                                HttpPostedFileBase file = Request.Files[i]; //Uploaded file
-                                                                            //Use the following properties to get file's name, size and MIMEType
-                                int fileSize = file.ContentLength;
-                                string fileName = file.FileName;
-                                string fileExt = Path.GetExtension(fileName);
-                                if (!Directory.Exists(Config.PodcastConfig.PodcastDirectory))
-                                {
-                                    Directory.CreateDirectory(Config.PodcastConfig.PodcastDirectory);
-                                }
-                                string newName = string.Format("Teknikast_Episode_{0}{1}", episode, fileExt);
-                                int index = 1;
-                                while (System.IO.File.Exists(Path.Combine(Config.PodcastConfig.PodcastDirectory, newName)))
-                                {
-                                    newName = string.Format("Teknikast_Episode_{0} ({1}){2}", episode, index, fileExt);
-                                    index++;
-                                }
-                                string fullPath = Path.Combine(Config.PodcastConfig.PodcastDirectory, newName);
-                                PodcastFile podFile = new PodcastFile();
-                                podFile.Path = fullPath;
-                                podFile.FileName = newName;
-                                podFile.ContentType = file.ContentType;
-                                podFile.ContentLength = file.ContentLength;
-                                podcast.Files = new List<PodcastFile>();
-                                podcast.Files.Add(podFile);
-
-                                file.SaveAs(fullPath);
-                            }
-
-                            db.Podcasts.Add(podcast);
-                            db.SaveChanges();
-                            return Json(new { result = true });
-                        }
-                        return Json(new { error = "You must submit at least one podcast audio file" });
+                        db.Podcasts.Add(podcast);
+                        db.SaveChanges();
+                        return Json(new { result = true });
                     }
                     return Json(new { error = "That episode already exists" });
                 }
@@ -237,6 +203,8 @@ namespace Teknik.Areas.Podcast.Controllers
                             podcast.Title = title;
                             podcast.Description = description;
                             podcast.DateEdited = DateTime.Now;
+                            List<PodcastFile> newFiles = SaveFiles(Request.Files, episode);
+                            podcast.Files.AddRange(newFiles);
                             db.Entry(podcast).State = EntityState.Modified;
                             db.SaveChanges();
                             return Json(new { result = true });
@@ -392,5 +360,44 @@ namespace Teknik.Areas.Podcast.Controllers
             return Json(new { error = "Invalid Parameters" });
         }
         #endregion
+
+        public List<PodcastFile> SaveFiles(HttpFileCollectionBase files, int episode)
+        {
+            List<PodcastFile> podFiles = new List<PodcastFile>();
+
+            if (files.Count > 0)
+            {
+                for (int i = 0; i < Request.Files.Count; i++)
+                {
+                    HttpPostedFileBase file = Request.Files[i]; 
+                                                               
+                    int fileSize = file.ContentLength;
+                    string fileName = file.FileName;
+                    string fileExt = Path.GetExtension(fileName);
+                    if (!Directory.Exists(Config.PodcastConfig.PodcastDirectory))
+                    {
+                        Directory.CreateDirectory(Config.PodcastConfig.PodcastDirectory);
+                    }
+                    string newName = string.Format("Teknikast_Episode_{0}{1}", episode, fileExt);
+                    int index = 1;
+                    while (System.IO.File.Exists(Path.Combine(Config.PodcastConfig.PodcastDirectory, newName)))
+                    {
+                        newName = string.Format("Teknikast_Episode_{0} ({1}){2}", episode, index, fileExt);
+                        index++;
+                    }
+                    string fullPath = Path.Combine(Config.PodcastConfig.PodcastDirectory, newName);
+                    PodcastFile podFile = new PodcastFile();
+                    podFile.Path = fullPath;
+                    podFile.FileName = newName;
+                    podFile.ContentType = file.ContentType;
+                    podFile.ContentLength = file.ContentLength;
+                    podFiles.Add(podFile);
+
+                    file.SaveAs(fullPath);
+                }
+            }
+
+            return podFiles;
+        }
     }
 }

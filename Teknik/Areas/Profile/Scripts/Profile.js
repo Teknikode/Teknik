@@ -53,14 +53,16 @@
                 serverSideEncrypt: upload_serverSideEncrypt
             },
             success: function (html) {
+                $.unblockUI();
                 if (html.result) {
-                    $.unblockUI();
                     window.location.reload();
                 }
                 else {
-                    $.unblockUI();
+                    var error = html;
+                    if (html.error)
+                        error = html.error;
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + error + '</div>');
                 }
             }
         });
