@@ -156,6 +156,29 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
+        public ActionResult GetPodcastFiles(int podcastId)
+        {
+            bool editor = User.IsInRole("Podcast");
+            var foundPodcast = db.Podcasts.Include("Files").Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
+            if (foundPodcast != null)
+            {
+                List<object> files = new List<object>();
+                foreach (PodcastFile file in foundPodcast.Files)
+                {
+                    object fileObj = new
+                    {
+                        name = file.FileName,
+                        id = file.PodcastFileId
+                    };
+                    files.Add(fileObj);
+                }
+                return Json(new { result = new { files = files } });
+            }
+            return Json(new { error = "No podcast found" });
+        }
+
+        [HttpPost]
         public ActionResult CreatePodcast(int episode, string title, string description)
         {
             if (ModelState.IsValid)
@@ -188,7 +211,7 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditPodcast(int podcastId, int episode, string title, string description)
+        public ActionResult EditPodcast(int podcastId, int episode, string title, string description, string fileIds)
         {
             if (ModelState.IsValid)
             {
@@ -203,8 +226,20 @@ namespace Teknik.Areas.Podcast.Controllers
                             podcast.Title = title;
                             podcast.Description = description;
                             podcast.DateEdited = DateTime.Now;
+                            // Remove any files not in fileIds
+                            List<string> fileIdList = fileIds.Split(',').ToList();
+                            for (int i = 0; i < podcast.Files.Count; i++)
+                            {
+                                PodcastFile curFile = podcast.Files[i];
+                                if (!fileIdList.Exists(id => id == curFile.PodcastFileId.ToString()))
+                                {
+                                    podcast.Files.Remove(curFile);
+                                }
+                            }
+                            // Add any new files
                             List<PodcastFile> newFiles = SaveFiles(Request.Files, episode);
                             podcast.Files.AddRange(newFiles);
+                            // Save podcast
                             db.Entry(podcast).State = EntityState.Modified;
                             db.SaveChanges();
                             return Json(new { result = true });

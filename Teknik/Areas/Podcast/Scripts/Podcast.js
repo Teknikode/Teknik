@@ -15,7 +15,6 @@
         fd.append("episode", episode);
         fd.append("title", title);
         fd.append("description", description);
-        fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
 
         var xhr = new XMLHttpRequest();
         xhr.open('POST', addPodcastURL);
@@ -35,7 +34,7 @@
                     $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + error + '</div>');
                 }
             }
-        }
+        };
         return false;
     });
 
@@ -43,6 +42,8 @@
         $("#edit_podcast_episode").val("");
         $("#edit_podcast_title").val("");
         $("#edit_podcast_description").val("");
+        $("#edit_podcast_cur_file_list").val("");
+        $("#edit_podcast_cur_files").html('');
         podcastId = $(e.relatedTarget).attr("id");
         $("#edit_podcast_podcastId").val(podcastId);
         $.ajax({
@@ -75,28 +76,73 @@
                 }
             }
         });
+        $.ajax({
+            type: "POST",
+            url: getPodcastFilesURL,
+            data: { podcastID: podcastId },
+            success: function (html) {
+                if (html.result) {
+                    var files = html.result.files
+                    var fileList = [];
+                    for (var i = 0; i < files.length; i++) {
+                        var fileId = files[i].id;
+                        var fileName = files[i].name;
+                        $("#edit_podcast_cur_file_list").append(' \
+                                                        <div class="alert alert-success uploaded_file_' + fileId + '"> \
+                                                            <button type="button" class="close podcast_file_delete" id="' + fileId + '">&times;</button> \
+                                                            ' + fileName + ' \
+                                                        </div> \
+                                                        ');
+                        fileList[i] = fileId;
+                        linkEditFileDelete('.podcast_file_delete');
+                    }
+                    $("#edit_podcast_cur_files").val(fileList.toString());
+                }
+            }
+        });
     });
 
     $("#edit_submit").click(function () {
+        $.blockUI({ message: '<div class="text-center"><h3>Saving...</h3></div>' });
         $('#editPodcast').modal('hide');
+        var fd = new FormData();
+        var fileInput = document.getElementById('edit_podcast_files');
+        for (i = 0; i < fileInput.files.length; i++) {
+            //Appending each file to FormData object
+            fd.append(fileInput.files[i].name, fileInput.files[i]);
+        }
+
         podcastId = $("#edit_podcast_podcastId").val();
         episode = $("#edit_podcast_episode").val();
         title = $("#edit_podcast_title").val();
         description = $("#edit_podcast_description").val();
-        $.ajax({
-            type: "POST",
-            url: editPodcastURL,
-            data: { podcastId: podcastId, episode: episode, title: title, description: description },
-            success: function (html) {
-                if (html.result) {
+        allFiles = $("#edit_podcast_cur_files").val();
+        
+        fd.append("podcastId", podcastId);
+        fd.append("episode", episode);
+        fd.append("title", title);
+        fd.append("description", description);
+        fd.append("fileIds", allFiles);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', editPodcastURL);
+        xhr.send(fd);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                obj = JSON.parse(xhr.responseText);
+                $.unblockUI();
+                if (obj.result) {
                     window.location.reload();
                 }
                 else {
+                    var error = obj;
+                    if (obj.error)
+                        error = obj.error;
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + error + '</div>');
                 }
             }
-        });
+        };
         return false;
     });
 
@@ -273,6 +319,22 @@ function linkPodcastDelete(selector) {
                 });
             }
         });
+    });
+}
+
+function linkEditFileDelete(selector) {
+    $(selector).click(function () {
+        var object = $(this);
+        podFile = object.attr('id');
+        allFiles = $("#edit_podcast_cur_files").val();
+        var fileList = allFiles.split(',');
+        var index = fileList.indexOf(podFile);
+        if (index != -1) {
+            fileList.splice(index, 1);
+            $("#edit_podcast_cur_files").val(fileList.toString());
+        }
+        $(".uploaded_file_" + podFile).remove();
+        return false;
     });
 }
 

@@ -9,6 +9,7 @@
     var getPodcastEpisodeURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastEpisode" })';
     var getPodcastTitleURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastTitle" })';
     var getPodcastDescriptionURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastDescription" })';
+    var getPodcastFilesURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "GetPodcastFiles" })';
     var publishPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "PublishPodcast" })';
     var addPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "CreatePodcast" })';
     var editPodcastURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "EditPodcast" })';
@@ -74,7 +75,7 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-sm-12">
-                                <label for="podcast_files"><h4>Upload Podcast</h4></label>
+                                <label for="podcast_files"><h4>Add Podcasts</h4></label>
                                 <input id="podcast_files" name="podcast_files" type="file" placeholder="podcast.ogg" title="select the podcast file." multiple>
                             </div>
                         </div>
@@ -121,9 +122,13 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-sm-12">
-                                <label for="edit_podcast_files"><h4>Upload Podcast</h4></label>
+                                <label for="edit_podcast_files"><h4>Add Podcasts</h4></label>
                                 <input id="edit_podcast_files" name="edit_podcast_files" type="file" placeholder="podcast.ogg" title="select the podcast file." multiple>
                             </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12" id="edit_podcast_cur_files"></div>
+                            <input name="edit_podcast_cur_file_list" id="edit_podcast_cur_file_list" type="hidden" />
                         </div>
                     </div>
                     <div class="modal-footer">
