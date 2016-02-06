@@ -29,18 +29,11 @@ namespace Teknik
         {
             string host = url.RequestContext.HttpContext.Request.Url.Authority;
             
-            string domain = host;
+            string domain = host.GetDomain();
             string rightUrl = string.Empty;
 
             // get current subdomain
             string curSub = host.GetSubdomain();
-            var split = host.Split('.'); // split the host by '.'
-            if (split.Count() > 2)
-            {
-                int index = host.IndexOf('.') + 1;
-                if (index >= 0 && index < host.Length)
-                    domain = host.Substring(index, (host.Length - index));
-            }
 
             // Grab the sub from parameters if it exists
             string subParam = url.RequestContext.HttpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname unless on dev
@@ -137,6 +130,32 @@ namespace Teknik
                 subParam = host.GetSubdomain();
             }
             return subParam;
+        }
+
+        public static string GetDomain(this string host)
+        {
+            string domain = host;
+            var split = host.Split('.'); // split the host by '.'
+            if (split.Count() > 2)
+            {
+                int index = host.IndexOf('.') + 1;
+                if (index >= 0 && index < host.Length)
+                    domain = host.Substring(index, (host.Length - index));
+            }
+            return domain;
+        }
+
+        public static string GetDomain(this Uri uri)
+        {
+            string domain = uri.Host;
+            var split = uri.Host.Split('.'); // split the host by '.'
+            if (split.Count() > 2)
+            {
+                int index = uri.Host.IndexOf('.') + 1;
+                if (index >= 0 && index < uri.Host.Length)
+                    domain = uri.Host.Substring(index, (uri.Host.Length - index));
+            }
+            return domain;
         }
 
         public static string GetActive(this UrlHelper url, params string[] subs)

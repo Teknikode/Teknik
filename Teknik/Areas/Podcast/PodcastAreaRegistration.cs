@@ -48,6 +48,7 @@ namespace Teknik.Areas.Podcast
             // Register Script Bundles
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/podcast").Include(
                       "~/Scripts/bootbox/bootbox.min.js",
+                      "~/Scripts/jquery.blockUI.js",
                       "~/Areas/Podcast/Scripts/Podcast.js"));
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/podcast").Include(

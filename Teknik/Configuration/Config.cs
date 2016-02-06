@@ -13,6 +13,7 @@ namespace Teknik.Configuration
         private JsonSerializerSettings _JsonSettings;
 
         private bool            _DevEnvironment;
+        private bool            _Migrate;
         private string          _Title;
         private string          _Description;
         private string          _Author;
@@ -34,6 +35,7 @@ namespace Teknik.Configuration
         private DatabaseConfig  _DatabaseConfig;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
+        public bool         Migrate         { get { return _Migrate; }          set { _Migrate = value; } }
 
         // Site Information
         public string       Title           { get { return _Title; }            set { _Title = value; } }
@@ -91,6 +93,7 @@ namespace Teknik.Configuration
         public void SetDefaults()
         {
             DevEnvironment  = false;
+            Migrate         = false;
             Title           = string.Empty;
             Description     = string.Empty;
             Author          = string.Empty;

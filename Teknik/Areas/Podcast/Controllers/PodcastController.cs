@@ -217,28 +217,38 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 if (User.IsInRole("Podcast"))
                 {
-                    Models.Podcast podcast = db.Podcasts.Find(podcastId);
+                    Models.Podcast podcast = db.Podcasts.Include("Files").Where(p => p.PodcastId == podcastId).FirstOrDefault();
                     if (podcast != null)
                     {
-                        if (db.Podcasts.Where(p => p.Episode != episode).FirstOrDefault() == null)
+                        if (db.Podcasts.Where(p => p.Episode != episode).FirstOrDefault() == null || podcast.Episode == episode)
                         {
                             podcast.Episode = episode;
                             podcast.Title = title;
                             podcast.Description = description;
                             podcast.DateEdited = DateTime.Now;
                             // Remove any files not in fileIds
-                            List<string> fileIdList = fileIds.Split(',').ToList();
+                            List<string> fileIdList = new List<string>();
+                            if (!string.IsNullOrEmpty(fileIds))
+                            {
+                                fileIdList = fileIds.Split(',').ToList();
+                            }
                             for (int i = 0; i < podcast.Files.Count; i++)
                             {
                                 PodcastFile curFile = podcast.Files[i];
                                 if (!fileIdList.Exists(id => id == curFile.PodcastFileId.ToString()))
                                 {
+                                    if (System.IO.File.Exists(curFile.Path))
+                                    {
+                                        System.IO.File.Delete(curFile.Path);
+                                    }
+                                    db.PodcastFiles.Remove(curFile);
                                     podcast.Files.Remove(curFile);
                                 }
                             }
                             // Add any new files
                             List<PodcastFile> newFiles = SaveFiles(Request.Files, episode);
                             podcast.Files.AddRange(newFiles);
+
                             // Save podcast
                             db.Entry(podcast).State = EntityState.Modified;
                             db.SaveChanges();
@@ -284,9 +294,13 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 if (User.IsInRole("Podcast"))
                 {
-                    Models.Podcast podcast = db.Podcasts.Find(podcastId);
+                    Models.Podcast podcast = db.Podcasts.Include("Files").Where(p => p.PodcastId == podcastId).FirstOrDefault();
                     if (podcast != null)
                     {
+                        foreach (PodcastFile file in podcast.Files)
+                        {
+                            System.IO.File.Delete(file.Path);
+                        }
                         db.Podcasts.Remove(podcast);
                         db.SaveChanges();
                         return Json(new { result = true });
@@ -402,9 +416,9 @@ namespace Teknik.Areas.Podcast.Controllers
 
             if (files.Count > 0)
             {
-                for (int i = 0; i < Request.Files.Count; i++)
+                for (int i = 0; i < files.Count; i++)
                 {
-                    HttpPostedFileBase file = Request.Files[i]; 
+                    HttpPostedFileBase file = files[i]; 
                                                                
                     int fileSize = file.ContentLength;
                     string fileName = file.FileName;

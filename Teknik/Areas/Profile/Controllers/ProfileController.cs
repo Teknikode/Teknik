@@ -141,7 +141,14 @@ namespace Teknik.Areas.Profile.Controllers
                         authcookie.Name = "TeknikAuth";
                         authcookie.HttpOnly = true;
                         authcookie.Secure = true;
-                        authcookie.Domain = string.Format(".{0}", Config.Host);
+                        authcookie.Domain = string.Format(".{0}", Request.Url.Host.GetDomain());
+                        if (Config.DevEnvironment)
+                        {
+                            authcookie.Domain = string.Format("dev.{0}", Request.Url.Host.GetDomain());
+                        }
+#if DEBUG
+                        authcookie.Domain = Request.Url.Host.GetDomain();
+#endif
                         Response.Cookies.Add(authcookie);
 
                         if (string.IsNullOrEmpty(model.ReturnUrl))

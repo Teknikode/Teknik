@@ -87,7 +87,7 @@
                     for (var i = 0; i < files.length; i++) {
                         var fileId = files[i].id;
                         var fileName = files[i].name;
-                        $("#edit_podcast_cur_file_list").append(' \
+                        $("#edit_podcast_cur_files").append(' \
                                                         <div class="alert alert-success uploaded_file_' + fileId + '"> \
                                                             <button type="button" class="close podcast_file_delete" id="' + fileId + '">&times;</button> \
                                                             ' + fileName + ' \
@@ -96,7 +96,7 @@
                         fileList[i] = fileId;
                         linkEditFileDelete('.podcast_file_delete');
                     }
-                    $("#edit_podcast_cur_files").val(fileList.toString());
+                    $("#edit_podcast_cur_file_list").val(fileList.toString());
                 }
             }
         });
@@ -326,12 +326,12 @@ function linkEditFileDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
         podFile = object.attr('id');
-        allFiles = $("#edit_podcast_cur_files").val();
+        allFiles = $("#edit_podcast_cur_file_list").val();
         var fileList = allFiles.split(',');
         var index = fileList.indexOf(podFile);
         if (index != -1) {
             fileList.splice(index, 1);
-            $("#edit_podcast_cur_files").val(fileList.toString());
+            $("#edit_podcast_cur_file_list").val(fileList.toString());
         }
         $(".uploaded_file_" + podFile).remove();
         return false;
