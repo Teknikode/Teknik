@@ -58,8 +58,14 @@ namespace Teknik
 
             // Allow this domain
             string origin = context.Request.Headers.Get("Origin");
-            if (!string.IsNullOrEmpty(origin))
+            if (!string.IsNullOrEmpty(origin) && !Request.IsLocal)
+            {
                 context.Response.AppendHeader("Access-Control-Allow-Origin", origin);
+            }
+            else if (Request.IsLocal)
+            {
+                context.Response.AppendHeader("Access-Control-Allow-Origin", "*");
+            }
         }
 
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)

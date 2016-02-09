@@ -146,9 +146,13 @@ namespace Teknik.Areas.Profile.Controllers
                         {
                             authcookie.Domain = string.Format("dev.{0}", Request.Url.Host.GetDomain());
                         }
-#if DEBUG
-                        authcookie.Domain = Request.Url.Host.GetDomain();
-#endif
+                        // Make it work for localhost
+                        if (Request.IsLocal)
+                        {
+                            authcookie.Domain = Request.Url.Host.GetDomain();
+                            authcookie.HttpOnly = false;
+                            authcookie.Secure = false;
+                        }
                         Response.Cookies.Add(authcookie);
 
                         if (string.IsNullOrEmpty(model.ReturnUrl))
@@ -234,7 +238,7 @@ namespace Teknik.Areas.Profile.Controllers
                             // Add gogs user
                             using (var client = new WebClient())
                             {
-                                var obj = new { source_id = Config.GitConfig.SourceId, username = model.Username, email = email, password = model.Password };
+                                var obj = new { source_id = Config.GitConfig.SourceId, username = model.Username, email = email, login_name = email, password = model.Password };
                                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                                 client.Headers[HttpRequestHeader.ContentType] = "application/json";
                                 Uri baseUri = new Uri(Config.GitConfig.Host);
