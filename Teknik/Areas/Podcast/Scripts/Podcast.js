@@ -116,7 +116,7 @@
         episode = $("#edit_podcast_episode").val();
         title = $("#edit_podcast_title").val();
         description = $("#edit_podcast_description").val();
-        allFiles = $("#edit_podcast_cur_files").val();
+        allFiles = $("#edit_podcast_cur_file_list").val();
         
         fd.append("podcastId", podcastId);
         fd.append("episode", episode);

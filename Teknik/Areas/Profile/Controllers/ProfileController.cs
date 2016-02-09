@@ -146,9 +146,13 @@ namespace Teknik.Areas.Profile.Controllers
                         {
                             authcookie.Domain = string.Format("dev.{0}", Request.Url.Host.GetDomain());
                         }
-#if DEBUG
-                        authcookie.Domain = Request.Url.Host.GetDomain();
-#endif
+                        // Make it work for localhost
+                        if (Request.IsLocal)
+                        {
+                            authcookie.Domain = Request.Url.Host.GetDomain();
+                            authcookie.HttpOnly = false;
+                            authcookie.Secure = false;
+                        }
                         Response.Cookies.Add(authcookie);
 
                         if (string.IsNullOrEmpty(model.ReturnUrl))
