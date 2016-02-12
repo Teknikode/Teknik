@@ -202,6 +202,7 @@
     <Compile Include="Areas\Profile\Models\UploadSettings.cs" />
     <Compile Include="Areas\Profile\Models\UserSettings.cs" />
     <Compile Include="Areas\Profile\ProfileAreaRegistration.cs" />
+    <Compile Include="Areas\Profile\Utility\UserHelper.cs" />
     <Compile Include="Areas\Profile\ViewModels\ProfileViewModel.cs" />
     <Compile Include="Areas\Profile\ViewModels\SettingsViewModel.cs" />
     <Compile Include="Areas\RSS\Controllers\RSSController.cs" />

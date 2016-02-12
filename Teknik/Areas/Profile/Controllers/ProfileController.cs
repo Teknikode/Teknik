@@ -137,22 +137,7 @@ namespace Teknik.Areas.Profile.Controllers
                             db.Entry(user).State = EntityState.Modified;
                             db.SaveChanges();
                         }
-                        HttpCookie authcookie = FormsAuthentication.GetAuthCookie(model.Username, model.RememberMe);
-                        authcookie.Name = "TeknikAuth";
-                        authcookie.HttpOnly = true;
-                        authcookie.Secure = true;
-                        authcookie.Domain = string.Format(".{0}", Request.Url.Host.GetDomain());
-                        if (Config.DevEnvironment)
-                        {
-                            authcookie.Domain = string.Format("dev.{0}", Request.Url.Host.GetDomain());
-                        }
-                        // Make it work for localhost
-                        if (Request.IsLocal)
-                        {
-                            authcookie.Domain = Request.Url.Host.GetDomain();
-                            authcookie.HttpOnly = false;
-                            authcookie.Secure = false;
-                        }
+                        HttpCookie authcookie = Utility.UserHelper.CreateAuthCookie(model.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
                         Response.Cookies.Add(authcookie);
 
                         if (string.IsNullOrEmpty(model.ReturnUrl))
@@ -171,7 +156,17 @@ namespace Teknik.Areas.Profile.Controllers
 
         public ActionResult Logout()
         {
+            // Get cookie
+            HttpCookie authCookie = Utility.UserHelper.CreateAuthCookie(User.Identity.Name, false, Request.Url.Host.GetDomain(), Request.IsLocal);
+
+            // Signout
             FormsAuthentication.SignOut();
+            Session.Abandon();
+
+            // Destroy Cookies
+            authCookie.Expires = DateTime.Now.AddYears(-1);
+            Response.Cookies.Add(authCookie);
+
             return Redirect(Url.SubRouteUrl("www", "Home.Index"));
         }
 
@@ -302,13 +297,18 @@ namespace Teknik.Areas.Profile.Controllers
                         // Update Email Pass
                         if (Config.EmailConfig.Enabled)
                         {
-                            var app = new hMailServer.Application();
-                            app.Connect();
-                            app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-                            var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
-                            var account = domain.Accounts.ItemByAddress[email];
-                            account.Password = newPass;
-                            account.Save();
+                            try
+                            {
+                                var app = new hMailServer.Application();
+                                app.Connect();
+                                app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
+                                var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
+                                var account = domain.Accounts.ItemByAddress[email];
+                                account.Password = newPass;
+                                account.Save();
+                            }
+                            catch (COMException)
+                            { }
                         }                        
 
                         // Update Git Pass
@@ -352,13 +352,18 @@ namespace Teknik.Areas.Profile.Controllers
             {
                 if (Config.EmailConfig.Enabled)
                 {
-                    // Delete Email
-                    var app = new hMailServer.Application();
-                    app.Connect();
-                    app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-                    var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
-                    var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain)];
-                    account.Delete();
+                    try
+                    {
+                        // Delete Email
+                        var app = new hMailServer.Application();
+                        app.Connect();
+                        app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
+                        var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
+                        var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain)];
+                        account.Delete();
+                    }
+                    catch (COMException)
+                    { }
                 }
 
                 // Delete Git
