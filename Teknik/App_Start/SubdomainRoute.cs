@@ -11,27 +11,33 @@ namespace Teknik
     {
         public List<string> Subdomains { get; set; }
 
-        public SubdomainRoute(List<string> subdomains, string url, IRouteHandler handler)
+        public List<string> Domains { get; set; }
+
+        public SubdomainRoute(List<string> subdomains, List<string> domains, string url, IRouteHandler handler)
         : base(url, handler)
         {
             this.Subdomains = subdomains;
+            this.Domains = domains;
         }
-        public SubdomainRoute(List<string> subdomains, string url, RouteValueDictionary defaults, IRouteHandler handler)
+        public SubdomainRoute(List<string> subdomains, List<string> domains, string url, RouteValueDictionary defaults, IRouteHandler handler)
         : base(url, defaults, handler)
         {
             this.Subdomains = subdomains;
+            this.Domains = domains;
         }
 
-        public SubdomainRoute(List<string> subdomains, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, IRouteHandler handler)
+        public SubdomainRoute(List<string> subdomains, List<string> domains, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, IRouteHandler handler)
         : base(url, defaults, constraints, handler)
         {
             this.Subdomains = subdomains;
+            this.Domains = domains;
         }
 
-        public SubdomainRoute(List<string> subdomains, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler handler)
+        public SubdomainRoute(List<string> subdomains, List<string> domains, string url, RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler handler)
         : base(url, defaults, constraints, dataTokens, handler)
         {
             this.Subdomains = subdomains;
+            this.Domains = domains;
         }
 
         public override RouteData GetRouteData(HttpContextBase httpContext)
@@ -41,6 +47,7 @@ namespace Teknik
             string subdomain = httpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname.
             string host = httpContext.Request.Headers["Host"];
             string curSub = host.GetSubdomain();
+            string domain = host.GetDomain();
 
             // special consideration for 'dev' subdomain
             if (subdomain == null || subdomain == "dev")
@@ -68,10 +75,14 @@ namespace Teknik
                 }
             }
 
-            //routeData.Values["sub"] = subdomain;
-            if (Subdomains.Contains("*") || Subdomains.Contains(subdomain))
+            // Check if this route is valid for the current domain
+            if (httpContext.Request.IsLocal || Domains.Contains(domain))
             {
-                return routeData;
+                // Check if this route is valid for the current subdomain ('*' means any subdomain is valid)
+                if (Subdomains.Contains("*") || Subdomains.Contains(subdomain))
+                {
+                    return routeData;
+                }
             }
             return null;
         }

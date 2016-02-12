@@ -6,10 +6,11 @@ namespace Teknik
 {
     public static class SubdomainRouteExtension
     {
-        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, List<string> subDomains, string url, object defaults)
+        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, List<string> subDomains, List<string> domains, string url, object defaults)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomains,
+                domains,
                 url,
                 new RouteValueDictionary(defaults),
                 new MvcRouteHandler());
@@ -18,10 +19,11 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, List<string> subDomains, string url, object defaults, object constraints)
+        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, List<string> subDomains, List<string> domains, string url, object defaults, object constraints)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomains,
+                domains,
                 url,
                 new RouteValueDictionary(defaults),
                 new RouteValueDictionary(constraints),
@@ -30,10 +32,11 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, List<string> subDomains, string area, string url, object defaults, string[] namespaces)
+        public static SubdomainRoute MapSubdomainRoute(this RouteCollection routes, string name, List<string> subDomains, List<string> domains, string area, string url, object defaults, string[] namespaces)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomains,
+                domains,
                 url,
                 new RouteValueDictionary(defaults),
                 new RouteValueDictionary(new { }),
@@ -43,10 +46,11 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, string url, object defaults)
+        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, List<string> domains, string url, object defaults)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomains,
+                domains,
                 url,
                 new RouteValueDictionary(defaults),
                 new RouteValueDictionary(new {}),
@@ -57,10 +61,11 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, string url, object defaults, object constraints)
+        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, List<string> domains, string url, object defaults, object constraints)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomains,
+                domains,
                 url,
                 new RouteValueDictionary(defaults),
                 new RouteValueDictionary(constraints),
@@ -71,10 +76,11 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, string url, object defaults, string[] namespaces)
+        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, List<string> domains, string url, object defaults, string[] namespaces)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomains,
+                domains,
                 url,
                 new RouteValueDictionary(defaults),
                 new RouteValueDictionary(new {}),
@@ -85,10 +91,11 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, string url, string area, object defaults)
+        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, List<string> domains, string url, string area, object defaults)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomains,
+                domains,
                 url,
                 new RouteValueDictionary(defaults),
                 new RouteValueDictionary(new { }),
@@ -99,10 +106,11 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, string url, string area, object defaults, object constraints)
+        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, List<string> domains, string url, string area, object defaults, object constraints)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomains,
+                domains,
                 url,
                 new RouteValueDictionary(defaults),
                 new RouteValueDictionary(constraints),
@@ -113,10 +121,11 @@ namespace Teknik
             return route;
         }
 
-        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, string url, string area, object defaults, string[] namespaces)
+        public static SubdomainRoute MapSubdomainRoute(this AreaRegistrationContext context, string name, List<string> subDomains, List<string> domains, string url, string area, object defaults, string[] namespaces)
         {
             SubdomainRoute route = new SubdomainRoute(
                 subDomains,
+                domains,
                 url,
                 new RouteValueDictionary(defaults),
                 new RouteValueDictionary(new { }),

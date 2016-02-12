@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik;
+using Teknik.Configuration;
 
 namespace Teknik.Areas.Home
 {
@@ -17,9 +18,11 @@ namespace Teknik.Areas.Home
 
         public override void RegisterArea(AreaRegistrationContext context)
         {
+            Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Home.Index", // Route name
                  new List<string>() { "dev", "www", string.Empty }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Home", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.HomeController).Namespace }

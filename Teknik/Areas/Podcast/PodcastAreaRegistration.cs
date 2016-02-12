@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Optimization;
+using Teknik.Configuration;
 
 namespace Teknik.Areas.Podcast
 {
@@ -16,9 +17,11 @@ namespace Teknik.Areas.Podcast
 
         public override void RegisterArea(AreaRegistrationContext context)
         {
+            Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Podcast.Index", // Route name
                  new List<string>() { "dev", "podcast" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Podcast", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.PodcastController).Namespace }
@@ -26,6 +29,7 @@ namespace Teknik.Areas.Podcast
             context.MapSubdomainRoute(
                  "Podcast.View", // Route name
                  new List<string>() { "dev", "podcast" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "{episode}",    // URL with parameters 
                  new { controller = "Podcast", action = "View" },  // Parameter defaults 
                  new[] { typeof(Controllers.PodcastController).Namespace }
@@ -33,6 +37,7 @@ namespace Teknik.Areas.Podcast
             context.MapSubdomainRoute(
                  "Podcast.Download", // Route name
                  new List<string>() { "dev", "podcast" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "File/{episode}/{fileName}",    // URL with parameters 
                  new { controller = "Podcast", action = "Download" },  // Parameter defaults 
                  new[] { typeof(Controllers.PodcastController).Namespace }
@@ -40,6 +45,7 @@ namespace Teknik.Areas.Podcast
             context.MapSubdomainRoute(
                  "Podcast.Action", // Route name
                  new List<string>() { "dev", "podcast" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "Action/{controller}/{action}",    // URL with parameters 
                  new { controller = "Podcast", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.PodcastController).Namespace }

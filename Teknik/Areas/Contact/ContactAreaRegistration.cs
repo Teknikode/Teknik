@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Optimization;
+using Teknik.Configuration;
 
 namespace Teknik.Areas.Contact
 {
@@ -16,9 +17,11 @@ namespace Teknik.Areas.Contact
 
         public override void RegisterArea(AreaRegistrationContext context)
         {
+            Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Contact.Index", // Route name
                  new List<string>() { "dev", "contact" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ContactController).Namespace }
@@ -26,6 +29,7 @@ namespace Teknik.Areas.Contact
             context.MapSubdomainRoute(
                  "Contact.Action", // Route name
                  new List<string>() { "dev", "contact" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "{action}",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ContactController).Namespace }

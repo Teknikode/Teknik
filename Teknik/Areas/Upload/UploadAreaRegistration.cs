@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Optimization;
+using Teknik.Configuration;
 
 namespace Teknik.Areas.Upload
 {
@@ -16,9 +17,11 @@ namespace Teknik.Areas.Upload
 
         public override void RegisterArea(AreaRegistrationContext context)
         {
+            Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Upload.Index",
                  new List<string>() { "dev", "upload", "u" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "",  
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
@@ -26,6 +29,7 @@ namespace Teknik.Areas.Upload
             context.MapSubdomainRoute(
                  "Upload.Download",
                  new List<string>() { "dev", "upload", "u" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "{file}",
                  new { controller = "Upload", action = "Download", file = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
@@ -33,6 +37,7 @@ namespace Teknik.Areas.Upload
             context.MapSubdomainRoute(
                  "Upload.Delete",
                  new List<string>() { "dev", "upload", "u" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "{file}/{key}",
                  new { controller = "Upload", action = "Delete", file = string.Empty, key = string.Empty },
                  new[] { typeof(Controllers.UploadController).Namespace }
@@ -40,6 +45,7 @@ namespace Teknik.Areas.Upload
             context.MapSubdomainRoute(
                  "Upload.Action",
                  new List<string>() { "dev", "upload", "u" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
                  "Action/{controller}/{action}",
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using Teknik.Configuration;
 
 namespace Teknik.Areas.About
 {
@@ -15,9 +16,11 @@ namespace Teknik.Areas.About
 
         public override void RegisterArea(AreaRegistrationContext context)
         {
+            Config config = Config.Load();
             context.MapSubdomainRoute(
                  "About.Index", // Route name
                  new List<string>() { "dev", "about" },
+                 new List<string>() { config.Host },
                  "",    // URL with parameters 
                  new { controller = "About", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.AboutController).Namespace }
