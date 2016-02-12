@@ -5,12 +5,37 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Security;
+using Teknik.Areas.Profile.Models;
 using Teknik.Configuration;
+using Teknik.Models;
 
 namespace Teknik.Areas.Profile.Utility
 {
     public static class UserHelper
     {
+        public static User GetUser(string username)
+        {
+            TeknikEntities db = new TeknikEntities();
+
+            User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
+
+            return user;
+        }
+
+        public static bool UserExists(string username)
+        {
+            TeknikEntities db = new TeknikEntities();
+            bool exists = false;
+
+            User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
+            if (user != null)
+            {
+                exists = true;
+            }
+
+            return exists;
+        }
+
         public static HttpCookie CreateAuthCookie(string username, bool remember, string domain, bool local)
         {
             Config config = Config.Load();
@@ -18,16 +43,19 @@ namespace Teknik.Areas.Profile.Utility
             authcookie.Name = "TeknikAuth";
             authcookie.HttpOnly = true;
             authcookie.Secure = true;
-            authcookie.Domain = string.Format(".{0}", domain);
-            if (config.DevEnvironment)
+
+            // Set domain dependent on where it's being ran from
+            if (local) // localhost
+            {
+                authcookie.Domain = null;
+            }
+            else if (config.DevEnvironment) // dev.example.com
             {
                 authcookie.Domain = string.Format("dev.{0}", domain);
             }
-            // Make it work for localhost
-            if (local)
+            else // A production instance
             {
-                authcookie.Domain = domain;
-                authcookie.Secure = false;
+                authcookie.Domain = string.Format(".{0}", domain);
             }
 
             return authcookie;

@@ -62,10 +62,6 @@ namespace Teknik
             {
                 context.Response.AppendHeader("Access-Control-Allow-Origin", origin);
             }
-            else if (Request.IsLocal)
-            {
-                context.Response.AppendHeader("Access-Control-Allow-Origin", "*");
-            }
         }
 
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
