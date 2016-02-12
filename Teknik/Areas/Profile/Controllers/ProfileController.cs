@@ -189,8 +189,7 @@ namespace Teknik.Areas.Profile.Controllers
             {
                 if (Config.UserConfig.RegistrationEnabled)
                 {
-                    var foundUser = db.Users.Where(b => b.Username == model.Username).FirstOrDefault();
-                    if (foundUser != null)
+                    if (Utility.UserHelper.UserExists(model.Username))
                     {
                         return Json(new { error = "That username already exists." });
                     }
@@ -275,7 +274,7 @@ namespace Teknik.Areas.Profile.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = db.Users.Where(u => u.Username == User.Identity.Name).First();
+                User user = Utility.UserHelper.GetUser(User.Identity.Name);
                 if (user != null)
                 {
                     string email = string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain);
@@ -427,7 +426,7 @@ namespace Teknik.Areas.Profile.Controllers
                 }
 
                 // Delete User
-                User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                User user = Utility.UserHelper.GetUser(User.Identity.Name);
                 if (user != null)
                 {
                     user.UserSettings = db.UserSettings.Find(user.UserId);

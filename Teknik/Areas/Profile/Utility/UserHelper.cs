@@ -24,16 +24,13 @@ namespace Teknik.Areas.Profile.Utility
 
         public static bool UserExists(string username)
         {
-            TeknikEntities db = new TeknikEntities();
-            bool exists = false;
-
-            User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
+            User user = GetUser(username);
             if (user != null)
             {
-                exists = true;
+                return true;
             }
 
-            return exists;
+            return false;
         }
 
         public static HttpCookie CreateAuthCookie(string username, bool remember, string domain, bool local)
