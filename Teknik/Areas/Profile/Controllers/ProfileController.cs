@@ -435,7 +435,8 @@ namespace Teknik.Areas.Profile.Controllers
                     user.UploadSettings = db.UploadSettings.Find(user.UserId);
                     db.Users.Remove(user);
                     db.SaveChanges();
-                    FormsAuthentication.SignOut();
+                    // Sign Out
+                    Logout();
                     return Json(new { result = true });
                 }
             }
