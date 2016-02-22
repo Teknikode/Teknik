@@ -18,11 +18,19 @@ namespace Teknik.Areas.Shortener
         {
             Config config = Config.Load();
             context.MapSubdomainRoute(
-                 "Stream.Index", // Route name
+                 "Shortener.Index", // Route name
                  new List<string>() { "dev", "shorten", "s" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Shortener", action = "Index" },  // Parameter defaults 
+                 new[] { typeof(Controllers.ShortenerController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Shortener.View", // Route name
+                 new List<string>() { "dev", "*" }, // Subdomains
+                 new List<string>() { config.ShortenerConfig.ShortenerHost }, // domains
+                 "",    // URL with parameters 
+                 new { controller = "Shortener", action = "View" },  // Parameter defaults 
                  new[] { typeof(Controllers.ShortenerController).Namespace }
              );
         }

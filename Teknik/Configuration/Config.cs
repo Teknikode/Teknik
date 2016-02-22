@@ -32,6 +32,7 @@ namespace Teknik.Configuration
         private ApiConfig       _ApiConfig;
         private PodcastConfig   _PodcastConfig;
         private StreamConfig    _StreamConfig;
+        private ShortenerConfig _ShortenerConfig;
         private DatabaseConfig  _DatabaseConfig;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
@@ -77,6 +78,9 @@ namespace Teknik.Configuration
         // Stream Configuration
         public StreamConfig     StreamConfig    { get { return _StreamConfig; }     set { _StreamConfig = value; } }
 
+        // Shortener Configuration
+        public ShortenerConfig  ShortenerConfig { get { return _ShortenerConfig; }  set { _ShortenerConfig = value; } }
+
         // Database Configuration
         public DatabaseConfig   DatabaseConfig  { get { return _DatabaseConfig; }   set { _DatabaseConfig = value; } }
 
@@ -112,6 +116,7 @@ namespace Teknik.Configuration
             ApiConfig       = new ApiConfig();
             PodcastConfig   = new PodcastConfig();
             StreamConfig    = new StreamConfig();
+            ShortenerConfig = new ShortenerConfig();
             DatabaseConfig  = new DatabaseConfig();
         }
 
