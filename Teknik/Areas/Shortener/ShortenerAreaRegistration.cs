@@ -29,8 +29,8 @@ namespace Teknik.Areas.Shortener
                  "Shortener.View", // Route name
                  new List<string>() { "dev", "*" }, // Subdomains
                  new List<string>() { config.ShortenerConfig.ShortenerHost }, // domains
-                 "",    // URL with parameters 
-                 new { controller = "Shortener", action = "View" },  // Parameter defaults 
+                 "{url}",    // URL with parameters 
+                 new { controller = "Shortener", action = "RedirectToUrl" },  // Parameter defaults 
                  new[] { typeof(Controllers.ShortenerController).Namespace }
              );
         }

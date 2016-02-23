@@ -9,6 +9,7 @@ using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Paste.Models;
 using Teknik.Areas.Podcast.Models;
 using Teknik.Areas.Transparency.Models;
+using Teknik.Areas.Shortener.Models;
 
 namespace Teknik.Models
 {
@@ -39,6 +40,8 @@ namespace Teknik.Models
         // Transparency
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Takedown> Takedowns { get; set; }
+        // Url Shortener
+        public DbSet<ShortenedUrl> ShortenedUrls { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -108,6 +111,8 @@ namespace Teknik.Models
             // Transparency
             modelBuilder.Entity<Transaction>().ToTable("Transactions");
             modelBuilder.Entity<Takedown>().ToTable("Takedowns");
+            // Shortened Urls
+            modelBuilder.Entity<ShortenedUrl>().ToTable("ShortenedUrls");
 
             base.OnModelCreating(modelBuilder);
         }

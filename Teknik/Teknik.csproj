@@ -208,7 +208,9 @@
     <Compile Include="Areas\RSS\Controllers\RSSController.cs" />
     <Compile Include="Areas\RSS\RSSAreaRegistration.cs" />
     <Compile Include="Areas\Shortener\Controllers\ShortenerController.cs" />
+    <Compile Include="Areas\Shortener\Models\ShortenedUrl.cs" />
     <Compile Include="Areas\Shortener\ShortenerAreaRegistration.cs" />
+    <Compile Include="Areas\Shortener\ViewModels\ShortenViewModel.cs" />
     <Compile Include="Areas\Stream\Controllers\StreamController.cs" />
     <Compile Include="Areas\Stream\StreamAreaRegistration.cs" />
     <Compile Include="Areas\Stream\ViewModels\StreamViewModel.cs" />
@@ -479,6 +481,8 @@
     <Content Include="Areas\Stream\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Stream\Views\Stream\Index.cshtml" />
     <Content Include="Areas\Shortener\Views\web.config" />
+    <Content Include="Areas\Shortener\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Shortener\Views\Shortener\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -569,9 +573,7 @@
     <Folder Include="Areas\Privacy\Models\" />
     <Folder Include="Areas\Privacy\Views\Shared\" />
     <Folder Include="Areas\Profile\Views\Shared\" />
-    <Folder Include="Areas\Shortener\Models\" />
     <Folder Include="Areas\Shortener\Views\Shared\" />
-    <Folder Include="Areas\Shortener\Views\Shortener\" />
     <Folder Include="Areas\Stream\Views\Shared\" />
     <Folder Include="Areas\Transparency\Views\Shared\" />
     <Folder Include="Areas\Upload\Views\Shared\" />
