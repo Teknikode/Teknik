@@ -52,6 +52,7 @@
                     <li><a href="#about" data-toggle="tab"> About Myself </a></li>
                     <li><a href="#uploads" data-toggle="tab"> Uploads </a></li>
                     <li><a href="#pastes" data-toggle="tab"> Pastes </a></li>
+                    <li><a href="#shortenedUrls" data-toggle="tab"> Shotened Urls </a></li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="about">
@@ -96,7 +97,7 @@
                         {
                             <div class="panel panel-default">
                                 <div class="panel-heading text-center">
-                                    <a href="@Url.SubRouteUrl("paste", "Paste.View", new { url = paste.Url })">@paste.Title</a>
+                                    <a href="@Url.SubRouteUrl("paste", "Paste.View", new { url = paste.Url })">@(string.IsNullOrEmpty(paste.Title) ? "Untitled Paste" : paste.Title)</a>
                                 </div>
                                 <div class="panel-body">
                                     <div class="col-sm-2 text-center">
@@ -125,6 +126,30 @@
                                     <div class="col-sm-2 text-center">
                                         <label for="views">Views</label>
                                         <p id="views">@paste.Views</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="tab-pane" id="shortenedUrls">
+                        @foreach (Teknik.Areas.Shortener.Models.ShortenedUrl url in Model.ShortenedUrls)
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading text-center">
+                                    <a href="@url.ShortUrl">@url.OriginalUrl</a>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="col-sm-5 text-center">
+                                        <label for="shortUrl">Short Url</label>
+                                        <p id="shortUrl">@url.ShortUrl</p>
+                                    </div>
+                                    <div class="col-sm-5 text-center">
+                                        <label for="dateAdded">Date Added</label>
+                                        <p id="dateAdded"><time datetime="@url.DateAdded.ToString("o")">@url.DateAdded.ToString("MMMM dd, yyyy")</time></p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="views">Views</label>
+                                        <p id="views">@url.Views</p>
                                     </div>
                                 </div>
                             </div>

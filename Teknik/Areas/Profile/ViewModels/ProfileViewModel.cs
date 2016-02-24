@@ -23,6 +23,8 @@ namespace Teknik.Areas.Profile.ViewModels
 
         public List<Paste.Models.Paste> Pastes { get; set; }
 
+        public List<Shortener.Models.ShortenedUrl> ShortenedUrls { get; set; }
+
         public UserSettings UserSettings { get; set; }
 
         public BlogSettings BlogSettings { get; set; }

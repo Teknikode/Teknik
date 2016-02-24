@@ -61,6 +61,8 @@ namespace Teknik.Areas.Profile.Controllers
 
                 model.Pastes = db.Pastes.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DatePosted).ToList();
 
+                model.ShortenedUrls = db.ShortenedUrls.Where(s => s.UserId == user.UserId).OrderByDescending(s => s.DateAdded).ToList();
+
                 return View(model);
             }
             model.Error = true;
