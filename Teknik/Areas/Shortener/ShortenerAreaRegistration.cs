@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Web.Optimization;
 using Teknik.Configuration;
 
 namespace Teknik.Areas.Shortener
@@ -29,7 +30,7 @@ namespace Teknik.Areas.Shortener
                  "Shortener.Action", // Route name
                  new List<string>() { "dev", "shorten", "s" }, // Subdomains
                  new List<string>() { config.Host }, // domains
-                 "Action/{controller}/{action}",    // URL with parameters 
+                 "Action/{action}",    // URL with parameters 
                  new { controller = "Shortener", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.ShortenerController).Namespace }
              );
@@ -41,6 +42,10 @@ namespace Teknik.Areas.Shortener
                  new { controller = "Shortener", action = "RedirectToUrl" },  // Parameter defaults 
                  new[] { typeof(Controllers.ShortenerController).Namespace }
              );
+
+            // Register Script Bundles
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/shortener").Include(
+                      "~/Areas/Shortener/Scripts/Shortener.js"));
         }
     }
 }

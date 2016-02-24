@@ -24,6 +24,7 @@ namespace Teknik.Areas.Shortener
             ShortenedUrl newUrl = new ShortenedUrl();
             newUrl.OriginalUrl = url;
             newUrl.ShortUrl = shortUrl;
+            newUrl.DateAdded = DateTime.Now;
 
             return newUrl;
         }

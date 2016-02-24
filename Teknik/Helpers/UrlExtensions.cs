@@ -170,5 +170,16 @@ namespace Teknik
             }
             return string.Empty;
         }
+
+        public static bool IsValidUrl(this string url)
+        {
+            Uri uriResult;
+            bool result = Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uriResult);
+            if (result)
+            {
+                result = uriResult.IsWellFormedOriginalString();
+            }
+            return result;
+        }
     }
 }
