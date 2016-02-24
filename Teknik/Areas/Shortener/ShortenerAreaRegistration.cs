@@ -26,6 +26,14 @@ namespace Teknik.Areas.Shortener
                  new[] { typeof(Controllers.ShortenerController).Namespace }
              );
             context.MapSubdomainRoute(
+                 "Shortener.Action", // Route name
+                 new List<string>() { "dev", "shorten", "s" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "Action/{controller}/{action}",    // URL with parameters 
+                 new { controller = "Shortener", action = "Index" },  // Parameter defaults 
+                 new[] { typeof(Controllers.ShortenerController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Shortener.View", // Route name
                  new List<string>() { "dev", "*" }, // Subdomains
                  new List<string>() { config.ShortenerConfig.ShortenerHost }, // domains

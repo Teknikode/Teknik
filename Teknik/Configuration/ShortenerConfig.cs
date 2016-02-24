@@ -9,9 +9,12 @@ namespace Teknik.Configuration
     {
         public string ShortenerHost { get; set; }
 
+        public int UrlLength { get; set; }
+
         public ShortenerConfig()
         {
             ShortenerHost = string.Empty;
+            UrlLength = 4;
         }
     }
 }

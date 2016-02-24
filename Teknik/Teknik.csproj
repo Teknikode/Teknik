@@ -210,6 +210,7 @@
     <Compile Include="Areas\Shortener\Controllers\ShortenerController.cs" />
     <Compile Include="Areas\Shortener\Models\ShortenedUrl.cs" />
     <Compile Include="Areas\Shortener\ShortenerAreaRegistration.cs" />
+    <Compile Include="Areas\Shortener\Shortener.cs" />
     <Compile Include="Areas\Shortener\ViewModels\ShortenViewModel.cs" />
     <Compile Include="Areas\Stream\Controllers\StreamController.cs" />
     <Compile Include="Areas\Stream\StreamAreaRegistration.cs" />

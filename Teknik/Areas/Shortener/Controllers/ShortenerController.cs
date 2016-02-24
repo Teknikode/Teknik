@@ -31,10 +31,24 @@ namespace Teknik.Areas.Shortener.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public ActionResult ShortenUrl(string url)
         {
+            ShortenedUrl newUrl = Shortener.ShortenUrl(url, Config.ShortenerConfig.UrlLength);
 
-            return Json(new { result = true });
+            if (User.Identity.IsAuthenticated)
+            {
+                Profile.Models.User foundUser = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                if (foundUser != null)
+                {
+                    newUrl.UserId = foundUser.UserId;
+                }
+            }
+
+            db.ShortenedUrls.Add(newUrl);
+            db.SaveChanges();
+
+            return Json(new { result = new { shortUrl = newUrl.ShortUrl, originalUrl = url } });
         }
     }
 }
