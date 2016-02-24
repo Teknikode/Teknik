@@ -15,8 +15,9 @@ function linkSaveKey(selector, uploadID, key, fileID) {
             success: function (html) {
                 if (html.result) {
                     $('#key-link-' + fileID).html('<button type="button" class="btn btn-default btn-sm" id="remove-key-link-' + fileID + '">Remove Key From Server</button>');
-                    $('#upload-link-' + fileID).html('<p><a href="' + html.result + '" target="_blank" class="alert-link">' + html.result + '</a></p>');
+                    $('#upload-link-' + fileID).html('<p><a href="' + html.result + '" id="full-url-link-' + fileID + '" target="_blank" class="alert-link">' + html.result + '</a></p>');
                     linkRemoveKey('#remove-key-link-' + fileID + '', uploadID, key, fileID);
+                    $('#shortenUrl-button-' + fileID).prop('disabled', false);
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
@@ -37,8 +38,9 @@ function linkRemoveKey(selector, uploadID, key, fileID) {
             success: function (html) {
                 if (html.result) {
                     $('#key-link-' + fileID).html('<button type="button" class="btn btn-default btn-sm" id="save-key-link-' + fileID + '">Save Key To Server</button>');
-                    $('#upload-link-' + fileID).html('<p><a href="' + html.result + '#' + key + '" target="_blank" class="alert-link">' + html.result + '#' + key + '</a></p>');
+                    $('#upload-link-' + fileID).html('<p><a href="' + html.result + '#' + key + '" id="full-url-link-' + fileID + '" target="_blank" class="alert-link">' + html.result + '#' + key + '</a></p>');
                     linkSaveKey('#save-key-link-' + fileID + '', uploadID, key, fileID);
+                    $('#shortenUrl-button-' + fileID).prop('disabled', false);
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
@@ -76,6 +78,7 @@ function linkUploadDelete(selector, uploadID) {
 
 function linkShortenUrl(selector, fileID, url) {
     $(selector).click(function () {
+        var url = $('#full-url-link-' + fileID).html();
         $.ajax({
             type: "POST",
             url: shortenURL,
@@ -83,7 +86,7 @@ function linkShortenUrl(selector, fileID, url) {
             success: function (html) {
                 if (html.result) {
                     $(selector).prop('disabled', true);
-                    $('#upload-link-' + fileID).html('<p><a href="' + html.result.shortUrl + '" target="_blank" class="alert-link">' + html.result.shortUrl + '</a></p>');
+                    $('#upload-link-' + fileID).html('<p><a href="' + html.result.shortUrl + '" id="full-url-link-' + fileID + '" target="_blank" class="alert-link">' + html.result.shortUrl + '</a></p>');
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
@@ -296,7 +299,7 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
     }
     $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
     $('#progress-' + fileID).children('.progress-bar').html('Complete');
-    $('#upload-link-' + fileID).html('<p><a href="' + fullName + '" target="_blank" class="alert-link">' + fullName + '</a></p>');
+    $('#upload-link-' + fileID).html('<p><a href="' + fullName + '" id="full-url-link-' + fileID + '" target="_blank" class="alert-link">' + fullName + '</a></p>');
     var keyBtn = '<div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
                     <button type="button" class="btn btn-default btn-sm" id="save-key-link-' + fileID + '">Save Key On Server</button> \
                 </div>';
