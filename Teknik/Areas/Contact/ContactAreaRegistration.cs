@@ -20,7 +20,7 @@ namespace Teknik.Areas.Contact
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Contact.Index", // Route name
-                 new List<string>() { "dev", "contact" }, // Subdomains
+                 new List<string>() { "contact" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 
@@ -28,7 +28,7 @@ namespace Teknik.Areas.Contact
              );
             context.MapSubdomainRoute(
                  "Contact.Action", // Route name
-                 new List<string>() { "dev", "contact" }, // Subdomains
+                 new List<string>() { "contact" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "{action}",    // URL with parameters 
                  new { controller = "Contact", action = "Index" },  // Parameter defaults 

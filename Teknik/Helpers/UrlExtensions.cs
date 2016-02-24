@@ -174,7 +174,7 @@ namespace Teknik
         public static bool IsValidUrl(this string url)
         {
             Uri uriResult;
-            bool result = Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uriResult);
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
             if (result)
             {
                 result = uriResult.IsWellFormedOriginalString();

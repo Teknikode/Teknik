@@ -31,7 +31,7 @@ namespace Teknik.Areas.Shortener.Controllers
                 shortUrl.Views += 1;
                 db.Entry(shortUrl).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToUrl(shortUrl.OriginalUrl);
+                return Redirect(shortUrl.OriginalUrl);
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
@@ -56,11 +56,17 @@ namespace Teknik.Areas.Shortener.Controllers
                 db.ShortenedUrls.Add(newUrl);
                 db.SaveChanges();
 
-                return Json(new { result = new { shortUrl = string.Format("http://{0}/{1}", Config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl), originalUrl = url } });
+                string shortUrl = Url.SubRouteUrl(string.Empty, "Shortener.View", new { url = newUrl.ShortUrl });
+                if (Config.DevEnvironment)
+                {
+                    shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
+                }
+
+                return Json(new { result = new { shortUrl = shortUrl, originalUrl = url } });
             }
             else
             {
-                return Json(new { error = "Must be a valid HTTP or HTTPS Url" });
+                return Json(new { error = "Must be a valid Url" });
             }
         }
     }

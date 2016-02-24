@@ -20,7 +20,7 @@ namespace Teknik.Areas.Blog
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Blog.Blog", // Route name
-                 new List<string>() { "dev", "blog" }, // Subdomains
+                 new List<string>() { "blog" }, // Subdomains
                  new List<string>() { config.Host },
                  "{username}",    // URL with parameters 
                  new { controller = "Blog", action = "Blog", username = string.Empty },  // Parameter defaults 
@@ -28,7 +28,7 @@ namespace Teknik.Areas.Blog
              );
             context.MapSubdomainRoute(
                  "Blog.Post", // Route name
-                 new List<string>() { "dev", "blog" }, // Subdomains
+                 new List<string>() { "blog" }, // Subdomains
                  new List<string>() { config.Host },
                  "{username}/{id}",    // URL with parameters 
                  new { controller = "Blog", action = "Post", username = "", id = 0 },  // Parameter defaults 
@@ -36,7 +36,7 @@ namespace Teknik.Areas.Blog
              );
             context.MapSubdomainRoute(
                  "Blog.Action", // Route name
-                 new List<string>() { "dev", "blog" }, // Subdomains
+                 new List<string>() { "blog" }, // Subdomains
                  new List<string>() { config.Host },
                  "Action/{controller}/{action}",    // URL with parameters 
                  new { controller = "Blog", action = "Blog" },  // Parameter defaults 

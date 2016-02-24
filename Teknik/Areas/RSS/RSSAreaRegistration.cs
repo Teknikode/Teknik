@@ -19,7 +19,7 @@ namespace Teknik.Areas.RSS
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "RSS.Index", // Route name
-                 new List<string>() { "dev", "rss" },
+                 new List<string>() { "rss" },
                  new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "RSS", action = "Index" },  // Parameter defaults 
@@ -27,7 +27,7 @@ namespace Teknik.Areas.RSS
              );
             context.MapSubdomainRoute(
                  "RSS.Blog", // Route name
-                 new List<string>() { "dev", "rss" },
+                 new List<string>() { "rss" },
                  new List<string>() { config.Host }, // domains
                  "Blog/{username}",    // URL with parameters 
                  new { controller = "RSS", action = "Blog", username = UrlParameter.Optional },  // Parameter defaults 
@@ -35,7 +35,7 @@ namespace Teknik.Areas.RSS
              );
             context.MapSubdomainRoute(
                  "RSS.Podcast", // Route name
-                 new List<string>() { "dev", "rss" },
+                 new List<string>() { "rss" },
                  new List<string>() { config.Host }, // domains
                  "Podcast",    // URL with parameters 
                  new { controller = "RSS", action = "Podcast" },  // Parameter defaults 

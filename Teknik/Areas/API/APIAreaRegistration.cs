@@ -21,7 +21,7 @@ namespace Teknik.Areas.API
             // Base Routing
             context.MapSubdomainRoute(
                  "API.v1.Index", // Route name
-                 new List<string>() { "dev", "api" },
+                 new List<string>() { "api" },
                  new List<string>() { config.Host },
                  "v1",    // URL with parameters 
                  new { controller = "APIv1", action = "Index" },  // Parameter defaults 
@@ -30,7 +30,7 @@ namespace Teknik.Areas.API
             // Uploads
             context.MapSubdomainRoute(
                  "API.v1.Upload", // Route name
-                 new List<string>() { "dev", "api" },
+                 new List<string>() { "api" },
                  new List<string>() { config.Host },
                  "v1/Upload",    // URL with parameters 
                  new { controller = "APIv1", action = "Upload" },  // Parameter defaults 
@@ -38,7 +38,7 @@ namespace Teknik.Areas.API
              );
             context.MapSubdomainRoute(
                  "API.v1.Paste", // Route name
-                 new List<string>() { "dev", "api" },
+                 new List<string>() { "api" },
                  new List<string>() { config.Host },
                  "v1/Paste",    // URL with parameters 
                  new { controller = "APIv1", action = "Paste" },  // Parameter defaults 
@@ -49,7 +49,7 @@ namespace Teknik.Areas.API
             // Default Routing
             context.MapSubdomainRoute(
                  "API.Index", // Route name
-                 new List<string>() { "dev", "" },
+                 new List<string>() { "api" },
                  new List<string>() { config.Host },
                  "",    // URL with parameters 
                  new { controller = "API", action = "Index" },  // Parameter defaults 

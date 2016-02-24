@@ -20,7 +20,7 @@ namespace Teknik.Areas.Shortener
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Shortener.Index", // Route name
-                 new List<string>() { "dev", "shorten", "s" }, // Subdomains
+                 new List<string>() { "shorten", "s" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Shortener", action = "Index" },  // Parameter defaults 
@@ -28,7 +28,7 @@ namespace Teknik.Areas.Shortener
              );
             context.MapSubdomainRoute(
                  "Shortener.Action", // Route name
-                 new List<string>() { "dev", "shorten", "s" }, // Subdomains
+                 new List<string>() { "shorten", "s" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Action/{action}",    // URL with parameters 
                  new { controller = "Shortener", action = "Index" },  // Parameter defaults 
@@ -36,7 +36,7 @@ namespace Teknik.Areas.Shortener
              );
             context.MapSubdomainRoute(
                  "Shortener.View", // Route name
-                 new List<string>() { "dev", "*" }, // Subdomains
+                 new List<string>() { string.Empty, "shortened" }, // Subdomains
                  new List<string>() { config.ShortenerConfig.ShortenerHost }, // domains
                  "{url}",    // URL with parameters 
                  new { controller = "Shortener", action = "RedirectToUrl" },  // Parameter defaults 

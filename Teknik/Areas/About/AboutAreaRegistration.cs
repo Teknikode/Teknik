@@ -19,7 +19,7 @@ namespace Teknik.Areas.About
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "About.Index", // Route name
-                 new List<string>() { "dev", "about" },
+                 new List<string>() { "about" },
                  new List<string>() { config.Host },
                  "",    // URL with parameters 
                  new { controller = "About", action = "Index" },  // Parameter defaults 

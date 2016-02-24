@@ -20,7 +20,7 @@ namespace Teknik.Areas.Profile
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Profile.Login", // Route name
-                 new List<string>() { "dev", "profile", "www", string.Empty }, // Subdomains
+                 new List<string>() { "profile" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Login",    // URL with parameters 
                  new { controller = "Profile", action = "Login" },  // Parameter defaults 
@@ -28,7 +28,7 @@ namespace Teknik.Areas.Profile
             );
             context.MapSubdomainRoute(
                  "Profile.Logout", // Route name
-                 new List<string>() { "dev", "profile", "www", string.Empty }, // Subdomains
+                 new List<string>() { "profile" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Logout",    // URL with parameters 
                  new { controller = "Profile", action = "Logout" },  // Parameter defaults 
@@ -36,7 +36,7 @@ namespace Teknik.Areas.Profile
             );
             context.MapSubdomainRoute(
                  "Profile.Register", // Route name
-                 new List<string>() { "dev", "profile", "www", string.Empty }, // Subdomains
+                 new List<string>() { "profile" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Register",    // URL with parameters 
                  new { controller = "Profile", action = "Register" },  // Parameter defaults 
@@ -44,7 +44,7 @@ namespace Teknik.Areas.Profile
             );
             context.MapSubdomainRoute(
                  "Profile.Settings", // Route name
-                 new List<string>() { "dev", "profile" }, // Subdomains
+                 new List<string>() { "profile" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Settings",    // URL with parameters 
                  new { controller = "Profile", action = "Settings" },  // Parameter defaults 
@@ -52,7 +52,7 @@ namespace Teknik.Areas.Profile
             );
             context.MapSubdomainRoute(
                  "Profile.Index", // Route name
-                 new List<string>() { "dev", "profile" }, // Subdomains
+                 new List<string>() { "profile" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "{username}",    // URL with parameters 
                  new { controller = "Profile", action = "Index", username = UrlParameter.Optional },  // Parameter defaults 
@@ -60,7 +60,7 @@ namespace Teknik.Areas.Profile
             );
             context.MapSubdomainRoute(
                  "Profile.Action", // Route name
-                 new List<string>() { "dev", "profile" }, // Subdomains
+                 new List<string>() { "profile" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Action/{action}",    // URL with parameters 
                  new { controller = "Profile", action = "Index" },  // Parameter defaults 

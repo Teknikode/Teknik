@@ -19,7 +19,7 @@ namespace Teknik.Areas.Stream
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Stream.Index", // Route name
-                 new List<string>() { "dev", "stream" }, // Subdomains
+                 new List<string>() { "stream" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Stream", action = "Index" },  // Parameter defaults 

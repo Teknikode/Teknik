@@ -19,7 +19,7 @@ namespace Teknik.Areas.Privacy
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Privacy.Index", // Route name
-                 new List<string>() { "dev", "privacy" }, // Subdomains
+                 new List<string>() { "privacy" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Privacy", action = "Index" },  // Parameter defaults 

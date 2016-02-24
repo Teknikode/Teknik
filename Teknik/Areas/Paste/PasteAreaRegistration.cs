@@ -20,7 +20,7 @@ namespace Teknik.Areas.Paste
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Paste.Index", // Route name
-                 new List<string>() { "dev", "paste", "p" },
+                 new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Paste", action = "Index" },  // Parameter defaults 
@@ -28,7 +28,7 @@ namespace Teknik.Areas.Paste
              );
             context.MapSubdomainRoute(
                  "Paste.Simple", // Route name
-                 new List<string>() { "dev", "paste", "p" },
+                 new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
                  "Simple/{url}/{password}",    // URL with parameters 
                  new { controller = "Paste", action = "ViewPaste", type = "Simple", password = UrlParameter.Optional },  // Parameter defaults 
@@ -36,7 +36,7 @@ namespace Teknik.Areas.Paste
              );
             context.MapSubdomainRoute(
                  "Paste.Raw", // Route name
-                 new List<string>() { "dev", "paste", "p" },
+                 new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
                  "Raw/{url}/{password}",    // URL with parameters 
                  new { controller = "Paste", action = "ViewPaste", type = "Raw", password = UrlParameter.Optional },  // Parameter defaults 
@@ -44,7 +44,7 @@ namespace Teknik.Areas.Paste
              );
             context.MapSubdomainRoute(
                  "Paste.Download", // Route name
-                 new List<string>() { "dev", "paste", "p" },
+                 new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
                  "Download/{url}/{password}",    // URL with parameters 
                  new { controller = "Paste", action = "ViewPaste", type = "Download", password = UrlParameter.Optional },  // Parameter defaults 
@@ -52,7 +52,7 @@ namespace Teknik.Areas.Paste
              );
             context.MapSubdomainRoute(
                  "Paste.Action", // Route name
-                 new List<string>() { "dev", "paste", "p" },
+                 new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
                  "Action/{action}",    // URL with parameters 
                  new { controller = "Paste", action = "Index" },  // Parameter defaults 
@@ -60,7 +60,7 @@ namespace Teknik.Areas.Paste
              );
             context.MapSubdomainRoute(
                  "Paste.View", // Route name
-                 new List<string>() { "dev", "paste", "p" },
+                 new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
                  "{url}/{password}",    // URL with parameters 
                  new { controller = "Paste", action = "ViewPaste", type = "Full", password = UrlParameter.Optional },  // Parameter defaults 

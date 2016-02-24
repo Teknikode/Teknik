@@ -20,7 +20,7 @@ namespace Teknik.Areas.Help
             Config config = Config.Load();
             context.MapSubdomainRoute(
                  "Help.Index", // Route name
-                 new List<string>() { "dev", "help" }, // Subdomains
+                 new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "",    // URL with parameters 
                  new { controller = "Help", action = "Index" },  // Parameter defaults 
@@ -28,7 +28,7 @@ namespace Teknik.Areas.Help
              );
             context.MapSubdomainRoute(
                  "Help.API", // Route name
-                 new List<string>() { "dev", "help" }, // Subdomains
+                 new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "API/{version}/{service}",    // URL with parameters 
                  new { controller = "Help", action = "API", version = UrlParameter.Optional, service = UrlParameter.Optional },  // Parameter defaults 
@@ -36,7 +36,7 @@ namespace Teknik.Areas.Help
              );
             context.MapSubdomainRoute(
                  "Help.Blog", // Route name
-                 new List<string>() { "dev", "help" }, // Subdomains
+                 new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Blog",    // URL with parameters 
                  new { controller = "Help", action = "Blog" },  // Parameter defaults 
@@ -44,7 +44,7 @@ namespace Teknik.Areas.Help
              );
             context.MapSubdomainRoute(
                  "Help.Git", // Route name
-                 new List<string>() { "dev", "help" }, // Subdomains
+                 new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Git",    // URL with parameters 
                  new { controller = "Help", action = "Git" },  // Parameter defaults 
@@ -52,7 +52,7 @@ namespace Teknik.Areas.Help
              );
             context.MapSubdomainRoute(
                  "Help.IRC", // Route name
-                 new List<string>() { "dev", "help" }, // Subdomains
+                 new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "IRC",    // URL with parameters 
                  new { controller = "Help", action = "IRC" },  // Parameter defaults 
@@ -60,7 +60,7 @@ namespace Teknik.Areas.Help
              );
             context.MapSubdomainRoute(
                  "Help.Mail", // Route name
-                 new List<string>() { "dev", "help" }, // Subdomains
+                 new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Mail",    // URL with parameters 
                  new { controller = "Help", action = "Mail" },  // Parameter defaults 
@@ -68,7 +68,7 @@ namespace Teknik.Areas.Help
              );
             context.MapSubdomainRoute(
                  "Help.Mumble", // Route name
-                 new List<string>() { "dev", "help" }, // Subdomains
+                 new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Mumble",    // URL with parameters 
                  new { controller = "Help", action = "Mumble" },  // Parameter defaults 
@@ -76,7 +76,7 @@ namespace Teknik.Areas.Help
              );
             context.MapSubdomainRoute(
                  "Help.RSS", // Route name
-                 new List<string>() { "dev", "help" }, // Subdomains
+                 new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "RSS",    // URL with parameters 
                  new { controller = "Help", action = "RSS" },  // Parameter defaults 
@@ -84,7 +84,7 @@ namespace Teknik.Areas.Help
              );
             context.MapSubdomainRoute(
                  "Help.Upload", // Route name
-                 new List<string>() { "dev", "help" }, // Subdomains
+                 new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Upload",    // URL with parameters 
                  new { controller = "Help", action = "Upload" },  // Parameter defaults 
