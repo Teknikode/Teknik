@@ -11,6 +11,7 @@ using Teknik.Controllers;
 using Teknik.Helpers;
 using Teknik.Models;
 using System.Text;
+using Teknik.Areas.Shortener.Models;
 
 namespace Teknik.Areas.API.Controllers
 {
@@ -132,8 +133,11 @@ namespace Teknik.Areas.API.Controllers
 
                 db.Pastes.Add(paste);
                 db.SaveChanges();
-                
-                return Json(new { result = new {
+
+                return Json(new
+                {
+                    result = new
+                    {
                         id = paste.Url,
                         url = Url.SubRouteUrl("paste", "Paste.View", new { type = "Full", url = paste.Url, password = password }),
                         title = paste.Title,
@@ -147,6 +151,33 @@ namespace Teknik.Areas.API.Controllers
             {
                 return Json(new { error = new { message = "Exception: " + ex.Message } });
             }
+        }
+
+        public ActionResult Shorten(string url)
+        {
+            if (url.IsValidUrl())
+            {
+                ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(url, Config.ShortenerConfig.UrlLength);
+
+                db.ShortenedUrls.Add(newUrl);
+                db.SaveChanges();
+
+                string shortUrl = Url.SubRouteUrl(string.Empty, "Shortener.View", new { url = newUrl.ShortUrl });
+                if (Config.DevEnvironment)
+                {
+                    shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
+                }
+
+                return Json(new
+                {
+                    result = new
+                    {
+                        shortUrl = shortUrl,
+                        originalUrl = url
+                    }
+                });
+            }
+            return Json(new { error = new { message = "Must be a valid Url" } });
         }
     }
 }

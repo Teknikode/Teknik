@@ -1,0 +1,81 @@
+﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
+
+@Styles.Render("~/Content/help");
+
+<div class="container">
+    <div class="row api">
+        <h2><b>Url Shortening Service</b></h2>
+        <hr>
+        <p>This is a description of the API commands available for the Url Shortening service.</p>
+        <h3>Shorten a Url</h3>
+        <pre><code>POST @Url.SubRouteUrl("api", "API.v1.Shortener")</code></pre>
+        <h4>Parameters</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>url</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>NULL</var>
+                    </td>
+                    <td>
+                        <strong>Required</strong>
+                        The url you want to shorten.  This url must be an absolute url.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>Response</h4>
+        <pre><code>{"result":{"shortUrl":"<var>shortened url</var>", "originalUrl":"<var>original url</var>"}}</code></pre>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>shortUrl</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The shortened url.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>originalUrl</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        The original url that was shortened.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>Example</h4>
+        <pre><code>$ curl --data "url=http://www.example.com/long/url/is/long" @Url.SubRouteUrl("api", "API.v1.Shortener")</code></pre>
+        <p>
+            This will shorten the supplied url.
+        </p>
+    </div>
+</div>

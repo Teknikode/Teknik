@@ -485,6 +485,7 @@
     <Content Include="Areas\Shortener\Views\web.config" />
     <Content Include="Areas\Shortener\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Shortener\Views\Shortener\Index.cshtml" />
+    <Content Include="Areas\Help\Views\Help\API\v1\Shorten.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

@@ -64,10 +64,7 @@ namespace Teknik.Areas.Shortener.Controllers
 
                 return Json(new { result = new { shortUrl = shortUrl, originalUrl = url } });
             }
-            else
-            {
-                return Json(new { error = "Must be a valid Url" });
-            }
+            return Json(new { error = "Must be a valid Url" });
         }
     }
 }

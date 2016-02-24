@@ -14,8 +14,13 @@
                     $('#url').val(html.result.shortUrl);
                 }
                 else {
+                    var errorMsg = "Invalid Url";
+                    if (html.error)
+                    {
+                        errorMsg = html.error;
+                    }
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
                 }
                 $('#url').focus();
                 $('#url').select();

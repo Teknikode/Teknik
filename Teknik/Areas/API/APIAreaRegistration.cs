@@ -36,12 +36,22 @@ namespace Teknik.Areas.API
                  new { controller = "APIv1", action = "Upload" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
+            // Pastes
             context.MapSubdomainRoute(
                  "API.v1.Paste", // Route name
                  new List<string>() { "api" },
                  new List<string>() { config.Host },
                  "v1/Paste",    // URL with parameters 
                  new { controller = "APIv1", action = "Paste" },  // Parameter defaults 
+                 new[] { typeof(Controllers.APIv1Controller).Namespace }
+             );
+            // Url Shortening
+            context.MapSubdomainRoute(
+                 "API.v1.Shortener", // Route name
+                 new List<string>() { "api" },
+                 new List<string>() { config.Host },
+                 "v1/Shorten",    // URL with parameters 
+                 new { controller = "APIv1", action = "Shorten" },  // Parameter defaults 
                  new[] { typeof(Controllers.APIv1Controller).Namespace }
              );
             #endregion
