@@ -5,14 +5,15 @@
 <script>
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
-    var generateDeleteKeyURL = '@Url.SubRouteUrl(Request.Url.Authority.GetSubdomain(), "Upload.Action", new { action= "GenerateDeleteKey" })';
-    var saveKeyToServerURL = '@Url.SubRouteUrl(Request.Url.Authority.GetSubdomain(), "Upload.Action", new { action= "SaveFileKey" })';
-    var removeKeyFromServerURL = '@Url.SubRouteUrl(Request.Url.Authority.GetSubdomain(), "Upload.Action", new { action= "RemoveFileKey" })';
-    var uploadFileURL = '@Url.SubRouteUrl(Request.Url.Authority.GetSubdomain(), "Upload.Action", new { action = "Upload" })';
+    var generateDeleteKeyURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action= "GenerateDeleteKey" })';
+    var saveKeyToServerURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action= "SaveFileKey" })';
+    var removeKeyFromServerURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action= "RemoveFileKey" })';
+    var uploadFileURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action = "Upload" })';
     var maxUploadSize = @Model.Config.UploadConfig.MaxUploadSize;
     var chunkSize = @Model.Config.UploadConfig.ChunkSize;
     var keySize = @Model.Config.UploadConfig.KeySize;
     var blockSize = @Model.Config.UploadConfig.BlockSize;
+    var shortenURL = '@Url.SubRouteUrl("shorten", "Shortener.Action", new { action= "ShortenUrl" })';
 </script>
 
 @Styles.Render("~/Content/upload")

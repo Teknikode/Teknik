@@ -25,6 +25,7 @@ namespace Teknik.Areas.Upload.Controllers
         {
             ViewBag.Title = "Teknik Upload - End to End Encryption";
             UploadViewModel model = new UploadViewModel();
+            model.CurrentSub = Subdomain;
             Areas.Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
             if (user != null)
             {

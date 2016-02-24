@@ -134,14 +134,19 @@
                     <div class="tab-pane" id="shortenedUrls">
                         @foreach (Teknik.Areas.Shortener.Models.ShortenedUrl url in Model.ShortenedUrls)
                         {
+                            string shortUrl = Url.SubRouteUrl(string.Empty, "Shortener.View", new { url = url.ShortUrl });
+                            if (Model.Config.DevEnvironment)
+                            {
+                                shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = url.ShortUrl });
+                            }
                             <div class="panel panel-default">
                                 <div class="panel-heading text-center">
-                                    <a href="@url.ShortUrl">@url.OriginalUrl</a>
+                                    <a href="@shortUrl">@shortUrl</a>
                                 </div>
                                 <div class="panel-body">
                                     <div class="col-sm-5 text-center">
                                         <label for="shortUrl">Short Url</label>
-                                        <p id="shortUrl">@url.ShortUrl</p>
+                                        <p id="shortUrl"><a href="@url.OriginalUrl">@url.OriginalUrl</a></p>
                                     </div>
                                     <div class="col-sm-5 text-center">
                                         <label for="dateAdded">Date Added</label>

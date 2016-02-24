@@ -74,6 +74,27 @@ function linkUploadDelete(selector, uploadID) {
     });
 }
 
+function linkShortenUrl(selector, fileID, url) {
+    $(selector).click(function () {
+        $.ajax({
+            type: "POST",
+            url: shortenURL,
+            data: { url: url },
+            success: function (html) {
+                if (html.result) {
+                    $(selector).prop('disabled', true);
+                    $('#upload-link-' + fileID).html('<p><a href="' + html.result.shortUrl + '" target="_blank" class="alert-link">' + html.result.shortUrl + '</a></p>');
+                }
+                else {
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                }
+            }
+        });
+        return false;
+    });
+}
+
 function linkRemove(selector, fileID) {
     $(selector).click(function () {
         $('#link-' + fileID).remove();
@@ -122,7 +143,7 @@ var dropZone = new Dropzone(document.body, {
                     <div class="panel-footer" id="link-footer-' + fileID + '"> \
                         <div class="row"> \
                             <div class="col-sm-12 text-center"> \
-                                <button type="button" class="btn btn-default btn-sm" id="remove-link-' + fileID + '">Remove From List</button> \
+                                <button type="button" class="btn btn-default btn-sm" id="remove-link-' + fileID + '">Cancel Upload</button> \
                             </div> \
                         </div> \
                     </div> \
@@ -291,7 +312,7 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
                             <button type="button" class="btn btn-default btn-sm" id="generate-delete-link-' + fileID + '">Generate Deletion URL</button> \
                         </div> \
                         <div class="col-sm-4 text-center"> \
-                            <button type="button" class="btn btn-default btn-sm" id="remove-link-' + fileID + '">Remove From List</button> \
+                            <button type="button" class="btn btn-default btn-sm" id="shortenUrl-button-' + fileID + '">Shorten Url</button> \
                         </div> \
                     </div> \
               ');
@@ -302,7 +323,7 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
         linkSaveKey('#save-key-link-' + fileID + '', name, key, fileID);
     }
     linkUploadDelete('#generate-delete-link-' + fileID + '', name);
-    linkRemove('#remove-link-' + fileID + '', fileID);
+    linkShortenUrl('#shortenUrl-button-' + fileID + '', fileID, fullName);
 }
 
 function uploadFailed(fileID, evt) {
