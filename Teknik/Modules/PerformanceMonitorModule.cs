@@ -28,7 +28,7 @@ namespace Teknik.Modules
                 timer.Stop();
                 // Don't interfere with non-HTML responses 
 
-                if (requestContext.Response.ContentType == "text/html")
+                if (requestContext.Response.ContentType == "text/html" && requestContext.Response.StatusCode == 200)
                 {
 
                     Uri requestUrl = requestContext.Request.Url;
