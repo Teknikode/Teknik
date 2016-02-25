@@ -162,7 +162,7 @@ namespace Teknik.Areas.API.Controllers
                 db.ShortenedUrls.Add(newUrl);
                 db.SaveChanges();
 
-                string shortUrl = Url.SubRouteUrl(string.Empty, "Shortener.View", new { url = newUrl.ShortUrl });
+                string shortUrl = string.Format("http://{0}/{1}", Config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl);
                 if (Config.DevEnvironment)
                 {
                     shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });

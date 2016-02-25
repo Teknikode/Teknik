@@ -81,6 +81,7 @@ namespace Teknik
                 // Check if this route is valid for the current subdomain ('*' means any subdomain is valid)
                 if (Subdomains.Contains("*") || Subdomains.Contains(subdomain))
                 {
+                    routeData.Values["sub"] = subdomain;
                     return routeData;
                 }
             }
