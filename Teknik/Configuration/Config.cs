@@ -34,6 +34,7 @@ namespace Teknik.Configuration
         private StreamConfig    _StreamConfig;
         private ShortenerConfig _ShortenerConfig;
         private DatabaseConfig  _DatabaseConfig;
+        private PiwikConfig     _PiwikConfig;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
         public bool         Migrate         { get { return _Migrate; }          set { _Migrate = value; } }
@@ -84,6 +85,9 @@ namespace Teknik.Configuration
         // Database Configuration
         public DatabaseConfig   DatabaseConfig  { get { return _DatabaseConfig; }   set { _DatabaseConfig = value; } }
 
+        // Piwik Configuration
+        public PiwikConfig      PiwikConfig     { get { return _PiwikConfig; }      set { _PiwikConfig = value; } }
+
         public Config()
         {
             _ConfigRWLock               = new ReaderWriterLockSlim();
@@ -118,6 +122,7 @@ namespace Teknik.Configuration
             StreamConfig    = new StreamConfig();
             ShortenerConfig = new ShortenerConfig();
             DatabaseConfig  = new DatabaseConfig();
+            PiwikConfig     = new PiwikConfig();
         }
 
         public static Config Deserialize(string text)

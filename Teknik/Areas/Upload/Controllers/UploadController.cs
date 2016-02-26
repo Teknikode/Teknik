@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Piwik.Tracker;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
@@ -144,6 +145,9 @@ namespace Teknik.Areas.Upload.Controllers
                             };
 
                             Response.AppendHeader("Content-Disposition", cd.ToString());
+
+                            // Handle Piwik Tracking if enabled
+                            Tracking.TrackPageView(Request, ViewBag.Title, Subdomain);
 
                             return File(data, upload.ContentType);
                         }

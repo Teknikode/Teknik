@@ -80,6 +80,10 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Piwik.Tracker, Version=2.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Piwik.Tracker.2.8.0.0\lib\net40\Piwik.Tracker.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="RouteDebugger, Version=2.1.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\routedebugger.2.1.4.0\lib\net40\RouteDebugger.dll</HintPath>
@@ -231,6 +235,7 @@
     <Compile Include="Areas\Upload\ViewModels\DeleteViewModel.cs" />
     <Compile Include="Areas\Upload\ViewModels\DownloadViewModel.cs" />
     <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
+    <Compile Include="Configuration\PiwikConfig.cs" />
     <Compile Include="Configuration\ShortenerConfig.cs" />
     <Compile Include="Configuration\StreamConfig.cs" />
     <Compile Include="Configuration\ApiConfig.cs" />
@@ -247,6 +252,7 @@
     <Compile Include="Configuration\UserConfig.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Areas\Dev\Controllers\DevController.cs" />
+    <Compile Include="Filters\TrackingFilterAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -257,9 +263,11 @@
     <Compile Include="Areas\Profile\Models\PermissionType.cs" />
     <Compile Include="Areas\Blog\Models\BlogPost.cs" />
     <Compile Include="Areas\Profile\Models\Role.cs" />
+    <Compile Include="Helpers\HttpRequestExtensions.cs" />
     <Compile Include="Helpers\MysqlDatabase.cs" />
     <Compile Include="Helpers\MarkdownHelper.cs" />
     <Compile Include="Helpers\RSSFeedResult.cs" />
+    <Compile Include="Helpers\Tracking.cs" />
     <Compile Include="Helpers\UrlExtensions.cs" />
     <Compile Include="Helpers\Utility.cs" />
     <Compile Include="Helpers\WebClientExtension.cs">

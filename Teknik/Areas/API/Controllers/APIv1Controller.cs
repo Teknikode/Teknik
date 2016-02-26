@@ -29,7 +29,9 @@ namespace Teknik.Areas.API.Controllers
         [AllowAnonymous]
         public ActionResult Upload(HttpPostedFileWrapper file, string contentType = null, bool encrypt = false, bool saveKey = false, string key = null, int keySize = 0, string iv = null, int blockSize = 0, bool genDeletionKey = false)
         {
-            try {
+            try
+            {
+                Tracking.TrackPageView(Request, "Upload", Subdomain);
                 if (file != null)
                 {
                     if (file.ContentLength <= Config.UploadConfig.MaxUploadSize)
@@ -129,6 +131,7 @@ namespace Teknik.Areas.API.Controllers
         {
             try
             {
+                Tracking.TrackPageView(Request, "Paste", Subdomain);
                 Paste.Models.Paste paste = PasteHelper.CreatePaste(code, title, syntax, expireUnit, expireLength, password, hide);
 
                 db.Pastes.Add(paste);
@@ -155,29 +158,37 @@ namespace Teknik.Areas.API.Controllers
 
         public ActionResult Shorten(string url)
         {
-            if (url.IsValidUrl())
+            try
             {
-                ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(url, Config.ShortenerConfig.UrlLength);
-
-                db.ShortenedUrls.Add(newUrl);
-                db.SaveChanges();
-
-                string shortUrl = string.Format("{0}://{1}/{2}", HttpContext.Request.Url.Scheme, Config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl);
-                if (Config.DevEnvironment)
+                Tracking.TrackPageView(Request, "Shorten", Subdomain);
+                if (url.IsValidUrl())
                 {
-                    shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
-                }
+                    ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(url, Config.ShortenerConfig.UrlLength);
 
-                return Json(new
-                {
-                    result = new
+                    db.ShortenedUrls.Add(newUrl);
+                    db.SaveChanges();
+
+                    string shortUrl = string.Format("{0}://{1}/{2}", HttpContext.Request.Url.Scheme, Config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl);
+                    if (Config.DevEnvironment)
                     {
-                        shortUrl = shortUrl,
-                        originalUrl = url
+                        shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
                     }
-                });
+
+                    return Json(new
+                    {
+                        result = new
+                        {
+                            shortUrl = shortUrl,
+                            originalUrl = url
+                        }
+                    });
+                }
+                return Json(new { error = new { message = "Must be a valid Url" } });
             }
-            return Json(new { error = new { message = "Must be a valid Url" } });
+            catch (Exception ex)
+            {
+                return Json(new { error = new { message = "Exception: " + ex.Message } });
+            }
         }
     }
 }

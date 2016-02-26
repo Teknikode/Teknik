@@ -8,8 +8,12 @@ using Teknik.Areas.Error.Controllers;
 using Teknik.Areas.Error.ViewModels;
 using Teknik.Configuration;
 
+using Piwik.Tracker;
+using Teknik.Filters;
+
 namespace Teknik.Controllers
 {
+    [TrackingFilter]
     public class DefaultController : Controller
     {
         private Config _config;

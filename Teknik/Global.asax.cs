@@ -16,6 +16,10 @@ using Teknik.Areas.Error.Controllers;
 using System.Web.Helpers;
 using System.Diagnostics;
 using System.Collections.Specialized;
+using Teknik.Configuration;
+using Piwik.Tracker;
+using System.Web.UI;
+using Teknik.Helpers;
 
 namespace Teknik
 {
@@ -62,6 +66,33 @@ namespace Teknik
             {
                 context.Response.AppendHeader("Access-Control-Allow-Origin", origin);
             }
+
+            //// Handle Piwik Tracking if enabled
+            //Config config = Config.Load();
+            //if (config.PiwikConfig.Enabled)
+            //{
+            //    try
+            //    {
+            //        string sub = context.Request.RequestContext.RouteData.Values["sub"].ToString();
+            //        if (string.IsNullOrEmpty(sub))
+            //        {
+            //            sub = context.Request.Url.AbsoluteUri.GetSubdomain();
+            //        }
+            //        string title = config.Title;
+            //        Page page = HttpContext.Current.Handler as Page;
+
+            //        if (page != null)
+            //        {
+            //            title = page.Title;
+            //        }
+            //        var newContext = ((HttpApplication)sender).Context;
+            //        Tracking.TrackPageView(new HttpRequestWrapper(newContext.Request), title, sub);
+            //    }
+            //    catch (Exception ex)
+            //    {
+
+            //    }
+            //}
         }
 
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
