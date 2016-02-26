@@ -147,7 +147,7 @@ namespace Teknik.Areas.Upload.Controllers
                             Response.AppendHeader("Content-Disposition", cd.ToString());
 
                             // Handle Piwik Tracking if enabled
-                            Tracking.TrackPageView(Request, ViewBag.Title, Subdomain);
+                            Tracking.TrackAction(Request.UserAgent, Request.Url.ToString());
 
                             return File(data, upload.ContentType);
                         }

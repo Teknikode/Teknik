@@ -13,7 +13,6 @@ using Teknik.Filters;
 
 namespace Teknik.Controllers
 {
-    [TrackingFilter]
     public class DefaultController : Controller
     {
         private Config _config;

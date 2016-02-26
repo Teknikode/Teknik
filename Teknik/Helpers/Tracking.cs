@@ -43,5 +43,27 @@ namespace Teknik.Helpers
                 }
             }
         }
+
+        public static void TrackAction(string userAgent, string url)
+        {
+            Config config = Config.Load();
+            // Handle Piwik Tracking if enabled
+            if (config.PiwikConfig.Enabled)
+            {
+                try
+                {
+                    PiwikTracker.URL = config.PiwikConfig.Url;
+                    PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId);
+
+                    tracker.setUserAgent(userAgent);
+
+                    tracker.doTrackAction(url, PiwikTracker.ActionType.download);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+        }
     }
 }
