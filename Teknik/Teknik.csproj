@@ -266,6 +266,7 @@
     <Compile Include="Helpers\HttpRequestExtensions.cs" />
     <Compile Include="Helpers\MysqlDatabase.cs" />
     <Compile Include="Helpers\MarkdownHelper.cs" />
+    <Compile Include="Helpers\RequestHelper.cs" />
     <Compile Include="Helpers\RSSFeedResult.cs" />
     <Compile Include="Helpers\Tracking.cs" />
     <Compile Include="Helpers\UrlExtensions.cs" />

@@ -14,11 +14,14 @@ namespace Teknik.Configuration
 
         public int SiteId { get; set; }
 
+        public string TokenAuth { get; set; }
+
         public PiwikConfig()
         {
             Enabled = false;
             Url = string.Empty;
             SiteId = 1;
+            TokenAuth = string.Empty;
         }
     }
 }

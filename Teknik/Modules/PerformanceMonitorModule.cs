@@ -30,8 +30,6 @@ namespace Teknik.Modules
 
                 if (requestContext.Response.ContentType == "text/html" && requestContext.Response.StatusCode == 200)
                 {
-
-                    Uri requestUrl = requestContext.Request.Url;
                     double ms = (double)timer.ElapsedMilliseconds;
                     string result = string.Format("{0:F0}", ms);
 

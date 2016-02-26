@@ -11,7 +11,7 @@ namespace Teknik.Helpers
 {
     public static class Tracking
     {
-        public static void TrackPageView(HttpRequestBase request, string title, string sub)
+        public static void TrackPageView(HttpRequestBase request, string title)
         {
             Config config = Config.Load();
             // Handle Piwik Tracking if enabled
@@ -19,22 +19,35 @@ namespace Teknik.Helpers
             {
                 try
                 {
+                    string sub = request.RequestContext.RouteData.Values["sub"].ToString();
+                    if (string.IsNullOrEmpty(sub))
+                    {
+                        sub = request.Url.AbsoluteUri.GetSubdomain();
+                    }
+
+                    if (string.IsNullOrEmpty(title))
+                    {
+                        title = config.Title;
+                    }
+
                     PiwikTracker.URL = config.PiwikConfig.Url;
                     PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId);
-
-                    tracker.setForceVisitDateTime(DateTime.Now);
+                    
                     tracker.setUserAgent(request.UserAgent);
 
                     tracker.setResolution(request.Browser.ScreenPixelsWidth, request.Browser.ScreenPixelsHeight);
                     tracker.setBrowserHasCookies(request.Browser.Cookies);
 
-                    string ipAddress = request.UserHostAddress;
+                    string ipAddress = request.ClientIPFromRequest(true);
 
                     tracker.setIp(ipAddress);
+                    tracker.setTokenAuth(config.PiwikConfig.TokenAuth);
 
                     tracker.setUrl(request.Url.ToString());
-                    tracker.setUrlReferrer(request.UrlReferrer.ToString());
+                    if (request.UrlReferrer != null)
+                        tracker.setUrlReferrer(request.UrlReferrer.ToString());
 
+                    tracker.setRequestTimeout(5);
                     tracker.doTrackPageView(string.Format("{0} / {1}", sub, title));
                 }
                 catch (Exception ex)
@@ -44,7 +57,7 @@ namespace Teknik.Helpers
             }
         }
 
-        public static void TrackAction(string userAgent, string url)
+        public static void TrackAction(HttpRequestBase request, string url)
         {
             Config config = Config.Load();
             // Handle Piwik Tracking if enabled
@@ -55,7 +68,12 @@ namespace Teknik.Helpers
                     PiwikTracker.URL = config.PiwikConfig.Url;
                     PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId);
 
-                    tracker.setUserAgent(userAgent);
+                    tracker.setUserAgent(request.UserAgent);
+
+                    string ipAddress = request.ClientIPFromRequest(true);
+
+                    tracker.setIp(ipAddress);
+                    tracker.setTokenAuth(config.PiwikConfig.TokenAuth);
 
                     tracker.doTrackAction(url, PiwikTracker.ActionType.download);
                 }

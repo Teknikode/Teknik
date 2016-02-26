@@ -15,6 +15,29 @@ using System;
 
 namespace Teknik.Helpers
 {
+    public class MD5
+    {
+        public static string Hash(string value)
+        {
+            byte[] valBytes = Encoding.ASCII.GetBytes(value);
+            System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] hashBytes = md5.ComputeHash(valBytes);
+
+            StringBuilder sBuilder = new StringBuilder();
+
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sBuilder.Append(hashBytes[i].ToString("x2"));
+            }
+
+            // Return the hexadecimal string.
+            return sBuilder.ToString();
+
+        }
+    }
+
     public class SHA384
     {
         public static string Hash(string key, string value)

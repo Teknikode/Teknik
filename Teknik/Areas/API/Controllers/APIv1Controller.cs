@@ -31,7 +31,7 @@ namespace Teknik.Areas.API.Controllers
         {
             try
             {
-                Tracking.TrackPageView(Request, "Upload", Subdomain);
+                Tracking.TrackPageView(Request, "Upload");
                 if (file != null)
                 {
                     if (file.ContentLength <= Config.UploadConfig.MaxUploadSize)
@@ -131,7 +131,7 @@ namespace Teknik.Areas.API.Controllers
         {
             try
             {
-                Tracking.TrackPageView(Request, "Paste", Subdomain);
+                Tracking.TrackPageView(Request, "Paste");
                 Paste.Models.Paste paste = PasteHelper.CreatePaste(code, title, syntax, expireUnit, expireLength, password, hide);
 
                 db.Pastes.Add(paste);
@@ -160,7 +160,7 @@ namespace Teknik.Areas.API.Controllers
         {
             try
             {
-                Tracking.TrackPageView(Request, "Shorten", Subdomain);
+                Tracking.TrackPageView(Request, "Shorten");
                 if (url.IsValidUrl())
                 {
                     ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(url, Config.ShortenerConfig.UrlLength);

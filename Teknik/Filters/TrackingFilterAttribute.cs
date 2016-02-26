@@ -20,30 +20,14 @@ namespace Teknik.Filters
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            Config config = Config.Load();
-            if (config.PiwikConfig.Enabled)
+            string title = string.Empty;
+            Page page = filterContext.HttpContext.Handler as Page;
+
+            if (page != null)
             {
-                try
-                {
-                    string sub = filterContext.HttpContext.Request.RequestContext.RouteData.Values["sub"].ToString();
-                    if (string.IsNullOrEmpty(sub))
-                    {
-                        sub = filterContext.HttpContext.Request.Url.AbsoluteUri.GetSubdomain();
-                    }
-                    string title = config.Title;
-                    Page page = filterContext.HttpContext.Handler as Page;
-
-                    if (page != null)
-                    {
-                        title = page.Title;
-                    }
-                    Tracking.TrackPageView(filterContext.HttpContext.Request, title, sub);
-                }
-                catch (Exception ex)
-                {
-
-                }
+                title = page.Title;
             }
+            Tracking.TrackPageView(filterContext.HttpContext.Request, title);
 
             base.OnActionExecuted(filterContext);
         }

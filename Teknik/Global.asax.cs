@@ -46,39 +46,21 @@ namespace Teknik
             var stopwatch = new Stopwatch();
             HttpContext.Current.Items["Stopwatch"] = stopwatch;
             stopwatch.Start();
-
-            // Handle Piwik Tracking if enabled
-            Config config = Config.Load();
-            if (config.PiwikConfig.Enabled)
-            {
-                try
-                {
-                    HttpRequest request = base.Request;
-
-                    string sub = request.RequestContext.RouteData.Values["sub"].ToString();
-                    if (string.IsNullOrEmpty(sub))
-                    {
-                        sub = request.Url.AbsoluteUri.GetSubdomain();
-                    }
-                    string title = config.Title;
-                    Page page = HttpContext.Current.Handler as Page;
-
-                    if (page != null)
-                    {
-                        title = page.Title;
-                    }
-                    Tracking.TrackPageView(new HttpRequestWrapper(request), title, sub);
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
             HttpContext context = HttpContext.Current;
+
+            // Handle Piwik
+            string title = string.Empty;
+            Page page = HttpContext.Current.Handler as Page;
+
+            if (page != null)
+            {
+                title = page.Title;
+            }
+            Tracking.TrackPageView(new HttpRequestWrapper(context.Request), title);
 
             Stopwatch stopwatch = (Stopwatch)context.Items["Stopwatch"];
             stopwatch.Stop();
