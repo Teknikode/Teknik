@@ -18,6 +18,8 @@ namespace Teknik.Areas.Transparency.ViewModels
 
         public int UserCount { get; set; }
 
+        public int ShortenedUrlCount { get; set; }
+
         public Dictionary<string, double> TotalBills { get; set; }
 
         public Dictionary<string, double> TotalOneTimes { get; set; }

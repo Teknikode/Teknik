@@ -29,6 +29,9 @@ namespace Teknik.Areas.Transparency.Controllers
             Profile.Models.User user = db.Users.OrderByDescending(u => u.UserId).FirstOrDefault();
             model.UserCount = (user != null) ? user.UserId : 0;
 
+            Shortener.Models.ShortenedUrl url = db.ShortenedUrls.OrderByDescending(s => s.ShortenedUrlId).FirstOrDefault();
+            model.ShortenedUrlCount = (url != null) ? url.ShortenedUrlId : 0;
+
             model.TotalNet = new Dictionary<string, double>();
 
             var billSums = db.Transactions.OfType<Bill>().GroupBy(b => b.Currency).Select(b => new { currency = b.Key, total = b.Sum(c => c.Amount) }).ToList();
