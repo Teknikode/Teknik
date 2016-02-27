@@ -24,7 +24,8 @@ namespace Teknik.Areas.Podcast.Controllers
             model.Description = Config.PodcastConfig.Description;
             try
             {
-                ViewBag.Title = "Teknikast - " + Config.Title;
+                ViewBag.Title = Config.PodcastConfig.Title + " - " + Config.Title;
+                ViewBag.Description = Config.PodcastConfig.Description;
                 bool editor = User.IsInRole("Podcast");
                 var foundPodcasts = db.Podcasts.Where(p => (p.Published || editor)).FirstOrDefault();
                 if (foundPodcasts != null)

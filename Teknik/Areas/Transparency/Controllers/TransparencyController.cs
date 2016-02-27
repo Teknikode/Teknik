@@ -17,6 +17,8 @@ namespace Teknik.Areas.Transparency.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
+            ViewBag.Title = "Transparency - " + Config.Title;
+            ViewBag.Message = "Teknik transparency and statistics.";
             TransparencyViewModel model = new TransparencyViewModel();
 
             Upload.Models.Upload upload = db.Uploads.OrderByDescending(u => u.UploadId).FirstOrDefault();

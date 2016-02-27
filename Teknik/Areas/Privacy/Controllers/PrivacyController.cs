@@ -14,7 +14,7 @@ namespace Teknik.Areas.Privacy.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            ViewBag.Title = Config.Title + " - Privacy";
+            ViewBag.Title = "Privacy Policy - " + Config.Title;
             ViewBag.Message = "Teknik privacy policy.";
 
             return View(new PrivacyViewModel());

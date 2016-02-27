@@ -27,7 +27,8 @@ namespace Teknik.Areas.Blog.Controllers
             // The blog is the main site's blog
             if (string.IsNullOrEmpty(username))
             {
-                ViewBag.Title = "Teknik Blog - " + Config.Title;
+                ViewBag.Title = Config.BlogConfig.Title + " - " + Config.Title;
+                ViewBag.Description = Config.BlogConfig.Description;
                 bool isAuth = User.IsInRole("Admin");
                 var foundPosts = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => ((p.System || isAuth) && p.Published));
                 model = new BlogViewModel();
@@ -49,6 +50,11 @@ namespace Teknik.Areas.Blog.Controllers
                 if (blog != null)
                 {
                     ViewBag.Title = blog.User.Username + "'s Blog - " + Config.Title;
+                    if (!string.IsNullOrEmpty(blog.User.BlogSettings.Title))
+                    {
+                        ViewBag.Title = blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                    }
+                    ViewBag.Description = blog.User.BlogSettings.Description;
                     bool isAuth = User.IsInRole("Admin");
                     var foundPosts = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.BlogId == blog.BlogId && !p.System) && 
                                                                                                     (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
@@ -85,11 +91,18 @@ namespace Teknik.Areas.Blog.Controllers
 
                 if (post.System)
                 {
-                    ViewBag.Title = model.Title + " - Teknik Blog - " + Config.Title;
+                    ViewBag.Title = model.Title + " - " + Config.BlogConfig.Title + " - " + Config.Title;
+                    ViewBag.Description = Config.BlogConfig.Description;
                 }
                 else
                 {
-                    ViewBag.Title = model.Title + " - " + username + "'s Blog - " + Config.Title;
+                    ViewBag.Title = username + "'s Blog - " + Config.Title;
+                    if (!string.IsNullOrEmpty(post.Blog.User.BlogSettings.Title))
+                    {
+                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                    }
+                    ViewBag.Title = model.Title + " - " + ViewBag.Title;
+                    ViewBag.Description = post.Blog.User.BlogSettings.Description;
                 }
                 return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
             }
