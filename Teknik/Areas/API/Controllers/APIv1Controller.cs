@@ -27,11 +27,12 @@ namespace Teknik.Areas.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Upload(HttpPostedFileWrapper file, string contentType = null, bool encrypt = false, bool saveKey = false, string key = null, int keySize = 0, string iv = null, int blockSize = 0, bool genDeletionKey = false)
+        public ActionResult Upload(HttpPostedFileWrapper file, string contentType = null, bool encrypt = false, bool saveKey = false, string key = null, int keySize = 0, string iv = null, int blockSize = 0, bool genDeletionKey = false, bool doNotTrack = false)
         {
             try
             {
-                Tracking.TrackPageView(Request, "Upload");
+                if (!doNotTrack)
+                    Tracking.TrackPageView(Request, "Upload");
                 if (file != null)
                 {
                     if (file.ContentLength <= Config.UploadConfig.MaxUploadSize)
@@ -127,11 +128,12 @@ namespace Teknik.Areas.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Paste(string code, string title = "", string syntax = "auto", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
+        public ActionResult Paste(string code, string title = "", string syntax = "auto", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false, bool doNotTrack = false)
         {
             try
             {
-                Tracking.TrackPageView(Request, "Paste");
+                if (!doNotTrack)
+                    Tracking.TrackPageView(Request, "Paste");
                 Paste.Models.Paste paste = PasteHelper.CreatePaste(code, title, syntax, expireUnit, expireLength, password, hide);
 
                 db.Pastes.Add(paste);
@@ -156,11 +158,12 @@ namespace Teknik.Areas.API.Controllers
             }
         }
 
-        public ActionResult Shorten(string url)
+        public ActionResult Shorten(string url, bool doNotTrack = false)
         {
             try
             {
-                Tracking.TrackPageView(Request, "Shorten");
+                if (!doNotTrack)
+                    Tracking.TrackPageView(Request, "Shorten");
                 if (url.IsValidUrl())
                 {
                     ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(url, Config.ShortenerConfig.UrlLength);
