@@ -35,14 +35,14 @@ namespace Teknik.Areas.Profile.Controllers
 
             ProfileViewModel model = new ProfileViewModel();
             ViewBag.Title = "User Does Not Exist - " + Config.Title;
-            ViewBag.Message = "The User does not exist";
+            ViewBag.Description = "The User does not exist";
 
             User user = db.Users.Where(u => u.Username == username).FirstOrDefault();
 
             if (user != null)
             {
                 ViewBag.Title = username + "'s Profile - " + Config.Title;
-                ViewBag.Message = "Viewing " + username + "'s Profile";
+                ViewBag.Description = "Viewing " + username + "'s Profile";
                 
                 model.UserID = user.UserId;
                 model.Username = user.Username;
@@ -79,14 +79,14 @@ namespace Teknik.Areas.Profile.Controllers
 
                 SettingsViewModel model = new SettingsViewModel();
                 ViewBag.Title = "User Does Not Exist - " + Config.Title;
-                ViewBag.Message = "The User does not exist";
+                ViewBag.Description = "The User does not exist";
 
                 User user = db.Users.Where(u => u.Username == username).FirstOrDefault();
 
                 if (user != null)
                 {
                     ViewBag.Title = "Settings - " + Config.Title;
-                    ViewBag.Message = "Your " + Config.Title + " Settings";
+                    ViewBag.Description = "Your " + Config.Title + " Settings";
 
                     model.UserID = user.UserId;
                     model.Username = user.Username;

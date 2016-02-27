@@ -37,7 +37,7 @@ namespace Teknik.Controllers
         public DefaultController()
         {
             ViewBag.Title = Config.Title;
-            ViewBag.Message = Config.Description;
+            ViewBag.Description = Config.Description;
 
             if (Response != null)
             {

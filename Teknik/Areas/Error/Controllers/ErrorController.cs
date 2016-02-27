@@ -14,6 +14,7 @@ namespace Teknik.Areas.Error.Controllers
         public ActionResult Exception(Exception exception)
         {
             ViewBag.Title = "Exception - " + Config.Title;
+            ViewBag.Description = "Just a boring 'ol exception. Nothing to see here, move along.";
 
             if (Response != null)
                 Response.StatusCode = 200;
@@ -28,6 +29,7 @@ namespace Teknik.Areas.Error.Controllers
         public ActionResult General(Exception exception)
         {
             ViewBag.Title = "Http Exception - " + Config.Title;
+            ViewBag.Description = "There has been a Http exception.  Run!";
 
             ErrorViewModel model = new ErrorViewModel();
             model.Description = exception.Message;
@@ -40,7 +42,7 @@ namespace Teknik.Areas.Error.Controllers
         public ActionResult Http403(Exception exception)
         {
             ViewBag.Title = "403 - " + Config.Title;
-            ViewBag.Message = "Access Denied";
+            ViewBag.Description = "Access Denied";
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
@@ -52,7 +54,7 @@ namespace Teknik.Areas.Error.Controllers
         public ActionResult Http404(Exception exception)
         {
             ViewBag.Title = "404 - " + Config.Title;
-            ViewBag.Message = "Uh Oh, can't find it!";
+            ViewBag.Description = "Uh Oh, can't find it!";
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
@@ -64,7 +66,7 @@ namespace Teknik.Areas.Error.Controllers
         public ActionResult Http500(Exception exception)
         {
             ViewBag.Title = "500 - " + Config.Title;
-            ViewBag.Message = "Something Borked";
+            ViewBag.Description = "Something Borked";
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
