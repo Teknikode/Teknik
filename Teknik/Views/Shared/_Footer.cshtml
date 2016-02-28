@@ -1,5 +1,6 @@
 ﻿@using System.Diagnostics;
 @using System.Reflection;
+@using Teknik.Helpers;
 
 <footer id="footer" class="footer navbar navbar-default">
     <div class="container">
@@ -24,7 +25,7 @@
         </div>
         <div class="row">
             <div class="col-md-12 text-center text-muted">
-                Version: @string.Format("{0}.{1} - Hash: {2}", verNum, commitVer, commitHash)
+                Version: @string.Format("{0}.{1}", verNum, commitVer) - Hash: <a href="http://git.teknik.io/Teknikode/Teknik/src/@commitHash">@commitHash.Truncate(10)</a>
             </div>
         </div>
     </div>
