@@ -27,7 +27,8 @@ namespace Teknik.Filters
             {
                 title = page.Title;
             }
-            Tracking.TrackPageView(filterContext.HttpContext.Request, title);
+            Config config = Config.Load();
+            Tracking.TrackPageView(filterContext.HttpContext.Request, config, title);
 
             base.OnActionExecuted(filterContext);
         }

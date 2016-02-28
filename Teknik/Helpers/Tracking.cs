@@ -11,9 +11,8 @@ namespace Teknik.Helpers
 {
     public static class Tracking
     {
-        public static void TrackPageView(HttpRequestBase request, string title)
+        public static void TrackPageView(HttpRequestBase request, Config config, string title)
         {
-            Config config = Config.Load();
             // Handle Piwik Tracking if enabled
             if (config.PiwikConfig.Enabled)
             {
@@ -24,10 +23,9 @@ namespace Teknik.Helpers
                     {
                         sub = request.Url.AbsoluteUri.GetSubdomain();
                     }
-
-                    if (string.IsNullOrEmpty(title))
+                    if (config.DevEnvironment)
                     {
-                        title = config.Title;
+                        sub = "dev - " + sub;
                     }
 
                     PiwikTracker.URL = config.PiwikConfig.Url;
@@ -48,7 +46,7 @@ namespace Teknik.Helpers
                         tracker.setUrlReferrer(request.UrlReferrer.ToString());
 
                     tracker.setRequestTimeout(5);
-                    tracker.doTrackPageView(string.Format("{0} / {1}", sub, title));
+                    tracker.doTrackPageView(string.Format("{0}/{1}", sub, title));
                 }
                 catch (Exception ex)
                 {

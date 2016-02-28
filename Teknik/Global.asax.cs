@@ -52,16 +52,6 @@ namespace Teknik
         {
             HttpContext context = HttpContext.Current;
 
-            // Handle Piwik
-            string title = string.Empty;
-            Page page = HttpContext.Current.Handler as Page;
-
-            if (page != null)
-            {
-                title = page.Title;
-            }
-            Tracking.TrackPageView(new HttpRequestWrapper(context.Request), title);
-
             Stopwatch stopwatch = (Stopwatch)context.Items["Stopwatch"];
             stopwatch.Stop();
 
