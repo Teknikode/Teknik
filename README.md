@@ -7,43 +7,47 @@ Teknik is a suite of services with attractive and functional interfaces.
 ## Features
   * File Upload w/ encryption
   * Pastebin
+  * Url Shortening
   * Blogs
   * Git Repositories
   * Podcasts
   * Easy to use API
-  * Server Statistics
   * Flexible installation and configuration
 
-## Screenshots
-[![File Upload Screenshot](https://cdn.teknik.io/default/img/screenshots/upload_screenshot_thumb.png)](https://cdn.teknik.io/default/img/screenshots/upload_screenshot.PNG)
-[![Pastebin Screenshot](https://cdn.teknik.io/default/img/screenshots/paste_screenshot_thumb.png)](https://cdn.teknik.io/default/img/screenshots/paste_screenshot.PNG)
-[![Blog Screenshot](https://cdn.teknik.io/default/img/screenshots/blog_screenshot_thumb.png)](https://cdn.teknik.io/default/img/screenshots/blog_screenshot.PNG)
-[![Podcast Screenshot](https://cdn.teknik.io/default/img/screenshots/podcast_screenshot_thumb.png)](https://cdn.teknik.io/default/img/screenshots/podcast_screenshot.PNG)
-[![Git Screenshot](https://cdn.teknik.io/default/img/screenshots/git_screenshot_thumb.png)](https://cdn.teknik.io/default/img/screenshots/git_screenshot.PNG)
-
-You can also see a live demo [here](https://www.teknik.io).
+You can see a live demo [here](https://www.teknik.io).
 
 ## Requirements
 In order to run Teknik on your server, you'll need:
 
-  * IIS 7 with URL Rewrite module or Apache with mod_rewrite enabled (Requires conversion of web.config files)
-  * ASP.NET MVC 4
+  * IIS 7+ with URL Rewrite module or Apache with mod_rewrite enabled (Requires conversion of web.config files)
+  * ASP.NET MVC 5
   * .NET Framework 4.5.2
   * MS SQL Server
   * hMailServer (If running email as well)
-  * RoundCube (If you would like to have webmail)
-  * Git Service (We use Gogs)
+  * Web Mail Client (If you would like to have webmail)
+  * Gogs Service (If you want to have git integration)
 
 ## Installation
   * Clone the Teknik repository to your web root directory, or anywhere else you want to run Teknik from.
 
 ```
 cd /var/www
-git clone git://teknik.io/Teknik
+git clone https://git.teknik.io/Teknikode/Teknik
 ```
 
-  * Do not clone the development branch unless you want to run the latest code.  It may be unstable.
-  * **TBD**
+  * Open the Teknik.sln file to build the project.
+  * Copy the build files to your wwwroot directory.
+  * Create a **ConnectionStrings.config** file in the **App_Data** directory and fill it with the following template and put in your sql server conenction details
+
+  ```
+  <connectionStrings>
+    <add name="TeknikEntities"
+      providerName="System.Data.SqlClient"
+      connectionString="Data Source=<server name>,<port>\<sql server name>;Initial Catalog=<database>;Integrated Security=False;User Id=<username>;Password=<password>" />
+  </connectionStrings>
+  ```
+
+  * After first run, a **Config.json** file will be created in the **App_Data** directory.  This will need to be edited with your configuration options.
 
 **That's it**, installation complete! If you're having problems, let us know through the [Contact](https://contact.teknik.io/) page.
 
