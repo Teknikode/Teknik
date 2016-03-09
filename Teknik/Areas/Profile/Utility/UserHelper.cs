@@ -13,18 +13,16 @@ namespace Teknik.Areas.Profile.Utility
 {
     public static class UserHelper
     {
-        public static User GetUser(string username)
+        public static User GetUser(TeknikEntities db, string username)
         {
-            TeknikEntities db = new TeknikEntities();
-
             User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
 
             return user;
         }
 
-        public static bool UserExists(string username)
+        public static bool UserExists(TeknikEntities db, string username)
         {
-            User user = GetUser(username);
+            User user = GetUser(db, username);
             if (user != null)
             {
                 return true;
