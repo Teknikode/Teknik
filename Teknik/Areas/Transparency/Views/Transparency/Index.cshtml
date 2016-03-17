@@ -136,13 +136,13 @@
                     @foreach (OneTime oneTime in Model.OneTimes)
                     {
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 @oneTime.DateSent.ToString("MMMM dd, yyyy")
                             </div>
                             <div class="col-sm-2">
                                 @oneTime.Amount <var>@oneTime.Currency</var>
                             </div>
-                            <div class="col-sm-8">
+                            <div class="col-sm-7">
                                 @oneTime.Reason
                             </div>
                         </div>
