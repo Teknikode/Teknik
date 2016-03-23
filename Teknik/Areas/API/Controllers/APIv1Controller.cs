@@ -158,6 +158,8 @@ namespace Teknik.Areas.API.Controllers
             }
         }
 
+        [HttpPost]
+        [AllowAnonymous]
         public ActionResult Shorten(string url, bool doNotTrack = false)
         {
             try
