@@ -14,8 +14,15 @@
                             window.location.replace(homeUrl);
                         }
                         else {
+                            errorMsg = html;
+                            if (html.error) {
+                                errorMsg = html.error;
+                                if (html.error.message) {
+                                    errorMsg = html.error.message;
+                                }
+                            }
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Unable to delete your account.  Please contact an Administrator.</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
                         }
                     }
                 });

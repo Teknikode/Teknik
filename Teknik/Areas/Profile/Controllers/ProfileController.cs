@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using Teknik.Areas.Shortener.Models;
 using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Error.Controllers;
 using Teknik.Areas.Error.ViewModels;
@@ -361,21 +362,40 @@ namespace Teknik.Areas.Profile.Controllers
                         app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
                         var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
                         var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain)];
-                        account.Delete();
+                        if (account != null)
+                        {
+                            account.Delete();
+                        }
                     }
                     catch (COMException)
-                    { }
+                    {
+                    }
+                    catch (Exception)
+                    {
+                        return Json(new { error = "Unable to delete email account." });
+                    }
                 }
 
                 // Delete Git
                 if (Config.GitConfig.Enabled)
                 {
-                    Uri baseUri = new Uri(Config.GitConfig.Host);
-                    Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
-                    WebRequest request = WebRequest.Create(finalUri);
-                    request.Method = "DELETE";
+                    try
+                    {
+                        Uri baseUri = new Uri(Config.GitConfig.Host);
+                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
+                        WebRequest request = WebRequest.Create(finalUri);
+                        request.Method = "DELETE";
 
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                        if (response.StatusCode != HttpStatusCode.NotFound && response.StatusCode != HttpStatusCode.OK)
+                        {
+                            return Json(new { error = "Unable to delete git account.  Response Code: " + response.StatusCode });
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return Json(new { error = "Unable to delete git account." });
+                    }
                 }
 
                 // Update uploads
@@ -397,6 +417,17 @@ namespace Teknik.Areas.Profile.Controllers
                     {
                         paste.UserId = null;
                         db.Entry(paste).State = EntityState.Modified;
+                    }
+                }
+
+                // Update shortened urls
+                List<ShortenedUrl> shortUrls = db.ShortenedUrls.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
+                if (shortUrls != null)
+                {
+                    foreach (ShortenedUrl shortUrl in shortUrls)
+                    {
+                        shortUrl.UserId = null;
+                        db.Entry(shortUrl).State = EntityState.Modified;
                     }
                 }
 
