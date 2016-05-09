@@ -399,7 +399,11 @@ namespace Teknik.Areas.Profile.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return Json(new { error = "Unable to delete git account.  Exception: " + ex.Message });
+                        // This error signifies the user doesn't exist, so we can continue deleting
+                        if (ex.Message != "The remote server returned an error: (404) Not Found.")
+                        {
+                            return Json(new { error = "Unable to delete git account.  Exception: " + ex.Message });
+                        }
                     }
                 }
 
