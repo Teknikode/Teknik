@@ -46,75 +46,83 @@ namespace Teknik.Areas.Upload.Controllers
         [AllowAnonymous]
         public ActionResult Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, bool saveKey, HttpPostedFileWrapper data, string key = null)
         {
-            if (Config.UploadConfig.UploadEnabled)
+            try
             {
-                if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
+                if (Config.UploadConfig.UploadEnabled)
                 {
-                    // convert file to bytes
-                    byte[] fileData = null;
-                    int contentLength = data.ContentLength;
-                    using (var binaryReader = new BinaryReader(data.InputStream))
+                    if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
                     {
-                        fileData = binaryReader.ReadBytes(data.ContentLength);
-                    }
-
-                    // Scan the file to detect a virus
-                    if (Config.UploadConfig.VirusScanEnable)
-                    {
-                        ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
-                        ClamScanResult scanResult = clam.SendAndScanFile(fileData);
-
-                        switch (scanResult.Result)
+                        // convert file to bytes
+                        byte[] fileData = null;
+                        int contentLength = data.ContentLength;
+                        using (var binaryReader = new BinaryReader(data.InputStream))
                         {
-                            case ClamScanResults.Clean:
-                                break;
-                            case ClamScanResults.VirusDetected:
-                                return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.InfectedFiles.First().VirusName, Url.SubRouteUrl("tos", "TOS.Index")) } });
-                            case ClamScanResults.Error:
-                                break;
-                            case ClamScanResults.Unknown:
-                                break;
-                        }
-                    }
-
-                    // if they want us to encrypt it, we do so here
-                    if (encrypt)
-                    {
-                        // Generate key and iv if empty
-                        if (string.IsNullOrEmpty(key))
-                        {
-                            key = Utility.RandomString(keySize / 8);
+                            fileData = binaryReader.ReadBytes(data.ContentLength);
                         }
 
-                        fileData = AES.Encrypt(fileData, key, iv);
-                        if (fileData == null || fileData.Length <= 0)
+                        // Scan the file to detect a virus
+                        if (Config.UploadConfig.VirusScanEnable)
                         {
-                            return Json(new { error = new { message = "Unable to encrypt file" } });
-                        }
-                    }
-                    Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, (saveKey) ? key : null, keySize, blockSize);
-                    if (upload != null)
-                    {
-                        if (User.Identity.IsAuthenticated)
-                        {
-                            Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
-                            if (user != null)
+                            ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
+                            clam.MaxStreamSize = Config.UploadConfig.MaxUploadSize;
+                            ClamScanResult scanResult = clam.SendAndScanFile(fileData);
+
+                            switch (scanResult.Result)
                             {
-                                upload.UserId = user.UserId;
-                                db.Entry(upload).State = EntityState.Modified;
-                                db.SaveChanges();
+                                case ClamScanResults.Clean:
+                                    break;
+                                case ClamScanResults.VirusDetected:
+                                    return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.InfectedFiles.First().VirusName, Url.SubRouteUrl("tos", "TOS.Index")) } });
+                                case ClamScanResults.Error:
+                                    return Json(new { error = new { message = string.Format("Error scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
+                                case ClamScanResults.Unknown:
+                                    return Json(new { error = new { message = string.Format("Unknown result while scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
                             }
                         }
-                        return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), key = key } }, "text/plain");
+
+                        // if they want us to encrypt it, we do so here
+                        if (encrypt)
+                        {
+                            // Generate key and iv if empty
+                            if (string.IsNullOrEmpty(key))
+                            {
+                                key = Utility.RandomString(keySize / 8);
+                            }
+
+                            fileData = AES.Encrypt(fileData, key, iv);
+                            if (fileData == null || fileData.Length <= 0)
+                            {
+                                return Json(new { error = new { message = "Unable to encrypt file" } });
+                            }
+                        }
+                        Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, (saveKey) ? key : null, keySize, blockSize);
+                        if (upload != null)
+                        {
+                            if (User.Identity.IsAuthenticated)
+                            {
+                                Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                                if (user != null)
+                                {
+                                    upload.UserId = user.UserId;
+                                    db.Entry(upload).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                            }
+                            return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), key = key } }, "text/plain");
+                        }
+                        return Json(new { error = new { message = "Unable to upload file" } });
                     }
-                    return Json(new { error = new { message = "Unable to upload file" } });
+                    else
+                    {
+                        return Json(new { error = new { message = "File Too Large" } });
+                    }
                 }
-                else
-                {
-                    return Json(new { error = new { message = "File Too Large" } });
-                }
+                return Json(new { error = new { message = "Uploads are disabled" } });
             }
-            return Json(new { error = new { message = "Uploads are disabled" } });
+            catch (Exception ex)
+            {
+                return Json(new { error = new { message = "Exception while uploading file: " + ex.Message } });
+            }
         }
 
         // User did not supply key

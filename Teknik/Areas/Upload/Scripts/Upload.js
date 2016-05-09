@@ -138,7 +138,7 @@ var dropZone = new Dropzone(document.body, {
                         <div class="row"> \
                             <div class="col-sm-12 text-center"> \
                                 <div class="progress" id="progress-' + fileID + '"> \
-                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div> \
+                                    <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div> \
                                 </div> \
                             </div> \
                         </div> \
@@ -165,6 +165,8 @@ var dropZone = new Dropzone(document.body, {
             // An error occured
             $("#progress-" + fileID).children('.progress-bar').css('width', '100%');
             $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
+            $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-striped');
+            $("#progress-" + fileID).children('.progress-bar').removeClass('active');
             $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-danger');
             $("#progress-" + fileID).children('.progress-bar').html('File Too Large');
         }
@@ -219,6 +221,8 @@ function encryptFile(file, callback) {
                     // An error occured
                     $("#progress-" + fileID).children('.progress-bar').css('width', '100%');
                     $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
+                    $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-striped');
+                    $("#progress-" + fileID).children('.progress-bar').removeClass('active');
                     $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-danger');
                     $("#progress-" + fileID).children('.progress-bar').html('Error Occured');
                 }
@@ -281,10 +285,17 @@ function uploadFile(data, key, iv, filetype, fileExt, fileID, saveKey, serverSid
 }
 
 function uploadProgress(fileID, evt) {
+    var serverSideEncrypt = $('#serverSideEncrypt').is(':checked');
     if (evt.lengthComputable) {
         var percentComplete = Math.round(evt.loaded * 100 / evt.total);
-        $('#progress-' + fileID).children('.progress-bar').css('width', (percentComplete * (2 / 5)) + 60 + '%');
-        $('#progress-' + fileID).children('.progress-bar').html(percentComplete + '% Uploaded');
+        if (serverSideEncrypt && percentComplete == 100) {
+            $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
+            $('#progress-' + fileID).children('.progress-bar').html('Encrypting');
+        }
+        else {
+            $('#progress-' + fileID).children('.progress-bar').css('width', (percentComplete * (2 / 5)) + 60 + '%');
+            $('#progress-' + fileID).children('.progress-bar').html(percentComplete + '% Uploaded');
+        }
     }
 }
 
@@ -299,6 +310,8 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
             fullName = fullName + '#' + key;
         }
         $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
+        $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-striped');
+        $("#progress-" + fileID).children('.progress-bar').removeClass('active');
         $('#progress-' + fileID).children('.progress-bar').html('Complete');
         $('#upload-link-' + fileID).html('<p><a href="' + fullName + '" id="full-url-link-' + fileID + '" target="_blank" class="alert-link">' + fullName + '</a></p>');
         var keyBtn = '<div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
@@ -333,6 +346,8 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
     {
         $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
         $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
+        $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-striped');
+        $("#progress-" + fileID).children('.progress-bar').removeClass('active');
         $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-danger');
         $('#remove-link-' + fileID).text('Clear Upload');
         if (obj.error != null) {
@@ -347,6 +362,8 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
 function uploadFailed(fileID, evt) {
     $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
     $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
+    $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-striped');
+    $("#progress-" + fileID).children('.progress-bar').removeClass('active');
     $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-danger');
     $('#progress-' + fileID).children('.progress-bar').html('Upload Failed');
 }
@@ -354,6 +371,8 @@ function uploadFailed(fileID, evt) {
 function uploadCanceled(fileID, evt) {
     $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
     $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
+    $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-striped');
+    $("#progress-" + fileID).children('.progress-bar').removeClass('active');
     $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-warning');
     $('#progress-' + fileID).children('.progress-bar').html('Upload Canceled');
 }
