@@ -137,8 +137,13 @@ namespace Teknik.Configuration
 
         public static Config Load()
         {
-            Config config = new Config();
             string path = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
+            return Load(path);
+        }
+
+        public static Config Load(string path)
+        {
+            Config config = new Config();
             if (!File.Exists(Path.Combine(path, "Config.json")))
             {
                 Save(Path.Combine(path, "Config.json"), config);

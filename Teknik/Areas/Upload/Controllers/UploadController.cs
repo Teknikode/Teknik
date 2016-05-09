@@ -63,9 +63,20 @@ namespace Teknik.Areas.Upload.Controllers
                         // Scan the file to detect a virus
                         if (Config.UploadConfig.VirusScanEnable)
                         {
+                            byte[] scanData = fileData;
+                            // If it was encrypted client side, decrypt it
+                            if (!encrypt && key != null)
+                            {
+                                // If the IV is set, and Key is set, then decrypt it
+                                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
+                                {
+                                    // Decrypt the data
+                                    scanData = AES.Decrypt(scanData, key, iv);
+                                }
+                            }
                             ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
                             clam.MaxStreamSize = Config.UploadConfig.MaxUploadSize;
-                            ClamScanResult scanResult = clam.SendAndScanFile(fileData);
+                            ClamScanResult scanResult = clam.SendAndScanFile(scanData);
 
                             switch (scanResult.Result)
                             {
