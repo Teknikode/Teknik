@@ -1,4 +1,5 @@
-﻿using Piwik.Tracker;
+﻿using nClam;
+using Piwik.Tracker;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -56,6 +57,26 @@ namespace Teknik.Areas.Upload.Controllers
                     {
                         fileData = binaryReader.ReadBytes(data.ContentLength);
                     }
+
+                    // Scan the file to detect a virus
+                    if (Config.UploadConfig.VirusScanEnable)
+                    {
+                        ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
+                        ClamScanResult scanResult = clam.SendAndScanFile(fileData);
+
+                        switch (scanResult.Result)
+                        {
+                            case ClamScanResults.Clean:
+                                break;
+                            case ClamScanResults.VirusDetected:
+                                return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.InfectedFiles.First().VirusName, Url.SubRouteUrl("tos", "TOS.Index")) } });
+                            case ClamScanResults.Error:
+                                break;
+                            case ClamScanResults.Unknown:
+                                break;
+                        }
+                    }
+
                     // if they want us to encrypt it, we do so here
                     if (encrypt)
                     {
@@ -86,14 +107,14 @@ namespace Teknik.Areas.Upload.Controllers
                         }
                         return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), key = key } }, "text/plain");
                     }
-                    return Json(new { error = "Unable to upload file" });
+                    return Json(new { error = new { message = "Unable to upload file" } });
                 }
                 else
                 {
-                    return Json(new { error = "File Too Large" });
+                    return Json(new { error = new { message = "File Too Large" } });
                 }
             }
-            return Json(new { error = "Uploads are disabled" });
+            return Json(new { error = new { message = "Uploads are disabled" } });
         }
 
         // User did not supply key

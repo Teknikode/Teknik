@@ -76,6 +76,10 @@
       <HintPath>..\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="nClam, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\nClam.2.0.6.0\lib\net40-Client\nClam.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -219,6 +223,9 @@
     <Compile Include="Areas\Stream\Controllers\StreamController.cs" />
     <Compile Include="Areas\Stream\StreamAreaRegistration.cs" />
     <Compile Include="Areas\Stream\ViewModels\StreamViewModel.cs" />
+    <Compile Include="Areas\TOS\Controllers\TOSController.cs" />
+    <Compile Include="Areas\TOS\TOSAreaRegistration.cs" />
+    <Compile Include="Areas\TOS\ViewModels\TOSViewModel.cs" />
     <Compile Include="Areas\Transparency\Controllers\TransparencyController.cs" />
     <Compile Include="Areas\Transparency\Models\Bill.cs" />
     <Compile Include="Areas\Transparency\Models\Donation.cs" />
@@ -503,6 +510,9 @@
     <Content Include="Areas\Shortener\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Shortener\Views\Shortener\Index.cshtml" />
     <Content Include="Areas\Help\Views\Help\API\v1\Shorten.cshtml" />
+    <Content Include="Areas\TOS\Views\web.config" />
+    <Content Include="Areas\TOS\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\TOS\Views\Shared\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -595,6 +605,8 @@
     <Folder Include="Areas\Profile\Views\Shared\" />
     <Folder Include="Areas\Shortener\Views\Shared\" />
     <Folder Include="Areas\Stream\Views\Shared\" />
+    <Folder Include="Areas\TOS\Models\" />
+    <Folder Include="Areas\TOS\Views\TOS\" />
     <Folder Include="Areas\Transparency\Views\Shared\" />
     <Folder Include="Areas\Upload\Views\Shared\" />
   </ItemGroup>

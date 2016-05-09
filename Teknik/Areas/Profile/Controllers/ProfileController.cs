@@ -392,9 +392,14 @@ namespace Teknik.Areas.Profile.Controllers
                             return Json(new { error = "Unable to delete git account.  Response Code: " + response.StatusCode });
                         }
                     }
-                    catch (Exception)
+                    catch (HttpException htex)
                     {
-                        return Json(new { error = "Unable to delete git account." });
+                        if (htex.GetHttpCode() != 404)
+                            return Json(new { error = "Unable to delete git account.  Http Exception: " + htex.Message });
+                    }
+                    catch (Exception ex)
+                    {
+                        return Json(new { error = "Unable to delete git account.  Exception: " + ex.Message });
                     }
                 }
 

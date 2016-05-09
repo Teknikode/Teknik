@@ -290,25 +290,26 @@ function uploadProgress(fileID, evt) {
 
 function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
     obj = JSON.parse(evt.target.responseText);
-    var name = obj.result.name;
-    var fullName = obj.result.url;
-    if (obj.result.key != null)
-        key = obj.result.key;
-    if (!saveKey) {
-        fullName = fullName + '#' + key;
-    }
-    $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
-    $('#progress-' + fileID).children('.progress-bar').html('Complete');
-    $('#upload-link-' + fileID).html('<p><a href="' + fullName + '" id="full-url-link-' + fileID + '" target="_blank" class="alert-link">' + fullName + '</a></p>');
-    var keyBtn = '<div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
+    if (obj.result != null) {
+        var name = obj.result.name;
+        var fullName = obj.result.url;
+        if (obj.result.key != null)
+            key = obj.result.key;
+        if (!saveKey) {
+            fullName = fullName + '#' + key;
+        }
+        $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
+        $('#progress-' + fileID).children('.progress-bar').html('Complete');
+        $('#upload-link-' + fileID).html('<p><a href="' + fullName + '" id="full-url-link-' + fileID + '" target="_blank" class="alert-link">' + fullName + '</a></p>');
+        var keyBtn = '<div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
                     <button type="button" class="btn btn-default btn-sm" id="save-key-link-' + fileID + '">Save Key On Server</button> \
                 </div>';
-    if (saveKey) {
-        keyBtn = '<div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
+        if (saveKey) {
+            keyBtn = '<div class="col-sm-4 text-center" id="key-link-' + fileID + '"> \
                     <button type="button" class="btn btn-default btn-sm" id="remove-key-link-' + fileID + '">Remove Key From Server</button> \
                 </div>';
-    }
-    $('#link-footer-' + fileID).html(' \
+        }
+        $('#link-footer-' + fileID).html(' \
                     <div class="row"> \
                         ' + keyBtn + ' \
                         <div class="col-sm-4 text-center"> \
@@ -319,14 +320,28 @@ function uploadComplete(fileID, key, saveKey, serverSideEncrypt, evt) {
                         </div> \
                     </div> \
               ');
-    if (saveKey) {
-        linkRemoveKey('#remove-key-link-' + fileID + '', name, key, fileID);
+        if (saveKey) {
+            linkRemoveKey('#remove-key-link-' + fileID + '', name, key, fileID);
+        }
+        else {
+            linkSaveKey('#save-key-link-' + fileID + '', name, key, fileID);
+        }
+        linkUploadDelete('#generate-delete-link-' + fileID + '', name);
+        linkShortenUrl('#shortenUrl-button-' + fileID + '', fileID, fullName);
     }
-    else {
-        linkSaveKey('#save-key-link-' + fileID + '', name, key, fileID);
+    else
+    {
+        $('#progress-' + fileID).children('.progress-bar').css('width', '100%');
+        $("#progress-" + fileID).children('.progress-bar').removeClass('progress-bar-success');
+        $("#progress-" + fileID).children('.progress-bar').addClass('progress-bar-danger');
+        $('#remove-link-' + fileID).text('Clear Upload');
+        if (obj.error != null) {
+            $('#progress-' + fileID).children('.progress-bar').html(obj.error.message);
+        }
+        else {
+            $('#progress-' + fileID).children('.progress-bar').html('Unable to Upload File');
+        }
     }
-    linkUploadDelete('#generate-delete-link-' + fileID + '', name);
-    linkShortenUrl('#shortenUrl-button-' + fileID + '', fileID, fullName);
 }
 
 function uploadFailed(fileID, evt) {

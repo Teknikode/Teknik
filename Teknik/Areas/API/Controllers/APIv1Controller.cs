@@ -12,6 +12,7 @@ using Teknik.Helpers;
 using Teknik.Models;
 using System.Text;
 using Teknik.Areas.Shortener.Models;
+using nClam;
 
 namespace Teknik.Areas.API.Controllers
 {
@@ -44,6 +45,25 @@ namespace Teknik.Areas.API.Controllers
                         using (var binaryReader = new BinaryReader(file.InputStream))
                         {
                             fileData = binaryReader.ReadBytes(file.ContentLength);
+                        }
+
+                        // Scan the file to detect a virus
+                        if (Config.UploadConfig.VirusScanEnable)
+                        {
+                            ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
+                            ClamScanResult scanResult = clam.SendAndScanFile(fileData);
+
+                            switch (scanResult.Result)
+                            {
+                                case ClamScanResults.Clean:
+                                    break;
+                                case ClamScanResults.VirusDetected:
+                                    return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.InfectedFiles.First().VirusName, Url.SubRouteUrl("tos", "TOS.Index")) } });
+                                case ClamScanResults.Error:
+                                    break;
+                                case ClamScanResults.Unknown:
+                                    break;
+                            }
                         }
 
                         // Need to grab the contentType if it's empty

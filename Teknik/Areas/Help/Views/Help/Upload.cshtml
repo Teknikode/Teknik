@@ -32,6 +32,13 @@
             <p>
                 The encryption library being used is <a href="http://code.google.com/p/crypto-js/">Crypto-JS</a> and the cipher being used is <b>AES-@Model.Config.UploadConfig.KeySize</b> using the mode <b>CTR</b>.  The variant of AES is determined by the size of the key used (128, 192, or 256).
             </p>
+            <h3>Upload Requirements</h3>
+            <p>
+                The maximum file size per upload is <b>@Utility.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</b>
+            </p>
+            <p>
+                Each file is scanned for viruses at upload.  If it fails, it will cancel the upload.
+            </p>
         </div>
     </div>
 </div>

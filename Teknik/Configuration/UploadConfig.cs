@@ -23,6 +23,10 @@ namespace Teknik.Configuration
         public bool IncludeExtension { get; set; }
         // The size of the chunk that the file will be encrypted/decrypted in (bytes)
         public int ChunkSize { get; set; }
+        // Virus Scanning Settings
+        public bool VirusScanEnable { get; set; }
+        public string ClamServer { get; set; }
+        public int ClamPort { get; set; }
 
         public UploadConfig()
         {
@@ -42,6 +46,9 @@ namespace Teknik.Configuration
             BlockSize = 128;
             IncludeExtension = true;
             ChunkSize = 1024;
+            VirusScanEnable = false;
+            ClamServer = "localhost";
+            ClamPort = 3310;
         }
     }
 }
