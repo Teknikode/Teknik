@@ -109,9 +109,9 @@ namespace ServerMaint
                             break;
                     }
                 }
-
-                Output(string.Format("Scanning Complete.  {0} Scanned | {1} Viruses Found | {2} Total Files", totalScans, totalViruses, totalCount));
             }
+
+            Output(string.Format("Scanning Complete.  {0} Scanned | {1} Viruses Found | {2} Total Files", totalScans, totalViruses, totalCount));
         }
 
         public static void Output(string message)
