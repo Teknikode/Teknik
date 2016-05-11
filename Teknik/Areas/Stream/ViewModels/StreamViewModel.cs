@@ -9,5 +9,11 @@ namespace Teknik.Areas.Stream.ViewModels
 {
     public class StreamViewModel : ViewModelBase
     {
+        public List<string> Streams;
+
+        public StreamViewModel()
+        {
+            Streams = new List<string>();
+        }
     }
 }

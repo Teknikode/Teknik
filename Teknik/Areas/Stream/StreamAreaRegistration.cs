@@ -25,6 +25,14 @@ namespace Teknik.Areas.Stream
                  new { controller = "Stream", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.StreamController).Namespace }
              );
+            context.MapSubdomainRoute(
+                 "Stream.View", // Route name
+                 new List<string>() { "stream" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "Stream/{id}",    // URL with parameters 
+                 new { controller = "Stream", action = "ViewStream" },  // Parameter defaults 
+                 new[] { typeof(Controllers.StreamController).Namespace }
+             );
         }
     }
 }
