@@ -265,6 +265,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ActionResultHelper.cs" />
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\Crypto.cs" />
     <Compile Include="Areas\Profile\Models\Group.cs" />
