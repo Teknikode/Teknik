@@ -246,6 +246,7 @@
     <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
     <Compile Include="Configuration\PiwikConfig.cs" />
     <Compile Include="Configuration\ShortenerConfig.cs" />
+    <Compile Include="Configuration\TransparencyConfig.cs" />
     <Compile Include="Configuration\StreamConfig.cs" />
     <Compile Include="Configuration\ApiConfig.cs" />
     <Compile Include="Configuration\DatabaseConfig.cs" />
