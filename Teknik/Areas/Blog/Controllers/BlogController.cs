@@ -81,13 +81,14 @@ namespace Teknik.Areas.Blog.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            PostViewModel model = new PostViewModel();
             // find the post specified
             bool isAuth = User.IsInRole("Admin");
             var post = db.BlogPosts.Include("Blog").Include("Blog.User").Where(p => (p.Blog.User.Username == username && p.BlogPostId == id) && 
                                                                                         (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
             if (post != null)
             {
-                PostViewModel model = new PostViewModel(post);
+                model = new PostViewModel(post);
 
                 if (post.System)
                 {
@@ -106,7 +107,9 @@ namespace Teknik.Areas.Blog.Controllers
                 }
                 return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
             }
-            return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", null);
+            model.Error = true;
+            model.ErrorMessage = "Blog Post does not exist.";
+            return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
         }
 
         [HttpPost]

@@ -34,6 +34,11 @@ namespace Teknik.Areas.Blog.ViewModels
 
         public List<BlogPostComment> Comments { get; set; }
 
+        public PostViewModel()
+        {
+
+        }
+
         public PostViewModel(BlogPost post)
         {
             BlogId = post.BlogId;

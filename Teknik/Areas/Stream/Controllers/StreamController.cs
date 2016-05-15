@@ -22,7 +22,7 @@ namespace Teknik.Areas.Stream.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult ViewStream(int id)
+        public FileStreamResult ViewStream(int id)
         {
             try
             {
@@ -40,14 +40,12 @@ namespace Teknik.Areas.Stream.Controllers
 
                         return File(fileResp.GetResponseStream(), fileResp.ContentType);
                     }
-                    return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
                 }
-                return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Redirect(Url.SubRouteUrl("error", "Error.Exception", new { exception = ex }));
             }
+            return null;
         }
     }
 }

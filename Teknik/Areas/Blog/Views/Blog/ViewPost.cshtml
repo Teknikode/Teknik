@@ -26,7 +26,7 @@
 @Scripts.Render("~/bundles/blog")
 
 <div class="container">
-@if (Model != null)
+@if (!Model.Error)
 {
     if (User.IsInRole("Admin") || Model.Blog.User.Username == User.Identity.Name)
     {
@@ -148,7 +148,7 @@ else
 {
     <div class="row">
         <div class="col-sm-12 text-center">
-            <h2>That post does not exist</h2>
+            <h2>@Model.ErrorMessage</h2>
         </div>
     </div>
 }
