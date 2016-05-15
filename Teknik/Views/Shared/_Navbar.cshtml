@@ -36,7 +36,7 @@
                             <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")">Shorten Url</a>
                         </li>
                         <li class="@Url.GetActive("git")">
-                            <a href="@Url.SubRouteUrl("git", "Git.Index")">Git</a>
+                            <a href="@Model.Config.GitConfig.Host">Git</a>
                         </li>
                         <li class="@Url.GetActive("mail")">
                             <a href="@Url.SubRouteUrl("mail", "Mail.Index")" target="_blank">Mail</a>
