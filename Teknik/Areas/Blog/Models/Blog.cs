@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Teknik.Areas.Profile.Models;
+using Teknik.Areas.Users.Models;
 
 namespace Teknik.Areas.Blog.Models
 {

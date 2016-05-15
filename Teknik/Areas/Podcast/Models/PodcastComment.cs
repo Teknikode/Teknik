@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Teknik.Areas.Profile.Models;
+using Teknik.Areas.Users.Models;
 
 namespace Teknik.Areas.Podcast.Models
 {

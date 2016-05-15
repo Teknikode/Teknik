@@ -11,13 +11,13 @@
             <a href="#" id="user_menu" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <strong class="caret"></strong></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="user_menu">
                 <li>
-                    <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = User.Identity.Name })">Profile</a>
+                    <a href="@Url.SubRouteUrl("user", "User.Index", new { username = User.Identity.Name })">Profile</a>
                 </li>
                 <li>
                     <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })">Blog</a>
                 </li>
                 <li>
-                    <a href="@Url.SubRouteUrl("profile", "Profile.Settings")">Settings</a>
+                    <a href="@Url.SubRouteUrl("user", "User.Settings")">Settings</a>
                 </li>
                 @if (User.IsInRole("Admin"))
                 {
@@ -26,7 +26,7 @@
                 </li>
                 }
                 <li>
-                    <a href="@Url.SubRouteUrl("profile", "Profile.Logout")">Sign Out</a>
+                    <a href="@Url.SubRouteUrl("user", "User.Logout")">Sign Out</a>
                 </li>
             </ul>
         </li>
@@ -38,7 +38,7 @@
         <li class="dropdown">
             <a class="dropdown-toggle" href="#" data-toggle="dropdown" id="reg_dropdown">Sign Up <strong class="caret"></strong></a>
             <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                @Html.Partial("../../Areas/Profile/Views/Profile/Register", new Teknik.Areas.Profile.ViewModels.RegisterViewModel())
+                @Html.Partial("../../Areas/User/Views/User/Register", new Teknik.Areas.Users.ViewModels.RegisterViewModel())
             </div>
         </li>
         }
@@ -47,7 +47,7 @@
         <li class="dropdown">
             <a class="dropdown-toggle" href="#" data-toggle="dropdown" id="login_dropdown">Sign In <strong class="caret"></strong></a>
             <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                @Html.Partial("../../Areas/Profile/Views/Profile/Login", new Teknik.Areas.Profile.ViewModels.LoginViewModel())
+                @Html.Partial("../../Areas/User/Views/User/Login", new Teknik.Areas.Users.ViewModels.LoginViewModel())
             </div>
         </li>
         }

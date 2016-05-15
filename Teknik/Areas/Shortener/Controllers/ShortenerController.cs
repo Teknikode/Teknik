@@ -46,7 +46,7 @@ namespace Teknik.Areas.Shortener.Controllers
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    Profile.Models.User foundUser = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                    Users.Models.User foundUser = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
                     if (foundUser != null)
                     {
                         newUrl.UserId = foundUser.UserId;

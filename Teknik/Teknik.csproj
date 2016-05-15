@@ -49,8 +49,8 @@
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
-      <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -83,7 +83,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Piwik.Tracker, Version=2.8.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -91,12 +91,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationFramework" />
-    <Reference Include="RouteDebugger, Version=2.1.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\routedebugger.2.1.4.0\lib\net40\RouteDebugger.dll</HintPath>
+    <Reference Include="RouteDebugger, Version=2.1.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\routedebugger.2.1.5\lib\net40\RouteDebugger.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SecurityDriven.Inferno, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Inferno.1.1.0\lib\net451\SecurityDriven.Inferno.dll</HintPath>
+    <Reference Include="SecurityDriven.Inferno, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inferno.1.2.0\lib\net452\SecurityDriven.Inferno.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -207,14 +207,14 @@
     <Compile Include="Areas\Privacy\Controllers\PrivacyController.cs" />
     <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
     <Compile Include="Areas\Privacy\ViewModels\PrivacyViewModel.cs" />
-    <Compile Include="Areas\Profile\Controllers\ProfileController.cs" />
-    <Compile Include="Areas\Profile\Models\BlogSettings.cs" />
-    <Compile Include="Areas\Profile\Models\UploadSettings.cs" />
-    <Compile Include="Areas\Profile\Models\UserSettings.cs" />
-    <Compile Include="Areas\Profile\ProfileAreaRegistration.cs" />
-    <Compile Include="Areas\Profile\Utility\UserHelper.cs" />
-    <Compile Include="Areas\Profile\ViewModels\ProfileViewModel.cs" />
-    <Compile Include="Areas\Profile\ViewModels\SettingsViewModel.cs" />
+    <Compile Include="Areas\User\Controllers\UserController.cs" />
+    <Compile Include="Areas\User\Models\BlogSettings.cs" />
+    <Compile Include="Areas\User\Models\UploadSettings.cs" />
+    <Compile Include="Areas\User\Models\UserSettings.cs" />
+    <Compile Include="Areas\User\UserAreaRegistration.cs" />
+    <Compile Include="Areas\User\Utility\UserHelper.cs" />
+    <Compile Include="Areas\User\ViewModels\ProfileViewModel.cs" />
+    <Compile Include="Areas\User\ViewModels\SettingsViewModel.cs" />
     <Compile Include="Areas\RSS\Controllers\RSSController.cs" />
     <Compile Include="Areas\RSS\RSSAreaRegistration.cs" />
     <Compile Include="Areas\Shortener\Controllers\ShortenerController.cs" />
@@ -269,11 +269,11 @@
     <Compile Include="Helpers\ActionResultHelper.cs" />
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\Crypto.cs" />
-    <Compile Include="Areas\Profile\Models\Group.cs" />
-    <Compile Include="Areas\Profile\Models\PermissionTarget.cs" />
-    <Compile Include="Areas\Profile\Models\PermissionType.cs" />
+    <Compile Include="Areas\User\Models\Group.cs" />
+    <Compile Include="Areas\User\Models\PermissionTarget.cs" />
+    <Compile Include="Areas\User\Models\PermissionType.cs" />
     <Compile Include="Areas\Blog\Models\BlogPost.cs" />
-    <Compile Include="Areas\Profile\Models\Role.cs" />
+    <Compile Include="Areas\User\Models\Role.cs" />
     <Compile Include="Helpers\HttpRequestExtensions.cs" />
     <Compile Include="Helpers\MysqlDatabase.cs" />
     <Compile Include="Helpers\MarkdownHelper.cs" />
@@ -288,10 +288,10 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\TeknikEntities.cs" />
-    <Compile Include="Areas\Profile\Models\User.cs" />
+    <Compile Include="Areas\User\Models\User.cs" />
     <Compile Include="Areas\Blog\Models\Blog.cs" />
-    <Compile Include="Areas\Profile\ViewModels\LoginViewModel.cs" />
-    <Compile Include="Areas\Profile\ViewModels\RegisterViewModel.cs" />
+    <Compile Include="Areas\User\ViewModels\LoginViewModel.cs" />
+    <Compile Include="Areas\User\ViewModels\RegisterViewModel.cs" />
     <Compile Include="Modules\PerformanceMonitorModule.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -310,7 +310,7 @@
     <Content Include="Areas\Paste\Scripts\SyntaxWorker.js" />
     <Content Include="Areas\Podcast\Content\Podcast.css" />
     <Content Include="Areas\Podcast\Scripts\Podcast.js" />
-    <Content Include="Areas\Profile\Scripts\Profile.js" />
+    <Content Include="Areas\User\Scripts\User.js" />
     <Content Include="Areas\Shortener\Scripts\Shortener.js" />
     <Content Include="Areas\Upload\Scripts\Download.js" />
     <Content Include="Content\audioplayer.css" />
@@ -439,9 +439,9 @@
     <Content Include="Areas\Contact\Views\web.config" />
     <Content Include="Areas\Contact\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Contact\Views\Contact\Index.cshtml" />
-    <Content Include="Areas\Profile\Views\web.config" />
-    <Content Include="Areas\Profile\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Profile\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\User\Views\web.config" />
+    <Content Include="Areas\User\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\User\Views\User\Index.cshtml" />
     <Content Include="Fonts\FontAwesome.otf" />
     <Content Include="Fonts\fontawesome-webfont.woff" />
     <Content Include="Fonts\fontawesome-webfont.ttf" />
@@ -457,14 +457,14 @@
     <Content Include="Areas\Blog\Views\Blog\Posts.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\Post.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\ViewPost.cshtml" />
-    <Content Include="Areas\Profile\Views\Profile\ViewLogin.cshtml" />
+    <Content Include="Areas\User\Views\User\ViewLogin.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\Comments.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\Comment.cshtml" />
     <Content Include="Fonts\fontawesome-webfont.woff2" />
     <Content Include="Areas\Upload\Views\web.config" />
     <Content Include="Areas\Upload\Views\Upload\Index.cshtml" />
     <Content Include="Areas\Upload\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Profile\Views\Profile\ViewRegistration.cshtml" />
+    <Content Include="Areas\User\Views\User\ViewRegistration.cshtml" />
     <Content Include="Areas\Error\Views\web.config" />
     <Content Include="Areas\Error\Views\Error\Http404.cshtml" />
     <Content Include="Areas\Error\Views\_ViewStart.cshtml" />
@@ -502,7 +502,7 @@
     <Content Include="Areas\Podcast\Views\Podcast\Comments.cshtml" />
     <Content Include="Areas\Podcast\Views\Podcast\ViewPodcast.cshtml" />
     <Content Include="App_Data\Config.json" />
-    <Content Include="Areas\Profile\Views\Profile\Settings.cshtml" />
+    <Content Include="Areas\User\Views\User\Settings.cshtml" />
     <Content Include="Areas\Transparency\Views\web.config" />
     <Content Include="Areas\Transparency\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Transparency\Views\Transparency\Index.cshtml" />
@@ -533,16 +533,15 @@
     <Content Include="Scripts\Dropzone\dropzone.js" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\Highlight\highlight.pack.js" />
-    <None Include="Scripts\jquery-2.2.0-vsdoc.js" />
-    <Content Include="Scripts\jquery-2.2.0.js" />
-    <Content Include="Scripts\jquery-2.2.0.min.js" />
-    <Content Include="Scripts\jquery-2.2.0.min.map" />
-    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <None Include="Scripts\jquery-2.2.3-vsdoc.js" />
+    <Content Include="Scripts\jquery-2.2.3.js" />
+    <Content Include="Scripts\jquery-2.2.3.min.js" />
     <Content Include="Scripts\jquery-ui.widgets.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
     <Content Include="Scripts\jquery.fileupload.js" />
     <Content Include="Scripts\jquery.iframe-transport.js" />
     <Content Include="Scripts\jquery.tocify.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -581,9 +580,10 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Navbar.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
-    <Content Include="Areas\Profile\Views\Profile\Login.cshtml" />
-    <Content Include="Areas\Profile\Views\Profile\Register.cshtml" />
+    <Content Include="Areas\User\Views\User\Login.cshtml" />
+    <Content Include="Areas\User\Views\User\Register.cshtml" />
     <Content Include="Areas\Dev\Views\Dev\Index.cshtml" />
+    <Content Include="Scripts\jquery-2.2.3.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\About\Models\" />
@@ -606,13 +606,13 @@
     <Folder Include="Areas\Podcast\Views\Shared\" />
     <Folder Include="Areas\Privacy\Models\" />
     <Folder Include="Areas\Privacy\Views\Shared\" />
-    <Folder Include="Areas\Profile\Views\Shared\" />
     <Folder Include="Areas\Shortener\Views\Shared\" />
     <Folder Include="Areas\Stream\Views\Shared\" />
     <Folder Include="Areas\TOS\Models\" />
     <Folder Include="Areas\TOS\Views\TOS\" />
     <Folder Include="Areas\Transparency\Views\Shared\" />
     <Folder Include="Areas\Upload\Views\Shared\" />
+    <Folder Include="Areas\User\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
@@ -679,12 +679,12 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="..\packages\GitVersionTask.3.4.1\build\dotnet\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.3.4.1\build\dotnet\GitVersionTask.targets')" />
+  <Import Project="..\packages\GitVersionTask.3.5.3\build\dotnet\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.3.5.3\build\dotnet\GitVersionTask.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\GitVersionTask.3.4.1\build\dotnet\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.3.4.1\build\dotnet\GitVersionTask.targets'))" />
+    <Error Condition="!Exists('..\packages\GitVersionTask.3.5.3\build\dotnet\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.3.5.3\build\dotnet\GitVersionTask.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

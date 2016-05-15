@@ -27,13 +27,13 @@ namespace Teknik.Migrations
             {
                 // Pre-populate with the default stuff
                 // Create system blog
-                Areas.Profile.Models.User systemUser = new Areas.Profile.Models.User();
+                Areas.Users.Models.User systemUser = new Areas.Users.Models.User();
                 systemUser.Username = Constants.SERVERUSER;
                 systemUser.JoinDate = DateTime.Now;
                 systemUser.LastSeen = DateTime.Now;
-                systemUser.UserSettings = new Areas.Profile.Models.UserSettings();
-                systemUser.BlogSettings = new Areas.Profile.Models.BlogSettings();
-                systemUser.UploadSettings = new Areas.Profile.Models.UploadSettings();
+                systemUser.UserSettings = new Areas.Users.Models.UserSettings();
+                systemUser.BlogSettings = new Areas.Users.Models.BlogSettings();
+                systemUser.UploadSettings = new Areas.Users.Models.UploadSettings();
                 context.Users.AddOrUpdate(systemUser);
                 context.SaveChanges();
 
@@ -44,32 +44,32 @@ namespace Teknik.Migrations
                 context.SaveChanges();
 
                 // Create roles and groups
-                Areas.Profile.Models.Role adminRole = new Areas.Profile.Models.Role();
+                Areas.Users.Models.Role adminRole = new Areas.Users.Models.Role();
                 adminRole.Name = "Admin";
                 adminRole.Description = "Allows complete access to user specific actions";
                 context.Roles.AddOrUpdate(adminRole);
 
-                Areas.Profile.Models.Role podcastRole = new Areas.Profile.Models.Role();
+                Areas.Users.Models.Role podcastRole = new Areas.Users.Models.Role();
                 podcastRole.Name = "Podcast";
                 podcastRole.Description = "Allows create/edit/delete access to podcasts";
                 context.Roles.AddOrUpdate(podcastRole);
 
-                Areas.Profile.Models.Group adminGroup = new Areas.Profile.Models.Group();
+                Areas.Users.Models.Group adminGroup = new Areas.Users.Models.Group();
                 adminGroup.Name = "Administrators";
                 adminGroup.Description = "System Administrators with full access";
-                adminGroup.Roles = new List<Areas.Profile.Models.Role>();
+                adminGroup.Roles = new List<Areas.Users.Models.Role>();
                 adminGroup.Roles.Add(adminRole);
                 adminGroup.Roles.Add(podcastRole);
                 context.Groups.AddOrUpdate(adminGroup);
 
-                Areas.Profile.Models.Group podcastGroup = new Areas.Profile.Models.Group();
+                Areas.Users.Models.Group podcastGroup = new Areas.Users.Models.Group();
                 podcastGroup.Name = "Podcast";
                 podcastGroup.Description = "Podcast team members";
-                podcastGroup.Roles = new List<Areas.Profile.Models.Role>();
+                podcastGroup.Roles = new List<Areas.Users.Models.Role>();
                 podcastGroup.Roles.Add(podcastRole);
                 context.Groups.AddOrUpdate(podcastGroup);
 
-                Areas.Profile.Models.Group memberGroup = new Areas.Profile.Models.Group();
+                Areas.Users.Models.Group memberGroup = new Areas.Users.Models.Group();
                 memberGroup.Name = "Member";
                 memberGroup.Description = "The default member group with basic permissions";
                 context.Groups.AddOrUpdate(memberGroup);
@@ -129,10 +129,10 @@ namespace Teknik.Migrations
                     foreach (var user in userRet)
                     {
                         // Create User
-                        Areas.Profile.Models.User newUser = new Areas.Profile.Models.User();
-                        newUser.UserSettings = new Areas.Profile.Models.UserSettings();
-                        newUser.BlogSettings = new Areas.Profile.Models.BlogSettings();
-                        newUser.UploadSettings = new Areas.Profile.Models.UploadSettings();
+                        Areas.User.Models.User newUser = new Areas.User.Models.User();
+                        newUser.UserSettings = new Areas.User.Models.UserSettings();
+                        newUser.BlogSettings = new Areas.User.Models.BlogSettings();
+                        newUser.UploadSettings = new Areas.User.Models.UploadSettings();
                         newUser.TransferAccount = true;
                         newUser.Username = user["username"].ToString();
                         newUser.HashedPassword = user["password"].ToString();
@@ -151,7 +151,7 @@ namespace Teknik.Migrations
                         context.Users.AddOrUpdate(newUser);
                         context.SaveChanges();
                         string oldUsername = user["username"].ToString();
-                        Areas.Profile.Models.User newUser = context.Users.Where(u => u.Username == oldUsername).FirstOrDefault();
+                        Areas.User.Models.User newUser = context.Users.Where(u => u.Username == oldUsername).FirstOrDefault();
                         if (newUser != null)
                         {
                             int oldUserId = Int32.Parse(user["id"].ToString());

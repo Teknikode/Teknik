@@ -10,7 +10,7 @@ using System.Data.Entity;
 using System.Web.Security;
 using Teknik.Migrations;
 using System.Data.Entity.Migrations;
-using Teknik.Areas.Profile.Models;
+using Teknik.Areas.Users.Models;
 using System.ComponentModel;
 using Teknik.Areas.Error.Controllers;
 using System.Web.Helpers;

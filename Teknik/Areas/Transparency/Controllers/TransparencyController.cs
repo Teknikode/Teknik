@@ -30,7 +30,7 @@ namespace Teknik.Areas.Transparency.Controllers
                 Paste.Models.Paste paste = db.Pastes.OrderByDescending(p => p.PasteId).FirstOrDefault();
                 model.PasteCount = (paste != null) ? paste.PasteId : 0;
 
-                Profile.Models.User user = db.Users.OrderByDescending(u => u.UserId).FirstOrDefault();
+                Users.Models.User user = db.Users.OrderByDescending(u => u.UserId).FirstOrDefault();
                 model.UserCount = (user != null) ? user.UserId : 0;
 
                 Shortener.Models.ShortenedUrl url = db.ShortenedUrls.OrderByDescending(s => s.ShortenedUrlId).FirstOrDefault();

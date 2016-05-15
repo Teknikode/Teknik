@@ -11,7 +11,7 @@
                 @if (!Model.System)
                 {
                     <text>
-                    by <a href="@Url.SubRouteUrl("profile", "Profile.Index", new { username = Model.Blog.User.Username })">@Model.Blog.User.Username</a> 
+                    by <a href="@Url.SubRouteUrl("user", "User.Index", new { username = Model.Blog.User.Username })">@Model.Blog.User.Username</a> 
                     </text>
                 }
                 @if (Model.Blog.User.Username == User.Identity.Name || User.IsInRole("Admin"))

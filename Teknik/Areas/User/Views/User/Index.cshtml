@@ -1,0 +1,235 @@
+﻿@model Teknik.Areas.Users.ViewModels.ProfileViewModel
+
+@using Teknik.Helpers
+@using Teknik.Areas.Paste
+@using Teknik.Areas.Upload
+
+<div class="container">
+    @if (!Model.Error)
+    {
+        bool OwnProfile = (Model.Username == User.Identity.Name || User.IsInRole("Admin"));
+        string pgpFingerprint = pgpFingerprint = string.Empty;
+        string pgpFingerprint64 = string.Empty;
+
+        if (!string.IsNullOrEmpty(Model.UserSettings.PGPSignature))
+        {
+            pgpFingerprint = PGP.GetFingerprint(Model.UserSettings.PGPSignature);
+            pgpFingerprint64 = PGP.GetFingerprint64(Model.UserSettings.PGPSignature);
+        }
+
+        <div class="row text-center">
+            <div class="col-sm-3"><h1>@Model.Username</h1></div>
+        </div>
+        <div class="modal fade" id="pgpSignature" tabindex="-1" role="dialog" aria-labelledby="pgpSignatureLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="newPostLabel">@(Model.Username)'s Public Key</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Fingerprint:
+                            </div>
+                            <div class="col-sm-10 text-right">
+                                @pgpFingerprint.AddStringAtInterval(4, " ")
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                64-bit:
+                            </div>
+                            <div class="col-sm-10 text-right">
+                                @pgpFingerprint64.AddStringAtInterval(4, " ")
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                Raw:
+                            </div>
+                            <div class="col-sm-10 text-right">
+                                <a href="@Url.SubRouteUrl("user", "User.PGPKey", new { username = Model.Username })" target="_blank">@Url.SubRouteUrl("user", "User.PGPKey", new { username = Model.Username })</a>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" onClick="SelectAll('pgpKeyBlock');" readonly>@Model.UserSettings.PGPSignature</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Left Info Box -->
+            <div class="col-sm-3"><!--left col-->
+                <ul class="list-group">
+                    <li class="list-group-item text-muted">Profile</li>
+                    @if (!string.IsNullOrEmpty(pgpFingerprint))
+                    {
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Public Key</strong></span> <a href="#" data-toggle="modal" data-target="#pgpSignature">@pgpFingerprint64.AddStringAtInterval(4, " ")</a></li>
+                    }
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.JoinDate.ToString("MMMM dd, yyyy")</time></li>
+                    @if (OwnProfile && User.Identity.IsAuthenticated)
+                    {
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.LastSeen.ToString("MMMM dd, yyyy")</time></li>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Email))
+                    {
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> <a href="mailto:@Model.Email">@Model.Email</a></li>
+                    }
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Blog</strong></span> <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = Model.Username })" id="blog_title">@(string.IsNullOrEmpty(Model.BlogSettings.Title) ? string.Format("{0}'s Blog", Model.Username) : Model.BlogSettings.Title)</a></li>
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Git</strong></span> <a href="@Url.SubRouteUrl("git", "Git.Index", new { username = Model.Username })">Public Repos</a></li>
+                </ul>
+                @if (!string.IsNullOrEmpty(Model.UserSettings.Website))
+                {
+                <div class="panel panel-default">
+                    <div class="panel-heading">Website <i class="fa fa-link fa-1x"></i></div>
+                    <div class="panel-body"><a href="@Model.UserSettings.Website" id="website">@Model.UserSettings.Website</a></div>
+                </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.UserSettings.Quote))
+                {
+                <div class="panel panel-default">
+                    <div class="panel-heading">Quote <i class="fa fa-quote-right fa-1x"></i></div>
+                    <div class="panel-body" id="quote">@Model.UserSettings.Quote</div>
+                </div>
+                }
+            </div><!--/col-3-->
+            <!-- Right Content Area -->
+            <div class="col-sm-9">
+                @if (OwnProfile)
+                {
+                <ul class="nav nav-tabs" id="myTab">
+                    <li><a href="#about" data-toggle="tab"> About Myself </a></li>
+                    <li><a href="#uploads" data-toggle="tab"> Uploads </a></li>
+                    <li><a href="#pastes" data-toggle="tab"> Pastes </a></li>
+                    <li><a href="#shortenedUrls" data-toggle="tab"> Shotened Urls </a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="about">
+                        <div class="col-sm-12" id="markdown_body">@Html.Markdown(@Model.UserSettings.About)</div>
+                    </div><!--/tab-pane-->
+                    @if (OwnProfile)
+                    {
+                    <div class="tab-pane" id="uploads">
+                        @foreach (Teknik.Areas.Upload.Models.Upload upload in Model.Uploads)
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading text-center">
+                                    <a href="@Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url })">@Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url })</a>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="col-sm-2 text-center">
+                                        <label for="size">Size</label>
+                                        <p id="size">@Utility.GetBytesReadable(upload.ContentLength)</p>
+                                    </div>
+                                    <div class="col-sm-3 text-center">
+                                        <label for="type">Type</label>
+                                        <p id="type">@upload.ContentType</p>
+                                    </div>
+                                    <div class="col-sm-3 text-center">
+                                        <label for="dateUploaded">Date Uploaded</label>
+                                        <p id="dateUploaded"><time datetime="@upload.DateUploaded.ToString("o")">@upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="downloads">Downloads</label>
+                                        <p id="downloads">@upload.Downloads</p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="deleteKey">Deletion Key</label>
+                                        <p id="deleteKey">@upload.DeleteKey</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div><!--/tab-pane-->
+                    <div class="tab-pane" id="pastes">
+                        @foreach (Teknik.Areas.Paste.Models.Paste paste in Model.Pastes)
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading text-center">
+                                    <a href="@Url.SubRouteUrl("paste", "Paste.View", new { url = paste.Url })">@(string.IsNullOrEmpty(paste.Title) ? "Untitled Paste" : paste.Title)</a>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="col-sm-2 text-center">
+                                        <label for="syntax">Syntax</label>
+                                        <p id="syntax">@paste.Syntax</p>
+                                    </div>
+                                    <div class="col-sm-3 text-center">
+                                        <label for="datePosted">Date Posted</label>
+                                        <p id="datePosted"><time datetime="@paste.DatePosted.ToString("o")">@paste.DatePosted.ToString("MMMM dd, yyyy")</time></p>
+                                    </div>
+                                    <div class="col-sm-3 text-center">
+                                        <label for="expireDate">Expire Date</label>
+                                        @{ 
+                                            string expireDate = "Never";
+                                            if (paste.ExpireDate != null)
+                                            {
+                                                expireDate = "<time datetime=\"" + paste.ExpireDate.Value.ToString("o") + "\">" + paste.ExpireDate.Value.ToString("MMMM dd, yyyy") + "</time>";
+                                            }
+                                        }
+                                        <p id="expireDate">@expireDate</p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="maxViews">Max Views</label>
+                                        <p id="maxViews">@paste.MaxViews</p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="views">Views</label>
+                                        <p id="views">@paste.Views</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="tab-pane" id="shortenedUrls">
+                        @foreach (Teknik.Areas.Shortener.Models.ShortenedUrl url in Model.ShortenedUrls)
+                        {
+                            string shortUrl = Url.SubRouteUrl(string.Empty, "Shortener.View", new { url = url.ShortUrl });
+                            if (Model.Config.DevEnvironment)
+                            {
+                                shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = url.ShortUrl });
+                            }
+                            <div class="panel panel-default">
+                                <div class="panel-heading text-center">
+                                    <a href="@shortUrl">@shortUrl</a>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="col-sm-5 text-center">
+                                        <label for="shortUrl">Short Url</label>
+                                        <p id="shortUrl"><a href="@url.OriginalUrl">@url.OriginalUrl</a></p>
+                                    </div>
+                                    <div class="col-sm-5 text-center">
+                                        <label for="dateAdded">Date Added</label>
+                                        <p id="dateAdded"><time datetime="@url.DateAdded.ToString("o")">@url.DateAdded.ToString("MMMM dd, yyyy")</time></p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="views">Views</label>
+                                        <p id="views">@url.Views</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    }
+                </div><!--/tab-content-->
+                }
+                else
+                {
+                    @Html.Markdown(@Model.UserSettings.About)
+                }
+            </div><!--/col-9-->
+        </div><!--/row-->
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <h2>@Model.ErrorMessage</h2>
+            </div>
+        </div>
+    }
+</div>

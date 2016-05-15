@@ -123,7 +123,7 @@ namespace Teknik.Areas.Paste.Controllers
 
                         if (User.Identity.IsAuthenticated)
                         {
-                            Profile.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                            Users.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
                             if (user != null)
                             {
                                 paste.UserId = user.UserId;

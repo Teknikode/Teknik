@@ -2,7 +2,7 @@
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using Teknik.Areas.Blog.Models;
-using Teknik.Areas.Profile.Models;
+using Teknik.Areas.Users.Models;
 using Teknik.Areas.Contact.Models;
 using Teknik.Migrations;
 using Teknik.Areas.Upload.Models;

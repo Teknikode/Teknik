@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Blog.ViewModels;
-using Teknik.Areas.Profile.Models;
+using Teknik.Areas.Users.Models;
 using Teknik.Controllers;
 using Teknik.Helpers;
 using Teknik.Models;

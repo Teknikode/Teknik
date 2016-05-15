@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Teknik.Areas.Profile.Models;
+using Teknik.Areas.Users.Models;
 
 namespace Teknik.Areas.Paste.Models
 {
