@@ -18,6 +18,7 @@ using Teknik.Models;
 using Teknik.ViewModels;
 using System.Windows;
 using System.Net;
+using Teknik.Areas.Users.Utility;
 
 namespace Teknik.Areas.Users.Controllers
 {
@@ -52,7 +53,7 @@ namespace Teknik.Areas.Users.Controllers
                     model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
                 }
                 model.JoinDate = user.JoinDate;
-                model.LastSeen = user.LastSeen;
+                model.LastSeen = UserHelper.GetLastActivity(db, Config, user);
 
                 model.UserSettings = user.UserSettings;
                 model.BlogSettings = user.BlogSettings;
@@ -208,7 +209,7 @@ namespace Teknik.Areas.Users.Controllers
             {
                 if (Config.UserConfig.RegistrationEnabled)
                 {
-                    if (Utility.UserHelper.UserExists(db, model.Username))
+                    if (UserHelper.UserExists(db, model.Username))
                     {
                         return Json(new { error = "That username already exists." });
                     }
@@ -216,51 +217,9 @@ namespace Teknik.Areas.Users.Controllers
                     {
                         return Json(new { error = "Passwords must match." });
                     }
+
                     try
                     {
-                        string email = string.Format("{0}@{1}", model.Username, Config.EmailConfig.Domain);
-                        // If Email Server is enabled
-                        if (Config.EmailConfig.Enabled)
-                        {
-                            // Connect to hmailserver COM
-                            var app = new hMailServer.Application();
-                            app.Connect();
-                            app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-
-                            var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
-                            try
-                            {
-                                var account = domain.Accounts.ItemByAddress[email];
-                                return Json(new { error = "That email already exists." });
-                            }
-                            catch { }
-
-                            // If we got an exception, then the email doesnt exist and we continue on!
-                            var newAccount = domain.Accounts.Add();
-                            newAccount.Address = email;
-                            newAccount.Password = model.Password;
-                            newAccount.Active = true;
-                            newAccount.MaxSize = Config.EmailConfig.MaxSize;
-
-                            newAccount.Save();
-                        }
-
-                        // If Git is enabled
-                        if (Config.GitConfig.Enabled)
-                        {
-                            // Add gogs user
-                            using (var client = new WebClient())
-                            {
-                                var obj = new { source_id = Config.GitConfig.SourceId, username = model.Username, email = email, login_name = email, password = model.Password };
-                                string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                                client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                                Uri baseUri = new Uri(Config.GitConfig.Host);
-                                Uri finalUri = new Uri(baseUri, "api/v1/admin/users?token=" + Config.GitConfig.AccessToken);
-                                string result = client.UploadString(finalUri, "POST", json);
-                            }
-                        }
-
-                        // Add User
                         User newUser = db.Users.Create();
                         newUser.JoinDate = DateTime.Now;
                         newUser.Username = model.Username;
@@ -268,18 +227,12 @@ namespace Teknik.Areas.Users.Controllers
                         newUser.UserSettings = new UserSettings();
                         newUser.BlogSettings = new BlogSettings();
                         newUser.UploadSettings = new UploadSettings();
-                        db.Users.Add(newUser);
-                        db.SaveChanges();
 
-                        // Generate blog for the user
-                        var newBlog = db.Blogs.Create();
-                        newBlog.UserId = newUser.UserId;
-                        db.Blogs.Add(newBlog);
-                        db.SaveChanges();
+                        UserHelper.AddUser(db, Config, newUser, model.Password);
                     }
                     catch (Exception ex)
                     {
-                        return Json(new { error = "Unable to create the user." });
+                        return Json(new { error = ex.Message });
                     }
                     return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false, ReturnUrl = model.ReturnUrl });
                 }
@@ -293,9 +246,10 @@ namespace Teknik.Areas.Users.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = Utility.UserHelper.GetUser(db, User.Identity.Name);
+                User user = UserHelper.GetUser(db, User.Identity.Name);
                 if (user != null)
                 {
+                    bool changePass = false;
                     string email = string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain);
                     // Changing Password?
                     if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
@@ -311,37 +265,7 @@ namespace Teknik.Areas.Users.Controllers
                             return Json(new { error = "New Password Must Match." });
                         }
                         user.HashedPassword = SHA384.Hash(User.Identity.Name, newPass);
-
-                        // Update Email Pass
-                        if (Config.EmailConfig.Enabled)
-                        {
-                            try
-                            {
-                                var app = new hMailServer.Application();
-                                app.Connect();
-                                app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-                                var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
-                                var account = domain.Accounts.ItemByAddress[email];
-                                account.Password = newPass;
-                                account.Save();
-                            }
-                            catch (COMException)
-                            { }
-                        }                        
-
-                        // Update Git Pass
-                        if (Config.GitConfig.Enabled)
-                        {
-                            using (var client = new WebClient())
-                            {
-                                var obj = new { source_id = Config.GitConfig.SourceId, email = email, password = newPass };
-                                string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                                client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                                Uri baseUri = new Uri(Config.GitConfig.Host);
-                                Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
-                                string result = client.UploadString(finalUri, "PATCH", json);
-                            }
-                        }
+                        changePass = true;
                     }
 
                     // PGP Key valid?
@@ -360,9 +284,7 @@ namespace Teknik.Areas.Users.Controllers
 
                     user.UploadSettings.SaveKey = saveKey;
                     user.UploadSettings.ServerSideEncrypt = serverSideEncrypt;
-
-                    db.Entry(user).State = EntityState.Modified;
-                    db.SaveChanges();
+                    UserHelper.SaveUser(db, Config, user, changePass, newPass);
                     return Json(new { result = true });
                 }
                 return Json(new { error = "User does not exist" });
@@ -375,130 +297,17 @@ namespace Teknik.Areas.Users.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (Config.EmailConfig.Enabled)
+                User user = UserHelper.GetUser(db, User.Identity.Name);
+                if (user != null)
                 {
                     try
                     {
-                        // Delete Email
-                        var app = new hMailServer.Application();
-                        app.Connect();
-                        app.Authenticate(Config.EmailConfig.Username, Config.EmailConfig.Password);
-                        var domain = app.Domains.ItemByName[Config.EmailConfig.Domain];
-                        var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain)];
-                        if (account != null)
-                        {
-                            account.Delete();
-                        }
-                    }
-                    catch (COMException)
-                    {
-                    }
-                    catch (Exception)
-                    {
-                        return Json(new { error = "Unable to delete email account." });
-                    }
-                }
-
-                // Delete Git
-                if (Config.GitConfig.Enabled)
-                {
-                    try
-                    {
-                        Uri baseUri = new Uri(Config.GitConfig.Host);
-                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + User.Identity.Name + "?token=" + Config.GitConfig.AccessToken);
-                        WebRequest request = WebRequest.Create(finalUri);
-                        request.Method = "DELETE";
-
-                        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                        if (response.StatusCode != HttpStatusCode.NotFound && response.StatusCode != HttpStatusCode.OK)
-                        {
-                            return Json(new { error = "Unable to delete git account.  Response Code: " + response.StatusCode });
-                        }
-                    }
-                    catch (HttpException htex)
-                    {
-                        if (htex.GetHttpCode() != 404)
-                            return Json(new { error = "Unable to delete git account.  Http Exception: " + htex.Message });
+                        UserHelper.DeleteUser(db, Config, user);
                     }
                     catch (Exception ex)
                     {
-                        // This error signifies the user doesn't exist, so we can continue deleting
-                        if (ex.Message != "The remote server returned an error: (404) Not Found.")
-                        {
-                            return Json(new { error = "Unable to delete git account.  Exception: " + ex.Message });
-                        }
+                        return Json(new { error = ex.Message });
                     }
-                }
-
-                // Update uploads
-                List<Upload.Models.Upload> uploads = db.Uploads.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
-                if (uploads != null)
-                {
-                    foreach (Upload.Models.Upload upload in uploads)
-                    {
-                        upload.UserId = null;
-                        db.Entry(upload).State = EntityState.Modified;
-                    }
-                }
-
-                // Update pastes
-                List<Paste.Models.Paste> pastes = db.Pastes.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
-                if (pastes != null)
-                {
-                    foreach (Paste.Models.Paste paste in pastes)
-                    {
-                        paste.UserId = null;
-                        db.Entry(paste).State = EntityState.Modified;
-                    }
-                }
-
-                // Update shortened urls
-                List<ShortenedUrl> shortUrls = db.ShortenedUrls.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
-                if (shortUrls != null)
-                {
-                    foreach (ShortenedUrl shortUrl in shortUrls)
-                    {
-                        shortUrl.UserId = null;
-                        db.Entry(shortUrl).State = EntityState.Modified;
-                    }
-                }
-
-                // Delete Blogs
-                Blog.Models.Blog blog = db.Blogs.Include("BlogPosts").Include("BlogPosts.Comments").Include("User").Where(u => u.User.Username == User.Identity.Name).FirstOrDefault();
-                if (blog != null)
-                {
-                    db.Blogs.Remove(blog);
-                }
-
-                // Delete post comments
-                List<BlogPostComment> postComments = db.BlogComments.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
-                if (postComments != null)
-                {
-                    foreach (BlogPostComment postComment in postComments)
-                    {
-                        db.BlogComments.Remove(postComment);
-                    }
-                }
-
-                // Delete post comments
-                List<Podcast.Models.PodcastComment> podComments = db.PodcastComments.Include("User").Where(u => u.User.Username == User.Identity.Name).ToList();
-                if (podComments != null)
-                {
-                    foreach (Podcast.Models.PodcastComment podComment in podComments)
-                    {
-                        db.PodcastComments.Remove(podComment);
-                    }
-                }
-
-                // Delete User
-                User user = Utility.UserHelper.GetUser(db, User.Identity.Name);
-                if (user != null)
-                {
-                    user.UserSettings = db.UserSettings.Find(user.UserId);
-                    user.BlogSettings = db.BlogSettings.Find(user.UserId);
-                    user.UploadSettings = db.UploadSettings.Find(user.UserId);
-                    db.Users.Remove(user);
-                    db.SaveChanges();
                     // Sign Out
                     Logout();
                     return Json(new { result = true });

@@ -16,12 +16,15 @@ namespace Teknik.Configuration
 
         public int SourceId { get; set; }
 
+        public DatabaseConfig Database { get; set; }
+
         public GitConfig()
         {
             Enabled = true;
             Host = string.Empty;
             AccessToken = string.Empty;
             SourceId = 1;
+            Database = new DatabaseConfig();
         }
     }
 }

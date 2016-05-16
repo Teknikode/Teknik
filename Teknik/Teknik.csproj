@@ -612,6 +612,7 @@
     <Folder Include="Areas\TOS\Views\TOS\" />
     <Folder Include="Areas\Transparency\Views\Shared\" />
     <Folder Include="Areas\Upload\Views\Shared\" />
+    <Folder Include="Areas\User\Repositories\" />
     <Folder Include="Areas\User\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
