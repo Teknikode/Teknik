@@ -274,6 +274,7 @@
     <Compile Include="Areas\User\Models\PermissionType.cs" />
     <Compile Include="Areas\Blog\Models\BlogPost.cs" />
     <Compile Include="Areas\User\Models\Role.cs" />
+    <Compile Include="Helpers\ExceptionExtensions.cs" />
     <Compile Include="Helpers\HttpRequestExtensions.cs" />
     <Compile Include="Helpers\MysqlDatabase.cs" />
     <Compile Include="Helpers\MarkdownHelper.cs" />

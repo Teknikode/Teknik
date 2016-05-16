@@ -73,7 +73,7 @@ namespace ServerMaint
             }
             catch (Exception ex)
             {
-                string msg = string.Format("[{0}] Exception: {1}", DateTime.Now, ex.Message);
+                string msg = string.Format("[{0}] Exception: {1}", DateTime.Now, ex.GetFullMessage(true));
                 File.AppendAllLines(errorFile, new List<string> { msg });
                 Output(msg);
             }
@@ -166,6 +166,13 @@ namespace ServerMaint
             List<User> curUsers = db.Users.ToList();
             foreach (User user in curUsers)
             {
+                // If the username isn't valid, don't clean it (Reserved, not formatted correctly, etc)
+                if (!UserHelper.ValidUsername(db, config, user.Username))
+                {
+                    continue;
+                }
+
+                #region Inactivity Cleaning
                 DateTime lastActivity = UserHelper.GetLastActivity(db, config, user);
 
                 TimeSpan inactiveTime = DateTime.Now.Subtract(lastActivity);
@@ -181,7 +188,7 @@ namespace ServerMaint
                 int daysForEmail = (int)Math.Floor((double)(maxDays / (numEmails + 1)));
                 for (int i = daysForEmail; i < maxDays; i = i + daysForEmail)
                 {
-                    if (inactiveTime.Days == daysForEmail)
+                    if (inactiveTime.Days == i)
                     {
                         string email = string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain);
                         // Let's send them an email
@@ -211,6 +218,23 @@ Thank you for your use of Teknik and I hope you decide to come back.
                         break;
                     }
                 }
+                #endregion
+
+                #region Missing Email Accounts
+                if (!UserHelper.UserEmailExists(config, user.Username))
+                {
+                    // They are missing an email account.  Something bad happened, so let's delete their account so they can start over.  :D
+                    UserHelper.DeleteUser(db, config, user);
+                }
+                #endregion
+
+                #region Missing Git Accounts
+                if (!UserHelper.UserGitExists(config, user.Username))
+                {
+                    // They are missing a git account.  Something bad happened, so let's delete their account so they can start over.  :D
+                    UserHelper.DeleteUser(db, config, user);
+                }
+                #endregion
             }
 
             // Add to transparency report if any users were removed

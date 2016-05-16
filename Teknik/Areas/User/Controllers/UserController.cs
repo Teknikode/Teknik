@@ -39,36 +39,44 @@ namespace Teknik.Areas.Users.Controllers
             ViewBag.Title = "User Does Not Exist - " + Config.Title;
             ViewBag.Description = "The User does not exist";
 
-            User user = db.Users.Where(u => u.Username == username).FirstOrDefault();
-
-            if (user != null)
+            try
             {
-                ViewBag.Title = username + "'s Profile - " + Config.Title;
-                ViewBag.Description = "Viewing " + username + "'s Profile";
-                
-                model.UserID = user.UserId;
-                model.Username = user.Username;
-                if (Config.EmailConfig.Enabled)
+                User user = db.Users.Where(u => u.Username == username).FirstOrDefault();
+
+                if (user != null)
                 {
-                    model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                    ViewBag.Title = username + "'s Profile - " + Config.Title;
+                    ViewBag.Description = "Viewing " + username + "'s Profile";
+
+                    model.UserID = user.UserId;
+                    model.Username = user.Username;
+                    if (Config.EmailConfig.Enabled)
+                    {
+                        model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                    }
+                    model.JoinDate = user.JoinDate;
+                    model.LastSeen = UserHelper.GetLastActivity(db, Config, user);
+
+                    model.UserSettings = user.UserSettings;
+                    model.BlogSettings = user.BlogSettings;
+                    model.UploadSettings = user.UploadSettings;
+
+                    model.Uploads = db.Uploads.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DateUploaded).ToList();
+
+                    model.Pastes = db.Pastes.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DatePosted).ToList();
+
+                    model.ShortenedUrls = db.ShortenedUrls.Where(s => s.UserId == user.UserId).OrderByDescending(s => s.DateAdded).ToList();
+
+                    return View(model);
                 }
-                model.JoinDate = user.JoinDate;
-                model.LastSeen = UserHelper.GetLastActivity(db, Config, user);
-
-                model.UserSettings = user.UserSettings;
-                model.BlogSettings = user.BlogSettings;
-                model.UploadSettings = user.UploadSettings;
-
-                model.Uploads = db.Uploads.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DateUploaded).ToList();
-
-                model.Pastes = db.Pastes.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DatePosted).ToList();
-
-                model.ShortenedUrls = db.ShortenedUrls.Where(s => s.UserId == user.UserId).OrderByDescending(s => s.DateAdded).ToList();
-
-                return View(model);
+                model.Error = true;
+                model.ErrorMessage = "The user does not exist";
             }
-            model.Error = true;
-            model.ErrorMessage = "The user does not exist";
+            catch (Exception ex)
+            {
+                model.Error = true;
+                model.ErrorMessage = ex.GetFullMessage(true);
+            }
             return View(model);
         }
         
@@ -210,9 +218,9 @@ namespace Teknik.Areas.Users.Controllers
             {
                 if (Config.UserConfig.RegistrationEnabled)
                 {
-                    if (UserHelper.UserExists(db, model.Username))
+                    if (UserHelper.UsernameAvailable(db, Config, model.Username))
                     {
-                        return Json(new { error = "That username already exists." });
+                        return Json(new { error = "That username is not available." });
                     }
                     if (model.Password != model.ConfirmPassword)
                     {
@@ -224,7 +232,6 @@ namespace Teknik.Areas.Users.Controllers
                         User newUser = db.Users.Create();
                         newUser.JoinDate = DateTime.Now;
                         newUser.Username = model.Username;
-                        newUser.HashedPassword = SHA384.Hash(model.Username, model.Password);
                         newUser.UserSettings = new UserSettings();
                         newUser.BlogSettings = new BlogSettings();
                         newUser.UploadSettings = new UploadSettings();
@@ -233,7 +240,7 @@ namespace Teknik.Areas.Users.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return Json(new { error = ex.Message });
+                        return Json(new { error = ex.GetFullMessage(true) });
                     }
                     return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false, ReturnUrl = model.ReturnUrl });
                 }
@@ -247,48 +254,54 @@ namespace Teknik.Areas.Users.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = UserHelper.GetUser(db, User.Identity.Name);
-                if (user != null)
+                try
                 {
-                    bool changePass = false;
-                    string email = string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain);
-                    // Changing Password?
-                    if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
+                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
                     {
-                        // Old Password Valid?
-                        if (SHA384.Hash(User.Identity.Name, curPass) != user.HashedPassword)
+                        bool changePass = false;
+                        string email = string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain);
+                        // Changing Password?
+                        if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
                         {
-                            return Json(new { error = "Invalid Original Password." });
+                            // Old Password Valid?
+                            if (SHA384.Hash(User.Identity.Name, curPass) != user.HashedPassword)
+                            {
+                                return Json(new { error = "Invalid Original Password." });
+                            }
+                            // The New Password Match?
+                            if (newPass != newPassConfirm)
+                            {
+                                return Json(new { error = "New Password Must Match." });
+                            }
+                            changePass = true;
                         }
-                        // The New Password Match?
-                        if (newPass != newPassConfirm)
+
+                        // PGP Key valid?
+                        if (!string.IsNullOrEmpty(pgpPublicKey) && !PGP.IsPublicKey(pgpPublicKey))
                         {
-                            return Json(new { error = "New Password Must Match." });
+                            return Json(new { error = "Invalid PGP Public Key" });
                         }
-                        user.HashedPassword = SHA384.Hash(User.Identity.Name, newPass);
-                        changePass = true;
+                        user.UserSettings.PGPSignature = pgpPublicKey;
+
+                        user.UserSettings.Website = website;
+                        user.UserSettings.Quote = quote;
+                        user.UserSettings.About = about;
+
+                        user.BlogSettings.Title = blogTitle;
+                        user.BlogSettings.Description = blogDesc;
+
+                        user.UploadSettings.SaveKey = saveKey;
+                        user.UploadSettings.ServerSideEncrypt = serverSideEncrypt;
+                        UserHelper.EditUser(db, Config, user, changePass, newPass);
+                        return Json(new { result = true });
                     }
-
-                    // PGP Key valid?
-                    if (!string.IsNullOrEmpty(pgpPublicKey) && !PGP.IsPublicKey(pgpPublicKey))
-                    {
-                        return Json(new { error = "Invalid PGP Public Key" });
-                    }
-                    user.UserSettings.PGPSignature = pgpPublicKey;
-
-                    user.UserSettings.Website = website;
-                    user.UserSettings.Quote = quote;
-                    user.UserSettings.About = about;
-
-                    user.BlogSettings.Title = blogTitle;
-                    user.BlogSettings.Description = blogDesc;
-
-                    user.UploadSettings.SaveKey = saveKey;
-                    user.UploadSettings.ServerSideEncrypt = serverSideEncrypt;
-                    UserHelper.SaveUser(db, Config, user, changePass, newPass);
-                    return Json(new { result = true });
+                    return Json(new { error = "User does not exist" });
                 }
-                return Json(new { error = "User does not exist" });
+                catch (Exception ex)
+                {
+                    return Json(new { error = ex.GetFullMessage(true) });
+                }
             }
             return Json(new { error = "Invalid Parameters" });
         }
@@ -298,20 +311,27 @@ namespace Teknik.Areas.Users.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = UserHelper.GetUser(db, User.Identity.Name);
-                if (user != null)
+                try
                 {
-                    try
+                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
                     {
-                        UserHelper.DeleteUser(db, Config, user);
+                        try
+                        {
+                            UserHelper.DeleteUser(db, Config, user);
+                        }
+                        catch (Exception ex)
+                        {
+                            return Json(new { error = ex.Message });
+                        }
+                        // Sign Out
+                        Logout();
+                        return Json(new { result = true });
                     }
-                    catch (Exception ex)
-                    {
-                        return Json(new { error = ex.Message });
-                    }
-                    // Sign Out
-                    Logout();
-                    return Json(new { result = true });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { error = ex.GetFullMessage(true) });
                 }
             }
             return Json(new { error = "Unable to delete user" });
