@@ -155,10 +155,11 @@ namespace Teknik.Areas.Users.Controllers
                         {
                             user.HashedPassword = SHA384.Hash(model.Username, model.Password);
                             user.TransferAccount = false;
-                            db.Entry(user).State = EntityState.Modified;
-                            db.SaveChanges();
                         }
-                        HttpCookie authcookie = Utility.UserHelper.CreateAuthCookie(model.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
+                        user.LastSeen = DateTime.Now;
+                        db.Entry(user).State = EntityState.Modified;
+                        db.SaveChanges();
+                        HttpCookie authcookie = UserHelper.CreateAuthCookie(model.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
                         Response.Cookies.Add(authcookie);
 
                         if (string.IsNullOrEmpty(model.ReturnUrl))

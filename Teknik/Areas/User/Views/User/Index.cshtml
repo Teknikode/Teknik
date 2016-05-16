@@ -73,7 +73,7 @@
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.JoinDate.ToString("MMMM dd, yyyy")</time></li>
                     @if (OwnProfile && User.Identity.IsAuthenticated)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.LastSeen.ToString("MMMM dd, yyyy hh:mm:ss")</time></li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.LastSeen.ToString("MMMM dd, yyyy hh:mm tt")</time></li>
                     }
                     @if (!string.IsNullOrEmpty(pgpFingerprint))
                     {
