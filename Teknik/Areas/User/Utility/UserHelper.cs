@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -19,6 +20,21 @@ namespace Teknik.Areas.Users.Utility
 {
     public static class UserHelper
     {
+        public static List<string> GetReservedUsernames(Config config)
+        {
+            List<string> foundNames = new List<string>();
+            if (config != null)
+            {
+                string path = config.UserConfig.ReservedUsernameDefinitionFile;
+                if (File.Exists(path))
+                {
+                    string[] names = File.ReadAllLines(path);
+                    foundNames = names.ToList();
+                }
+            }
+            return foundNames;
+        }
+
         #region User Management
         public static User GetUser(TeknikEntities db, string username)
         {
@@ -48,7 +64,9 @@ namespace Teknik.Areas.Users.Utility
         {
             bool isValid = true;
 
-            if (config.UserConfig.ReservedUsernames.Exists(u => u.ToLower() == username.ToLower()))
+            // Load reserved usernames
+            List<string> reserved = GetReservedUsernames(config);
+            if (reserved.Exists(u => u.ToLower() == username.ToLower()))
                 isValid = false;
 
             return isValid;

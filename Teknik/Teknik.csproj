@@ -300,6 +300,7 @@
     <Compile Include="App_Start\SubdomainRouteExtension.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\reservedUsernames.txt" />
     <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
     <Content Include="Areas\Contact\Scripts\Contact.js" />

@@ -218,7 +218,7 @@ namespace Teknik.Areas.Users.Controllers
             {
                 if (Config.UserConfig.RegistrationEnabled)
                 {
-                    if (UserHelper.UsernameAvailable(db, Config, model.Username))
+                    if (!UserHelper.UsernameAvailable(db, Config, model.Username))
                     {
                         return Json(new { error = "That username is not available." });
                     }
