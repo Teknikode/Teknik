@@ -78,7 +78,7 @@ namespace Teknik.Areas.Users.Utility
 
             isAvailable &= ValidUsername(db, config, username);
             isAvailable &= !UserExists(db, username);
-            isAvailable &= !UserEmailExists(config, username);
+            isAvailable &= !UserEmailExists(config, GetUserEmailAddress(config, username));
             isAvailable &= !UserGitExists(config, username);
 
             return isAvailable;
@@ -89,9 +89,8 @@ namespace Teknik.Areas.Users.Utility
             try
             {
                 DateTime lastActive = new DateTime(1900, 1, 1);
-                string email = string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain);
 
-                DateTime emailLastActive = UserEmailLastActive(config, user.Username);
+                DateTime emailLastActive = UserEmailLastActive(config, GetUserEmailAddress(config, user.Username));
                 if (lastActive < emailLastActive)
                     lastActive = emailLastActive;
 
@@ -115,10 +114,10 @@ namespace Teknik.Areas.Users.Utility
             try
             {
                 // Create an Email Account
-                AddUserEmail(config, user, password);
+                AddUserEmail(config, GetUserEmailAddress(config, user.Username), password);
 
                 // Create a Git Account
-                AddUserGit(config, user, password);
+                AddUserGit(config, user.Username, password);
 
                 // Add User
                 user.HashedPassword = SHA384.Hash(user.Username, password);
@@ -141,15 +140,14 @@ namespace Teknik.Areas.Users.Utility
         {
             try
             {
-                string email = string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain);
                 // Changing Password?
                 if (changePass)
                 {
                     // Change email password
-                    EditUserEmailPassword(config, user, password);
+                    EditUserEmailPassword(config, GetUserEmailAddress(config, user.Username), password);
 
                     // Update Git password
-                    EditUserGitPassword(config, user, password);
+                    EditUserGitPassword(config, user.Username, password);
 
                     // Update User password
                     user.HashedPassword = SHA384.Hash(user.Username, password);
@@ -168,10 +166,12 @@ namespace Teknik.Areas.Users.Utility
             try
             {
                 // Delete Email Account
-                DeleteUserEmail(config, user);
+                if (UserEmailExists(config, GetUserEmailAddress(config, user.Username)))
+                    DeleteUserEmail(config, GetUserEmailAddress(config, user.Username));
 
                 // Delete Git Account
-                DeleteUserGit(config, user);
+                if (UserGitExists(config, user.Username))
+                    DeleteUserGit(config, user.Username);
 
                 // Update uploads
                 List<Upload.Models.Upload> uploads = db.Uploads.Include("User").Where(u => u.User.Username == user.Username).ToList();
@@ -245,12 +245,16 @@ namespace Teknik.Areas.Users.Utility
         #endregion
 
         #region Email Management
-        public static bool UserEmailExists(Config config, string username)
+        public static string GetUserEmailAddress(Config config, string username)
+        {
+            return string.Format("{0}@{1}", username, config.EmailConfig.Domain);
+        }
+
+        public static bool UserEmailExists(Config config, string email)
         {
             // If Email Server is enabled
             if (config.EmailConfig.Enabled)
             {
-                string email = string.Format("{0}@{1}", username, config.EmailConfig.Domain);
                 // Connect to hmailserver COM
                 var app = new hMailServer.Application();
                 app.Connect();
@@ -268,13 +272,12 @@ namespace Teknik.Areas.Users.Utility
             return false;
         }
 
-        public static DateTime UserEmailLastActive(Config config, string username)
+        public static DateTime UserEmailLastActive(Config config, string email)
         {
             DateTime lastActive = new DateTime(1900, 1, 1);
 
             if (config.EmailConfig.Enabled)
             {
-                string email = string.Format("{0}@{1}", username, config.EmailConfig.Domain);
                 var app = new hMailServer.Application();
                 app.Connect();
                 app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
@@ -292,14 +295,13 @@ namespace Teknik.Areas.Users.Utility
             return lastActive;
         }
 
-        public static void AddUserEmail(Config config, User user, string password)
+        public static void AddUserEmail(Config config, string email, string password)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    string email = string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain);
                     // Connect to hmailserver COM
                     var app = new hMailServer.Application();
                     app.Connect();
@@ -321,14 +323,13 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static void EditUserEmailPassword(Config config, User user, string password)
+        public static void EditUserEmailPassword(Config config, string email, string password)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    string email = string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain);
                     var app = new hMailServer.Application();
                     app.Connect();
                     app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
@@ -344,19 +345,18 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static void DeleteUserEmail(Config config, User user)
+        public static void DeleteUserEmail(Config config, string email)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    string email = string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain);
                     var app = new hMailServer.Application();
                     app.Connect();
                     app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
                     var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                    var account = domain.Accounts.ItemByAddress[string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain)];
+                    var account = domain.Accounts.ItemByAddress[email];
                     if (account != null)
                     {
                         account.Delete();
@@ -399,7 +399,7 @@ namespace Teknik.Areas.Users.Utility
 
             if (config.GitConfig.Enabled)
             {
-                string email = string.Format("{0}@{1}", username, config.EmailConfig.Domain);
+                string email = GetUserEmailAddress(config, username);
                 // We need to check the actual git database
                 MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
                 string sql = @"SELECT MAX(gogs.repository.updated) AS LastUpdate 
@@ -419,18 +419,18 @@ namespace Teknik.Areas.Users.Utility
             return lastActive;
         }
 
-        public static void AddUserGit(Config config, User user, string password)
+        public static void AddUserGit(Config config, string username, string password)
         {
             try
             {
                 // If Git is enabled
                 if (config.GitConfig.Enabled)
                 {
-                    string email = string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain);
+                    string email = GetUserEmailAddress(config, username);
                     // Add gogs user
                     using (var client = new WebClient())
                     {
-                        var obj = new { source_id = config.GitConfig.SourceId, username = user.Username, email = email, login_name = email, password = password };
+                        var obj = new { source_id = config.GitConfig.SourceId, username = username, email = email, login_name = email, password = password };
                         string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                         client.Headers[HttpRequestHeader.ContentType] = "application/json";
                         Uri baseUri = new Uri(config.GitConfig.Host);
@@ -445,21 +445,21 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static void EditUserGitPassword(Config config, User user, string password)
+        public static void EditUserGitPassword(Config config, string username, string password)
         {
             try
             {
                 // If Git is enabled
                 if (config.GitConfig.Enabled)
                 {
-                    string email = string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain);
+                    string email = GetUserEmailAddress(config, username);
                     using (var client = new WebClient())
                     {
                         var obj = new { source_id = config.GitConfig.SourceId, email = email, password = password };
                         string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                         client.Headers[HttpRequestHeader.ContentType] = "application/json";
                         Uri baseUri = new Uri(config.GitConfig.Host);
-                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + user.Username + "?token=" + config.GitConfig.AccessToken);
+                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + username + "?token=" + config.GitConfig.AccessToken);
                         string result = client.UploadString(finalUri, "PATCH", json);
                     }
                 }
@@ -470,7 +470,7 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static void DeleteUserGit(Config config, User user)
+        public static void DeleteUserGit(Config config, string username)
         {
             try
             {
@@ -480,7 +480,7 @@ namespace Teknik.Areas.Users.Utility
                     try
                     {
                         Uri baseUri = new Uri(config.GitConfig.Host);
-                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + user.Username + "?token=" + config.GitConfig.AccessToken);
+                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + username + "?token=" + config.GitConfig.AccessToken);
                         WebRequest request = WebRequest.Create(finalUri);
                         request.Method = "DELETE";
 

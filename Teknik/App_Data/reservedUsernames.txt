@@ -60,6 +60,7 @@ login
 logout
 logs
 mail
+mailer
 mailman
 map
 maps

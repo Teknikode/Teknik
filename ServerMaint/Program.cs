@@ -56,6 +56,19 @@ namespace ServerMaint
                         {
                             CleanUsers(config, db, options.DaysBeforeDeletion, options.EmailsToSend);
                         }
+
+                        // Cleans the email for unused accounts
+                        if (options.CleanEmails)
+                        {
+                            CleanEmail(config, db);
+                        }
+
+                        // Cleans all the git accounts that are unused
+                        if (options.CleanGit)
+                        {
+                            CleanGit(config, db);
+                        }
+
                         Output(string.Format("[{0}] Finished Server Maintainence Process.", DateTime.Now));
                         return 0;
                     }
@@ -219,22 +232,6 @@ Thank you for your use of Teknik and I hope you decide to come back.
                     }
                 }
                 #endregion
-
-                #region Missing Email Accounts
-                if (!UserHelper.UserEmailExists(config, user.Username))
-                {
-                    // They are missing an email account.  Something bad happened, so let's delete their account so they can start over.  :D
-                    UserHelper.DeleteUser(db, config, user);
-                }
-                #endregion
-
-                #region Missing Git Accounts
-                if (!UserHelper.UserGitExists(config, user.Username))
-                {
-                    // They are missing a git account.  Something bad happened, so let's delete their account so they can start over.  :D
-                    UserHelper.DeleteUser(db, config, user);
-                }
-                #endregion
             }
 
             // Add to transparency report if any users were removed
@@ -247,6 +244,60 @@ Thank you for your use of Teknik and I hope you decide to come back.
             report.DateActionTaken = DateTime.Now;
             db.Takedowns.Add(report);
             db.SaveChanges();
+        }
+
+        public static void CleanEmail(Config config, TeknikEntities db)
+        {
+            if (config.EmailConfig.Enabled)
+            {
+                List<User> curUsers = db.Users.ToList();
+
+                // Connect to hmailserver COM
+                var app = new hMailServer.Application();
+                app.Connect();
+                app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
+
+                var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
+                var accounts = domain.Accounts;
+                for (int i = 0; i < accounts.Count; i++)
+                {
+                    var account = accounts[i];
+
+                    bool userExists = curUsers.Exists(u => UserHelper.GetUserEmailAddress(config, u.Username) == account.Address);
+                    bool isReserved = UserHelper.GetReservedUsernames(config).Exists(r => UserHelper.GetUserEmailAddress(config, r).ToLower() == account.Address.ToLower());
+                    if (!userExists && !isReserved)
+                    {
+                        // User doesn't exist, and it isn't reserved.  Let's nuke it.
+                        UserHelper.DeleteUserEmail(config, account.Address);
+                    }
+                }
+            }
+        }
+
+        public static void CleanGit(Config config, TeknikEntities db)
+        {
+            if (config.EmailConfig.Enabled)
+            {
+                List<User> curUsers = db.Users.ToList();
+                
+                // We need to check the actual git database
+                MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
+                string sql = @"SELECT gogs.user.login_name AS login_name, gogs.user.lower_name AS username FROM gogs.user";
+                var results = mySQL.Query(sql);
+
+                if (results != null && results.Any())
+                {
+                    foreach (var account in results)
+                    {
+                        bool userExists = curUsers.Exists(u => UserHelper.GetUserEmailAddress(config, u.Username).ToLower() == account["login_name"].ToString().ToLower());
+                        bool isReserved = UserHelper.GetReservedUsernames(config).Exists(r => UserHelper.GetUserEmailAddress(config, r) == account["login_name"].ToString().ToLower());
+                        if (!userExists && !isReserved)
+                        {
+                            UserHelper.DeleteUserGit(config, account["username"].ToString());
+                        }
+                    }
+                }
+            }
         }
 
         public static void Output(string message)

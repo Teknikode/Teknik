@@ -19,6 +19,12 @@ namespace ServerMaint
         [Option('u', "clean-users", DefaultValue = false, Required = false, HelpText = "Clean all inactive users")]
         public bool CleanUsers { get; set; }
 
+        [Option('e', "clean-emails", DefaultValue = false, Required = false, HelpText = "Clean all unused email accounts")]
+        public bool CleanEmails { get; set; }
+
+        [Option('g', "clean-git", DefaultValue = false, Required = false, HelpText = "Clean all unused git accounts")]
+        public bool CleanGit { get; set; }
+
         [Option('s', "scan", DefaultValue = false, Required = false, HelpText = "Scan all uploads for viruses")]
         public bool ScanUploads { get; set; }
 

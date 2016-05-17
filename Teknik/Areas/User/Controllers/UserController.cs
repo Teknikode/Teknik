@@ -316,14 +316,7 @@ namespace Teknik.Areas.Users.Controllers
                     User user = UserHelper.GetUser(db, User.Identity.Name);
                     if (user != null)
                     {
-                        try
-                        {
-                            UserHelper.DeleteUser(db, Config, user);
-                        }
-                        catch (Exception ex)
-                        {
-                            return Json(new { error = ex.Message });
-                        }
+                        UserHelper.DeleteUser(db, Config, user);
                         // Sign Out
                         Logout();
                         return Json(new { result = true });
