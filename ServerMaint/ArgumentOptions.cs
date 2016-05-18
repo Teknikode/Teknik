@@ -34,8 +34,11 @@ namespace ServerMaint
         [Option('d', "days", DefaultValue = 90, Required = false, HelpText = "Days before the user is deleted")]
         public int DaysBeforeDeletion { get; set; }
 
-        [Option('e', "emails", DefaultValue = 2, Required = false, HelpText = "Number of emails to send before deletion")]
-        public int EmailsToSend { get; set; }
+        [Option('l', "last-seen", DefaultValue = false, Required = false, HelpText = "Generate a list of user's last seen stats")]
+        public bool GenerateLastSeen { get; set; }
+
+        [Option('f', "last-seen-file", Required = false, HelpText = "The file in which you want the last seen stats to be saved to")]
+        public string LastSeenFile { get; set; }
 
         // Omitting long name, default --verbose
         [Option(HelpText = "Prints all messages to standard output.")]

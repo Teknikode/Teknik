@@ -402,16 +402,22 @@ namespace Teknik.Areas.Users.Utility
                 string email = GetUserEmailAddress(config, username);
                 // We need to check the actual git database
                 MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
-                string sql = @"SELECT MAX(gogs.repository.updated) AS LastUpdate 
-                                FROM gogs.repository
-                                INNER JOIN gogs.user
-                                WHERE gogs.user.login_name = {0} AND gogs.user.id = gogs.repository.owner_id";
-                object result = mySQL.ScalarQuery(sql, new object[] { email });
+                string sql = @"SELECT 
+	                                CASE
+		                                WHEN MAX(gogs.action.created) >= MAX(gogs.user.updated) THEN MAX(gogs.action.created)
+		                                WHEN MAX(gogs.user.updated) >= MAX(gogs.action.created) THEN MAX(gogs.user.updated)
+		                                ELSE MAX(gogs.user.updated)
+	                                END AS LastUpdate
+                                FROM gogs.user
+                                LEFT JOIN gogs.action ON gogs.user.id = gogs.action.act_user_id
+                                WHERE gogs.user.login_name = {0}";
+                var results = mySQL.Query(sql, new object[] { email });
 
-                if (result != null)
+                if (results != null && results.Any())
                 {
+                    var result = results.First();
                     DateTime tmpLast = lastActive;
-                    DateTime.TryParse(result.ToString(), out tmpLast);
+                    DateTime.TryParse(result["LastUpdate"].ToString(), out tmpLast);
                     if (lastActive < tmpLast)
                         lastActive = tmpLast;
                 }

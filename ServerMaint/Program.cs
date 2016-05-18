@@ -45,6 +45,8 @@ namespace ServerMaint
                         Config config = Config.Load(configPath);
                         TeknikEntities db = new TeknikEntities();
 
+                        Output(string.Format("[{0}] Started Server Maintenance Process.", DateTime.Now));
+
                         // Scan all the uploads for viruses, and remove the bad ones
                         if (options.ScanUploads && config.UploadConfig.VirusScanEnable)
                         {
@@ -54,7 +56,7 @@ namespace ServerMaint
                         // Cleans all inactive users
                         if (options.CleanUsers)
                         {
-                            CleanUsers(config, db, options.DaysBeforeDeletion, options.EmailsToSend);
+                            CleanUsers(config, db, options.DaysBeforeDeletion);
                         }
 
                         // Cleans the email for unused accounts
@@ -69,7 +71,13 @@ namespace ServerMaint
                             CleanGit(config, db);
                         }
 
-                        Output(string.Format("[{0}] Finished Server Maintainence Process.", DateTime.Now));
+                        // Generates a file for all of the user's last seen dates
+                        if (options.GenerateLastSeen)
+                        {
+                            GenerateLastSeen(config, db, options.LastSeenFile);
+                        }
+
+                        Output(string.Format("[{0}] Finished Server Maintenance Process.", DateTime.Now));
                         return 0;
                     }
                     else
@@ -95,6 +103,7 @@ namespace ServerMaint
 
         public static void ScanUploads(Config config, TeknikEntities db)
         {
+            Output(string.Format("[{0}] Started Virus Scan.", DateTime.Now));
             List<Upload> uploads = db.Uploads.ToList();
 
             int totalCount = uploads.Count();
@@ -158,24 +167,28 @@ namespace ServerMaint
                 }
             }
 
-            // Add to transparency report if any were found
-            Takedown report = db.Takedowns.Create();
-            report.Requester = TAKEDOWN_REPORTER;
-            report.RequesterContact = config.SupportEmail;
-            report.DateRequested = DateTime.Now;
-            report.Reason = "Malware Found";
-            report.ActionTaken = string.Format("{0} Uploads removed", totalViruses);
-            report.DateActionTaken = DateTime.Now;
-            db.Takedowns.Add(report);
-            db.SaveChanges();
+            if (totalViruses > 0)
+            {
+                // Add to transparency report if any were found
+                Takedown report = db.Takedowns.Create();
+                report.Requester = TAKEDOWN_REPORTER;
+                report.RequesterContact = config.SupportEmail;
+                report.DateRequested = DateTime.Now;
+                report.Reason = "Malware Found";
+                report.ActionTaken = string.Format("{0} Uploads removed", totalViruses);
+                report.DateActionTaken = DateTime.Now;
+                db.Takedowns.Add(report);
+                db.SaveChanges();
+            }
 
             Output(string.Format("Scanning Complete.  {0} Scanned | {1} Viruses Found | {2} Total Files", totalScans, totalViruses, totalCount));
         }
 
-        public static void CleanUsers(Config config, TeknikEntities db, int maxDays, int numEmails)
+        public static void CleanUsers(Config config, TeknikEntities db, int maxDays)
         {
             int totalUsers = 0;
 
+            Output(string.Format("[{0}] Started Cleaning of Inactive Users.", DateTime.Now));
             List<User> curUsers = db.Users.ToList();
             foreach (User user in curUsers)
             {
@@ -190,67 +203,81 @@ namespace ServerMaint
 
                 TimeSpan inactiveTime = DateTime.Now.Subtract(lastActivity);
 
-                // If older than max days, delete
+                // If older than max days, check their current usage
                 if (inactiveTime >= new TimeSpan(maxDays, 0, 0, 0, 0))
                 {
-                    UserHelper.DeleteUser(db, config, user);
-                    continue;
-                }
+                    // Check the user's usage of the service.
+                    bool noData = true;
 
-                // Otherwise, send an email if they are within +-1 day of email days
-                int daysForEmail = (int)Math.Floor((double)(maxDays / (numEmails + 1)));
-                for (int i = daysForEmail; i < maxDays; i = i + daysForEmail)
-                {
-                    if (inactiveTime.Days == i)
+                    // Any blog comments?
+                    var blogCom = db.BlogComments.Include("Users").Where(c => c.UserId == user.UserId);
+                    noData &= !(blogCom != null && blogCom.Any());
+
+                    // Any blog posts?
+                    var blogPosts = db.BlogPosts.Include("Blog").Include("Blog.Users").Where(p => p.Blog.UserId == user.UserId);
+                    noData &= !(blogPosts != null && blogPosts.Any());
+
+                    // Any podcast comments?
+                    var podCom = db.PodcastComments.Include("Users").Where(p => p.UserId == user.UserId);
+                    noData &= !(podCom != null && podCom.Any());
+
+                    // Any email?
+                    if (config.EmailConfig.Enabled)
                     {
-                        string email = string.Format("{0}@{1}", user.Username, config.EmailConfig.Domain);
-                        // Let's send them an email
-                        SmtpClient client = new SmtpClient();
-                        client.Host = config.ContactConfig.Host;
-                        client.Port = config.ContactConfig.Port;
-                        client.EnableSsl = config.ContactConfig.SSL;
-                        client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                        client.UseDefaultCredentials = true;
-                        client.Credentials = new NetworkCredential(config.ContactConfig.Username, config.ContactConfig.Password);
-                        client.Timeout = 5000;
+                        var app = new hMailServer.Application();
+                        app.Connect();
+                        app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
 
-                        MailMessage mail = new MailMessage(config.SupportEmail, email);
-                        mail.Subject = "Inactive Account Notice";
-                        mail.Body = string.Format(@"
-The account {0} has not had any activity for {1} days.  After {2} days of inactivity, this account will be deleted permanently.  
-
-In order to avoid this, login into your email, or teknik website.
-
-Thank you for your use of Teknik and I hope you decide to come back.
-
-- Teknik Administration", user.Username, inactiveTime.Days, maxDays);
-                        mail.BodyEncoding = UTF8Encoding.UTF8;
-                        mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
-
-                        client.Send(mail);
-                        break;
+                        try
+                        {
+                            var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
+                            var account = domain.Accounts.ItemByAddress[UserHelper.GetUserEmailAddress(config, user.Username)];
+                            noData &= ((account.Messages.Count == 0) && ((int)account.Size == 0));
+                        }
+                        catch { }
                     }
+
+                    // Any git repos?
+                    if (config.GitConfig.Enabled)
+                    {
+
+                    }
+
+                    if (noData)
+                    {
+                        // They have no data, so safe to delete them.
+                        UserHelper.DeleteUser(db, config, user);
+                        totalUsers++;
+                    }
+                    continue;
                 }
                 #endregion
             }
 
-            // Add to transparency report if any users were removed
-            Takedown report = db.Takedowns.Create();
-            report.Requester = TAKEDOWN_REPORTER;
-            report.RequesterContact = config.SupportEmail;
-            report.DateRequested = DateTime.Now;
-            report.Reason = "User Inactive";
-            report.ActionTaken = string.Format("{0} Users Removed", totalUsers);
-            report.DateActionTaken = DateTime.Now;
-            db.Takedowns.Add(report);
-            db.SaveChanges();
+            if (totalUsers > 0)
+            {
+                // Add to transparency report if any users were removed
+                Takedown report = db.Takedowns.Create();
+                report.Requester = TAKEDOWN_REPORTER;
+                report.RequesterContact = config.SupportEmail;
+                report.DateRequested = DateTime.Now;
+                report.Reason = "User Inactive";
+                report.ActionTaken = string.Format("{0} Users Removed", totalUsers);
+                report.DateActionTaken = DateTime.Now;
+                db.Takedowns.Add(report);
+                db.SaveChanges();
+            }
+
+            Output(string.Format("[{0}] Finished Cleaning of Inactive Users.  {1} Users Removed.", DateTime.Now, totalUsers));
         }
 
         public static void CleanEmail(Config config, TeknikEntities db)
         {
             if (config.EmailConfig.Enabled)
             {
+                Output(string.Format("[{0}] Started Cleaning of Orphaned Email Accounts.", DateTime.Now));
                 List<User> curUsers = db.Users.ToList();
+                int totalAccounts = 0;
 
                 // Connect to hmailserver COM
                 var app = new hMailServer.Application();
@@ -269,17 +296,36 @@ Thank you for your use of Teknik and I hope you decide to come back.
                     {
                         // User doesn't exist, and it isn't reserved.  Let's nuke it.
                         UserHelper.DeleteUserEmail(config, account.Address);
+                        totalAccounts++;
                     }
                 }
+
+                if (totalAccounts > 0)
+                {
+                    // Add to transparency report if any users were removed
+                    Takedown report = db.Takedowns.Create();
+                    report.Requester = TAKEDOWN_REPORTER;
+                    report.RequesterContact = config.SupportEmail;
+                    report.DateRequested = DateTime.Now;
+                    report.Reason = "Orphaned Email Account";
+                    report.ActionTaken = string.Format("{0} Accounts Removed", totalAccounts);
+                    report.DateActionTaken = DateTime.Now;
+                    db.Takedowns.Add(report);
+                    db.SaveChanges();
+                }
+
+                Output(string.Format("[{0}] Finished Cleaning of Orphaned Email Accounts.  {1} Accounts Removed.", DateTime.Now, totalAccounts));
             }
         }
 
         public static void CleanGit(Config config, TeknikEntities db)
         {
-            if (config.EmailConfig.Enabled)
+            if (config.GitConfig.Enabled)
             {
+                Output(string.Format("[{0}] Started Cleaning of Orphaned Git Accounts.", DateTime.Now));
                 List<User> curUsers = db.Users.ToList();
-                
+                int totalAccounts = 0;
+
                 // We need to check the actual git database
                 MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
                 string sql = @"SELECT gogs.user.login_name AS login_name, gogs.user.lower_name AS username FROM gogs.user";
@@ -294,10 +340,51 @@ Thank you for your use of Teknik and I hope you decide to come back.
                         if (!userExists && !isReserved)
                         {
                             UserHelper.DeleteUserGit(config, account["username"].ToString());
+                            totalAccounts++;
                         }
                     }
                 }
+
+                if (totalAccounts > 0)
+                {
+                    // Add to transparency report if any users were removed
+                    Takedown report = db.Takedowns.Create();
+                    report.Requester = TAKEDOWN_REPORTER;
+                    report.RequesterContact = config.SupportEmail;
+                    report.DateRequested = DateTime.Now;
+                    report.Reason = "Orphaned Git Account";
+                    report.ActionTaken = string.Format("{0} Accounts Removed", totalAccounts);
+                    report.DateActionTaken = DateTime.Now;
+                    db.Takedowns.Add(report);
+                    db.SaveChanges();
+                }
+
+                Output(string.Format("[{0}] Finished Cleaning of Orphaned Git Accounts.  {1} Accounts Removed.", DateTime.Now, totalAccounts));
             }
+        }
+
+        public static void GenerateLastSeen(Config config, TeknikEntities db, string fileName)
+        {
+            Output(string.Format("[{0}] Started Generation of Last Activity List.", DateTime.Now));
+            List<User> curUsers = db.Users.ToList();
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Username,Last Activity,Creation Date,Last Website Activity,Last Email Activity,Last Git Activity");
+            foreach (User user in curUsers)
+            {
+                sb.AppendLine(string.Format("{0},{1},{2},{3},{4},{5}",
+                                user.Username,
+                                UserHelper.GetLastActivity(db, config, user).ToString("g"),
+                                user.JoinDate.ToString("g"),
+                                user.LastSeen.ToString("g"),
+                                UserHelper.UserEmailLastActive(config, UserHelper.GetUserEmailAddress(config, user.Username)).ToString("g"),
+                                UserHelper.UserGitLastActive(config, user.Username).ToString("g")));
+            }
+            string dir = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            File.WriteAllText(fileName, sb.ToString());
+            Output(string.Format("[{0}] Finished Generating Last Activity List.", DateTime.Now));
         }
 
         public static void Output(string message)

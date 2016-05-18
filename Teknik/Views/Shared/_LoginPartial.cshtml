@@ -11,10 +11,10 @@
             <a href="#" id="user_menu" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <strong class="caret"></strong></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="user_menu">
                 <li>
-                    <a href="@Url.SubRouteUrl("user", "User.Index", new { username = User.Identity.Name })">Profile</a>
+                    <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })">Blog</a>
                 </li>
                 <li>
-                    <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })">Blog</a>
+                    <a href="@Url.SubRouteUrl("user", "User.Index", new { username = User.Identity.Name })">Profile</a>
                 </li>
                 <li>
                     <a href="@Url.SubRouteUrl("user", "User.Settings")">Settings</a>
@@ -35,11 +35,14 @@
     {
         if (Model.Config.UserConfig.RegistrationEnabled)
         {
-        <li class="dropdown">
-            <a class="dropdown-toggle" href="#" data-toggle="dropdown" id="reg_dropdown">Sign Up <strong class="caret"></strong></a>
-            <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
+        <li>
+            <p class="navbar-btn">
+                <a href="@Url.SubRouteUrl("user", "User.Register", new { returnUrl = Request.Url.AbsoluteUri })" class="btn btn-default">Sign Up</a>
+            </p>
+            @*<a class="dropdown-toggle" href="#" data-toggle="dropdown" id="reg_dropdown">Sign Up <strong class="caret"></strong></a>
+            <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px; min-width: 100px;">
                 @Html.Partial("../../Areas/User/Views/User/Register", new Teknik.Areas.Users.ViewModels.RegisterViewModel())
-            </div>
+            </div>*@
         </li>
         }
         if (Model.Config.UserConfig.LoginEnabled)
