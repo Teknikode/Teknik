@@ -106,6 +106,10 @@ namespace ServerMaint
             Output(string.Format("[{0}] Started Virus Scan.", DateTime.Now));
             List<Upload> uploads = db.Uploads.ToList();
 
+            // Initialize ClamAV
+            ClamClient clam = new ClamClient(config.UploadConfig.ClamServer, config.UploadConfig.ClamPort);
+            clam.MaxStreamSize = config.UploadConfig.MaxUploadSize;
+
             int totalCount = uploads.Count();
             int totalScans = 0;
             int totalClean = 0;
@@ -127,8 +131,6 @@ namespace ServerMaint
                     }
 
                     // We have the data, let's scan it
-                    ClamClient clam = new ClamClient(config.UploadConfig.ClamServer, config.UploadConfig.ClamPort);
-                    clam.MaxStreamSize = config.UploadConfig.MaxUploadSize;
                     ClamScanResult scanResult = clam.SendAndScanFile(data);
 
                     switch (scanResult.Result)
@@ -240,13 +242,21 @@ namespace ServerMaint
                     // Any git repos?
                     if (config.GitConfig.Enabled)
                     {
+                        string email = UserHelper.GetUserEmailAddress(config, user.Username);
+                        // We need to check the actual git database
+                        MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
+                        string sql = @"SELECT * FROM gogs.repository
+                                        LEFT JOIN gogs.action ON gogs.user.id = gogs.action.act_user_id
+                                        WHERE gogs.user.login_name = {0}";
+                        var results = mySQL.Query(sql, new object[] { email });
 
+                        noData &= !(results != null && results.Any());
                     }
 
                     if (noData)
                     {
                         // They have no data, so safe to delete them.
-                        UserHelper.DeleteUser(db, config, user);
+                        UserHelper.DeleteUser(db, config, UserHelper.GetUser(db, user.Username));
                         totalUsers++;
                     }
                     continue;
