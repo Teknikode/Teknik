@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Security;
@@ -64,10 +65,22 @@ namespace Teknik.Areas.Users.Utility
         {
             bool isValid = true;
 
+            // Must be something there
+            isValid &= !string.IsNullOrEmpty(username);
+
+            // Is the format correct?
+            Regex reg = new Regex(config.UserConfig.UsernameFilter);
+            isValid &= reg.IsMatch(username);
+
+            // Meets the min length?
+            isValid &= (username.Length >= config.UserConfig.MinUsernameLength);
+
+            // Meets the max length?
+            isValid &= (username.Length <= config.UserConfig.MaxUsernameLength);
+
             // Load reserved usernames
             List<string> reserved = GetReservedUsernames(config);
-            if (reserved.Exists(u => u.ToLower() == username.ToLower()))
-                isValid = false;
+            isValid &= (reserved.Exists(u => u.ToLower() == username.ToLower()));
 
             return isValid;
         }
