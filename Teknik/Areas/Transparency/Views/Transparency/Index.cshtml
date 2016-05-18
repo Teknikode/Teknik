@@ -3,259 +3,272 @@
 @using Teknik.Helpers
 @using Teknik.Areas.Transparency.Models
 
+@Scripts.Render("~/bundles/transparency")
+
 <div class="container">
-    <div class="row">
-        <div class="col-sm-10 col-sm-offset-1">
-            <h2 class="text-center"><b>Behind the Scenes</b></h2>
-            <hr>
-            <p>
-                Here you can view all of Teknik's financial information, takedown requests and the actions we took, as well as some general statistics for the site's services.
-            </p>
-            <p>
-                If you would like to request additional information about Teknik, please feel free to contact us through our <a href="@Url.SubRouteUrl("contact", "Contact.Index")" target="_blank">Contact Form</a> or by emailing us at <a href="mailto:@Model.Config.SupportEmail">@Model.Config.SupportEmail</a>.
-            </p>
-            <p>
-                Want to make a donation?  Visit our <a href="@Url.SubRouteUrl("about", "About.Index")" target="_blank">About Page</a> and choose a donation method at the bottom.
-            </p>
-            <br />
-            <h2 class="text-center"><b>Statistics</b></h2>
-            <hr>
-            <div class="row">
-                <div class="col-sm-6">
-                    <h3>Uploads</h3>
-                    <p>Number of Uploads: @Model.UploadCount</p>
-                    <p>Total Size: @Utility.GetBytesReadable(Model.UploadSize)</p>
-                </div>
-                <div class="col-sm-6">
-                    <h3>Pastes</h3>
-                    <p>Number of Pastes: @Model.PasteCount</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <h3>Users</h3>
-                    <p>Number of Users: @Model.UserCount</p>
-                </div>
-                <div class="col-sm-6">
-                    <h3>Shortened Urls</h3>
-                    <p>Number of Shortened Urls: @Model.ShortenedUrlCount</p>
-                </div>
-            </div>
-            <br />
-            <h2 class="text-center"><b>Transactions</b></h2>
-            <hr>
-            <h3 class="text-center">Total Amounts</h3>
-            <div class="row">
-                <div class="col-sm-3 text-center">
-                    <h4>Donations</h4>
-                    @foreach (var val in Model.TotalDonations)
-                    {
-                        <p>@Math.Round(val.Value, 2) @val.Key</p>
-                    }
-                </div>
-                <div class="col-sm-3 text-center">
-                    <h4>Bills</h4>
-                    @foreach (var val in Model.TotalBills)
-                    {
-                        <p>@Math.Round(val.Value, 2) @val.Key</p>
-                    }
-                </div>
-                <div class="col-sm-3 text-center">
-                    <h4>One-Time Payments</h4>
-                    @foreach (var val in Model.TotalOneTimes)
-                    {
-                        <p>@Math.Round(val.Value, 2) @val.Key</p>
-                    }
-                </div>
-                <div class="col-sm-3 text-center">
-                    <h4>Net Profit</h4>
-                    @foreach (var val in Model.TotalNet)
-                    {
-                        <p>@Math.Round(val.Value, 2) @val.Key</p>
-                    }
-                </div>
-            </div>
-            @if (Model.Bills != null && Model.Bills.Any())
-            {
-                <h3>Bills</h3>
+    @if (Model.Config.TransparencyConfig.Enabled)
+    {
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <h2 class="text-center"><b>Behind the Scenes</b></h2>
+                <hr>
+                <p>
+                    Here you can view all of Teknik's financial information, takedown requests and the actions we took, as well as some general statistics for the site's services.
+                </p>
+                <p>
+                    If you would like to request additional information about Teknik, please feel free to contact us through our <a href="@Url.SubRouteUrl("contact", "Contact.Index")" target="_blank">Contact Form</a> or by emailing us at <a href="mailto:@Model.Config.SupportEmail">@Model.Config.SupportEmail</a>.
+                </p>
+                <p>
+                    Want to make a donation?  Visit our <a href="@Url.SubRouteUrl("about", "About.Index")" target="_blank">About Page</a> and choose a donation method at the bottom.
+                </p>
+                <br />
+                <h2 class="text-center"><b>Statistics</b></h2>
+                <hr>
                 <div class="row">
-                    <div class="col-sm-12">
-                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#bills-section">View Bills</button>
+                    <div class="col-sm-6">
+                        <h3>Uploads</h3>
+                        <p>Number of Uploads: @Model.UploadCount</p>
+                        <p>Total Size: @Utility.GetBytesReadable(Model.UploadSize)</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <h3>Pastes</h3>
+                        <p>Number of Pastes: @Model.PasteCount</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h3>Users</h3>
+                        <p>Number of Users: @Model.UserCount</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <h3>Shortened Urls</h3>
+                        <p>Number of Shortened Urls: @Model.ShortenedUrlCount</p>
                     </div>
                 </div>
                 <br />
-                <div id="bills-section" class="collapse">
+                <h2 class="text-center"><b>Transactions</b></h2>
+                <hr>
+                <h3 class="text-center">Total Amounts</h3>
+                <div class="row">
+                    <div class="col-sm-3 text-center">
+                        <h4>Donations</h4>
+                        @foreach (var val in Model.TotalDonations)
+                        {
+                            <p>@Math.Round(val.Value, 2) @val.Key</p>
+                        }
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <h4>Bills</h4>
+                        @foreach (var val in Model.TotalBills)
+                        {
+                            <p>@Math.Round(val.Value, 2) @val.Key</p>
+                        }
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <h4>One-Time Payments</h4>
+                        @foreach (var val in Model.TotalOneTimes)
+                        {
+                            <p>@Math.Round(val.Value, 2) @val.Key</p>
+                        }
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <h4>Net Profit</h4>
+                        @foreach (var val in Model.TotalNet)
+                        {
+                            <p>@Math.Round(val.Value, 2) @val.Key</p>
+                        }
+                    </div>
+                </div>
+                @if (Model.Bills != null && Model.Bills.Any())
+                {
+                    <h3>Bills</h3>
                     <div class="row">
-                        <div class="col-sm-3">
-                            <h4><strong>Date</strong></h4>
-                        </div>
-                        <div class="col-sm-2">
-                            <h4><strong>Amount</strong></h4>
-                        </div>
-                        <div class="col-sm-7">
-                            <h4><strong>Description</strong></h4>
+                        <div class="col-sm-12">
+                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#bills-section">View Bills</button>
                         </div>
                     </div>
-                    @foreach (Bill bill in Model.Bills)
-                    {
+                    <br />
+                    <div id="bills-section">
                         <div class="row">
                             <div class="col-sm-3">
-                                @bill.DateSent.ToString("MMMM dd, yyyy")
+                                <h4><strong>Date</strong></h4>
                             </div>
                             <div class="col-sm-2">
-                                @bill.Amount <var>@bill.Currency</var>
+                                <h4><strong>Amount</strong></h4>
                             </div>
                             <div class="col-sm-7">
-                                @bill.Reason
+                                <h4><strong>Description</strong></h4>
                             </div>
                         </div>
-                    }
-                </div>
-            }
-            @if (Model.OneTimes != null && Model.OneTimes.Any())
-            {
-                <h3>One Time Payments</h3>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#oneTime-section">View Payments</button>
+                        @foreach (Bill bill in Model.Bills)
+                        {
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    @bill.DateSent.ToString("MMMM dd, yyyy")
+                                </div>
+                                <div class="col-sm-2">
+                                    @bill.Amount <var>@bill.Currency</var>
+                                </div>
+                                <div class="col-sm-7">
+                                    @bill.Reason
+                                </div>
+                            </div>
+                        }
                     </div>
-                </div>
-                <br />
-                <div id="oneTime-section" class="collapse">
+                }
+                @if (Model.OneTimes != null && Model.OneTimes.Any())
+                {
+                    <h3>One Time Payments</h3>
                     <div class="row">
-                        <div class="col-sm-3">
-                            <h4><strong>Date</strong></h4>
-                        </div>
-                        <div class="col-sm-2">
-                            <h4><strong>Amount</strong></h4>
-                        </div>
-                        <div class="col-sm-7">
-                            <h4><strong>Reason for Payment</strong></h4>
+                        <div class="col-sm-12">
+                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#oneTime-section">View Payments</button>
                         </div>
                     </div>
-                    @foreach (OneTime oneTime in Model.OneTimes)
-                    {
+                    <br />
+                    <div id="oneTime-section">
                         <div class="row">
                             <div class="col-sm-3">
-                                @oneTime.DateSent.ToString("MMMM dd, yyyy")
+                                <h4><strong>Date</strong></h4>
                             </div>
                             <div class="col-sm-2">
-                                @oneTime.Amount <var>@oneTime.Currency</var>
+                                <h4><strong>Amount</strong></h4>
                             </div>
                             <div class="col-sm-7">
-                                @oneTime.Reason
+                                <h4><strong>Reason for Payment</strong></h4>
                             </div>
                         </div>
-                    }
-                </div>
-            }
-            @if (Model.Donations != null && Model.Donations.Any())
-            {
-                <h3>Donations</h3>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#donations-section">View Donations</button>
+                        @foreach (OneTime oneTime in Model.OneTimes)
+                        {
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    @oneTime.DateSent.ToString("MMMM dd, yyyy")
+                                </div>
+                                <div class="col-sm-2">
+                                    @oneTime.Amount <var>@oneTime.Currency</var>
+                                </div>
+                                <div class="col-sm-7">
+                                    @oneTime.Reason
+                                </div>
+                            </div>
+                        }
                     </div>
-                </div>
-                <br />
-                <div id="donations-section" class="collapse">
+                }
+                @if (Model.Donations != null && Model.Donations.Any())
+                {
+                    <h3>Donations</h3>
                     <div class="row">
-                        <div class="col-sm-3">
-                            <h4><strong>Date</strong></h4>
-                        </div>
-                        <div class="col-sm-2">
-                            <h4><strong>Amount</strong></h4>
-                        </div>
-                        <div class="col-sm-2">
-                            <h4><strong>Donor</strong></h4>
-                        </div>
-                        <div class="col-sm-5">
-                            <h4><strong>Reason for Donation</strong></h4>
+                        <div class="col-sm-12">
+                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#donations-section">View Donations</button>
                         </div>
                     </div>
-                    @foreach (Donation donation in Model.Donations)
-                    {
+                    <br />
+                    <div id="donations-section">
                         <div class="row">
                             <div class="col-sm-3">
-                                @donation.DateSent.ToString("MMMM dd, yyyy")
+                                <h4><strong>Date</strong></h4>
                             </div>
                             <div class="col-sm-2">
-                                @donation.Amount <var>@donation.Currency</var>
+                                <h4><strong>Amount</strong></h4>
                             </div>
                             <div class="col-sm-2">
-                                @donation.Sender
+                                <h4><strong>Donor</strong></h4>
                             </div>
                             <div class="col-sm-5">
-                                @donation.Reason
+                                <h4><strong>Reason for Donation</strong></h4>
                             </div>
                         </div>
-                    }
-                </div>
-            }
-            <br />
-            <h2 class="text-center"><b>Takedowns</b></h2>
-            <hr>
-            @if (Model.Takedowns != null && Model.Takedowns.Any())
-            {
-                <h3>Takedowns</h3>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#takedowns-section">View Takedowns</button>
+                        @foreach (Donation donation in Model.Donations)
+                        {
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    @donation.DateSent.ToString("MMMM dd, yyyy")
+                                </div>
+                                <div class="col-sm-2">
+                                    @donation.Amount <var>@donation.Currency</var>
+                                </div>
+                                <div class="col-sm-2">
+                                    @donation.Sender
+                                </div>
+                                <div class="col-sm-5">
+                                    @donation.Reason
+                                </div>
+                            </div>
+                        }
                     </div>
-                </div>
+                }
                 <br />
-                <div id="takedowns-section" class="collapse">
+                <h2 class="text-center"><b>Takedowns</b></h2>
+                <hr>
+                @if (Model.Takedowns != null && Model.Takedowns.Any())
+                {
+                    <h3>Takedowns</h3>
                     <div class="row">
-                        <div class="col-sm-2">
-                            <h4><strong>Requester</strong></h4>
-                        </div>
-                        <div class="col-sm-2">
-                            <h4><strong>Contact</strong></h4>
-                        </div>
-                        <div class="col-sm-2">
-                            <h4><strong>Reason</strong></h4>
-                        </div>
-                        <div class="col-sm-2">
-                            <h4><strong>Action Taken</strong></h4>
-                        </div>
-                        <div class="col-sm-2">
-                            <h4><strong>Date Requested</strong></h4>
-                        </div>
-                        <div class="col-sm-2">
-                            <h4><strong>Date Of Action</strong></h4>
+                        <div class="col-sm-12">
+                            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#takedowns-section">View Takedowns</button>
                         </div>
                     </div>
-                    @foreach (Takedown takedown in Model.Takedowns)
-                    {
+                    <br />
+                    <div id="takedowns-section">
                         <div class="row">
                             <div class="col-sm-2">
-                                @takedown.Requester
+                                <h4><strong>Requester</strong></h4>
                             </div>
                             <div class="col-sm-2">
-                                @takedown.RequesterContact
+                                <h4><strong>Contact</strong></h4>
                             </div>
                             <div class="col-sm-2">
-                                @takedown.Reason
+                                <h4><strong>Reason</strong></h4>
                             </div>
                             <div class="col-sm-2">
-                                @takedown.ActionTaken
+                                <h4><strong>Action Taken</strong></h4>
                             </div>
                             <div class="col-sm-2">
-                                @takedown.DateRequested.ToString("MMMM dd, yyyy")
+                                <h4><strong>Date Requested</strong></h4>
                             </div>
                             <div class="col-sm-2">
-                                @takedown.DateActionTaken.ToString("MMMM dd, yyyy")
+                                <h4><strong>Date Of Action</strong></h4>
                             </div>
                         </div>
-                    }
-                </div>
-            }
-            <br />
+                        @foreach (Takedown takedown in Model.Takedowns)
+                        {
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    @takedown.Requester
+                                </div>
+                                <div class="col-sm-2">
+                                    @takedown.RequesterContact
+                                </div>
+                                <div class="col-sm-2">
+                                    @takedown.Reason
+                                </div>
+                                <div class="col-sm-2">
+                                    @takedown.ActionTaken
+                                </div>
+                                <div class="col-sm-2">
+                                    @takedown.DateRequested.ToString("MMMM dd, yyyy")
+                                </div>
+                                <div class="col-sm-2">
+                                    @takedown.DateActionTaken.ToString("MMMM dd, yyyy")
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                <br />
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-8 col-sm-offset-2">
-            <pre>@Model.Canary</pre>
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+                <pre>@Model.Canary</pre>
+            </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2 text-center">
+                <h3>Transparency Information has been disabled</h3>
+            </div>
+        </div>
+    }
 </div>

@@ -1,12 +1,15 @@
 ﻿$(document).ready(function () {
     $("#top_msg").css('display', 'none', 'important');
 
-    $("#login_dropdown").click(function () {
-        $("#top_msg").css('display', 'none', 'important');
-        $("#top_msg").html('');
+    $('#loginButton').removeClass('hide');
+
+    $('#loginModal').on('shown.bs.modal', function (e) {
+        $("#loginStatus").css('display', 'none', 'important');
+        $("#loginStatus").html('');
+        $('#loginUsername').focus();
     });
 
-    $("#login_submit").click(function () {
+    $("#loginSubmit").click(function () {
         var form = $('#loginForm');
         $.ajax({
             type: "POST",
@@ -20,20 +23,23 @@
                     window.location.reload();
                 }
                 else {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#loginStatus").css('display', 'inline', 'important');
+                    $("#loginStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                 }
             }
         });
         return false;
     });
 
-    $("#reg_dropdown").click(function () {
-        $("#top_msg").css('display', 'none', 'important');
-        $("#top_msg").html('');
+    $('#registerButton').removeClass('hide');
+
+    $('#registerModal').on('shown.bs.modal', function (e) {
+        $("#registerStatus").css('display', 'none', 'important');
+        $("#registerStatus").html('');
+        $('#registerUsername').focus();
     });
 
-    $("#reg_submit").click(function () {
+    $("#registerSubmit").click(function () {
         var form = $('#registrationForm');
         $.ajax({
             type: "POST",
@@ -47,8 +53,8 @@
                     window.location.reload();
                 }
                 else {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#registerStatus").css('display', 'inline', 'important');
+                    $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
                 }
             }
         });

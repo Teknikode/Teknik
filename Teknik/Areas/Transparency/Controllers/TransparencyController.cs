@@ -83,18 +83,28 @@ namespace Teknik.Areas.Transparency.Controllers
                     }
                 }
 
-                model.Bills = db.Transactions.OfType<Bill>().OrderByDescending(b => b.DateSent).ToList();
-                model.OneTimes = db.Transactions.OfType<OneTime>().OrderByDescending(b => b.DateSent).ToList();
-                model.Donations = db.Transactions.OfType<Donation>().OrderByDescending(b => b.DateSent).ToList();
+                List<Bill> bills = db.Transactions.OfType<Bill>().OrderByDescending(b => b.DateSent).ToList();
+                model.Bills = (bills != null) ? bills : new List<Bill>();
 
-                model.Takedowns = db.Takedowns.OrderByDescending(b => b.DateRequested).ToList();
+                List<OneTime> oneTimes = db.Transactions.OfType<OneTime>().OrderByDescending(b => b.DateSent).ToList();
+                model.OneTimes = (oneTimes != null) ? oneTimes : new List<OneTime>();
+
+                List<Donation> donations = db.Transactions.OfType<Donation>().OrderByDescending(b => b.DateSent).ToList();
+                model.Donations = (donations != null) ? donations : new List<Donation>();
+
+
+                List<Takedown> takedowns = db.Takedowns.OrderByDescending(b => b.DateRequested).ToList();
+                model.Takedowns = (takedowns != null) ? takedowns : new List<Takedown>();
 
                 // Grab canary file
                 if (System.IO.File.Exists(Config.TransparencyConfig.CanaryPath))
                 {
                     model.Canary = System.IO.File.ReadAllText(Config.TransparencyConfig.CanaryPath);
                 }
-
+                else
+                {
+                    model.Canary = string.Empty;
+                }
             }
             return View(model);
         }

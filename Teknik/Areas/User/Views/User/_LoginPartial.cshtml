@@ -4,7 +4,7 @@
 
 @if (Model.Config.UserConfig.RegistrationEnabled || Model.Config.UserConfig.LoginEnabled)
 {
-    <ul class="nav navbar-nav pull-right">
+    <div class="nav navbar-nav pull-right">
     @if (Request.IsAuthenticated)
     {
         <li class="dropdown">
@@ -35,25 +35,29 @@
     {
         if (Model.Config.UserConfig.RegistrationEnabled)
         {
-        <li>
-            <p class="navbar-btn">
-                <a href="@Url.SubRouteUrl("user", "User.Register", new { returnUrl = Request.Url.AbsoluteUri })" class="btn btn-default">Sign Up</a>
-            </p>
+            <button id="registerButton" data-toggle="modal" data-target="#registerModal" class="btn btn-default navbar-btn hide">Sign Up</button>
+            <noscript>
+                <a href="@Url.SubRouteUrl("user", "User.Register")" class="btn btn-default navbar-btn">Sign Up</a>
+            </noscript>
             @*<a class="dropdown-toggle" href="#" data-toggle="dropdown" id="reg_dropdown">Sign Up <strong class="caret"></strong></a>
             <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px; min-width: 100px;">
                 @Html.Partial("../../Areas/User/Views/User/Register", new Teknik.Areas.Users.ViewModels.RegisterViewModel())
             </div>*@
-        </li>
         }
         if (Model.Config.UserConfig.LoginEnabled)
         {
-        <li class="dropdown">
-            <a class="dropdown-toggle" href="#" data-toggle="dropdown" id="login_dropdown">Sign In <strong class="caret"></strong></a>
+            if (Model.Config.UserConfig.RegistrationEnabled)
+            {
+            }
+            <button id="loginButton" data-toggle="modal" data-target="#loginModal" class="btn btn-default navbar-btn hide">Sign In</button>
+            <noscript>
+                <a href="@Url.SubRouteUrl("user", "User.Login")" class="btn btn-default navbar-btn">Sign In</a>
+            </noscript>
+            @*<a class="dropdown-toggle" href="#" data-toggle="dropdown" id="login_dropdown">Sign In <strong class="caret"></strong></a>
             <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
                 @Html.Partial("../../Areas/User/Views/User/Login", new Teknik.Areas.Users.ViewModels.LoginViewModel())
-            </div>
-        </li>
+            </div>*@
         }
     }
-    </ul>
+    </div>
 }

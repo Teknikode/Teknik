@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Web.Optimization;
 using Teknik.Configuration;
 
 namespace Teknik.Areas.Transparency
@@ -25,6 +26,10 @@ namespace Teknik.Areas.Transparency
                  new { controller = "Transparency", action = "Index" },
                  new[] { typeof(Controllers.TransparencyController).Namespace }
              );
+
+            // Register Script Bundle
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/transparency").Include(
+                      "~/Areas/Transparency/Scripts/Transparency.js"));
         }
     }
 }

@@ -138,12 +138,12 @@ namespace Teknik.Areas.Users.Controllers
             LoginViewModel model = new LoginViewModel();
             model.ReturnUrl = ReturnUrl;
 
-            return View("/Areas/Users/Views/User/ViewLogin.cshtml", model);
+            return View("/Areas/User/Views/User/ViewLogin.cshtml", model);
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Login(LoginViewModel model)
+        public ActionResult Login([Bind(Prefix = "Login")]LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -212,7 +212,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Register(RegisterViewModel model)
+        public ActionResult Register([Bind(Prefix="Register")]RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {

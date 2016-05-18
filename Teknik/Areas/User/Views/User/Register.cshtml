@@ -2,24 +2,29 @@
 
 @if (Model.Config.UserConfig.RegistrationEnabled)
 {
-<form role="form" id="registrationForm" action="@Url.SubRouteUrl("user", "User.Register")" method="post" accept-charset="UTF-8">
-    <input name="ReturnUrl" id="ReturnUrl" type="hidden" value="@Model.ReturnUrl" />
-    <div class="form-group">
-        <input type="text" class="form-control" id="Username" value="" placeholder="Username" name="Username" data-val-required="The Username field is required." data-val="true"/>
+    <div class="row">
+        <div class="col-sm-12 text-center">
+            <div id="registerStatus"></div>
+        </div>
     </div>
-    <div class="form-group">
-        <input type="password" class="form-control" id="Password" value="" placeholder="Password" name="Password" data-val-required="The Password field is required." data-val="true"/>
-    </div>
-    <div class="form-group">
-        <input type="password" class="form-control" id="ConfirmPassword" value="" placeholder="Confirm Password" name="ConfirmPassword" data-val-required="The Confirm Password field is required." data-val="true" />
-    </div>
-    <p>
-        By registering for Teknik, you agree to the <a href="@Url.SubRouteUrl("tos", "TOS.Index")">Terms of Service</a>.
-    </p>
-    <div class="form-group text-center">
-        <button class="btn btn-primary" id="reg_submit" type="submit" name="submit">Sign Up</button>
-    </div>
-</form>
+    <form role="form" id="registrationForm" action="@Url.SubRouteUrl("user", "User.Register")" method="post" accept-charset="UTF-8">
+        <input name="Register.ReturnUrl" id="registerReturnUrl" type="hidden" value="@Model.ReturnUrl" />
+        <div class="form-group">
+            <input type="text" class="form-control" id="registerUsername" value="" placeholder="Username" name="Register.Username" data-val-required="The Username field is required." data-val="true"/>
+        </div>
+        <div class="form-group">
+            <input type="password" class="form-control" id="registerPassword" value="" placeholder="Password" name="Register.Password" data-val-required="The Password field is required." data-val="true"/>
+        </div>
+        <div class="form-group">
+            <input type="password" class="form-control" id="registerConfirmPassword" value="" placeholder="Confirm Password" name="Register.ConfirmPassword" data-val-required="The Confirm Password field is required." data-val="true" />
+        </div>
+        <p class="text-center">
+            By registering for Teknik, you agree to the <a href="@Url.SubRouteUrl("tos", "TOS.Index")">Terms of Service</a>.
+        </p>
+        <div class="form-group text-center">
+            <button class="btn btn-primary" id="registerSubmit" type="submit" name="Register.Submit">Sign Up</button>
+        </div>
+    </form>
 }
 else
 {

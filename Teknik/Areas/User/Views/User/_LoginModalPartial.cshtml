@@ -1,0 +1,35 @@
+﻿@model Teknik.ViewModels.ViewModelBase
+
+@if (Model.Config.UserConfig.RegistrationEnabled)
+{
+<div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="registerModalLabel">Teknik Registration</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Partial("../../Areas/User/Views/User/Register", new Teknik.Areas.Users.ViewModels.RegisterViewModel())
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@if (Model.Config.UserConfig.LoginEnabled)
+{
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="loginModalLabel">Teknik Login</h4>
+                </div>
+                <div class="modal-body">
+                    @Html.Partial("../../Areas/User/Views/User/Login", new Teknik.Areas.Users.ViewModels.LoginViewModel())
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,5 +1,6 @@
 ﻿@model Teknik.ViewModels.ViewModelBase
 
+@Html.Partial("../../Areas/User/Views/User/_LoginModalPartial", Model)
 <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -53,7 +54,7 @@
                     <a href="@Url.SubRouteUrl("help", "Help.Index")">Help</a>
                 </li>
             </ul>
-            @Html.Partial("_LoginPartial", Model)
+            @Html.Partial("../../Areas/User/Views/User/_LoginPartial", Model)
         </div>
     </div>
 </div>
