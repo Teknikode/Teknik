@@ -43,6 +43,18 @@ namespace ServerMaint
         [Option('f', "last-seen-file", Required = false, HelpText = "The file in which you want the last seen stats to be saved to")]
         public string LastSeenFile { get; set; }
 
+        [Option('i', "invalid", DefaultValue = false, Required = false, HelpText = "Generate a list of invalid accounts")]
+        public bool GenerateInvalid { get; set; }
+
+        [Option('t', "invalid-file", Required = false, HelpText = "The file in which you want the invalid accounts to be saved to")]
+        public string InvalidFile { get; set; }
+
+        [Option('o', "to-clean", DefaultValue = false, Required = false, HelpText = "Generate a list of accounts to be cleaned")]
+        public bool GenerateCleaning { get; set; }
+
+        [Option('n', "to-clean-file", Required = false, HelpText = "The file in which you want the accounts to be cleaned to be saved to")]
+        public string CleaningFile { get; set; }
+
         // Omitting long name, default --verbose
         [Option(HelpText = "Prints all messages to standard output.")]
         public bool Verbose { get; set; }

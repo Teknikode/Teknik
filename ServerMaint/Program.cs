@@ -83,6 +83,18 @@ namespace ServerMaint
                             GenerateLastSeen(config, db, options.LastSeenFile);
                         }
 
+                        // Generates a file for all of the invalid accounts
+                        if (options.GenerateInvalid)
+                        {
+                            GenerateInvalidAccounts(config, db, options.InvalidFile);
+                        }
+
+                        // Generates a file for all of the accounts to be cleaned
+                        if (options.GenerateCleaning)
+                        {
+                            GenerateCleaningList(config, db, options.CleaningFile, options.DaysBeforeDeletion);
+                        }
+
                         Output(string.Format("[{0}] Finished Server Maintenance Process.", DateTime.Now));
                         return 0;
                     }
@@ -217,7 +229,7 @@ namespace ServerMaint
                 mail.Body = string.Format(@"
 The account {0} does not meet the requirements for a valid username.  
 
-The username must match the following Regex Pattern: {1}  
+The username must meet the following requirements: {1}  
 It must also be greater than or equal to {2} characters in length, and less than or equal to {3} characters in length.
 
 This email is to let you know that this account will be deleted in {4} days ({5}) in order to comply with the username restrictions.  If you would like to keep your data, you should create a new account and transfer the data over to the new account.  
@@ -226,7 +238,7 @@ In order to make the process as easy as possible, you can reply to this email to
 
 Thank you for your continued use of Teknik!
 
-- Teknik Administration", account, config.UserConfig.UsernameFilter, config.UserConfig.MinUsernameLength, config.UserConfig.MaxUsernameLength, 30, DateTime.Now.AddDays(30).ToShortDateString(), 15, DateTime.Now.AddDays(15).ToShortDateString());
+- Teknik Administration", account, config.UserConfig.UsernameFilterLabel, config.UserConfig.MinUsernameLength, config.UserConfig.MaxUsernameLength, 30, DateTime.Now.AddDays(30).ToShortDateString(), 15, DateTime.Now.AddDays(15).ToShortDateString());
                 mail.BodyEncoding = UTF8Encoding.UTF8;
                 mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
@@ -287,94 +299,56 @@ Thank you for your continued use of Teknik!
 
         public static void CleanEmail(Config config, TeknikEntities db)
         {
-            if (config.EmailConfig.Enabled)
+            Output(string.Format("[{0}] Started Cleaning of Orphaned Email Accounts.", DateTime.Now));
+            List<string> emails = GetOrphanedEmail(config, db);
+            foreach (string email in emails)
             {
-                Output(string.Format("[{0}] Started Cleaning of Orphaned Email Accounts.", DateTime.Now));
-                List<User> curUsers = db.Users.ToList();
-                int totalAccounts = 0;
-
-                // Connect to hmailserver COM
-                var app = new hMailServer.Application();
-                app.Connect();
-                app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
-
-                var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                var accounts = domain.Accounts;
-                for (int i = 0; i < accounts.Count; i++)
-                {
-                    var account = accounts[i];
-
-                    bool userExists = curUsers.Exists(u => UserHelper.GetUserEmailAddress(config, u.Username) == account.Address);
-                    bool isReserved = UserHelper.GetReservedUsernames(config).Exists(r => UserHelper.GetUserEmailAddress(config, r).ToLower() == account.Address.ToLower());
-                    if (!userExists && !isReserved)
-                    {
-                        // User doesn't exist, and it isn't reserved.  Let's nuke it.
-                        UserHelper.DeleteUserEmail(config, account.Address);
-                        totalAccounts++;
-                    }
-                }
-
-                if (totalAccounts > 0)
-                {
-                    // Add to transparency report if any users were removed
-                    Takedown report = db.Takedowns.Create();
-                    report.Requester = TAKEDOWN_REPORTER;
-                    report.RequesterContact = config.SupportEmail;
-                    report.DateRequested = DateTime.Now;
-                    report.Reason = "Orphaned Email Account";
-                    report.ActionTaken = string.Format("{0} Accounts Removed", totalAccounts);
-                    report.DateActionTaken = DateTime.Now;
-                    db.Takedowns.Add(report);
-                    db.SaveChanges();
-                }
-
-                Output(string.Format("[{0}] Finished Cleaning of Orphaned Email Accounts.  {1} Accounts Removed.", DateTime.Now, totalAccounts));
+                // User doesn't exist, and it isn't reserved.  Let's nuke it.
+                UserHelper.DeleteUserEmail(config, email);
             }
+
+            if (emails.Count > 0)
+            {
+                // Add to transparency report if any users were removed
+                Takedown report = db.Takedowns.Create();
+                report.Requester = TAKEDOWN_REPORTER;
+                report.RequesterContact = config.SupportEmail;
+                report.DateRequested = DateTime.Now;
+                report.Reason = "Orphaned Email Account";
+                report.ActionTaken = string.Format("{0} Accounts Removed", emails.Count);
+                report.DateActionTaken = DateTime.Now;
+                db.Takedowns.Add(report);
+                db.SaveChanges();
+            }
+
+            Output(string.Format("[{0}] Finished Cleaning of Orphaned Email Accounts.  {1} Accounts Removed.", DateTime.Now, emails.Count));
         }
 
         public static void CleanGit(Config config, TeknikEntities db)
         {
-            if (config.GitConfig.Enabled)
+            Output(string.Format("[{0}] Started Cleaning of Orphaned Git Accounts.", DateTime.Now));
+            List<string> gitAccounts = GetOrphanedGit(config, db);
+            foreach (string account in gitAccounts)
             {
-                Output(string.Format("[{0}] Started Cleaning of Orphaned Git Accounts.", DateTime.Now));
-                List<User> curUsers = db.Users.ToList();
-                int totalAccounts = 0;
-
-                // We need to check the actual git database
-                MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
-                string sql = @"SELECT gogs.user.login_name AS login_name, gogs.user.lower_name AS username FROM gogs.user";
-                var results = mySQL.Query(sql);
-
-                if (results != null && results.Any())
-                {
-                    foreach (var account in results)
-                    {
-                        bool userExists = curUsers.Exists(u => UserHelper.GetUserEmailAddress(config, u.Username).ToLower() == account["login_name"].ToString().ToLower());
-                        bool isReserved = UserHelper.GetReservedUsernames(config).Exists(r => UserHelper.GetUserEmailAddress(config, r) == account["login_name"].ToString().ToLower());
-                        if (!userExists && !isReserved)
-                        {
-                            UserHelper.DeleteUserGit(config, account["username"].ToString());
-                            totalAccounts++;
-                        }
-                    }
-                }
-
-                if (totalAccounts > 0)
-                {
-                    // Add to transparency report if any users were removed
-                    Takedown report = db.Takedowns.Create();
-                    report.Requester = TAKEDOWN_REPORTER;
-                    report.RequesterContact = config.SupportEmail;
-                    report.DateRequested = DateTime.Now;
-                    report.Reason = "Orphaned Git Account";
-                    report.ActionTaken = string.Format("{0} Accounts Removed", totalAccounts);
-                    report.DateActionTaken = DateTime.Now;
-                    db.Takedowns.Add(report);
-                    db.SaveChanges();
-                }
-
-                Output(string.Format("[{0}] Finished Cleaning of Orphaned Git Accounts.  {1} Accounts Removed.", DateTime.Now, totalAccounts));
+                // User doesn't exist, and it isn't reserved.  Let's nuke it.
+                UserHelper.DeleteUserGit(config, account);
             }
+
+            if (gitAccounts.Count > 0)
+            {
+                // Add to transparency report if any users were removed
+                Takedown report = db.Takedowns.Create();
+                report.Requester = TAKEDOWN_REPORTER;
+                report.RequesterContact = config.SupportEmail;
+                report.DateRequested = DateTime.Now;
+                report.Reason = "Orphaned Git Account";
+                report.ActionTaken = string.Format("{0} Accounts Removed", gitAccounts.Count);
+                report.DateActionTaken = DateTime.Now;
+                db.Takedowns.Add(report);
+                db.SaveChanges();
+            }
+
+            Output(string.Format("[{0}] Finished Cleaning of Orphaned Git Accounts.  {1} Accounts Removed.", DateTime.Now, gitAccounts.Count));
         }
 
         public static void GenerateLastSeen(Config config, TeknikEntities db, string fileName)
@@ -401,15 +375,107 @@ Thank you for your continued use of Teknik!
             Output(string.Format("[{0}] Finished Generating Last Activity List.", DateTime.Now));
         }
 
+        public static void GenerateInvalidAccounts(Config config, TeknikEntities db, string fileName)
+        {
+            Output(string.Format("[{0}] Started Generation of Invalid Account List.", DateTime.Now));
+            List<string> invalidAccounts = GetInvalidAccounts(config, db);
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Username,Last Activity,Creation Date,Last Website Activity,Last Email Activity,Last Git Activity");
+            foreach (string account in invalidAccounts)
+            {
+                User user = UserHelper.GetUser(db, account);
+                sb.AppendLine(string.Format("{0},{1},{2},{3},{4},{5}",
+                                user.Username,
+                                UserHelper.GetLastAccountActivity(db, config, user).ToString("g"),
+                                user.JoinDate.ToString("g"),
+                                user.LastSeen.ToString("g"),
+                                UserHelper.UserEmailLastActive(config, UserHelper.GetUserEmailAddress(config, user.Username)).ToString("g"),
+                                UserHelper.UserGitLastActive(config, user.Username).ToString("g")));
+            }
+            string dir = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            File.WriteAllText(fileName, sb.ToString());
+            Output(string.Format("[{0}] Finished Generating Invalid Account List.", DateTime.Now));
+        }
+
+        public static void GenerateCleaningList(Config config, TeknikEntities db, string fileName, int maxDays)
+        {
+            Output(string.Format("[{0}] Started Generation of Accounts to Clean List.", DateTime.Now));
+            List<string> invalidAccounts = GetInvalidAccounts(config, db);
+            List<string> inactiveAccounts = GetInactiveAccounts(config, db, maxDays);
+            List<string> emailAccounts = GetOrphanedEmail(config, db);
+            List<string> gitAccounts = GetOrphanedGit(config, db);
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Invalid Account Cleaning");
+            sb.AppendLine("Username,Last Activity,Creation Date,Last Website Activity,Last Email Activity,Last Git Activity");
+            foreach (string account in invalidAccounts)
+            {
+                User user = UserHelper.GetUser(db, account);
+                sb.AppendLine(string.Format("{0},{1},{2},{3},{4},{5}",
+                                user.Username,
+                                UserHelper.GetLastAccountActivity(db, config, user).ToString("g"),
+                                user.JoinDate.ToString("g"),
+                                user.LastSeen.ToString("g"),
+                                UserHelper.UserEmailLastActive(config, UserHelper.GetUserEmailAddress(config, user.Username)).ToString("g"),
+                                UserHelper.UserGitLastActive(config, user.Username).ToString("g")));
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("Inactive Account Cleaning");
+            sb.AppendLine("Username,Last Activity,Creation Date,Last Website Activity,Last Email Activity,Last Git Activity");
+            foreach (string account in inactiveAccounts)
+            {
+                User user = UserHelper.GetUser(db, account);
+                sb.AppendLine(string.Format("{0},{1},{2},{3},{4},{5}",
+                                user.Username,
+                                UserHelper.GetLastAccountActivity(db, config, user).ToString("g"),
+                                user.JoinDate.ToString("g"),
+                                user.LastSeen.ToString("g"),
+                                UserHelper.UserEmailLastActive(config, UserHelper.GetUserEmailAddress(config, user.Username)).ToString("g"),
+                                UserHelper.UserGitLastActive(config, user.Username).ToString("g")));
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("Orphaned Email Cleaning");
+            sb.AppendLine("Email,Last Activity");
+            foreach (string account in emailAccounts)
+            {
+                sb.AppendLine(string.Format("{0},{1}",
+                                account,
+                                UserHelper.UserEmailLastActive(config, account).ToString("g")));
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("Orphaned Git Cleaning");
+            sb.AppendLine("Username,Last Activity");
+            foreach (string account in gitAccounts)
+            {
+                sb.AppendLine(string.Format("{0},{1}",
+                                account,
+                                UserHelper.UserGitLastActive(config, account).ToString("g")));
+            }
+
+            string dir = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            File.WriteAllText(fileName, sb.ToString());
+            Output(string.Format("[{0}] Finished Generating Accounts to Clean List.", DateTime.Now));
+        }
+
         public static List<string> GetInvalidAccounts(Config config, TeknikEntities db)
         {
             List<string> foundUsers = new List<string>();
             List<User> curUsers = db.Users.ToList();
             foreach (User user in curUsers)
             {
-                // If the username is reserved, don't worry about it
+                // If the username is reserved, let's add it to the list
                 if (UserHelper.UsernameReserved(config, user.Username))
                 {
+                    foundUsers.Add(user.Username);
                     continue;
                 }
 
@@ -498,6 +564,63 @@ Thank you for your continued use of Teknik!
                 #endregion
             }
             return foundUsers;
+        }
+
+        public static List<string> GetOrphanedEmail(Config config, TeknikEntities db)
+        {
+            List<string> foundEmail = new List<string>();
+            if (config.EmailConfig.Enabled)
+            {
+                List<User> curUsers = db.Users.ToList();
+
+                // Connect to hmailserver COM
+                var app = new hMailServer.Application();
+                app.Connect();
+                app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
+
+                var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
+                var accounts = domain.Accounts;
+                for (int i = 0; i < accounts.Count; i++)
+                {
+                    var account = accounts[i];
+
+                    bool userExists = curUsers.Exists(u => UserHelper.GetUserEmailAddress(config, u.Username) == account.Address);
+                    bool isReserved = UserHelper.GetReservedUsernames(config).Exists(r => UserHelper.GetUserEmailAddress(config, r).ToLower() == account.Address.ToLower());
+                    if (!userExists && !isReserved)
+                    {
+                        foundEmail.Add(account.Address);
+                    }
+                }
+            }
+            return foundEmail;
+        }
+
+        public static List<string> GetOrphanedGit(Config config, TeknikEntities db)
+        {
+            List<string> foundGit = new List<string>();
+            if (config.GitConfig.Enabled)
+            {
+                List<User> curUsers = db.Users.ToList();
+
+                // We need to check the actual git database
+                MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
+                string sql = @"SELECT gogs.user.login_name AS login_name, gogs.user.lower_name AS username FROM gogs.user";
+                var results = mySQL.Query(sql);
+
+                if (results != null && results.Any())
+                {
+                    foreach (var account in results)
+                    {
+                        bool userExists = curUsers.Exists(u => UserHelper.GetUserEmailAddress(config, u.Username).ToLower() == account["login_name"].ToString().ToLower());
+                        bool isReserved = UserHelper.GetReservedUsernames(config).Exists(r => UserHelper.GetUserEmailAddress(config, r) == account["login_name"].ToString().ToLower());
+                        if (!userExists && !isReserved)
+                        {
+                            foundGit.Add(account["username"].ToString());
+                        }
+                    }
+                }
+            }
+            return foundGit;
         }
 
         public static void Output(string message)
