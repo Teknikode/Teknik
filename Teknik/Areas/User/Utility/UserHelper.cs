@@ -21,6 +21,97 @@ namespace Teknik.Areas.Users.Utility
 {
     public static class UserHelper
     {
+        #region Account Management
+        public static DateTime GetLastAccountActivity(TeknikEntities db, Config config, User user)
+        {
+            try
+            {
+                DateTime lastActive = new DateTime(1900, 1, 1);
+
+                DateTime emailLastActive = UserEmailLastActive(config, GetUserEmailAddress(config, user.Username));
+                if (lastActive < emailLastActive)
+                    lastActive = emailLastActive;
+
+                DateTime gitLastActive = UserGitLastActive(config, user.Username);
+                if (lastActive < gitLastActive)
+                    lastActive = gitLastActive;
+
+                DateTime userLastActive = UserLastActive(db, config, user);
+                if (lastActive < userLastActive)
+                    lastActive = userLastActive;
+
+                return lastActive;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to determine last account activity.", ex);
+            }
+        }
+
+        public static void AddAccount(TeknikEntities db, Config config, User user, string password)
+        {
+            try
+            {
+                // Create an Email Account
+                AddUserEmail(config, GetUserEmailAddress(config, user.Username), password);
+
+                // Create a Git Account
+                AddUserGit(config, user.Username, password);
+
+                // Add User
+                AddUser(db, config, user, password);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to create account.", ex);
+            }
+        }
+
+        public static void EditAccount(TeknikEntities db, Config config, User user, bool changePass, string password)
+        {
+            try
+            {
+                // Changing Password?
+                if (changePass)
+                {
+                    // Change email password
+                    EditUserEmailPassword(config, GetUserEmailAddress(config, user.Username), password);
+
+                    // Update Git password
+                    EditUserGitPassword(config, user.Username, password);
+                }
+                // Update User
+                EditUser(db, config, user, changePass, password);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to edit account.", ex);
+            }
+        }
+
+        public static void DeleteAccount(TeknikEntities db, Config config, User user)
+        {
+            try
+            {
+                // Delete Email Account
+                if (UserEmailExists(config, GetUserEmailAddress(config, user.Username)))
+                    DeleteUserEmail(config, GetUserEmailAddress(config, user.Username));
+
+                // Delete Git Account
+                if (UserGitExists(config, user.Username))
+                    DeleteUserGit(config, user.Username);
+
+                // Delete User Account
+                DeleteUser(db, config, user);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to delete account.", ex);
+            }
+        }
+        #endregion
+
+        #region User Management
         public static List<string> GetReservedUsernames(Config config)
         {
             List<string> foundNames = new List<string>();
@@ -36,7 +127,6 @@ namespace Teknik.Areas.Users.Utility
             return foundNames;
         }
 
-        #region User Management
         public static User GetUser(TeknikEntities db, string username)
         {
             User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
@@ -97,19 +187,11 @@ namespace Teknik.Areas.Users.Utility
             return isAvailable;
         }
 
-        public static DateTime GetLastActivity(TeknikEntities db, Config config, User user)
+        public static DateTime UserLastActive(TeknikEntities db, Config config, User user)
         {
             try
             {
                 DateTime lastActive = new DateTime(1900, 1, 1);
-
-                DateTime emailLastActive = UserEmailLastActive(config, GetUserEmailAddress(config, user.Username));
-                if (lastActive < emailLastActive)
-                    lastActive = emailLastActive;
-
-                DateTime gitLastActive = UserGitLastActive(config, user.Username);
-                if (lastActive < gitLastActive)
-                    lastActive = gitLastActive;
 
                 if (lastActive < user.LastSeen)
                     lastActive = user.LastSeen;
@@ -118,7 +200,7 @@ namespace Teknik.Areas.Users.Utility
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to determine last activity.", ex);
+                throw new Exception("Unable to determine last user activity.", ex);
             }
         }
 
@@ -126,12 +208,6 @@ namespace Teknik.Areas.Users.Utility
         {
             try
             {
-                // Create an Email Account
-                AddUserEmail(config, GetUserEmailAddress(config, user.Username), password);
-
-                // Create a Git Account
-                AddUserGit(config, user.Username, password);
-
                 // Add User
                 user.HashedPassword = SHA384.Hash(user.Username, password);
                 db.Users.Add(user);
@@ -156,12 +232,6 @@ namespace Teknik.Areas.Users.Utility
                 // Changing Password?
                 if (changePass)
                 {
-                    // Change email password
-                    EditUserEmailPassword(config, GetUserEmailAddress(config, user.Username), password);
-
-                    // Update Git password
-                    EditUserGitPassword(config, user.Username, password);
-
                     // Update User password
                     user.HashedPassword = SHA384.Hash(user.Username, password);
                 }
@@ -178,14 +248,6 @@ namespace Teknik.Areas.Users.Utility
         {
             try
             {
-                // Delete Email Account
-                if (UserEmailExists(config, GetUserEmailAddress(config, user.Username)))
-                    DeleteUserEmail(config, GetUserEmailAddress(config, user.Username));
-
-                // Delete Git Account
-                if (UserGitExists(config, user.Username))
-                    DeleteUserGit(config, user.Username);
-
                 // Update uploads
                 List<Upload.Models.Upload> uploads = db.Uploads.Include("User").Where(u => u.User.Username == user.Username).ToList();
                 if (uploads != null)

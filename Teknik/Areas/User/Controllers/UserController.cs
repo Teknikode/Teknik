@@ -55,7 +55,7 @@ namespace Teknik.Areas.Users.Controllers
                         model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
                     }
                     model.JoinDate = user.JoinDate;
-                    model.LastSeen = UserHelper.GetLastActivity(db, Config, user);
+                    model.LastSeen = UserHelper.GetLastAccountActivity(db, Config, user);
 
                     model.UserSettings = user.UserSettings;
                     model.BlogSettings = user.BlogSettings;
@@ -236,7 +236,7 @@ namespace Teknik.Areas.Users.Controllers
                         newUser.BlogSettings = new BlogSettings();
                         newUser.UploadSettings = new UploadSettings();
 
-                        UserHelper.AddUser(db, Config, newUser, model.Password);
+                        UserHelper.AddAccount(db, Config, newUser, model.Password);
                     }
                     catch (Exception ex)
                     {
@@ -293,7 +293,7 @@ namespace Teknik.Areas.Users.Controllers
 
                         user.UploadSettings.SaveKey = saveKey;
                         user.UploadSettings.ServerSideEncrypt = serverSideEncrypt;
-                        UserHelper.EditUser(db, Config, user, changePass, newPass);
+                        UserHelper.EditAccount(db, Config, user, changePass, newPass);
                         return Json(new { result = true });
                     }
                     return Json(new { error = "User does not exist" });
@@ -316,7 +316,7 @@ namespace Teknik.Areas.Users.Controllers
                     User user = UserHelper.GetUser(db, User.Identity.Name);
                     if (user != null)
                     {
-                        UserHelper.DeleteUser(db, Config, user);
+                        UserHelper.DeleteAccount(db, Config, user);
                         // Sign Out
                         Logout();
                         return Json(new { result = true });

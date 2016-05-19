@@ -194,14 +194,16 @@ namespace ServerMaint
             List<User> curUsers = db.Users.ToList();
             foreach (User user in curUsers)
             {
-                // If the username isn't valid, don't clean it (Reserved, not formatted correctly, etc)
+                // If the username is reserved, don't clean it
                 if (!UserHelper.ValidUsername(db, config, user.Username))
                 {
                     continue;
                 }
 
+                // If the username is invalid, let's clean the sucker, data and all
+
                 #region Inactivity Cleaning
-                DateTime lastActivity = UserHelper.GetLastActivity(db, config, user);
+                DateTime lastActivity = UserHelper.GetLastAccountActivity(db, config, user);
 
                 TimeSpan inactiveTime = DateTime.Now.Subtract(lastActivity);
 
@@ -383,7 +385,7 @@ namespace ServerMaint
             {
                 sb.AppendLine(string.Format("{0},{1},{2},{3},{4},{5}",
                                 user.Username,
-                                UserHelper.GetLastActivity(db, config, user).ToString("g"),
+                                UserHelper.GetLastAccountActivity(db, config, user).ToString("g"),
                                 user.JoinDate.ToString("g"),
                                 user.LastSeen.ToString("g"),
                                 UserHelper.UserEmailLastActive(config, UserHelper.GetUserEmailAddress(config, user.Username)).ToString("g"),
