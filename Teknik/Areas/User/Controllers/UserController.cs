@@ -218,13 +218,17 @@ namespace Teknik.Areas.Users.Controllers
             {
                 if (Config.UserConfig.RegistrationEnabled)
                 {
+                    if (!UserHelper.ValidUsername(Config, model.Username))
+                    {
+                        return Json(new { error = "That username is not valid" });
+                    }
                     if (!UserHelper.UsernameAvailable(db, Config, model.Username))
                     {
-                        return Json(new { error = "That username is not available." });
+                        return Json(new { error = "That username is not available" });
                     }
                     if (model.Password != model.ConfirmPassword)
                     {
-                        return Json(new { error = "Passwords must match." });
+                        return Json(new { error = "Passwords must match" });
                     }
 
                     try
