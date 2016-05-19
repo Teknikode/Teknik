@@ -195,12 +195,17 @@ namespace ServerMaint
             foreach (User user in curUsers)
             {
                 // If the username is reserved, don't clean it
-                if (!UserHelper.ValidUsername(db, config, user.Username))
+                if (UserHelper.UsernameReserved(config, user.Username))
                 {
                     continue;
                 }
 
                 // If the username is invalid, let's clean the sucker, data and all
+                if (!UserHelper.ValidUsername(config, user.Username))
+                {
+                    UserHelper.DeleteAccount(db, config, user);
+                    continue;
+                }
 
                 #region Inactivity Cleaning
                 DateTime lastActivity = UserHelper.GetLastAccountActivity(db, config, user);
@@ -258,7 +263,7 @@ namespace ServerMaint
                     if (noData)
                     {
                         // They have no data, so safe to delete them.
-                        UserHelper.DeleteUser(db, config, UserHelper.GetUser(db, user.Username));
+                        UserHelper.DeleteAccount(db, config, UserHelper.GetUser(db, user.Username));
                         totalUsers++;
                     }
                     continue;

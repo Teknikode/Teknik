@@ -22,6 +22,61 @@ namespace Teknik.Areas.Users.Utility
     public static class UserHelper
     {
         #region Account Management
+        public static List<string> GetReservedUsernames(Config config)
+        {
+            List<string> foundNames = new List<string>();
+            if (config != null)
+            {
+                string path = config.UserConfig.ReservedUsernameDefinitionFile;
+                if (File.Exists(path))
+                {
+                    string[] names = File.ReadAllLines(path);
+                    foundNames = names.ToList();
+                }
+            }
+            return foundNames;
+        }
+
+        public static bool UsernameReserved(Config config, string username)
+        {
+            // Load reserved usernames
+            List<string> reserved = GetReservedUsernames(config);
+            return (reserved.Exists(u => u.ToLower() == username.ToLower()));
+        }
+
+        public static bool ValidUsername(Config config, string username)
+        {
+            bool isValid = true;
+
+            // Must be something there
+            isValid &= !string.IsNullOrEmpty(username);
+
+            // Is the format correct?
+            Regex reg = new Regex(config.UserConfig.UsernameFilter);
+            isValid &= reg.IsMatch(username);
+
+            // Meets the min length?
+            isValid &= (username.Length >= config.UserConfig.MinUsernameLength);
+
+            // Meets the max length?
+            isValid &= (username.Length <= config.UserConfig.MaxUsernameLength);
+
+            return isValid;
+        }
+
+        public static bool UsernameAvailable(TeknikEntities db, Config config, string username)
+        {
+            bool isAvailable = true;
+
+            isAvailable &= ValidUsername(config, username);
+            isAvailable &= !UsernameReserved(config, username);
+            isAvailable &= !UserExists(db, username);
+            isAvailable &= !UserEmailExists(config, GetUserEmailAddress(config, username));
+            isAvailable &= !UserGitExists(config, username);
+
+            return isAvailable;
+        }
+
         public static DateTime GetLastAccountActivity(TeknikEntities db, Config config, User user)
         {
             try
@@ -112,21 +167,6 @@ namespace Teknik.Areas.Users.Utility
         #endregion
 
         #region User Management
-        public static List<string> GetReservedUsernames(Config config)
-        {
-            List<string> foundNames = new List<string>();
-            if (config != null)
-            {
-                string path = config.UserConfig.ReservedUsernameDefinitionFile;
-                if (File.Exists(path))
-                {
-                    string[] names = File.ReadAllLines(path);
-                    foundNames = names.ToList();
-                }
-            }
-            return foundNames;
-        }
-
         public static User GetUser(TeknikEntities db, string username)
         {
             User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
@@ -149,42 +189,6 @@ namespace Teknik.Areas.Users.Utility
             }
 
             return false;
-        }
-
-        public static bool ValidUsername(TeknikEntities db, Config config, string username)
-        {
-            bool isValid = true;
-
-            // Must be something there
-            isValid &= !string.IsNullOrEmpty(username);
-
-            // Is the format correct?
-            Regex reg = new Regex(config.UserConfig.UsernameFilter);
-            isValid &= reg.IsMatch(username);
-
-            // Meets the min length?
-            isValid &= (username.Length >= config.UserConfig.MinUsernameLength);
-
-            // Meets the max length?
-            isValid &= (username.Length <= config.UserConfig.MaxUsernameLength);
-
-            // Load reserved usernames
-            List<string> reserved = GetReservedUsernames(config);
-            isValid &= (reserved.Exists(u => u.ToLower() == username.ToLower()));
-
-            return isValid;
-        }
-
-        public static bool UsernameAvailable(TeknikEntities db, Config config, string username)
-        {
-            bool isAvailable = true;
-
-            isAvailable &= ValidUsername(db, config, username);
-            isAvailable &= !UserExists(db, username);
-            isAvailable &= !UserEmailExists(config, GetUserEmailAddress(config, username));
-            isAvailable &= !UserGitExists(config, username);
-
-            return isAvailable;
         }
 
         public static DateTime UserLastActive(TeknikEntities db, Config config, User user)
