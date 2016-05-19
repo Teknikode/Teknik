@@ -19,7 +19,13 @@
             <input type="password" class="form-control" id="registerConfirmPassword" value="" placeholder="Confirm Password" name="Register.ConfirmPassword" data-val-required="The Confirm Password field is required." data-val="true" />
         </div>
         <p class="text-center">
-            By registering for Teknik, you agree to the <a href="@Url.SubRouteUrl("tos", "TOS.Index")">Terms of Service</a>.
+            <small>
+                Username must match the following pattern <var>@Model.Config.UserConfig.UsernameFilter</var><br />
+                and the length must be greater than <b>@Model.Config.UserConfig.MinUsernameLength</b> and less than <b>@Model.Config.UserConfig.MaxUsernameLength</b> characters
+            </small>
+        </p>
+        <p class="text-center">
+            By registering for Teknik, you agree to the <a href="@Url.SubRouteUrl("tos", "TOS.Index")" target="_blank">Terms of Service</a>.
         </p>
         <div class="form-group text-center">
             <button class="btn btn-primary" id="registerSubmit" type="submit" name="Register.Submit">Sign Up</button>

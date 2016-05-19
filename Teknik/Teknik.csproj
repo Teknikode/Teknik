@@ -521,7 +521,7 @@
     <Content Include="Areas\Help\Views\Help\API\v1\Shorten.cshtml" />
     <Content Include="Areas\TOS\Views\web.config" />
     <Content Include="Areas\TOS\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\TOS\Views\Shared\Index.cshtml" />
+    <Content Include="Areas\TOS\Views\TOS\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -615,7 +615,7 @@
     <Folder Include="Areas\Shortener\Views\Shared\" />
     <Folder Include="Areas\Stream\Views\Shared\" />
     <Folder Include="Areas\TOS\Models\" />
-    <Folder Include="Areas\TOS\Views\TOS\" />
+    <Folder Include="Areas\TOS\Views\Shared\" />
     <Folder Include="Areas\Transparency\Views\Shared\" />
     <Folder Include="Areas\Upload\Views\Shared\" />
     <Folder Include="Areas\User\Repositories\" />
