@@ -25,6 +25,9 @@ namespace ServerMaint
         [Option('g', "clean-git", DefaultValue = false, Required = false, HelpText = "Clean all unused git accounts")]
         public bool CleanGit { get; set; }
 
+        [Option('w', "warn", DefaultValue = false, Required = false, HelpText = "Warn all invalid accounts")]
+        public bool WarnAccounts { get; set; }
+
         [Option('s', "scan", DefaultValue = false, Required = false, HelpText = "Scan all uploads for viruses")]
         public bool ScanUploads { get; set; }
 

@@ -53,10 +53,16 @@ namespace ServerMaint
                             ScanUploads(config, db);
                         }
 
+                        // Warns all the invalid accounts via email
+                        if (options.WarnAccounts)
+                        {
+                            WarnInvalidAccounts(config, db);
+                        }
+
                         // Cleans all inactive users
                         if (options.CleanUsers)
                         {
-                            CleanUsers(config, db, options.DaysBeforeDeletion);
+                            CleanAccounts(config, db, options.DaysBeforeDeletion);
                         }
 
                         // Cleans the email for unused accounts
@@ -186,106 +192,97 @@ namespace ServerMaint
             Output(string.Format("Scanning Complete.  {0} Scanned | {1} Viruses Found | {2} Total Files", totalScans, totalViruses, totalCount));
         }
 
-        public static void CleanUsers(Config config, TeknikEntities db, int maxDays)
+        public static void WarnInvalidAccounts(Config config, TeknikEntities db)
         {
-            int totalUsers = 0;
 
-            Output(string.Format("[{0}] Started Cleaning of Inactive Users.", DateTime.Now));
-            List<User> curUsers = db.Users.ToList();
-            foreach (User user in curUsers)
+            Output(string.Format("[{0}] Started Warning of Invalid Accounts.", DateTime.Now));
+            List<string> invalidAccounts = GetInvalidAccounts(config, db);
+
+            foreach (string account in invalidAccounts)
             {
-                // If the username is reserved, don't clean it
-                if (UserHelper.UsernameReserved(config, user.Username))
-                {
-                    continue;
-                }
+                // Let's send them an email :D
+                string email = UserHelper.GetUserEmailAddress(config, account);
+                
+                SmtpClient client = new SmtpClient();
+                client.Host = config.ContactConfig.Host;
+                client.Port = config.ContactConfig.Port;
+                client.EnableSsl = config.ContactConfig.SSL;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.UseDefaultCredentials = true;
+                client.Credentials = new NetworkCredential(config.ContactConfig.Username, config.ContactConfig.Password);
+                client.Timeout = 5000;
 
-                // If the username is invalid, let's clean the sucker, data and all
-                if (!UserHelper.ValidUsername(config, user.Username))
-                {
-                    UserHelper.DeleteAccount(db, config, user);
-                    continue;
-                }
+                MailMessage mail = new MailMessage(config.SupportEmail, email);
+                mail.Subject = "Invalid Account Notice";
+                mail.Body = string.Format(@"
+The account {0} does not meet the requirements for a valid username.  
 
-                #region Inactivity Cleaning
-                DateTime lastActivity = UserHelper.GetLastAccountActivity(db, config, user);
+The username must match the following Regex Pattern: {1}  
+It must also be greater than or equal to {2} characters in length, and less than or equal to {3} characters in length.
 
-                TimeSpan inactiveTime = DateTime.Now.Subtract(lastActivity);
+This email is to let you know that this account will be deleted in {4} days ({5}) in order to comply with the username restrictions.  If you would like to keep your data, you should create a new account and transfer the data over to the new account.  
 
-                // If older than max days, check their current usage
-                if (inactiveTime >= new TimeSpan(maxDays, 0, 0, 0, 0))
-                {
-                    // Check the user's usage of the service.
-                    bool noData = true;
+In order to make the process as easy as possible, you can reply to this email to ask for your current account to be renamed to another available account.  This would keep all your data intact, and just require you to change all references to your email/git/user to the new username.  If you wish to do this, please respond within {6} days ({7}).
 
-                    // Any blog comments?
-                    var blogCom = db.BlogComments.Include("Users").Where(c => c.UserId == user.UserId);
-                    noData &= !(blogCom != null && blogCom.Any());
+Thank you for your continued use of Teknik!
 
-                    // Any blog posts?
-                    var blogPosts = db.BlogPosts.Include("Blog").Include("Blog.Users").Where(p => p.Blog.UserId == user.UserId);
-                    noData &= !(blogPosts != null && blogPosts.Any());
+- Teknik Administration", account, config.UserConfig.UsernameFilter, config.UserConfig.MinUsernameLength, config.UserConfig.MaxUsernameLength, 30, DateTime.Now.AddDays(30).ToShortDateString(), 15, DateTime.Now.AddDays(15).ToShortDateString());
+                mail.BodyEncoding = UTF8Encoding.UTF8;
+                mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
-                    // Any podcast comments?
-                    var podCom = db.PodcastComments.Include("Users").Where(p => p.UserId == user.UserId);
-                    noData &= !(podCom != null && podCom.Any());
-
-                    // Any email?
-                    if (config.EmailConfig.Enabled)
-                    {
-                        var app = new hMailServer.Application();
-                        app.Connect();
-                        app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
-
-                        try
-                        {
-                            var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                            var account = domain.Accounts.ItemByAddress[UserHelper.GetUserEmailAddress(config, user.Username)];
-                            noData &= ((account.Messages.Count == 0) && ((int)account.Size == 0));
-                        }
-                        catch { }
-                    }
-
-                    // Any git repos?
-                    if (config.GitConfig.Enabled)
-                    {
-                        string email = UserHelper.GetUserEmailAddress(config, user.Username);
-                        // We need to check the actual git database
-                        MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
-                        string sql = @"SELECT * FROM gogs.repository
-                                        LEFT JOIN gogs.action ON gogs.user.id = gogs.action.act_user_id
-                                        WHERE gogs.user.login_name = {0}";
-                        var results = mySQL.Query(sql, new object[] { email });
-
-                        noData &= !(results != null && results.Any());
-                    }
-
-                    if (noData)
-                    {
-                        // They have no data, so safe to delete them.
-                        UserHelper.DeleteAccount(db, config, UserHelper.GetUser(db, user.Username));
-                        totalUsers++;
-                    }
-                    continue;
-                }
-                #endregion
+                client.Send(mail);
             }
 
-            if (totalUsers > 0)
+            Output(string.Format("[{0}] Finished Warning of Invalid Accounts.  {1} Accounts Warned.", DateTime.Now, invalidAccounts.Count));
+        }
+
+        public static void CleanAccounts(Config config, TeknikEntities db, int maxDays)
+        {
+            Output(string.Format("[{0}] Started Cleaning of Inactive/Invalid Users.", DateTime.Now));
+            List<string> invalidAccounts = GetInvalidAccounts(config, db);
+            List<string> inactiveAccounts = GetInactiveAccounts(config, db, maxDays);
+
+            // Delete invalid accounts
+            foreach (string account in invalidAccounts)
+            {
+                UserHelper.DeleteAccount(db, config, UserHelper.GetUser(db, account));
+            }
+
+            if (invalidAccounts.Count > 0)
             {
                 // Add to transparency report if any users were removed
                 Takedown report = db.Takedowns.Create();
                 report.Requester = TAKEDOWN_REPORTER;
                 report.RequesterContact = config.SupportEmail;
                 report.DateRequested = DateTime.Now;
-                report.Reason = "User Inactive";
-                report.ActionTaken = string.Format("{0} Users Removed", totalUsers);
+                report.Reason = "Username Invalid";
+                report.ActionTaken = string.Format("{0} Accounts Removed", invalidAccounts.Count);
                 report.DateActionTaken = DateTime.Now;
                 db.Takedowns.Add(report);
                 db.SaveChanges();
             }
 
-            Output(string.Format("[{0}] Finished Cleaning of Inactive Users.  {1} Users Removed.", DateTime.Now, totalUsers));
+            // Delete inactive accounts
+            foreach (string account in inactiveAccounts)
+            {
+                UserHelper.DeleteAccount(db, config, UserHelper.GetUser(db, account));
+            }
+
+            if (invalidAccounts.Count > 0)
+            {
+                // Add to transparency report if any users were removed
+                Takedown report = db.Takedowns.Create();
+                report.Requester = TAKEDOWN_REPORTER;
+                report.RequesterContact = config.SupportEmail;
+                report.DateRequested = DateTime.Now;
+                report.Reason = "Account Inactive";
+                report.ActionTaken = string.Format("{0} Accounts Removed", inactiveAccounts.Count);
+                report.DateActionTaken = DateTime.Now;
+                db.Takedowns.Add(report);
+                db.SaveChanges();
+            }
+
+            Output(string.Format("[{0}] Finished Cleaning of Inactive/Invalid Users.  {1} Accounts Removed.", DateTime.Now, invalidAccounts.Count + inactiveAccounts.Count));
         }
 
         public static void CleanEmail(Config config, TeknikEntities db)
@@ -402,6 +399,105 @@ namespace ServerMaint
 
             File.WriteAllText(fileName, sb.ToString());
             Output(string.Format("[{0}] Finished Generating Last Activity List.", DateTime.Now));
+        }
+
+        public static List<string> GetInvalidAccounts(Config config, TeknikEntities db)
+        {
+            List<string> foundUsers = new List<string>();
+            List<User> curUsers = db.Users.ToList();
+            foreach (User user in curUsers)
+            {
+                // If the username is reserved, don't worry about it
+                if (UserHelper.UsernameReserved(config, user.Username))
+                {
+                    continue;
+                }
+
+                // If the username is invalid, let's add it to the list
+                if (!UserHelper.ValidUsername(config, user.Username))
+                {
+                    foundUsers.Add(user.Username);
+                    continue;
+                }
+            }
+            return foundUsers;
+        }
+
+        public static List<string> GetInactiveAccounts(Config config, TeknikEntities db, int maxDays)
+        {
+            List<string> foundUsers = new List<string>();
+            List<User> curUsers = db.Users.ToList();
+            foreach (User user in curUsers)
+            {
+                // If the username is reserved, don't worry about it
+                if (UserHelper.UsernameReserved(config, user.Username))
+                {
+                    continue;
+                }
+
+                #region Inactivity Finding
+                DateTime lastActivity = UserHelper.GetLastAccountActivity(db, config, user);
+
+                TimeSpan inactiveTime = DateTime.Now.Subtract(lastActivity);
+
+                // If older than max days, check their current usage
+                if (inactiveTime >= new TimeSpan(maxDays, 0, 0, 0, 0))
+                {
+                    // Check the user's usage of the service.
+                    bool noData = true;
+
+                    // Any blog comments?
+                    var blogCom = db.BlogComments.Include("Users").Where(c => c.UserId == user.UserId);
+                    noData &= !(blogCom != null && blogCom.Any());
+
+                    // Any blog posts?
+                    var blogPosts = db.BlogPosts.Include("Blog").Include("Blog.Users").Where(p => p.Blog.UserId == user.UserId);
+                    noData &= !(blogPosts != null && blogPosts.Any());
+
+                    // Any podcast comments?
+                    var podCom = db.PodcastComments.Include("Users").Where(p => p.UserId == user.UserId);
+                    noData &= !(podCom != null && podCom.Any());
+
+                    // Any email?
+                    if (config.EmailConfig.Enabled)
+                    {
+                        var app = new hMailServer.Application();
+                        app.Connect();
+                        app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
+
+                        try
+                        {
+                            var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
+                            var account = domain.Accounts.ItemByAddress[UserHelper.GetUserEmailAddress(config, user.Username)];
+                            noData &= ((account.Messages.Count == 0) && ((int)account.Size == 0));
+                        }
+                        catch { }
+                    }
+
+                    // Any git repos?
+                    if (config.GitConfig.Enabled)
+                    {
+                        string email = UserHelper.GetUserEmailAddress(config, user.Username);
+                        // We need to check the actual git database
+                        MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
+                        string sql = @"SELECT * FROM gogs.repository
+                                        LEFT JOIN gogs.action ON gogs.user.id = gogs.action.act_user_id
+                                        WHERE gogs.user.login_name = {0}";
+                        var results = mySQL.Query(sql, new object[] { email });
+
+                        noData &= !(results != null && results.Any());
+                    }
+
+                    if (noData)
+                    {
+                        // They have no data, so safe to delete them.
+                        foundUsers.Add(user.Username);
+                    }
+                    continue;
+                }
+                #endregion
+            }
+            return foundUsers;
         }
 
         public static void Output(string message)
