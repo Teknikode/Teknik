@@ -224,9 +224,11 @@ namespace ServerMaint
                 client.Credentials = new NetworkCredential(config.ContactConfig.Username, config.ContactConfig.Password);
                 client.Timeout = 5000;
 
-                MailMessage mail = new MailMessage(config.SupportEmail, email);
-                mail.Subject = "Invalid Account Notice";
-                mail.Body = string.Format(@"
+                try
+                {
+                    MailMessage mail = new MailMessage(config.SupportEmail, email);
+                    mail.Subject = "Invalid Account Notice";
+                    mail.Body = string.Format(@"
 The account {0} does not meet the requirements for a valid username.  
 
 The username must meet the following requirements: {1}  
@@ -234,15 +236,20 @@ It must also be greater than or equal to {2} characters in length, and less than
 
 This email is to let you know that this account will be deleted in {4} days ({5}) in order to comply with the username restrictions.  If you would like to keep your data, you should create a new account and transfer the data over to the new account.  
 
-In order to make the process as easy as possible, you can reply to this email to ask for your current account to be renamed to another available account.  This would keep all your data intact, and just require you to change all references to your email/git/user to the new username.  If you wish to do this, please respond within {6} days ({7}).
+In order to make the process as easy as possible, you can reply to this email to ask for your current account to be renamed to another available account.  This would keep all your data intact, and just require you to change all references to your email/git/user to the new username.  If you wish to do this, please respond within {6} days ({7}) with the new username you would like to use.
 
 Thank you for your continued use of Teknik!
 
 - Teknik Administration", account, config.UserConfig.UsernameFilterLabel, config.UserConfig.MinUsernameLength, config.UserConfig.MaxUsernameLength, 30, DateTime.Now.AddDays(30).ToShortDateString(), 15, DateTime.Now.AddDays(15).ToShortDateString());
-                mail.BodyEncoding = UTF8Encoding.UTF8;
-                mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
+                    mail.BodyEncoding = UTF8Encoding.UTF8;
+                    mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
-                client.Send(mail);
+                    client.Send(mail);
+                }
+                catch (Exception ex)
+                {
+                    Output(string.Format("[{0}] Unable to send email to {1}.  Exception: {2}", DateTime.Now, email, ex.Message));
+                }
             }
 
             Output(string.Format("[{0}] Finished Warning of Invalid Accounts.  {1} Accounts Warned.", DateTime.Now, invalidAccounts.Count));
