@@ -164,10 +164,12 @@ namespace Teknik.Areas.Upload.Controllers
                     }
                     else // We have the key, so that means server side decryption
                     {
+                        // Are they downloading it by range?
+                        bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]);
                         // Check to see if they have a cache
                         bool isCached = !string.IsNullOrEmpty(Request.Headers["If-Modified-Since"]);
 
-                        if (isCached)
+                        if (isCached && !byRange)
                         {
                             // The file is cached, let's just 304 this
                             Response.StatusCode = 304;
@@ -197,7 +199,7 @@ namespace Teknik.Areas.Upload.Controllers
                                 Response.AddHeader("Accept-Ranges", "0-" + upload.ContentLength);
 
                                 // check to see if we need to pass a specified range
-                                if (!String.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]))
+                                if (!byRange)
                                 {
                                     long anotherStart = startByte;
                                     long anotherEnd = endByte;
@@ -256,13 +258,11 @@ namespace Teknik.Areas.Upload.Controllers
                                     // Ranges are response of 206
                                     Response.StatusCode = 206;
                                 }
-                                else
-                                {
-                                    // No content range requested, so we can cache it.
-                                    Response.Cache.SetCacheability(HttpCacheability.Public);
-                                    Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
-                                    Response.Cache.SetLastModified(upload.DateUploaded);
-                                }
+
+                                // Add cache parameters
+                                Response.Cache.SetCacheability(HttpCacheability.Public);
+                                Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
+                                Response.Cache.SetLastModified(upload.DateUploaded);
 
                                 // Notify the client the byte range we'll be outputting 
                                 Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
