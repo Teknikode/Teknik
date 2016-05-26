@@ -27,11 +27,17 @@ namespace Teknik.Filters
             {
                 title = page.Title;
             }
-            Config config = Config.Load();
-            Tracking.TrackPageView(filterContext.HttpContext.Request, config, title);
+            HttpRequestBase request = filterContext.HttpContext.Request;
+            // Fire and forget.  Don't need to wait for it.
+            Task.Run(() => AsyncTrackPageView(request, title));
 
             base.OnActionExecuted(filterContext);
         }
 
+        private void AsyncTrackPageView(HttpRequestBase request, string title)
+        {
+            Config config = Config.Load();
+            Tracking.TrackPageView(request, config, title);
+        }
     }
 }

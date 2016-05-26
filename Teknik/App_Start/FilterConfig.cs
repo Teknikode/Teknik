@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
+using Teknik.Filters;
 
 namespace Teknik
 {
@@ -10,6 +11,7 @@ namespace Teknik
             //filters.Add(new HandleErrorAttribute());
             filters.Add(new AuthorizeAttribute());
             filters.Add(new RequireHttpsAttribute());
+            filters.Add(new TrackingFilterAttribute());
         }
     }
 }

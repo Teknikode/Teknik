@@ -14,7 +14,7 @@
             }
 
             <!-- Piwik -->
-            <script type="text/javascript">
+            @*<script type="text/javascript">
                 var _paq = _paq || [];
                 _paq.push(["setDocumentTitle", "@sub/@ViewBag.Title"]);
                 _paq.push(["setCookieDomain", "*.teknik.io"]);
@@ -28,7 +28,7 @@
                     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
                     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
                 })();
-            </script>
+            </script>*@
             <!-- End Piwik Code -->
         }
         <script type="text/javascript">
@@ -58,12 +58,12 @@
             </div>
             <!-- NoScript Alert -->
             <noscript>
-                @if (Model.Config.PiwikConfig.Enabled)
+                @*@if (Model.Config.PiwikConfig.Enabled)
                 {
                 <!-- Piwik Image Tracker-->
                 <img src="https://stats.teknik.io/piwik.php?idsite=1&rec=1" style="border:0" alt="" />
                 <!-- End Piwik -->
-                }
+                }*@
                 <div class="container">
                     <div class="row">
                         <div class="col-xs-12 text-center">

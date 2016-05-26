@@ -45,7 +45,7 @@ namespace Teknik.Helpers
                     if (request.UrlReferrer != null)
                         tracker.setUrlReferrer(request.UrlReferrer.ToString());
 
-                    tracker.setRequestTimeout(5);
+                    tracker.setRequestTimeout(15);
                     tracker.doTrackPageView(string.Format("{0}/{1}", sub, title));
                 }
                 catch (Exception ex)
