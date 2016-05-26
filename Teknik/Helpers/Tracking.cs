@@ -31,20 +31,28 @@ namespace Teknik.Helpers
                     PiwikTracker.URL = config.PiwikConfig.Url;
                     PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId);
                     
-                    tracker.setUserAgent(request.UserAgent);
-
-                    tracker.setResolution(request.Browser.ScreenPixelsWidth, request.Browser.ScreenPixelsHeight);
-                    tracker.setBrowserHasCookies(request.Browser.Cookies);
-
+                    // Get Request Info
                     string ipAddress = request.ClientIPFromRequest(true);
-
                     tracker.setIp(ipAddress);
                     tracker.setTokenAuth(config.PiwikConfig.TokenAuth);
-
                     tracker.setUrl(request.Url.ToString());
+
+                    tracker.setUserAgent(request.UserAgent);
+
+                    // Get browser info
+                    tracker.setResolution(request.Browser.ScreenPixelsWidth, request.Browser.ScreenPixelsHeight);
+                    tracker.setBrowserHasCookies(request.Browser.Cookies);
+                    if (!string.IsNullOrEmpty(request.Headers["Accept-Language"]))
+                        tracker.setBrowserLanguage(request.Headers["Accept-Language"]);
+                    BrowserPlugins plugins = new BrowserPlugins();
+                    plugins.java = request.Browser.JavaApplets;
+                    tracker.setPlugins(plugins);
+
+                    // Get Referral
                     if (request.UrlReferrer != null)
                         tracker.setUrlReferrer(request.UrlReferrer.ToString());
 
+                    // Send the tracking request
                     tracker.setRequestTimeout(15);
                     tracker.doTrackPageView(string.Format("{0}/{1}", sub, title));
                 }

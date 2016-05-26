@@ -21,11 +21,9 @@ namespace Teknik.Filters
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
             string title = string.Empty;
-            Page page = filterContext.HttpContext.Handler as Page;
-
-            if (page != null)
+            if (filterContext.Controller.ViewBag != null)
             {
-                title = page.Title;
+                title = filterContext.Controller.ViewBag.Title;
             }
             HttpRequestBase request = filterContext.HttpContext.Request;
             // Fire and forget.  Don't need to wait for it.
