@@ -21,7 +21,7 @@ namespace Teknik.Filters
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
             string title = string.Empty;
-            if (filterContext.Controller.ViewBag != null)
+            if (filterContext.Controller != null && filterContext.Controller.ViewBag != null && filterContext.Controller.ViewBag.Title != null)
             {
                 title = filterContext.Controller.ViewBag.Title;
             }

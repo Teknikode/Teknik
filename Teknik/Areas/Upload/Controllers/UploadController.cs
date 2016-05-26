@@ -199,7 +199,7 @@ namespace Teknik.Areas.Upload.Controllers
                                 Response.AddHeader("Accept-Ranges", "0-" + upload.ContentLength);
 
                                 // check to see if we need to pass a specified range
-                                if (!byRange)
+                                if (byRange)
                                 {
                                     long anotherStart = startByte;
                                     long anotherEnd = endByte;
