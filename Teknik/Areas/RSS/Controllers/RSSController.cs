@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using System.Xml.Linq;
 using Teknik.Areas.Blog.Models;
 using Teknik.Controllers;
+using Teknik.Filters;
 using Teknik.Helpers;
 using Teknik.Models;
 
@@ -17,6 +18,7 @@ namespace Teknik.Areas.RSS.Controllers
     {
         private TeknikEntities db = new TeknikEntities();
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {
@@ -25,6 +27,7 @@ namespace Teknik.Areas.RSS.Controllers
             return new RssResult(feed);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Blog(string username)
         {
@@ -82,6 +85,7 @@ namespace Teknik.Areas.RSS.Controllers
             return new RssResult(badFeed);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Podcast()
         {

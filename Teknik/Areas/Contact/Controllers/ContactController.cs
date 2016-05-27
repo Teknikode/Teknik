@@ -9,6 +9,7 @@ using Teknik.Areas.Contact.ViewModels;
 using Teknik.Areas.Contact.Models;
 using Teknik.Models;
 using System.Text;
+using Teknik.Filters;
 
 namespace Teknik.Areas.Contact.Controllers
 {
@@ -17,6 +18,7 @@ namespace Teknik.Areas.Contact.Controllers
         private TeknikEntities db = new TeknikEntities();
 
         // GET: Contact/Contact
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {

@@ -5,12 +5,14 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Help.ViewModels;
 using Teknik.Controllers;
+using Teknik.Filters;
 
 namespace Teknik.Areas.Help.Controllers
 {
     public class HelpController : DefaultController
     {
         // GET: Help/Help
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {
@@ -19,6 +21,7 @@ namespace Teknik.Areas.Help.Controllers
             return View(model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult API(string version, string service)
         {
@@ -36,6 +39,7 @@ namespace Teknik.Areas.Help.Controllers
             return RedirectToRoute("*.Error.Http404");
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Blog()
         {
@@ -44,6 +48,7 @@ namespace Teknik.Areas.Help.Controllers
             return View("~/Areas/Help/Views/Help/Blog.cshtml", model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Git()
         {
@@ -52,6 +57,7 @@ namespace Teknik.Areas.Help.Controllers
             return View("~/Areas/Help/Views/Help/Git.cshtml", model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult IRC()
         {
@@ -60,6 +66,7 @@ namespace Teknik.Areas.Help.Controllers
             return View("~/Areas/Help/Views/Help/IRC.cshtml", model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Mail()
         {
@@ -68,6 +75,7 @@ namespace Teknik.Areas.Help.Controllers
             return View("~/Areas/Help/Views/Help/Mail.cshtml", model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Mumble()
         {
@@ -76,6 +84,7 @@ namespace Teknik.Areas.Help.Controllers
             return View("~/Areas/Help/Views/Help/Mumble.cshtml", model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult RSS()
         {
@@ -84,6 +93,7 @@ namespace Teknik.Areas.Help.Controllers
             return View("~/Areas/Help/Views/Help/RSS.cshtml", model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Upload()
         {

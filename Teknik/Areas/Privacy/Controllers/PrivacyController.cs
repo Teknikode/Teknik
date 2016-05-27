@@ -5,12 +5,14 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Privacy.ViewModels;
 using Teknik.Controllers;
+using Teknik.Filters;
 
 namespace Teknik.Areas.Privacy.Controllers
 {
     public class PrivacyController : DefaultController
     {
         // GET: Privacy/Privacy
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {

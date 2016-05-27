@@ -5,11 +5,13 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Error.ViewModels;
 using Teknik.Controllers;
+using Teknik.Filters;
 
 namespace Teknik.Areas.Error.Controllers
 {
     public class ErrorController : DefaultController
     {
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Exception(Exception exception)
         {
@@ -25,6 +27,7 @@ namespace Teknik.Areas.Error.Controllers
             return View(model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult General(Exception exception)
         {
@@ -38,6 +41,7 @@ namespace Teknik.Areas.Error.Controllers
             return View(model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Http403(Exception exception)
         {
@@ -50,6 +54,7 @@ namespace Teknik.Areas.Error.Controllers
             return View(model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Http404(Exception exception)
         {
@@ -62,6 +67,7 @@ namespace Teknik.Areas.Error.Controllers
             return View(model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Http500(Exception exception)
         {

@@ -9,6 +9,7 @@ using Teknik.Areas.Home.ViewModels;
 using Teknik.Controllers;
 using Teknik.Helpers;
 using Teknik.Models;
+using Teknik.Filters;
 
 namespace Teknik.Areas.Home.Controllers
 {
@@ -17,6 +18,7 @@ namespace Teknik.Areas.Home.Controllers
         // GET: Home/Home
         private TeknikEntities db = new TeknikEntities();
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {

@@ -10,6 +10,7 @@ using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Blog.ViewModels;
 using Teknik.Areas.Users.Models;
 using Teknik.Controllers;
+using Teknik.Filters;
 using Teknik.Helpers;
 using Teknik.Models;
 
@@ -20,6 +21,7 @@ namespace Teknik.Areas.Blog.Controllers
         private TeknikEntities db = new TeknikEntities();
 
         // GET: Blogs/Details/5
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Blog(string username)
         {
@@ -74,6 +76,7 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         #region Posts
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Post(string username, int id)
         {

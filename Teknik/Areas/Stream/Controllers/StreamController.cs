@@ -6,11 +6,13 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Stream.ViewModels;
 using Teknik.Controllers;
+using Teknik.Filters;
 
 namespace Teknik.Areas.Stream.Controllers
 {
     public class StreamController : DefaultController
     {
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {

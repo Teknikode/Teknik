@@ -262,7 +262,9 @@
     <Compile Include="Configuration\UserConfig.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Areas\Dev\Controllers\DevController.cs" />
-    <Compile Include="Filters\TrackingFilterAttribute.cs" />
+    <Compile Include="Filters\TrackLink.cs" />
+    <Compile Include="Filters\TrackDownload.cs" />
+    <Compile Include="Filters\TrackPageView.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

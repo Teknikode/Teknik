@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Podcast.Models;
 using Teknik.Areas.Podcast.ViewModels;
 using Teknik.Controllers;
+using Teknik.Filters;
 using Teknik.Models;
 
 namespace Teknik.Areas.Podcast.Controllers
@@ -15,7 +16,8 @@ namespace Teknik.Areas.Podcast.Controllers
     public class PodcastController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();
-        
+
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {
@@ -50,6 +52,7 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         #region Podcasts
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult View(int episode)
         {

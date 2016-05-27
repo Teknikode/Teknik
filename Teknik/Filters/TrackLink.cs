@@ -11,7 +11,7 @@ using Teknik.Helpers;
 
 namespace Teknik.Filters
 {
-    public class TrackingFilterAttribute : ActionFilterAttribute
+    public class TrackLink : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -20,22 +20,17 @@ namespace Teknik.Filters
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            string title = string.Empty;
-            if (filterContext.Controller != null && filterContext.Controller.ViewBag != null && filterContext.Controller.ViewBag.Title != null)
-            {
-                title = filterContext.Controller.ViewBag.Title;
-            }
             HttpRequestBase request = filterContext.HttpContext.Request;
             // Fire and forget.  Don't need to wait for it.
-            Task.Run(() => AsyncTrackPageView(request, title));
+            Task.Run(() => AsyncTrackLink(request, request.Url.ToString()));
 
             base.OnActionExecuted(filterContext);
         }
 
-        private void AsyncTrackPageView(HttpRequestBase request, string title)
+        private void AsyncTrackLink(HttpRequestBase request, string url)
         {
             Config config = Config.Load();
-            Tracking.TrackPageView(request, config, title);
+            Tracking.TrackLink(request, config, url);
         }
     }
 }

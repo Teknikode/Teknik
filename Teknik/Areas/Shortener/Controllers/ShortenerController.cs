@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Shortener.Models;
 using Teknik.Areas.Shortener.ViewModels;
 using Teknik.Controllers;
+using Teknik.Filters;
 using Teknik.Models;
 
 namespace Teknik.Areas.Shortener.Controllers
@@ -14,6 +15,7 @@ namespace Teknik.Areas.Shortener.Controllers
     {
         private TeknikEntities db = new TeknikEntities();
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {

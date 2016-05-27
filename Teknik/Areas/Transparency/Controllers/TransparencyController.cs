@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Transparency.Models;
 using Teknik.Areas.Transparency.ViewModels;
 using Teknik.Controllers;
+using Teknik.Filters;
 using Teknik.Models;
 
 namespace Teknik.Areas.Transparency.Controllers
@@ -14,6 +15,7 @@ namespace Teknik.Areas.Transparency.Controllers
     {
         private TeknikEntities db = new TeknikEntities();
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {

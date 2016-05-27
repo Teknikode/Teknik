@@ -19,6 +19,7 @@ using Teknik.ViewModels;
 using System.Windows;
 using System.Net;
 using Teknik.Areas.Users.Utility;
+using Teknik.Filters;
 
 namespace Teknik.Areas.Users.Controllers
 {
@@ -27,6 +28,7 @@ namespace Teknik.Areas.Users.Controllers
         private TeknikEntities db = new TeknikEntities();
 
         // GET: Profile/Profile
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index(string username)
         {
@@ -79,7 +81,8 @@ namespace Teknik.Areas.Users.Controllers
             }
             return View(model);
         }
-        
+
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Settings()
         {
@@ -114,6 +117,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult ViewRawPGP(string username)
         {
@@ -132,6 +136,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Login(string ReturnUrl)
         {
@@ -201,6 +206,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Register(string ReturnUrl)
         {

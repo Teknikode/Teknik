@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Error.Controllers;
 using Teknik.Areas.Paste.ViewModels;
 using Teknik.Controllers;
+using Teknik.Filters;
 using Teknik.Helpers;
 using Teknik.Models;
 
@@ -19,6 +20,7 @@ namespace Teknik.Areas.Paste.Controllers
     {
         private TeknikEntities db = new TeknikEntities();
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {
@@ -28,6 +30,7 @@ namespace Teknik.Areas.Paste.Controllers
             return View(model);
         }
 
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult ViewPaste(string type, string url, string password)
         {

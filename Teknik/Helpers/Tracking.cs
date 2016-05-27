@@ -20,7 +20,7 @@ namespace Teknik.Helpers
                 {
                     // Follow Do Not Track
                     string doNotTrack = request.Headers["DNT"];
-                    if (!string.IsNullOrEmpty(doNotTrack) && doNotTrack != "1")
+                    if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
                     {
                         string sub = request.RequestContext.RouteData.Values["sub"].ToString();
                         if (string.IsNullOrEmpty(sub))
@@ -67,25 +67,39 @@ namespace Teknik.Helpers
             }
         }
 
-        public static void TrackAction(HttpRequestBase request, string url)
+        public static void TrackDownload(HttpRequestBase request, Config config, string url)
         {
-            Config config = Config.Load();
+            TrackAction(request, config, url, PiwikTracker.ActionType.download);
+        }
+
+        public static void TrackLink(HttpRequestBase request, Config config, string url)
+        {
+            TrackAction(request, config, url, PiwikTracker.ActionType.link);
+        }
+
+        private static void TrackAction(HttpRequestBase request, Config config, string url, PiwikTracker.ActionType type)
+        {
             // Handle Piwik Tracking if enabled
             if (config.PiwikConfig.Enabled)
             {
                 try
                 {
-                    PiwikTracker.URL = config.PiwikConfig.Url;
-                    PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId);
+                    // Follow Do Not Track
+                    string doNotTrack = request.Headers["DNT"];
+                    if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
+                    {
+                        PiwikTracker.URL = config.PiwikConfig.Url;
+                        PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId);
 
-                    tracker.setUserAgent(request.UserAgent);
+                        tracker.setUserAgent(request.UserAgent);
 
-                    string ipAddress = request.ClientIPFromRequest(true);
+                        string ipAddress = request.ClientIPFromRequest(true);
 
-                    tracker.setIp(ipAddress);
-                    tracker.setTokenAuth(config.PiwikConfig.TokenAuth);
+                        tracker.setIp(ipAddress);
+                        tracker.setTokenAuth(config.PiwikConfig.TokenAuth);
 
-                    tracker.doTrackAction(url, PiwikTracker.ActionType.download);
+                        tracker.doTrackAction(url, type);
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -11,6 +11,7 @@ using Teknik.Areas.Error.ViewModels;
 using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Upload.ViewModels;
 using Teknik.Controllers;
+using Teknik.Filters;
 using Teknik.Helpers;
 using Teknik.Models;
 
@@ -22,6 +23,7 @@ namespace Teknik.Areas.Upload.Controllers
 
         // GET: Upload/Upload
         [HttpGet]
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {
