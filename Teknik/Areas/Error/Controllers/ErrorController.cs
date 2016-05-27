@@ -19,7 +19,10 @@ namespace Teknik.Areas.Error.Controllers
             ViewBag.Description = "Just a boring 'ol exception. Nothing to see here, move along.";
 
             if (Response != null)
-                Response.StatusCode = 200;
+            {
+                Response.StatusCode = 500;
+                Response.TrySkipIisCustomErrors = true;
+            }
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
@@ -33,6 +36,12 @@ namespace Teknik.Areas.Error.Controllers
         {
             ViewBag.Title = "Http Exception - " + Config.Title;
             ViewBag.Description = "There has been a Http exception.  Run!";
+
+            if (Response != null)
+            {
+                Response.StatusCode = 500;
+                Response.TrySkipIisCustomErrors = true;
+            }
 
             ErrorViewModel model = new ErrorViewModel();
             model.Description = exception.Message;
@@ -48,6 +57,12 @@ namespace Teknik.Areas.Error.Controllers
             ViewBag.Title = "403 - " + Config.Title;
             ViewBag.Description = "Access Denied";
 
+            if (Response != null)
+            {
+                Response.StatusCode = 403;
+                Response.TrySkipIisCustomErrors = true;
+            }
+
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
@@ -61,6 +76,12 @@ namespace Teknik.Areas.Error.Controllers
             ViewBag.Title = "404 - " + Config.Title;
             ViewBag.Description = "Uh Oh, can't find it!";
 
+            if (Response != null)
+            {
+                Response.StatusCode = 404;
+                Response.TrySkipIisCustomErrors = true;
+            }
+
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
@@ -73,6 +94,12 @@ namespace Teknik.Areas.Error.Controllers
         {
             ViewBag.Title = "500 - " + Config.Title;
             ViewBag.Description = "Something Borked";
+
+            if (Response != null)
+            {
+                Response.StatusCode = 500;
+                Response.TrySkipIisCustomErrors = true;
+            }
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
