@@ -30,7 +30,7 @@ namespace Teknik.Areas.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [TrackPageView]
-        public ActionResult Upload(HttpPostedFileWrapper file, string contentType = null, bool encrypt = false, bool saveKey = false, string key = null, int keySize = 0, string iv = null, int blockSize = 0, bool genDeletionKey = false, bool doNotTrack = false)
+        public ActionResult Upload(HttpPostedFileWrapper file, string contentType = null, bool encrypt = true, bool saveKey = true, string key = null, int keySize = 0, string iv = null, int blockSize = 0, bool genDeletionKey = false, bool doNotTrack = false)
         {
             try
             {
