@@ -14,6 +14,12 @@ namespace Teknik.Areas.Users.Models
 
         public string HashedPassword { get; set; }
 
+        public string RecoveryEmail { get; set; }
+
+        public string RecoveryVerifyCode { get; set; }
+
+        public bool RecoveryVerified { get; set; }
+
         public bool TransferAccount { get; set; }
 
         public DateTime JoinDate { get; set; }
@@ -34,8 +40,11 @@ namespace Teknik.Areas.Users.Models
 
         public User()
         {
-            Username = String.Empty;
-            HashedPassword = String.Empty;
+            Username = string.Empty;
+            HashedPassword = string.Empty;
+            RecoveryEmail = string.Empty;
+            RecoveryVerifyCode = string.Empty;
+            RecoveryVerified = false;
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;
             Groups = new List<Group>();

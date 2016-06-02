@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -320,6 +321,36 @@ namespace Teknik.Areas.Users.Utility
             {
                 throw new Exception("Unable to delete user.", ex);
             }
+        }
+
+        public static void SendRecoveryEmailVerification(Config config, string username, string email, string resetUrl, string verifyUrl)
+        {
+            SmtpClient client = new SmtpClient();
+            client.Host = config.ContactConfig.Host;
+            client.Port = config.ContactConfig.Port;
+            client.EnableSsl = config.ContactConfig.SSL;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = true;
+            client.Credentials = new NetworkCredential(config.NoReplyEmail, config.ContactConfig.Password);
+            client.Timeout = 5000;
+
+            MailMessage mail = new MailMessage(config.NoReplyEmail, email);
+            mail.Subject = "Recovery Email Validation";
+            mail.Body = string.Format(@"Thank you {0} for signing up for Teknik!  
+
+You are recieving this email because you have specified this email address as your recovery email.  In the event that you forget your password, you can visit {1} and request a temporary password reset key be sent to this email.  You will then be able to reset and choose a new password.
+
+In order to verify that you own this email, please click the following link or paste it into your browser: {2}  
+
+If you recieved this email and you did not sign up for an account, please email us at {3} and ignore the verification link.
+
+Thank you and enjoy!
+
+- Teknik Administration", username, resetUrl, verifyUrl, config.SupportEmail);
+            mail.BodyEncoding = UTF8Encoding.UTF8;
+            mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
+
+            client.Send(mail);
         }
         #endregion
 

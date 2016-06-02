@@ -23,6 +23,12 @@ namespace Teknik.Areas.Users.ViewModels
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
 
+        [Display(Name = "Recovery Email")]
+        public string RecoveryEmail { get; set; }
+
+        [Display(Name = "Public PGP Key")]
+        public string PublicKey { get; set; }
+
         public string ReturnUrl { get; set; }
     }
 }

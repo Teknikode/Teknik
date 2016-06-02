@@ -51,6 +51,22 @@ namespace Teknik.Areas.Users
                  new[] { typeof(Controllers.UserController).Namespace }
             );
             context.MapSubdomainRoute(
+                 "User.ResetPassword", // Route name
+                 new List<string>() { "user" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "Reset/{username}",    // URL with parameters 
+                 new { controller = "User", action = "ResetPassword", username = UrlParameter.Optional },  // Parameter defaults 
+                 new[] { typeof(Controllers.UserController).Namespace }
+            );
+            context.MapSubdomainRoute(
+                 "User.VerifyRecoveryEmail", // Route name
+                 new List<string>() { "user" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "VerifyEmail/{username}/{code}",    // URL with parameters 
+                 new { controller = "User", action = "VerifyRecoveryEmail" },  // Parameter defaults 
+                 new[] { typeof(Controllers.UserController).Namespace }
+            );
+            context.MapSubdomainRoute(
                  "User.Index", // Route name
                  new List<string>() { "user" }, // Subdomains
                  new List<string>() { config.Host }, // domains

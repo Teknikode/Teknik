@@ -19,6 +19,7 @@ namespace Teknik.Configuration
         private string              _Author;
         private string              _Host;
         private string              _SupportEmail;
+        private string              _NoReplyEmail;
         private string              _BitcoinAddress;
         private string              _Salt1;
         private string              _Salt2;
@@ -46,6 +47,7 @@ namespace Teknik.Configuration
         public string       Author          { get { return _Author; }           set { _Author = value; } }
         public string       Host            { get { return _Host; }             set { _Host = value; } }
         public string       SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
+        public string       NoReplyEmail    { get { return _NoReplyEmail; }     set { _NoReplyEmail = value; } }
         public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
         public string       Salt1           { get { return _Salt1; }            set { _Salt1 = value; } }
         public string       Salt2           { get { return _Salt2; }            set { _Salt2 = value; } }
@@ -111,6 +113,7 @@ namespace Teknik.Configuration
             Author              = string.Empty;
             Host                = string.Empty;
             SupportEmail        = string.Empty;
+            NoReplyEmail        = string.Empty;
             BitcoinAddress      = string.Empty;
             Salt1               = string.Empty;
             Salt2               = string.Empty;

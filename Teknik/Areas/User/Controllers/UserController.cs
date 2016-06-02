@@ -19,6 +19,7 @@ using Teknik.ViewModels;
 using System.Windows;
 using System.Net;
 using Teknik.Areas.Users.Utility;
+using Teknik.Helpers;
 using Teknik.Filters;
 
 namespace Teknik.Areas.Users.Controllers
@@ -237,12 +238,28 @@ namespace Teknik.Areas.Users.Controllers
                         return Json(new { error = "Passwords must match" });
                     }
 
+                    // PGP Key valid?
+                    if (!string.IsNullOrEmpty(model.PublicKey) && !PGP.IsPublicKey(model.PublicKey))
+                    {
+                        return Json(new { error = "Invalid PGP Public Key" });
+                    }
+
                     try
                     {
                         User newUser = db.Users.Create();
                         newUser.JoinDate = DateTime.Now;
                         newUser.Username = model.Username;
+                        if (!string.IsNullOrEmpty(model.RecoveryEmail))
+                        {
+                            string recoveryCode = Teknik.Utility.RandomString(24);
+                            string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = model.Username });
+                            string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Username = model.Username, Code = recoveryCode });
+                            //UserHelper.SendRecoveryEmailVerification(Config, model.Username, model.RecoveryEmail, resetUrl, verifyUrl);  Not yet :)
+                            //newUser.RecoveryEmail = model.RecoveryEmail;
+                        }
                         newUser.UserSettings = new UserSettings();
+                        if (!string.IsNullOrEmpty(model.PublicKey))
+                            newUser.UserSettings.PGPSignature = model.PublicKey;
                         newUser.BlogSettings = new BlogSettings();
                         newUser.UploadSettings = new UploadSettings();
 

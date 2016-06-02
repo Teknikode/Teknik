@@ -18,6 +18,12 @@
         <div class="form-group">
             <input type="password" class="form-control" id="registerConfirmPassword" value="" placeholder="Confirm Password" name="Register.ConfirmPassword" data-val-required="The Confirm Password field is required." data-val="true" />
         </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="registerRecoveryEmail" value="" placeholder="Recovery Email (Optional)" name="Register.RecoveryEmail" />
+        </div>
+        <div class="form-group">
+            <textarea class="form-control" id="registerPublicKey" name="Register.PublicKey" placeholder="PGP Public Key (Optional)" title="enter your pgp public key" rows="5"></textarea>
+        </div>
         <p class="text-center">
             <small>
                 Username must meet the following requirements: <var>@Model.Config.UserConfig.UsernameFilterLabel</var><br />
