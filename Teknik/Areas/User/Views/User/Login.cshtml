@@ -20,7 +20,10 @@
                 <input id="loginRememberMe" type="checkbox" value="true" name="Login.RememberMe" data-val-required="The Remember Me field is required." data-val="true" /><input name="Login.RememberMe" type="hidden" value="false"> Remember Me
             </label>
         </div>
-        <p class="text-center"><a href="@Url.SubRouteUrl("user", "User.ResetPassword")">Forgotten Password?</a></p>
+        @if (Model.Config.UserConfig.PasswordResetEnabled)
+        {
+            <p class="text-center"><a href="@Url.SubRouteUrl("user", "User.ResetPassword")">Forgotten Password?</a></p>
+        }
         <div class="form-group text-center">
             <button class="btn btn-primary" id="loginSubmit" type="submit" name="Login.Submit">Sign In</button>
         </div>
