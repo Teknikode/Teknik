@@ -19,6 +19,8 @@ namespace Teknik.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<RecoveryEmailVerification> RecoveryEmailVerifications { get; set; }
+        public DbSet<ResetPasswordVerification> ResetPasswordVerifications { get; set; }
         // User Settings
         public DbSet<UserSettings> UserSettings { get; set; }
         public DbSet<BlogSettings> BlogSettings { get; set; }
@@ -90,6 +92,8 @@ namespace Teknik.Models
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Group>().ToTable("Groups");
             modelBuilder.Entity<Role>().ToTable("Roles");
+            modelBuilder.Entity<RecoveryEmailVerification>().ToTable("RecoveryEmailVerifications");
+            modelBuilder.Entity<ResetPasswordVerification>().ToTable("ResetPasswordVerifications");
             // User Settings
             modelBuilder.Entity<UserSettings>().ToTable("Users");
             modelBuilder.Entity<BlogSettings>().ToTable("Users");

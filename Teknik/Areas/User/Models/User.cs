@@ -16,8 +16,6 @@ namespace Teknik.Areas.Users.Models
 
         public string RecoveryEmail { get; set; }
 
-        public string RecoveryVerifyCode { get; set; }
-
         public bool RecoveryVerified { get; set; }
 
         public bool TransferAccount { get; set; }
@@ -43,7 +41,6 @@ namespace Teknik.Areas.Users.Models
             Username = string.Empty;
             HashedPassword = string.Empty;
             RecoveryEmail = string.Empty;
-            RecoveryVerifyCode = string.Empty;
             RecoveryVerified = false;
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;

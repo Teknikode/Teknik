@@ -104,6 +104,8 @@ namespace Teknik.Areas.Users.Controllers
 
                     model.UserID = user.UserId;
                     model.Username = user.Username;
+                    model.RecoveryEmail = user.RecoveryEmail;
+                    model.RecoveryVerified = user.RecoveryVerified;
 
                     model.UserSettings = user.UserSettings;
                     model.BlogSettings = user.BlogSettings;
@@ -250,13 +252,7 @@ namespace Teknik.Areas.Users.Controllers
                         newUser.JoinDate = DateTime.Now;
                         newUser.Username = model.Username;
                         if (!string.IsNullOrEmpty(model.RecoveryEmail))
-                        {
-                            string recoveryCode = Teknik.Utility.RandomString(24);
-                            string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = model.Username });
-                            string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Username = model.Username, Code = recoveryCode });
-                            //UserHelper.SendRecoveryEmailVerification(Config, model.Username, model.RecoveryEmail, resetUrl, verifyUrl);  Not yet :)
-                            //newUser.RecoveryEmail = model.RecoveryEmail;
-                        }
+                            newUser.RecoveryEmail = model.RecoveryEmail;
                         newUser.UserSettings = new UserSettings();
                         if (!string.IsNullOrEmpty(model.PublicKey))
                             newUser.UserSettings.PGPSignature = model.PublicKey;
@@ -264,6 +260,15 @@ namespace Teknik.Areas.Users.Controllers
                         newUser.UploadSettings = new UploadSettings();
 
                         UserHelper.AddAccount(db, Config, newUser, model.Password);
+                        
+                        // If they have a recovery email, let's send a verification
+                        if (!string.IsNullOrEmpty(model.RecoveryEmail))
+                        {
+                            string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, newUser);
+                            string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = model.Username });
+                            string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
+                            UserHelper.SendRecoveryEmailVerification(Config, model.Username, model.RecoveryEmail, resetUrl, verifyUrl);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -277,7 +282,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
+        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string recoveryEmail, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
         {
             if (ModelState.IsValid)
             {
@@ -311,6 +316,14 @@ namespace Teknik.Areas.Users.Controllers
                         }
                         user.UserSettings.PGPSignature = pgpPublicKey;
 
+                        bool newRecovery = false;
+                        if (recoveryEmail != user.RecoveryEmail)
+                        {
+                            newRecovery = true;
+                            user.RecoveryEmail = recoveryEmail;
+                            user.RecoveryVerified = false;
+                        }
+
                         user.UserSettings.Website = website;
                         user.UserSettings.Quote = quote;
                         user.UserSettings.About = about;
@@ -321,6 +334,15 @@ namespace Teknik.Areas.Users.Controllers
                         user.UploadSettings.SaveKey = saveKey;
                         user.UploadSettings.ServerSideEncrypt = serverSideEncrypt;
                         UserHelper.EditAccount(db, Config, user, changePass, newPass);
+
+                        // If they have a recovery email, let's send a verification
+                        if (!string.IsNullOrEmpty(recoveryEmail) && newRecovery)
+                        {
+                            string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, user);
+                            string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
+                            string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
+                            UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.RecoveryEmail, resetUrl, verifyUrl);
+                        }
                         return Json(new { result = true });
                     }
                     return Json(new { error = "User does not exist" });
@@ -355,6 +377,153 @@ namespace Teknik.Areas.Users.Controllers
                 }
             }
             return Json(new { error = "Unable to delete user" });
+        }
+
+        [HttpGet]
+        public ActionResult VerifyRecoveryEmail(string code)
+        {
+            bool verified = true;
+            if (string.IsNullOrEmpty(code))
+                verified &= false;
+            verified &= UserHelper.VerifyRecoveryEmail(db, Config, User.Identity.Name, code);
+
+            RecoveryEmailVerificationViewModel model = new RecoveryEmailVerificationViewModel();
+            model.Success = verified;
+
+            return View("/Areas/User/Views/User/ViewRecoveryEmailVerification.cshtml", model);
+        }
+
+        [HttpPost]
+        public ActionResult ResendVerifyRecoveryEmail()
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
+                    {
+                        // If they have a recovery email, let's send a verification
+                        if (!string.IsNullOrEmpty(user.RecoveryEmail))
+                        {
+                            if (!user.RecoveryVerified)
+                            {
+                                string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, user);
+                                string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
+                                string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
+                                UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.RecoveryEmail, resetUrl, verifyUrl);
+                                return Json(new { result = true });
+                            }
+                            return Json(new { error = "The recovery email is already verified" });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { error = ex.GetFullMessage(true) });
+                }
+            }
+            return Json(new { error = "Unable to resend verification" });
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult ResetPassword(string username)
+        {
+            ResetPasswordViewModel model = new ResetPasswordViewModel();
+            model.Username = username;
+
+            return View("/Areas/User/Views/User/ResetPassword.cshtml", model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult SendResetPasswordVerification(string username)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    User user = UserHelper.GetUser(db, username);
+                    if (user != null)
+                    {
+                        // If they have a recovery email, let's send a verification
+                        if (!string.IsNullOrEmpty(user.RecoveryEmail) && user.RecoveryVerified)
+                        {
+                            string verifyCode = UserHelper.CreateResetPasswordVerification(db, Config, user);
+                            string resetUrl = Url.SubRouteUrl("user", "User.VerifyResetPassword", new { Username = user.Username, Code = verifyCode });
+                            UserHelper.SendResetPasswordVerification(Config, user.Username, user.RecoveryEmail, resetUrl);
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "The username doesn't have a recovery email specified" });
+                    }
+                    return Json(new { error = "The username is not valid" });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { error = ex.GetFullMessage(true) });
+                }
+            }
+            return Json(new { error = "Unable to send reset link" });
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult VerifyResetPassword(string username, string code)
+        {
+            bool verified = true;
+            if (string.IsNullOrEmpty(code))
+                verified &= false;
+            verified &= UserHelper.VerifyResetPassword(db, Config, username, code);
+
+            if (verified)
+            {
+                // The password reset code is valid, let's log them in
+                User user = UserHelper.GetUser(db, username);
+                user.LastSeen = DateTime.Now;
+                db.Entry(user).State = EntityState.Modified;
+                db.SaveChanges();
+                HttpCookie authcookie = UserHelper.CreateAuthCookie(user.Username, false, Request.Url.Host.GetDomain(), Request.IsLocal);
+                Response.Cookies.Add(authcookie);
+            }
+
+            ResetPasswordVerificationViewModel model = new ResetPasswordVerificationViewModel();
+            model.Success = verified;
+
+            return View("/Areas/User/Views/User/ResetPasswordVerification.cshtml", model);
+        }
+
+        [HttpPost]
+        public ActionResult SetUserPassword(string password, string confirmPassword)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
+                    {
+                        if (string.IsNullOrEmpty(password))
+                        {
+                            return Json(new { error = "Password must not be empty" });
+                        }
+                        if (password != confirmPassword)
+                        {
+                            return Json(new { error = "Passwords must match" });
+                        }
+
+                        UserHelper.EditAccount(db, Config, user, true, password);
+
+                        return Json(new { result = true });
+                    }
+                    return Json(new { error = "User does not exist" });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { error = ex.GetFullMessage(true) });
+                }
+            }
+            return Json(new { error = "Unable to reset user password" });
         }
     }
 }

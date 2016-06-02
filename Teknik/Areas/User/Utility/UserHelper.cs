@@ -313,6 +313,26 @@ namespace Teknik.Areas.Users.Utility
                     }
                 }
 
+                // Delete Recovery Email Verifications
+                List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Include("User").Where(r => r.User.Username == user.Username).ToList();
+                if (verCodes != null)
+                {
+                    foreach (RecoveryEmailVerification verCode in verCodes)
+                    {
+                        db.RecoveryEmailVerifications.Remove(verCode);
+                    }
+                }
+
+                // Delete Password Reset Verifications 
+                List<ResetPasswordVerification> verPass = db.ResetPasswordVerifications.Include("User").Where(r => r.User.Username == user.Username).ToList();
+                if (verPass != null)
+                {
+                    foreach (ResetPasswordVerification ver in verPass)
+                    {
+                        db.ResetPasswordVerifications.Remove(ver);
+                    }
+                }
+
                 // Delete User
                 db.Users.Remove(user);
                 db.SaveChanges();
@@ -321,6 +341,30 @@ namespace Teknik.Areas.Users.Utility
             {
                 throw new Exception("Unable to delete user.", ex);
             }
+        }
+
+        public static string CreateRecoveryEmailVerification(TeknikEntities db, Config config, User user)
+        {
+            // Check to see if there already is a verification code for the user
+            List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Include("User").Where(r => r.User.Username == user.Username).ToList();
+            if (verCodes != null && verCodes.Any())
+            {
+                foreach (RecoveryEmailVerification verCode in verCodes)
+                {
+                    db.RecoveryEmailVerifications.Remove(verCode);
+                }
+            }
+
+            // Create a new verification code and add it
+            string verifyCode = Teknik.Utility.RandomString(24);
+            RecoveryEmailVerification ver = new RecoveryEmailVerification();
+            ver.UserId = user.UserId;
+            ver.Code = verifyCode;
+            ver.DateCreated = DateTime.Now;
+            db.RecoveryEmailVerifications.Add(ver);
+            db.SaveChanges();
+
+            return verifyCode;
         }
 
         public static void SendRecoveryEmailVerification(Config config, string username, string email, string resetUrl, string verifyUrl)
@@ -336,7 +380,9 @@ namespace Teknik.Areas.Users.Utility
 
             MailMessage mail = new MailMessage(config.NoReplyEmail, email);
             mail.Subject = "Recovery Email Validation";
-            mail.Body = string.Format(@"Thank you {0} for signing up for Teknik!  
+            mail.Body = string.Format(@"Hello {0},
+
+Welcome to Teknik!  
 
 You are recieving this email because you have specified this email address as your recovery email.  In the event that you forget your password, you can visit {1} and request a temporary password reset key be sent to this email.  You will then be able to reset and choose a new password.
 
@@ -351,6 +397,105 @@ Thank you and enjoy!
             mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
             client.Send(mail);
+        }
+
+        public static bool VerifyRecoveryEmail(TeknikEntities db, Config config, string username, string code)
+        {
+            User user = GetUser(db, username);
+            RecoveryEmailVerification verCode = db.RecoveryEmailVerifications.Include("User").Where(r => r.User.Username == username && r.Code == code).FirstOrDefault();
+            if (verCode != null)
+            {
+                // We have a match, so clear out the verifications for that user
+                List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Include("User").Where(r => r.User.Username == username).ToList();
+                if (verCodes != null && verCodes.Any())
+                {
+                    foreach (RecoveryEmailVerification ver in verCodes)
+                    {
+                        db.RecoveryEmailVerifications.Remove(ver);
+                    }
+                }
+                // Update the user
+                user.RecoveryVerified = true;
+                db.Entry(user).State = EntityState.Modified;
+                db.SaveChanges();
+
+                return true;
+            }
+            return false;
+        }
+
+        public static string CreateResetPasswordVerification(TeknikEntities db, Config config, User user)
+        {
+            // Check to see if there already is a verification code for the user
+            List<ResetPasswordVerification> verCodes = db.ResetPasswordVerifications.Include("User").Where(r => r.User.Username == user.Username).ToList();
+            if (verCodes != null && verCodes.Any())
+            {
+                foreach (ResetPasswordVerification verCode in verCodes)
+                {
+                    db.ResetPasswordVerifications.Remove(verCode);
+                }
+            }
+
+            // Create a new verification code and add it
+            string verifyCode = Teknik.Utility.RandomString(24);
+            ResetPasswordVerification ver = new ResetPasswordVerification();
+            ver.UserId = user.UserId;
+            ver.Code = verifyCode;
+            ver.DateCreated = DateTime.Now;
+            db.ResetPasswordVerifications.Add(ver);
+            db.SaveChanges();
+
+            return verifyCode;
+        }
+
+        public static void SendResetPasswordVerification(Config config, string username, string email, string resetUrl)
+        {
+            SmtpClient client = new SmtpClient();
+            client.Host = config.ContactConfig.Host;
+            client.Port = config.ContactConfig.Port;
+            client.EnableSsl = config.ContactConfig.SSL;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = true;
+            client.Credentials = new NetworkCredential(config.NoReplyEmail, config.ContactConfig.Password);
+            client.Timeout = 5000;
+
+            MailMessage mail = new MailMessage(config.NoReplyEmail, email);
+            mail.Subject = "Password Reset Request";
+            mail.Body = string.Format(@"Hello {0},
+
+You are recieving this email because either you or someone has requested a password reset for your account and this email was specified as the recovery email.
+
+To proceed in resetting your password, please click the following link or paste it into your browser: {1}  
+
+If you recieved this email and you did not reset your password, you can ignore this email and email us at {2} to prevent it occuring again.
+
+- Teknik Administration", username, resetUrl, config.SupportEmail);
+            mail.BodyEncoding = UTF8Encoding.UTF8;
+            mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
+
+            client.Send(mail);
+        }
+
+        public static bool VerifyResetPassword(TeknikEntities db, Config config, string username, string code)
+        {
+            User user = GetUser(db, username);
+            ResetPasswordVerification verCode = db.ResetPasswordVerifications.Include("User").Where(r => r.User.Username == username && r.Code == code).FirstOrDefault();
+            if (verCode != null)
+            {
+                // We have a match, so clear out the verifications for that user
+                List<ResetPasswordVerification> verCodes = db.ResetPasswordVerifications.Include("User").Where(r => r.User.Username == username).ToList();
+                if (verCodes != null && verCodes.Any())
+                {
+                    foreach (ResetPasswordVerification ver in verCodes)
+                    {
+                        db.ResetPasswordVerifications.Remove(ver);
+                    }
+                }
+                db.SaveChanges();
+
+                return true;
+            }
+            return false;
         }
         #endregion
 

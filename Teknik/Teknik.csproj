@@ -209,11 +209,16 @@
     <Compile Include="Areas\Privacy\ViewModels\PrivacyViewModel.cs" />
     <Compile Include="Areas\User\Controllers\UserController.cs" />
     <Compile Include="Areas\User\Models\BlogSettings.cs" />
+    <Compile Include="Areas\User\Models\ResetPasswordVerification.cs" />
+    <Compile Include="Areas\User\Models\RecoveryEmailVerification.cs" />
     <Compile Include="Areas\User\Models\UploadSettings.cs" />
     <Compile Include="Areas\User\Models\UserSettings.cs" />
     <Compile Include="Areas\User\UserAreaRegistration.cs" />
     <Compile Include="Areas\User\Utility\UserHelper.cs" />
     <Compile Include="Areas\User\ViewModels\ProfileViewModel.cs" />
+    <Compile Include="Areas\User\ViewModels\ResetPasswordVerificationViewModel.cs" />
+    <Compile Include="Areas\User\ViewModels\ResetPasswordViewModel.cs" />
+    <Compile Include="Areas\User\ViewModels\RecoveryEmailVerificationViewModel.cs" />
     <Compile Include="Areas\User\ViewModels\SettingsViewModel.cs" />
     <Compile Include="Areas\RSS\Controllers\RSSController.cs" />
     <Compile Include="Areas\RSS\RSSAreaRegistration.cs" />
@@ -533,6 +538,9 @@
     <Content Include="Areas\TOS\Views\TOS\Index.cshtml" />
     <Content Include="Areas\Vault\Views\web.config" />
     <Content Include="Areas\Vault\Views\Vault\ViewVault.cshtml" />
+    <Content Include="Areas\User\Views\User\ViewRecoveryEmailVerification.cshtml" />
+    <Content Include="Areas\User\Views\User\ResetPasswordVerification.cshtml" />
+    <Content Include="Areas\User\Views\User\ResetPassword.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

@@ -1,0 +1,21 @@
+﻿@model Teknik.Areas.Users.ViewModels.RecoveryEmailVerificationViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center">
+                <h1>Verification @(Model.Success ? "Successful" : "Invalid")</h1>
+                <div class="col-md-10 col-md-offset-1">
+                    @if (Model.Success)
+                    {
+                    <p>Your recovery email has been successfully verified.  When you want to reset your pasword, the reset link will be sent to that email.</p>
+                    }
+                    else
+                    {
+                        <p>The verification you provided is not valid.  Please check the URL and try again.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

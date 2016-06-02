@@ -6,6 +6,7 @@
     var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
     var editUserURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Edit" })';
     var deleteUserURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Delete" })';
+    var resendVerifyURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ResendVerifyRecoveryEmail"})';
 </script>
 
 @Styles.Render("~/Content/user")
@@ -48,7 +49,30 @@
                         </div>
                         <div class="col-sm-8">
                             <label for="update_pgp_public_key"><h4>Public Key</h4></label>
-                            <textarea class="form-control" id="update_pgp_public_key" name="update_pgp_public_key" placeholder="Public Key Here" title="enter your pgp public key" rows="10">@Model.UserSettings.PGPSignature</textarea>
+                            <textarea class="form-control" id="update_pgp_public_key" name="update_pgp_public_key" placeholder="Public Key Here" title="enter your pgp public key" rows="15">@Model.UserSettings.PGPSignature</textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="row">
+                                <div class="form-group col-sm-12">
+                                    <label for="update_recovery_email"><h4>Recovery Email</h4></label>
+                                    <input class="form-control" name="update_recovery_email" id="update_recovery_email" placeholder="user@example.com" title="enter a recovery email." type="text" value="@Model.RecoveryEmail" />
+                                    @if (!string.IsNullOrEmpty(Model.RecoveryEmail))
+                                    {
+                                    <p class="form-control-static">
+                                        @if (Model.RecoveryVerified)
+                                        {
+                                            <span class="text-success"><i class="fa fa-check"></i> Verified</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger"><i class="fa fa-ban"></i> Unverified</span> <small><a href="#" class="text-primary" id="ResendVerification"><i class="fa fa-repeat"></i> Resend</a></small>
+                                        }
+                                    </p>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
