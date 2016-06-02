@@ -44,6 +44,16 @@ namespace Teknik.Controllers
                 Response.SuppressFormsAuthenticationRedirect = true;
             }
         }
+
+        // Get the Favicon
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Favicon()
+        {
+            // Get favicon
+            string imageFile = Server.MapPath("~/Images/favicon.ico");
+            return File(imageFile, "image/x-icon");
+        }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

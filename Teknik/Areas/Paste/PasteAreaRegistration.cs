@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Controllers;
 
 namespace Teknik.Areas.Paste
 {
@@ -25,6 +26,14 @@ namespace Teknik.Areas.Paste
                  "",    // URL with parameters 
                  new { controller = "Paste", action = "Index" },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Paste.Favicon",
+                 new List<string>() { "paste", "p" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "favicon.ico",
+                 new { controller = "Default", action = "Favicon" },
+                 new[] { typeof(DefaultController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Paste.Simple", // Route name

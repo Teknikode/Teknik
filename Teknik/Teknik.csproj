@@ -244,6 +244,13 @@
     <Compile Include="Areas\Upload\ViewModels\DeleteViewModel.cs" />
     <Compile Include="Areas\Upload\ViewModels\DownloadViewModel.cs" />
     <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
+    <Compile Include="Areas\Vault\Controllers\VaultController.cs" />
+    <Compile Include="Areas\Vault\Models\PasteItem.cs" />
+    <Compile Include="Areas\Vault\Models\UploadItem.cs" />
+    <Compile Include="Areas\Vault\Models\Vault.cs" />
+    <Compile Include="Areas\Vault\Models\VaultItem.cs" />
+    <Compile Include="Areas\Vault\VaultAreaRegistration.cs" />
+    <Compile Include="Areas\Vault\ViewModels\VaultViewModel.cs" />
     <Compile Include="Configuration\PiwikConfig.cs" />
     <Compile Include="Configuration\ShortenerConfig.cs" />
     <Compile Include="Configuration\TransparencyConfig.cs" />
@@ -511,7 +518,7 @@
     <Content Include="App_Data\Config.json" />
     <Content Include="Areas\User\Views\User\Settings.cshtml" />
     <Content Include="Areas\Transparency\Views\web.config" />
-    <Content Include="Areas\Transparency\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Vault\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Transparency\Views\Transparency\Index.cshtml" />
     <Content Include="Areas\Help\Views\Help\RSS.cshtml" />
     <Content Include="Areas\Stream\Views\web.config" />
@@ -524,6 +531,8 @@
     <Content Include="Areas\TOS\Views\web.config" />
     <Content Include="Areas\TOS\Views\_ViewStart.cshtml" />
     <Content Include="Areas\TOS\Views\TOS\Index.cshtml" />
+    <Content Include="Areas\Vault\Views\web.config" />
+    <Content Include="Areas\Vault\Views\Vault\ViewVault.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -622,6 +631,8 @@
     <Folder Include="Areas\Upload\Views\Shared\" />
     <Folder Include="Areas\User\Repositories\" />
     <Folder Include="Areas\User\Views\Shared\" />
+    <Folder Include="Areas\Vault\Scripts\" />
+    <Folder Include="Areas\Vault\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

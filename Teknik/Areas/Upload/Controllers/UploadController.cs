@@ -3,6 +3,8 @@ using Piwik.Tracker;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -134,7 +136,7 @@ namespace Teknik.Areas.Upload.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { error = new { message = "Exception while uploading file: " + ex.Message } });
+                return Json(new { error = new { message = "Exception while uploading file: " + ex.GetFullMessage(true) } });
             }
         }
 

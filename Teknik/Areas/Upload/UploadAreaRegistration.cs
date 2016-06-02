@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Controllers;
 
 namespace Teknik.Areas.Upload
 {
@@ -25,6 +26,14 @@ namespace Teknik.Areas.Upload
                  "",  
                  new { controller = "Upload", action = "Index" },
                  new[] { typeof(Controllers.UploadController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Upload.Favicon",
+                 new List<string>() { "upload", "u" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "favicon.ico",
+                 new { controller = "Default", action = "Favicon" },
+                 new[] { typeof(DefaultController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Upload.Download",
