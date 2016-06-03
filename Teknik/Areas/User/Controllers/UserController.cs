@@ -19,7 +19,6 @@ using Teknik.ViewModels;
 using System.Windows;
 using System.Net;
 using Teknik.Areas.Users.Utility;
-using Teknik.Helpers;
 using Teknik.Filters;
 
 namespace Teknik.Areas.Users.Controllers
