@@ -113,7 +113,7 @@ namespace Teknik.Areas.API.Controllers
                         }
 
                         // Save the file data
-                        Upload.Models.Upload upload = Uploader.SaveFile((encrypt) ? data : fileData, contentType, contentLength, fileExt, iv, (saveKey) ? key : null, keySize, blockSize);
+                        Upload.Models.Upload upload = Uploader.SaveFile(db, Config, (encrypt) ? data : fileData, contentType, contentLength, fileExt, iv, (saveKey) ? key : null, keySize, blockSize);
 
                         if (upload != null)
                         {

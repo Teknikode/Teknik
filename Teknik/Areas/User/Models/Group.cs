@@ -14,8 +14,8 @@ namespace Teknik.Areas.Users.Models
 
         public string Description { get; set; }
 
-        public List<User> Users { get; set; }
+        public virtual ICollection<User> Users { get; set; }
 
-        public List<Role> Roles { get; set; }
+        public virtual ICollection<Role> Roles { get; set; }
     }
 }

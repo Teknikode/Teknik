@@ -11,7 +11,7 @@ namespace Teknik.Areas.Podcast.Models
 
         public int PodcastId { get; set; }
 
-        public Podcast Podcast { get; set; }
+        public virtual Podcast Podcast { get; set; }
 
         public string FileName { get; set; }
 

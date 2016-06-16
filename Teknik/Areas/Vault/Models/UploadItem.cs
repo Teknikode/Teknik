@@ -8,6 +8,6 @@ namespace Teknik.Areas.Vault.Models
     public class UploadItem : VaultItem
     {
         public int UploadId { get; set; }
-        public Upload.Models.Upload Upload { get; set; }
+        public virtual Upload.Models.Upload Upload { get; set; }
     }
 }

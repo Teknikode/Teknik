@@ -24,7 +24,7 @@ namespace Teknik.Areas.Users.Models
 
         public DateTime LastSeen { get; set; }
 
-        public List<Group> Groups { get; set; }
+        public virtual ICollection<Group> Groups { get; set; }
         
         public virtual UserSettings UserSettings { get; set; }
         
@@ -32,9 +32,9 @@ namespace Teknik.Areas.Users.Models
         
         public virtual UploadSettings UploadSettings { get; set; }
 
-        public List<Upload.Models.Upload> Uploads { get; set; }
+        public virtual ICollection<Upload.Models.Upload> Uploads { get; set; }
 
-        public List<Paste.Models.Paste> Pastes { get; set; }
+        public virtual ICollection<Paste.Models.Paste> Pastes { get; set; }
 
         public User()
         {

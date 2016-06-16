@@ -13,7 +13,7 @@ namespace Teknik.Areas.Paste.Models
 
         public int? UserId { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
         public DateTime DatePosted { get; set; }
 

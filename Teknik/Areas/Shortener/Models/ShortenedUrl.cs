@@ -12,7 +12,7 @@ namespace Teknik.Areas.Shortener.Models
 
         public int? UserId { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
         
         public string ShortUrl { get; set; }
         

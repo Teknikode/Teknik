@@ -10,8 +10,8 @@ namespace Teknik.Areas.Blog.Models
 
         public int UserId { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
-        public List<BlogPost> BlogPosts { get; set; }
+        public virtual ICollection<BlogPost> BlogPosts { get; set; }
     }
 }

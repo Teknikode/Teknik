@@ -110,7 +110,7 @@ namespace Teknik.Areas.Upload.Controllers
                                 return Json(new { error = new { message = "Unable to encrypt file" } });
                             }
                         }
-                        Models.Upload upload = Uploader.SaveFile(fileData, fileType, contentLength, fileExt, iv, (saveKey) ? key : null, keySize, blockSize);
+                        Models.Upload upload = Uploader.SaveFile(db, Config, fileData, fileType, contentLength, fileExt, iv, (saveKey) ? key : null, keySize, blockSize);
                         if (upload != null)
                         {
                             if (User.Identity.IsAuthenticated)

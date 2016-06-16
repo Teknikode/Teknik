@@ -37,7 +37,7 @@ namespace Teknik.Areas.Podcast.ViewModels
             Episode = podcast.Episode;
             Title = podcast.Title;
             Description = podcast.Description;
-            Files = podcast.Files;
+            Files = podcast.Files.ToList();
             Tags = podcast.Tags;
             DatePosted = podcast.DatePosted;
             Published = podcast.Published;

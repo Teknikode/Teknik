@@ -11,7 +11,7 @@ namespace Teknik.Areas.Users.Models
 
         public int UserId { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
         public string Code { get; set; }
 

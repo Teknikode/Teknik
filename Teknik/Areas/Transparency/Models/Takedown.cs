@@ -22,6 +22,6 @@ namespace Teknik.Areas.Transparency.Models
 
         public DateTime DateActionTaken { get; set; }
 
-        public List<Upload.Models.Upload> Attachments { get; set; }
+        public virtual ICollection<Upload.Models.Upload> Attachments { get; set; }
     }
 }
