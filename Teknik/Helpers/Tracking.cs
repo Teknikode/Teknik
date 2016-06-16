@@ -98,6 +98,10 @@ namespace Teknik.Helpers
                         tracker.setIp(ipAddress);
                         tracker.setTokenAuth(config.PiwikConfig.TokenAuth);
 
+                        // Get Referral
+                        if (request.UrlReferrer != null)
+                            tracker.setUrlReferrer(request.UrlReferrer.ToString());
+
                         tracker.doTrackAction(url, type);
                     }
                 }
