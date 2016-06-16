@@ -254,7 +254,7 @@ namespace Teknik.Areas.Users.Utility
             try
             {
                 // Update uploads
-                List<Upload.Models.Upload> uploads = db.Uploads.Include("User").Where(u => u.User.Username == user.Username).ToList();
+                List<Upload.Models.Upload> uploads = db.Uploads.Where(u => u.User.Username == user.Username).ToList();
                 if (uploads != null)
                 {
                     foreach (Upload.Models.Upload upload in uploads)
@@ -265,7 +265,7 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Update pastes
-                List<Paste.Models.Paste> pastes = db.Pastes.Include("User").Where(u => u.User.Username == user.Username).ToList();
+                List<Paste.Models.Paste> pastes = db.Pastes.Where(u => u.User.Username == user.Username).ToList();
                 if (pastes != null)
                 {
                     foreach (Paste.Models.Paste paste in pastes)
@@ -276,7 +276,7 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Update shortened urls
-                List<ShortenedUrl> shortUrls = db.ShortenedUrls.Include("User").Where(u => u.User.Username == user.Username).ToList();
+                List<ShortenedUrl> shortUrls = db.ShortenedUrls.Where(u => u.User.Username == user.Username).ToList();
                 if (shortUrls != null)
                 {
                     foreach (ShortenedUrl shortUrl in shortUrls)
@@ -287,14 +287,14 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Delete Blogs
-                Blog.Models.Blog blog = db.Blogs.Include("BlogPosts").Include("BlogPosts.Comments").Include("User").Where(u => u.User.Username == user.Username).FirstOrDefault();
+                Blog.Models.Blog blog = db.Blogs.Where(u => u.User.Username == user.Username).FirstOrDefault();
                 if (blog != null)
                 {
                     db.Blogs.Remove(blog);
                 }
 
                 // Delete post comments
-                List<BlogPostComment> postComments = db.BlogComments.Include("User").Where(u => u.User.Username == user.Username).ToList();
+                List<BlogPostComment> postComments = db.BlogComments.Where(u => u.User.Username == user.Username).ToList();
                 if (postComments != null)
                 {
                     foreach (BlogPostComment postComment in postComments)
@@ -304,7 +304,7 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Delete podcast comments
-                List<Podcast.Models.PodcastComment> podComments = db.PodcastComments.Include("User").Where(u => u.User.Username == user.Username).ToList();
+                List<Podcast.Models.PodcastComment> podComments = db.PodcastComments.Where(u => u.User.Username == user.Username).ToList();
                 if (podComments != null)
                 {
                     foreach (Podcast.Models.PodcastComment podComment in podComments)
@@ -314,7 +314,7 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Delete Recovery Email Verifications
-                List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Include("User").Where(r => r.User.Username == user.Username).ToList();
+                List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Where(r => r.User.Username == user.Username).ToList();
                 if (verCodes != null)
                 {
                     foreach (RecoveryEmailVerification verCode in verCodes)
@@ -324,7 +324,7 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Delete Password Reset Verifications 
-                List<ResetPasswordVerification> verPass = db.ResetPasswordVerifications.Include("User").Where(r => r.User.Username == user.Username).ToList();
+                List<ResetPasswordVerification> verPass = db.ResetPasswordVerifications.Where(r => r.User.Username == user.Username).ToList();
                 if (verPass != null)
                 {
                     foreach (ResetPasswordVerification ver in verPass)
@@ -346,7 +346,7 @@ namespace Teknik.Areas.Users.Utility
         public static string CreateRecoveryEmailVerification(TeknikEntities db, Config config, User user)
         {
             // Check to see if there already is a verification code for the user
-            List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Include("User").Where(r => r.User.Username == user.Username).ToList();
+            List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Where(r => r.User.Username == user.Username).ToList();
             if (verCodes != null && verCodes.Any())
             {
                 foreach (RecoveryEmailVerification verCode in verCodes)
@@ -402,11 +402,11 @@ Thank you and enjoy!
         public static bool VerifyRecoveryEmail(TeknikEntities db, Config config, string username, string code)
         {
             User user = GetUser(db, username);
-            RecoveryEmailVerification verCode = db.RecoveryEmailVerifications.Include("User").Where(r => r.User.Username == username && r.Code == code).FirstOrDefault();
+            RecoveryEmailVerification verCode = db.RecoveryEmailVerifications.Where(r => r.User.Username == username && r.Code == code).FirstOrDefault();
             if (verCode != null)
             {
                 // We have a match, so clear out the verifications for that user
-                List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Include("User").Where(r => r.User.Username == username).ToList();
+                List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Where(r => r.User.Username == username).ToList();
                 if (verCodes != null && verCodes.Any())
                 {
                     foreach (RecoveryEmailVerification ver in verCodes)
@@ -427,7 +427,7 @@ Thank you and enjoy!
         public static string CreateResetPasswordVerification(TeknikEntities db, Config config, User user)
         {
             // Check to see if there already is a verification code for the user
-            List<ResetPasswordVerification> verCodes = db.ResetPasswordVerifications.Include("User").Where(r => r.User.Username == user.Username).ToList();
+            List<ResetPasswordVerification> verCodes = db.ResetPasswordVerifications.Where(r => r.User.Username == user.Username).ToList();
             if (verCodes != null && verCodes.Any())
             {
                 foreach (ResetPasswordVerification verCode in verCodes)
@@ -479,11 +479,11 @@ If you recieved this email and you did not reset your password, you can ignore t
         public static bool VerifyResetPassword(TeknikEntities db, Config config, string username, string code)
         {
             User user = GetUser(db, username);
-            ResetPasswordVerification verCode = db.ResetPasswordVerifications.Include("User").Where(r => r.User.Username == username && r.Code == code).FirstOrDefault();
+            ResetPasswordVerification verCode = db.ResetPasswordVerifications.Where(r => r.User.Username == username && r.Code == code).FirstOrDefault();
             if (verCode != null)
             {
                 // We have a match, so clear out the verifications for that user
-                List<ResetPasswordVerification> verCodes = db.ResetPasswordVerifications.Include("User").Where(r => r.User.Username == username).ToList();
+                List<ResetPasswordVerification> verCodes = db.ResetPasswordVerifications.Where(r => r.User.Username == username).ToList();
                 if (verCodes != null && verCodes.Any())
                 {
                     foreach (ResetPasswordVerification ver in verCodes)

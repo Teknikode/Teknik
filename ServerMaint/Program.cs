@@ -520,15 +520,15 @@ Thank you for your continued use of Teknik!
                     bool noData = true;
 
                     // Any blog comments?
-                    var blogCom = db.BlogComments.Include("Users").Where(c => c.UserId == user.UserId);
+                    var blogCom = db.BlogComments.Where(c => c.UserId == user.UserId);
                     noData &= !(blogCom != null && blogCom.Any());
 
                     // Any blog posts?
-                    var blogPosts = db.BlogPosts.Include("Blog").Include("Blog.Users").Where(p => p.Blog.UserId == user.UserId);
+                    var blogPosts = db.BlogPosts.Where(p => p.Blog.UserId == user.UserId);
                     noData &= !(blogPosts != null && blogPosts.Any());
 
                     // Any podcast comments?
-                    var podCom = db.PodcastComments.Include("Users").Where(p => p.UserId == user.UserId);
+                    var podCom = db.PodcastComments.Where(p => p.UserId == user.UserId);
                     noData &= !(podCom != null && podCom.Any());
 
                     // Any email?

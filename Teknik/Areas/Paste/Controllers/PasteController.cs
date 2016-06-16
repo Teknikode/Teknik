@@ -30,7 +30,7 @@ namespace Teknik.Areas.Paste.Controllers
             return View(model);
         }
 
-        [TrackPageView]
+        [TrackDownload]
         [AllowAnonymous]
         public ActionResult ViewPaste(string type, string url, string password)
         {

@@ -142,6 +142,7 @@ namespace Teknik.Areas.Upload.Controllers
 
         // User did not supply key
         [HttpGet]
+        [TrackDownload]
         [AllowAnonymous]
         public ActionResult Download(string file)
         {
