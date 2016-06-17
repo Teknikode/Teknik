@@ -10,6 +10,9 @@ using Teknik.Areas.Paste.Models;
 using Teknik.Areas.Podcast.Models;
 using Teknik.Areas.Transparency.Models;
 using Teknik.Areas.Shortener.Models;
+using Teknik.Attributes;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Linq;
 
 namespace Teknik.Models
 {
@@ -19,6 +22,7 @@ namespace Teknik.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<TransferType> TransferTypes { get; set; }
         public DbSet<RecoveryEmailVerification> RecoveryEmailVerifications { get; set; }
         public DbSet<ResetPasswordVerification> ResetPasswordVerifications { get; set; }
         // User Settings
@@ -92,6 +96,7 @@ namespace Teknik.Models
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Group>().ToTable("Groups");
             modelBuilder.Entity<Role>().ToTable("Roles");
+            modelBuilder.Entity<TransferType>().ToTable("TransferTypes");
             modelBuilder.Entity<RecoveryEmailVerification>().ToTable("RecoveryEmailVerifications");
             modelBuilder.Entity<ResetPasswordVerification>().ToTable("ResetPasswordVerifications");
             // User Settings
@@ -117,6 +122,11 @@ namespace Teknik.Models
             modelBuilder.Entity<Takedown>().ToTable("Takedowns");
             // Shortened Urls
             modelBuilder.Entity<ShortenedUrl>().ToTable("ShortenedUrls");
+
+            // Custom Attributes
+            modelBuilder.Conventions.Add(new AttributeToColumnAnnotationConvention<CaseSensitiveAttribute, bool>(
+                                        "CaseSensitive",
+                                        (property, attributes) => attributes.Single().IsEnabled));
 
             base.OnModelCreating(modelBuilder);
         }

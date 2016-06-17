@@ -211,6 +211,7 @@
     <Compile Include="Areas\User\Models\BlogSettings.cs" />
     <Compile Include="Areas\User\Models\ResetPasswordVerification.cs" />
     <Compile Include="Areas\User\Models\RecoveryEmailVerification.cs" />
+    <Compile Include="Areas\User\Models\TransferTypes.cs" />
     <Compile Include="Areas\User\Models\UploadSettings.cs" />
     <Compile Include="Areas\User\Models\UserSettings.cs" />
     <Compile Include="Areas\User\UserAreaRegistration.cs" />
@@ -256,6 +257,7 @@
     <Compile Include="Areas\Vault\Models\VaultItem.cs" />
     <Compile Include="Areas\Vault\VaultAreaRegistration.cs" />
     <Compile Include="Areas\Vault\ViewModels\VaultViewModel.cs" />
+    <Compile Include="Attributes\EntityAttribute.cs" />
     <Compile Include="Configuration\PiwikConfig.cs" />
     <Compile Include="Configuration\ShortenerConfig.cs" />
     <Compile Include="Configuration\TransparencyConfig.cs" />
@@ -284,8 +286,6 @@
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\Crypto.cs" />
     <Compile Include="Areas\User\Models\Group.cs" />
-    <Compile Include="Areas\User\Models\PermissionTarget.cs" />
-    <Compile Include="Areas\User\Models\PermissionType.cs" />
     <Compile Include="Areas\Blog\Models\BlogPost.cs" />
     <Compile Include="Areas\User\Models\Role.cs" />
     <Compile Include="Helpers\ExceptionExtensions.cs" />

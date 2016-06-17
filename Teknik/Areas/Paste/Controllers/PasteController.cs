@@ -64,7 +64,8 @@ namespace Teknik.Areas.Paste.Controllers
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
                 {
-                    if (string.IsNullOrEmpty(password) || Helpers.SHA384.Hash(paste.Key, password) != paste.HashedPassword)
+                    string hashedPass = Helpers.SHA384.Hash(paste.Key, password).ToHex();
+                    if (string.IsNullOrEmpty(password) || hashedPass != paste.HashedPassword)
                     {
                         PasswordViewModel passModel = new PasswordViewModel();
                         passModel.Url = url;

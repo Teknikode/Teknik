@@ -155,22 +155,13 @@ namespace Teknik.Areas.Users.Controllers
             if (ModelState.IsValid)
             {
                 string username = model.Username;
-                string password = SHA384.Hash(model.Username, model.Password);
-                User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
+                User user = UserHelper.GetUser(db, username);
                 if (user != null)
                 {
-                    if (user.TransferAccount)
-                    {
-                        password = SHA256.Hash(model.Password, Config.Salt1, Config.Salt2);
-                    }
-                    bool userValid = db.Users.Any(b => b.Username == username && b.HashedPassword == password);
+                    bool userValid = UserHelper.UserPasswordCorrect(db, Config, user, model.Password);
                     if (userValid)
                     {
-                        if (user.TransferAccount)
-                        {
-                            user.HashedPassword = SHA384.Hash(model.Username, model.Password);
-                            user.TransferAccount = false;
-                        }
+                        UserHelper.TransferUser(db, Config, user, model.Password);
                         user.LastSeen = DateTime.Now;
                         db.Entry(user).State = EntityState.Modified;
                         db.SaveChanges();
@@ -296,7 +287,7 @@ namespace Teknik.Areas.Users.Controllers
                         if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
                         {
                             // Old Password Valid?
-                            if (SHA384.Hash(User.Identity.Name, curPass) != user.HashedPassword)
+                            if (!UserHelper.UserPasswordCorrect(db, Config, user, curPass))
                             {
                                 return Json(new { error = "Invalid Original Password." });
                             }

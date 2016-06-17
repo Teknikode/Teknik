@@ -173,7 +173,7 @@ namespace Teknik.Areas.Upload.Controllers
                         // Check to see if they have a cache
                         bool isCached = !string.IsNullOrEmpty(Request.Headers["If-Modified-Since"]);
 
-                        if (isCached && !byRange)
+                        if (isCached)
                         {
                             // The file is cached, let's just 304 this
                             Response.StatusCode = 304;

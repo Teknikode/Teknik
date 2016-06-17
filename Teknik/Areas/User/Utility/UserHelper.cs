@@ -104,6 +104,36 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
+        public static string GeneratePassword(Config config, User user, string password)
+        {
+            try
+            {
+                string username = user.Username.ToLower();
+                if (user.Transfers.Exists(t => t.Type == TransferTypes.CaseSensitivePassword))
+                {
+                    username = user.Username;
+                }
+                byte[] hashBytes = SHA384.Hash(username, password);
+                string hash = hashBytes.ToHex();
+
+                if (user.Transfers.Exists(t => t.Type == TransferTypes.ASCIIPassword))
+                {
+                    hash = Encoding.ASCII.GetString(hashBytes);
+                }
+
+                if (user.Transfers.Exists(t => t.Type == TransferTypes.Sha256Password))
+                {
+                    hash = SHA256.Hash(password, config.Salt1, config.Salt2);
+                }
+
+                return hash;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to generate password.", ex);
+            }
+        }
+
         public static void AddAccount(TeknikEntities db, Config config, User user, string password)
         {
             try
@@ -170,7 +200,7 @@ namespace Teknik.Areas.Users.Utility
         #region User Management
         public static User GetUser(TeknikEntities db, string username)
         {
-            User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
+            User user = db.Users.Include("Transfers").Where(b => b.Username == username).FirstOrDefault();
             if (user != null)
             {
                 user.UserSettings = db.UserSettings.Find(user.UserId);
@@ -209,12 +239,59 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
+        public static bool UserPasswordCorrect(TeknikEntities db, Config config, User user, string password)
+        {
+            try
+            {
+                string hash = GeneratePassword(config, user, password);
+                return db.Users.Any(b => b.Username == user.Username && b.HashedPassword == hash);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to determine if password is correct.", ex);
+            }
+        }
+
+        public static void TransferUser(TeknikEntities db, Config config, User user, string password)
+        {
+            try
+            {
+                List<TransferType> transfers = user.Transfers;
+                for (int i = 0; i < transfers.Count; i++)
+                {
+                    TransferType transfer = transfers[i];
+                    switch (transfer.Type)
+                    {
+                        case TransferTypes.Sha256Password:
+                            user.HashedPassword = GeneratePassword(config, user, password);
+                            break;
+                        case TransferTypes.CaseSensitivePassword:
+                            user.HashedPassword = GeneratePassword(config, user, password);
+                            break;
+                        case TransferTypes.ASCIIPassword:
+                            user.HashedPassword = GeneratePassword(config, user, password);
+                            break;
+                        default:
+                            break;
+                    }
+                    user.Transfers.Remove(transfer);
+                    i--;
+                }
+                db.Entry(user).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to transfer user info.", ex);
+            }
+        }
+
         public static void AddUser(TeknikEntities db, Config config, User user, string password)
         {
             try
             {
                 // Add User
-                user.HashedPassword = SHA384.Hash(user.Username, password);
+                user.HashedPassword = GeneratePassword(config, user, password);
                 db.Users.Add(user);
                 db.SaveChanges();
 
@@ -238,7 +315,7 @@ namespace Teknik.Areas.Users.Utility
                 if (changePass)
                 {
                     // Update User password
-                    user.HashedPassword = SHA384.Hash(user.Username, password);
+                    user.HashedPassword = SHA384.Hash(user.Username.ToLower(), password).ToHex();
                 }
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();

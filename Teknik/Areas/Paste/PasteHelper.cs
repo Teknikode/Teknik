@@ -60,7 +60,7 @@ namespace Teknik.Areas.Paste
             {
                 string key = Utility.RandomString(config.PasteConfig.KeySize / 8);
                 string iv = Utility.RandomString(config.PasteConfig.BlockSize / 16);
-                paste.HashedPassword = Helpers.SHA384.Hash(key, password);
+                paste.HashedPassword = SHA384.Hash(key, password).ToHex();
 
                 // Encrypt Content
                 byte[] data = Encoding.Unicode.GetBytes(content);

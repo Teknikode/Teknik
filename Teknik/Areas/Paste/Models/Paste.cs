@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Teknik.Areas.Users.Models;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.Paste.Models
 {
@@ -17,6 +18,7 @@ namespace Teknik.Areas.Paste.Models
 
         public DateTime DatePosted { get; set; }
 
+        [CaseSensitive]
         public string Url { get; set; }
 
         public string Content { get; set; }
@@ -27,12 +29,15 @@ namespace Teknik.Areas.Paste.Models
 
         public DateTime? ExpireDate { get; set; }
 
+        [CaseSensitive]
         public string HashedPassword { get; set; }
 
+        [CaseSensitive]
         public string Key { get; set; }
 
         public int KeySize { get; set; }
 
+        [CaseSensitive]
         public string IV { get; set; }
 
         public int BlockSize { get; set; }

@@ -43,14 +43,13 @@ namespace Teknik.Helpers
 
     public class SHA384
     {
-        public static string Hash(string key, string value)
+        public static byte[] Hash(string key, string value)
         {
-            byte[] keyBytes = Encoding.ASCII.GetBytes(key);
-            byte[] data = Encoding.ASCII.GetBytes(value);
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] data = Encoding.UTF8.GetBytes(value);
 
             byte[] result = new HMAC2(HashFactories.SHA384, keyBytes).ComputeHash(data);
-
-            return Encoding.ASCII.GetString(result);
+            return result;
         }
     }
 

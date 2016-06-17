@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.Users.Models
 {
@@ -12,6 +13,7 @@ namespace Teknik.Areas.Users.Models
         
         public string Username { get; set; }
 
+        [CaseSensitive]
         public string HashedPassword { get; set; }
 
         public string RecoveryEmail { get; set; }
@@ -19,6 +21,8 @@ namespace Teknik.Areas.Users.Models
         public bool RecoveryVerified { get; set; }
 
         public bool TransferAccount { get; set; }
+
+        public List<TransferType> Transfers { get; set; }
 
         public DateTime JoinDate { get; set; }
 
@@ -42,6 +46,7 @@ namespace Teknik.Areas.Users.Models
             HashedPassword = string.Empty;
             RecoveryEmail = string.Empty;
             RecoveryVerified = false;
+            Transfers = new List<TransferType>();
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;
             Groups = new List<Group>();
