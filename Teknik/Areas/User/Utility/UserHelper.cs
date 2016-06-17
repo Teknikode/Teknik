@@ -271,7 +271,6 @@ namespace Teknik.Areas.Users.Utility
                             break;
                     }
                     user.Transfers.Remove(transfer);
-                    i--;
                 }
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
