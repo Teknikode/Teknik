@@ -13,7 +13,7 @@ namespace Teknik.Areas.Upload.Models
         
         public int? UserId { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
         public DateTime DateUploaded { get; set; }
 

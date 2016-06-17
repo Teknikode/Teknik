@@ -27,7 +27,7 @@ namespace Teknik.Areas.Home.Controllers
             List<BlogPost> lastSite = new List<BlogPost>();
             if (db.BlogPosts.Count() > 0)
             {
-                var foundSite = db.BlogPosts.Include("Blog").Include("Blog.User").OrderByDescending(post => post.DatePosted).Where(p => p.Published && p.System).Take(5);
+                var foundSite = db.BlogPosts.OrderByDescending(post => post.DatePosted).Where(p => p.Published && p.System).Take(5);
                 if (foundSite != null)
                     lastSite = foundSite.ToList();
             }
@@ -35,7 +35,7 @@ namespace Teknik.Areas.Home.Controllers
             List<BlogPost> lastPosts = new List<BlogPost>();
             if (db.BlogPosts.Count() > 0)
             {
-                var foundPosts = db.BlogPosts.Include("Blog").Include("Blog.User").OrderByDescending(post => post.DatePosted).Where(p => p.Published && !p.System).Take(5);
+                var foundPosts = db.BlogPosts.OrderByDescending(post => post.DatePosted).Where(p => p.Published && !p.System).Take(5);
                 if (foundPosts != null)
                     lastPosts = foundPosts.ToList();
             }

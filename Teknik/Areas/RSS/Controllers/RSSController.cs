@@ -25,7 +25,8 @@ namespace Teknik.Areas.RSS.Controllers
 
             return new RssResult(feed);
         }
-        
+
+        [TrackDownload]
         [AllowAnonymous]
         public ActionResult Blog(string username)
         {
@@ -37,12 +38,12 @@ namespace Teknik.Areas.RSS.Controllers
             bool isSystem = string.IsNullOrEmpty(username);
             if (isSystem)
             {
-                blog = db.Blogs.Include("BlogPosts").Include("User").Where(b => b.BlogId == Config.BlogConfig.ServerBlogId).FirstOrDefault();
+                blog = db.Blogs.Where(b => b.BlogId == Config.BlogConfig.ServerBlogId).FirstOrDefault();
                 blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
             }
             else
             {
-                blog = db.Blogs.Include("BlogPosts").Include("User").Where(b => b.User.Username == username).FirstOrDefault();
+                blog = db.Blogs.Where(b => b.User.Username == username).FirstOrDefault();
                 blogUrl = Url.SubRouteUrl("blog", "Blog.Blog", new { username = username });
             }
             if (blog != null)
@@ -83,11 +84,12 @@ namespace Teknik.Areas.RSS.Controllers
             return new RssResult(badFeed);
         }
         
+        [TrackDownload]
         [AllowAnonymous]
         public ActionResult Podcast()
         {
             List<SyndicationItem> items = new List<SyndicationItem>();
-            List<Podcast.Models.Podcast> podcasts = db.Podcasts.Include("Files").Where(p => p.Published).ToList();
+            List<Podcast.Models.Podcast> podcasts = db.Podcasts.Where(p => p.Published).ToList();
             if (podcasts != null)
             {
                 foreach (Podcast.Models.Podcast podcast in podcasts)

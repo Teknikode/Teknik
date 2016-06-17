@@ -49,8 +49,7 @@ namespace Teknik.Areas.Error.Controllers
 
             return View(model);
         }
-
-        [TrackPageView]
+        
         [AllowAnonymous]
         public ActionResult Http403(Exception exception)
         {
@@ -68,8 +67,7 @@ namespace Teknik.Areas.Error.Controllers
 
             return View(model);
         }
-
-        [TrackPageView]
+        
         [AllowAnonymous]
         public ActionResult Http404(Exception exception)
         {

@@ -12,11 +12,11 @@ namespace Teknik.Areas.Podcast.Models
 
         public int PodcastId { get; set; }
 
-        public Podcast Podcast { get; set; }
+        public virtual Podcast Podcast { get; set; }
 
         public int UserId { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
         public DateTime DatePosted { get; set; }
 

@@ -59,7 +59,7 @@ namespace Teknik.Areas.Podcast.Controllers
             PodcastViewModel model = new PodcastViewModel();
             // find the podcast specified
             bool editor = User.IsInRole("Podcast");
-            var foundPodcast = db.Podcasts.Include("Files").Where(p => ((p.Published || editor) && p.Episode == episode)).FirstOrDefault();
+            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.Episode == episode)).FirstOrDefault();
             if (foundPodcast != null)
             {
                 model = new PodcastViewModel(foundPodcast);
@@ -76,7 +76,7 @@ namespace Teknik.Areas.Podcast.Controllers
         public ActionResult Download(int episode, string fileName)
         {
             // find the podcast specified
-            var foundPodcast = db.Podcasts.Include("Files").Where(p => (p.Published && p.Episode == episode)).FirstOrDefault();
+            var foundPodcast = db.Podcasts.Where(p => (p.Published && p.Episode == episode)).FirstOrDefault();
             if (foundPodcast != null)
             {
                 PodcastFile file = foundPodcast.Files.Where(f => f.FileName == fileName).FirstOrDefault();
@@ -108,7 +108,7 @@ namespace Teknik.Areas.Podcast.Controllers
         public ActionResult GetPodcasts(int startPodcastID, int count)
         {
             bool editor = User.IsInRole("Podcast");
-            var podcasts = db.Podcasts.Include("Files").Where(p => p.Published || editor).OrderByDescending(p => p.DatePosted).Skip(startPodcastID).Take(count).ToList();
+            var podcasts = db.Podcasts.Where(p => p.Published || editor).OrderByDescending(p => p.DatePosted).Skip(startPodcastID).Take(count).ToList();
             List<PodcastViewModel> podcastViews = new List<PodcastViewModel>();
             if (podcasts != null)
             {
@@ -164,7 +164,7 @@ namespace Teknik.Areas.Podcast.Controllers
         public ActionResult GetPodcastFiles(int podcastId)
         {
             bool editor = User.IsInRole("Podcast");
-            var foundPodcast = db.Podcasts.Include("Files").Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
+            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
             if (foundPodcast != null)
             {
                 List<object> files = new List<object>();
@@ -221,7 +221,7 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 if (User.IsInRole("Podcast"))
                 {
-                    Models.Podcast podcast = db.Podcasts.Include("Files").Where(p => p.PodcastId == podcastId).FirstOrDefault();
+                    Models.Podcast podcast = db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault();
                     if (podcast != null)
                     {
                         if (db.Podcasts.Where(p => p.Episode != episode).FirstOrDefault() == null || podcast.Episode == episode)
@@ -238,7 +238,7 @@ namespace Teknik.Areas.Podcast.Controllers
                             }
                             for (int i = 0; i < podcast.Files.Count; i++)
                             {
-                                PodcastFile curFile = podcast.Files[i];
+                                PodcastFile curFile = podcast.Files.ElementAt(i);
                                 if (!fileIdList.Exists(id => id == curFile.PodcastFileId.ToString()))
                                 {
                                     if (System.IO.File.Exists(curFile.Path))
@@ -251,7 +251,10 @@ namespace Teknik.Areas.Podcast.Controllers
                             }
                             // Add any new files
                             List<PodcastFile> newFiles = SaveFiles(Request.Files, episode);
-                            podcast.Files.AddRange(newFiles);
+                            foreach (PodcastFile file in newFiles)
+                            {
+                                podcast.Files.Add(file);
+                            }
 
                             // Save podcast
                             db.Entry(podcast).State = EntityState.Modified;
@@ -298,7 +301,7 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 if (User.IsInRole("Podcast"))
                 {
-                    Models.Podcast podcast = db.Podcasts.Include("Files").Where(p => p.PodcastId == podcastId).FirstOrDefault();
+                    Models.Podcast podcast = db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault();
                     if (podcast != null)
                     {
                         foreach (PodcastFile file in podcast.Files)
@@ -322,7 +325,7 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetComments(int podcastId, int startCommentID, int count)
         {
-            var comments = db.PodcastComments.Include("BlogPost").Include("BlogPost.Blog").Include("BlogPost.Blog.User").Include("User").Where(p => (p.PodcastId == podcastId)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
+            var comments = db.PodcastComments.Where(p => (p.PodcastId == podcastId)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
             List<CommentViewModel> commentViews = new List<CommentViewModel>();
             if (comments != null)
             {
@@ -374,7 +377,7 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             if (ModelState.IsValid)
             {
-                PodcastComment comment = db.PodcastComments.Include("User").Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
+                PodcastComment comment = db.PodcastComments.Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
@@ -397,7 +400,7 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             if (ModelState.IsValid)
             {
-                PodcastComment comment = db.PodcastComments.Include("User").Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
+                PodcastComment comment = db.PodcastComments.Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))

@@ -10,30 +10,27 @@ namespace Teknik.Areas.Upload
 {
     public static class Uploader
     {
-        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, byte[] file, string contentType, int contentLength)
         {
-            return SaveFile(file, contentType, contentLength, string.Empty, null, null, 256, 128);
+            return SaveFile(db, config, file, contentType, contentLength, string.Empty, null, null, 256, 128);
         }
-        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string defaultExtension)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, byte[] file, string contentType, int contentLength, string defaultExtension)
         {
-            return SaveFile(file, contentType, contentLength, defaultExtension, null, null, 256, 128);
-        }
-
-        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string defaultExtension, string iv)
-        {
-            return SaveFile(file, contentType, contentLength, defaultExtension, iv, null, 256, 128);
+            return SaveFile(db, config, file, contentType, contentLength, defaultExtension, null, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string defaultExtension, string iv, string key)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, byte[] file, string contentType, int contentLength, string defaultExtension, string iv)
         {
-            return SaveFile(file, contentType, contentLength, defaultExtension, iv, key, 256, 128);
+            return SaveFile(db, config, file, contentType, contentLength, defaultExtension, iv, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(byte[] file, string contentType, int contentLength, string defaultExtension, string iv, string key, int keySize, int blockSize)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, byte[] file, string contentType, int contentLength, string defaultExtension, string iv, string key)
         {
-            Config config = Config.Load();
-            TeknikEntities db = new TeknikEntities();
+            return SaveFile(db, config, file, contentType, contentLength, defaultExtension, iv, key, 256, 128);
+        }
 
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, byte[] file, string contentType, int contentLength, string defaultExtension, string iv, string key, int keySize, int blockSize)
+        {
             if (!Directory.Exists(config.UploadConfig.UploadDirectory))
             {
                 Directory.CreateDirectory(config.UploadConfig.UploadDirectory);

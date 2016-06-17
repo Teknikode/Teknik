@@ -52,7 +52,7 @@ namespace Teknik.Areas.Blog.ViewModels
             Title = post.Title;
             Tags = post.Tags;
             Article = post.Article;
-            Comments = post.Comments;
+            Comments = post.Comments.ToList();
         }
     }
 }

@@ -80,7 +80,7 @@ namespace Teknik
 
                     using (TeknikEntities entities = new TeknikEntities())
                     {
-                        User user = entities.Users.Include("Groups").Include("Groups.Roles").SingleOrDefault(u => u.Username == username);
+                        User user = entities.Users.SingleOrDefault(u => u.Username == username);
 
                         if (user != null)
                         {

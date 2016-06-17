@@ -15,7 +15,7 @@ namespace Teknik.Areas.Podcast.Models
 
         public string Description { get; set; }
 
-        public List<PodcastFile> Files { get; set; }
+        public virtual ICollection<PodcastFile> Files { get; set; }
 
         public List<string> Tags { get; set; }
 
@@ -27,6 +27,6 @@ namespace Teknik.Areas.Podcast.Models
 
         public DateTime DateEdited { get; set; }
 
-        public List<PodcastComment> Comments { get; set; }
+        public virtual ICollection<PodcastComment> Comments { get; set; }
     }
 }

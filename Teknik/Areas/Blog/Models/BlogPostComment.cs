@@ -12,11 +12,11 @@ namespace Teknik.Areas.Blog.Models
 
         public int BlogPostId { get; set; }
 
-        public BlogPost BlogPost { get; set; }
+        public virtual BlogPost BlogPost { get; set; }
 
         public int? UserId { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
         public DateTime DatePosted { get; set; }
         public DateTime DateEdited { get; set; }
