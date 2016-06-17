@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Error.Controllers;
 using Teknik.Areas.Paste.ViewModels;
+using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Helpers;
@@ -127,7 +128,7 @@ namespace Teknik.Areas.Paste.Controllers
 
                         if (User.Identity.IsAuthenticated)
                         {
-                            Users.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                            Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
                             if (user != null)
                             {
                                 paste.UserId = user.UserId;

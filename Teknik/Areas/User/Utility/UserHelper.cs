@@ -263,13 +263,9 @@ namespace Teknik.Areas.Users.Utility
                     switch (transfer.Type)
                     {
                         case TransferTypes.Sha256Password:
-                            user.HashedPassword = GeneratePassword(config, user, password);
-                            break;
                         case TransferTypes.CaseSensitivePassword:
-                            user.HashedPassword = GeneratePassword(config, user, password);
-                            break;
                         case TransferTypes.ASCIIPassword:
-                            user.HashedPassword = GeneratePassword(config, user, password);
+                            user.HashedPassword = SHA384.Hash(user.Username.ToLower(), password).ToHex();
                             break;
                         default:
                             break;

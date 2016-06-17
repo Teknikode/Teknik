@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Podcast.Models;
 using Teknik.Areas.Podcast.ViewModels;
+using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Models;
@@ -358,7 +359,7 @@ namespace Teknik.Areas.Podcast.Controllers
                 {
                     PodcastComment comment = db.PodcastComments.Create();
                     comment.PodcastId = podcastId;
-                    comment.UserId = db.Users.Where(u => u.Username == User.Identity.Name).First().UserId;
+                    comment.UserId = UserHelper.GetUser(db, User.Identity.Name).UserId;
                     comment.Article = article;
                     comment.DatePosted = DateTime.Now;
                     comment.DateEdited = DateTime.Now;

@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Error.ViewModels;
 using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Upload.ViewModels;
+using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Helpers;
@@ -32,7 +33,7 @@ namespace Teknik.Areas.Upload.Controllers
             ViewBag.Title = "Teknik Upload - End to End Encryption";
             UploadViewModel model = new UploadViewModel();
             model.CurrentSub = Subdomain;
-            Users.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+            Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
             if (user != null)
             {
                 model.SaveKey = user.UploadSettings.SaveKey;
@@ -115,7 +116,7 @@ namespace Teknik.Areas.Upload.Controllers
                         {
                             if (User.Identity.IsAuthenticated)
                             {
-                                Users.Models.User user = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                                Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
                                 if (user != null)
                                 {
                                     upload.UserId = user.UserId;

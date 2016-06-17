@@ -43,7 +43,7 @@ namespace Teknik.Areas.Users.Controllers
 
             try
             {
-                User user = db.Users.Where(u => u.Username == username).FirstOrDefault();
+                User user = UserHelper.GetUser(db, username);
 
                 if (user != null)
                 {
@@ -94,7 +94,7 @@ namespace Teknik.Areas.Users.Controllers
                 ViewBag.Title = "User Does Not Exist - " + Config.Title;
                 ViewBag.Description = "The User does not exist";
 
-                User user = db.Users.Where(u => u.Username == username).FirstOrDefault();
+                User user = UserHelper.GetUser(db, username);
 
                 if (user != null)
                 {
@@ -126,7 +126,7 @@ namespace Teknik.Areas.Users.Controllers
             ViewBag.Title = username + "'s Public Key - " + Config.Title;
             ViewBag.Description = "The PGP public key for " + username;
 
-            User user = db.Users.Where(u => u.Username == username).FirstOrDefault();
+            User user = UserHelper.GetUser(db, username);
             if (user != null)
             {
                 if (!string.IsNullOrEmpty(user.UserSettings.PGPSignature))

@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Shortener.Models;
 using Teknik.Areas.Shortener.ViewModels;
+using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Models;
@@ -48,7 +49,7 @@ namespace Teknik.Areas.Shortener.Controllers
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    Users.Models.User foundUser = db.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+                    Users.Models.User foundUser = UserHelper.GetUser(db, User.Identity.Name);
                     if (foundUser != null)
                     {
                         newUrl.UserId = foundUser.UserId;

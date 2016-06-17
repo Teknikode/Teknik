@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Blog.ViewModels;
 using Teknik.Areas.Users.Models;
+using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Helpers;
@@ -36,7 +37,7 @@ namespace Teknik.Areas.Blog.Controllers
                 model = new BlogViewModel();
                 model.BlogId = Config.BlogConfig.ServerBlogId;
 
-                User user = (User.IsInRole("Admin")) ? db.Users.Where(u => u.Username == User.Identity.Name).First() : null;
+                User user = (User.IsInRole("Admin")) ? UserHelper.GetUser(db, User.Identity.Name) : null;
                 model.UserId = (user != null) ? user.UserId : 0;
                 model.User = user;
                 model.Title = Config.BlogConfig.Title;
@@ -301,7 +302,7 @@ namespace Teknik.Areas.Blog.Controllers
                 {
                     BlogPostComment comment = db.BlogComments.Create();
                     comment.BlogPostId = postID;
-                    comment.UserId = db.Users.Where(u => u.Username == User.Identity.Name).First().UserId;
+                    comment.UserId = UserHelper.GetUser(db, User.Identity.Name).UserId;
                     comment.Article = article;
                     comment.DatePosted = DateTime.Now;
                     comment.DateEdited = DateTime.Now;
