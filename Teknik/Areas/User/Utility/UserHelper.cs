@@ -200,7 +200,7 @@ namespace Teknik.Areas.Users.Utility
         #region User Management
         public static User GetUser(TeknikEntities db, string username)
         {
-            User user = db.Users.Include("Transfers").Where(b => b.Username == username).FirstOrDefault();
+            User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
             if (user != null)
             {
                 user.UserSettings = db.UserSettings.Find(user.UserId);
