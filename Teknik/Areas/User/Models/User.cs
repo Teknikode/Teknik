@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Teknik.Attributes;
+using Teknik.Models;
 
 namespace Teknik.Areas.Users.Models
 {
@@ -22,7 +23,7 @@ namespace Teknik.Areas.Users.Models
 
         public bool TransferAccount { get; set; }
 
-        public List<TransferType> Transfers { get; set; }
+        public virtual ICollection<TransferType> Transfers { get; set; }
 
         public DateTime JoinDate { get; set; }
 

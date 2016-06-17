@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using Teknik.Areas.Users.Models;
+using Teknik.Areas.Paste.Models;
 
-namespace Teknik.Areas.Users.Models
+namespace Teknik.Models
 {
     public enum TransferTypes
     {
@@ -19,6 +21,8 @@ namespace Teknik.Areas.Users.Models
 
         public TransferTypes Type { get; set; }
 
-        public List<User> Users { get; set; }
+        public virtual ICollection<User> Users { get; set; }
+
+        public virtual ICollection<Paste> Pastes { get; set; }
     }
 }

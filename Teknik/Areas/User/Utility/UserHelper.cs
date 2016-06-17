@@ -109,19 +109,19 @@ namespace Teknik.Areas.Users.Utility
             try
             {
                 string username = user.Username.ToLower();
-                if (user.Transfers.Exists(t => t.Type == TransferTypes.CaseSensitivePassword))
+                if (user.Transfers.ToList().Exists(t => t.Type == TransferTypes.CaseSensitivePassword))
                 {
                     username = user.Username;
                 }
                 byte[] hashBytes = SHA384.Hash(username, password);
                 string hash = hashBytes.ToHex();
 
-                if (user.Transfers.Exists(t => t.Type == TransferTypes.ASCIIPassword))
+                if (user.Transfers.ToList().Exists(t => t.Type == TransferTypes.ASCIIPassword))
                 {
                     hash = Encoding.ASCII.GetString(hashBytes);
                 }
 
-                if (user.Transfers.Exists(t => t.Type == TransferTypes.Sha256Password))
+                if (user.Transfers.ToList().Exists(t => t.Type == TransferTypes.Sha256Password))
                 {
                     hash = SHA256.Hash(password, config.Salt1, config.Salt2);
                 }
@@ -256,7 +256,7 @@ namespace Teknik.Areas.Users.Utility
         {
             try
             {
-                List<TransferType> transfers = user.Transfers;
+                List<TransferType> transfers = user.Transfers.ToList();
                 for (int i = 0; i < transfers.Count; i++)
                 {
                     TransferType transfer = transfers[i];

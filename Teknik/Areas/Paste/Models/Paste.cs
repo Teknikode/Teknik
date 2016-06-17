@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Teknik.Areas.Users.Models;
 using Teknik.Attributes;
+using Teknik.Models;
 
 namespace Teknik.Areas.Paste.Models
 {
@@ -47,5 +48,7 @@ namespace Teknik.Areas.Paste.Models
         public int MaxViews { get; set; }
 
         public int Views { get; set; }
+
+        public virtual ICollection<TransferType> Transfers { get; set; }
     }
 }

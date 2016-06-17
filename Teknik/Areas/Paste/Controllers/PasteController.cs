@@ -65,8 +65,18 @@ namespace Teknik.Areas.Paste.Controllers
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
                 {
-                    string hashedPass = Helpers.SHA384.Hash(paste.Key, password).ToHex();
-                    if (string.IsNullOrEmpty(password) || hashedPass != paste.HashedPassword)
+                    byte[] passBytes = Helpers.SHA384.Hash(paste.Key, password);
+                    string hash = passBytes.ToHex();
+                    // We need to convert old pastes to the new password scheme
+                    if (paste.Transfers.ToList().Exists(t => t.Type == TransferTypes.ASCIIPassword))
+                    {
+                        hash = Encoding.ASCII.GetString(passBytes);
+                        // Remove the transfer types
+                        paste.Transfers.Clear();
+                        db.Entry(paste).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                    if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
                     {
                         PasswordViewModel passModel = new PasswordViewModel();
                         passModel.Url = url;
