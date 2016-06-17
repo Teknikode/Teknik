@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Teknik", "Teknik\Teknik.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{725ABF52-FD44-4682-81BB-D93598787643}"
 	ProjectSection(SolutionItems) = preProject
-		GitVersion.yaml = GitVersion.yaml
+		GitVersionConfig.yaml = GitVersionConfig.yaml
 		README.md = README.md
 	EndProjectSection
 EndProject
