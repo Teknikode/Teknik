@@ -818,7 +818,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                         request.Method = "DELETE";
 
                         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                        if (response.StatusCode != HttpStatusCode.NotFound && response.StatusCode != HttpStatusCode.OK)
+                        if (response.StatusCode != HttpStatusCode.NotFound && response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
                         {
                             throw new Exception("Unable to delete git account.  Response Code: " + response.StatusCode);
                         }
