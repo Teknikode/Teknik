@@ -413,6 +413,8 @@
     <Content Include="Content\Highlight\xcode.css" />
     <Content Include="Content\Highlight\zenburn.css" />
     <Content Include="Content\jquery.tocify.css" />
+    <Content Include="Migrations\InitializeTransfers.sql" />
+    <Content Include="Migrations\SetCaseSensitivity.sql" />
     <Content Include="Scripts\audioplayer.min.js" />
     <Content Include="Scripts\Blob.js" />
     <Content Include="Scripts\Bootstra.386\bootstrap.js" />
