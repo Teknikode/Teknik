@@ -21,8 +21,6 @@ namespace Teknik.Areas.Users.Models
 
         public bool RecoveryVerified { get; set; }
 
-        public bool TransferAccount { get; set; }
-
         public virtual ICollection<TransferType> Transfers { get; set; }
 
         public DateTime JoinDate { get; set; }
