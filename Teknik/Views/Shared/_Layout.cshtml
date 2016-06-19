@@ -5,20 +5,42 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript">
-            var startTime = new Date();
-        </script>
+        <!-- Required Meta -->
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <!-- Content Restriction Policy: Where the content is allowed to come from -->
+        @if (!Request.IsLocal)
+        {
+            // Only have this if we aren't running on localhost
+            <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' *.@Model.Config.Host @Model.Config.ShortenerConfig.ShortenerHost; img-src *; media-src *" />
+        }
+
+        <!-- What is the page's content type -->
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <!-- Website Info -->
         <meta name="description" content="@ViewBag.Description" />
         <meta name="author" content="@Model.Config.Author" />
+
+        <!-- Robots -->
+        <meta name="robots" content="index,follow,noodp"><!-- All Search Engines -->
 
         <!-- Site Verification Tags -->
         <meta name="google-site-verification" content="X54N1YTsjgOc7hivpZK7RRKyvhGwaTI4BoFfxqOLlbc" />
 
+        <!-- Start of page 'load' -->
+        <script type="text/javascript">
+            var startTime = new Date();
+        </script>
+
+        <!-- Main Page Title -->
         <title>@ViewBag.Title</title>
-        <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon" />
+
+        <!-- Favicon -->
+        <link href="@Url.SubRouteUrl("www", "Default.Favicon")" rel="shortcut icon" type="image/x-icon" />
+        <link href="@Url.SubRouteUrl("www", "Default.Favicon")" rel="apple-touch-icon-precomposed" />
 
         @Styles.Render("~/Content/Common")
         @Scripts.Render("~/bundles/common")

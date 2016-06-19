@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik;
 using Teknik.Configuration;
+using Teknik.Controllers;
 
 namespace Teknik.Areas.Home
 {
@@ -19,6 +20,17 @@ namespace Teknik.Areas.Home
         public override void RegisterArea(AreaRegistrationContext context)
         {
             Config config = Config.Load();
+
+            // Default Routes to be applied everywhere
+            context.MapSubdomainRoute(
+                 "Default.Favicon", // Route name
+                 new List<string>() { "*" }, // Subdomains
+                 new List<string>() { config.Host, config.ShortenerConfig.ShortenerHost }, // domains
+                 "favicon.ico",    // URL with parameters 
+                 new { controller = "Default", action = "Favicon" },  // Parameter defaults 
+                 new[] { typeof(DefaultController).Namespace }
+             );
+
             context.MapSubdomainRoute(
                  "Home.Index", // Route name
                  new List<string>() { "www", string.Empty }, // Subdomains
