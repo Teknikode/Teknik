@@ -3,6 +3,7 @@ abuse
 account
 add
 admin
+administrator
 administration
 api
 app
@@ -13,9 +14,11 @@ auth
 better
 billing
 blog
+boss
 cache
 cdn
 changelog
+chanserv
 codereview
 compare
 config
@@ -26,6 +29,7 @@ delete
 dev
 developer
 direct_messages
+dmca
 downloads
 edit
 email
@@ -44,11 +48,15 @@ home
 host
 hosting
 hostmaster
+hostserv
 imap
 info
 invitations
 invite
 jobs
+law
+lawyer
+legal
 list
 list-request
 lists
@@ -72,6 +80,7 @@ mod
 moderator
 news
 next
+nickserv
 no-reply
 noc
 noreply
