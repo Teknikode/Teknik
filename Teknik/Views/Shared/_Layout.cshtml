@@ -10,13 +10,6 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <!-- Content Restriction Policy: Where the content is allowed to come from -->
-        @if (!Request.IsLocal)
-        {
-            // Only have this if we aren't running on localhost
-            <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' *.@Model.Config.Host @Model.Config.ShortenerConfig.ShortenerHost; img-src *; media-src *" />
-        }
-
         <!-- What is the page's content type -->
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
