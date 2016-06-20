@@ -487,7 +487,7 @@ Thank you for your continued use of Teknik!
                 }
 
                 // If the username is invalid, let's add it to the list
-                if (!UserHelper.ValidUsername(config, user.Username))
+                if (!UserHelper.ValidUsername(config, user.Username) && user.Username != "Server Admin")
                 {
                     foundUsers.Add(user.Username);
                     continue;
