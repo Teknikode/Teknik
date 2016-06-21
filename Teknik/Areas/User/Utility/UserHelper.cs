@@ -317,7 +317,7 @@ namespace Teknik.Areas.Users.Utility
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to edit user.", ex);
+                throw new Exception(string.Format("Unable to edit user {0}.", user.Username), ex);
             }
         }
 
@@ -334,6 +334,7 @@ namespace Teknik.Areas.Users.Utility
                         upload.UserId = null;
                         db.Entry(upload).State = EntityState.Modified;
                     }
+                    db.SaveChanges();
                 }
 
                 // Update pastes
@@ -345,6 +346,7 @@ namespace Teknik.Areas.Users.Utility
                         paste.UserId = null;
                         db.Entry(paste).State = EntityState.Modified;
                     }
+                    db.SaveChanges();
                 }
 
                 // Update shortened urls
@@ -356,6 +358,7 @@ namespace Teknik.Areas.Users.Utility
                         shortUrl.UserId = null;
                         db.Entry(shortUrl).State = EntityState.Modified;
                     }
+                    db.SaveChanges();
                 }
 
                 // Delete Blogs
@@ -363,6 +366,7 @@ namespace Teknik.Areas.Users.Utility
                 if (blog != null)
                 {
                     db.Blogs.Remove(blog);
+                    db.SaveChanges();
                 }
 
                 // Delete post comments
@@ -373,6 +377,7 @@ namespace Teknik.Areas.Users.Utility
                     {
                         db.BlogComments.Remove(postComment);
                     }
+                    db.SaveChanges();
                 }
 
                 // Delete podcast comments
@@ -383,6 +388,7 @@ namespace Teknik.Areas.Users.Utility
                     {
                         db.PodcastComments.Remove(podComment);
                     }
+                    db.SaveChanges();
                 }
 
                 // Delete Recovery Email Verifications
@@ -393,6 +399,7 @@ namespace Teknik.Areas.Users.Utility
                     {
                         db.RecoveryEmailVerifications.Remove(verCode);
                     }
+                    db.SaveChanges();
                 }
 
                 // Delete Password Reset Verifications 
@@ -403,6 +410,7 @@ namespace Teknik.Areas.Users.Utility
                     {
                         db.ResetPasswordVerifications.Remove(ver);
                     }
+                    db.SaveChanges();
                 }
 
                 // Delete User
@@ -411,7 +419,7 @@ namespace Teknik.Areas.Users.Utility
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to delete user.", ex);
+                throw new Exception(string.Format("Unable to delete user {0}.", user.Username), ex);
             }
         }
 
