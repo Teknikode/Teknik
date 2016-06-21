@@ -20,6 +20,7 @@ cdn
 changelog
 chanserv
 codereview
+combot
 compare
 config
 connect
@@ -132,6 +133,7 @@ unsubscribe
 url
 usenet
 user
+username
 uucp
 webmaster
 widget
