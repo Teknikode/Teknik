@@ -204,6 +204,7 @@ namespace Teknik.Areas.Users.Utility
             if (user != null)
             {
                 user.UserSettings = db.UserSettings.Find(user.UserId);
+                user.SecuritySettings = db.SecuritySettings.Find(user.UserId);
                 user.BlogSettings = db.BlogSettings.Find(user.UserId);
                 user.UploadSettings = db.UploadSettings.Find(user.UserId);
             }
@@ -495,7 +496,7 @@ Thank you and enjoy!
                     }
                 }
                 // Update the user
-                user.RecoveryVerified = true;
+                user.SecuritySettings.RecoveryVerified = true;
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
 

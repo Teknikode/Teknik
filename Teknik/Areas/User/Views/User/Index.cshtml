@@ -14,10 +14,10 @@
         string pgpFingerprint = pgpFingerprint = string.Empty;
         string pgpFingerprint64 = string.Empty;
 
-        if (!string.IsNullOrEmpty(Model.UserSettings.PGPSignature))
+        if (!string.IsNullOrEmpty(Model.SecuritySettings.PGPSignature))
         {
-            pgpFingerprint = PGP.GetFingerprint(Model.UserSettings.PGPSignature);
-            pgpFingerprint64 = PGP.GetFingerprint64(Model.UserSettings.PGPSignature);
+            pgpFingerprint = PGP.GetFingerprint(Model.SecuritySettings.PGPSignature);
+            pgpFingerprint64 = PGP.GetFingerprint64(Model.SecuritySettings.PGPSignature);
         }
 
         <div class="row text-center">
@@ -58,7 +58,7 @@
                         <br />
                         <div class="row">
                             <div class="col-sm-12">
-                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" onClick="SelectAll('pgpKeyBlock');" readonly>@Model.UserSettings.PGPSignature</textarea>
+                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" onClick="SelectAll('pgpKeyBlock');" readonly>@Model.SecuritySettings.PGPSignature</textarea>
                             </div>
                         </div>
                     </div>

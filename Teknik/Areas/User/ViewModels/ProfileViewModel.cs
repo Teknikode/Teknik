@@ -27,6 +27,8 @@ namespace Teknik.Areas.Users.ViewModels
 
         public UserSettings UserSettings { get; set; }
 
+        public SecuritySettings SecuritySettings { get; set; }
+
         public BlogSettings BlogSettings { get; set; }
 
         public UploadSettings UploadSettings { get; set; }

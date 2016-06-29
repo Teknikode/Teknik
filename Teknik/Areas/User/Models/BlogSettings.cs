@@ -13,15 +13,17 @@ namespace Teknik.Areas.Users.Models
         [Key]
         public int UserId { get; set; }
 
-        public string Title { get; set; }
-
-        public string Description { get; set; }
-
         public virtual User User { get; set; }
+
+        public virtual SecuritySettings SecuritySettings { get; set; }
 
         public virtual UserSettings UserSettings { get; set; }
 
         public virtual UploadSettings UploadSettings { get; set; }
+
+        public string Title { get; set; }
+
+        public string Description { get; set; }
 
         public BlogSettings()
         {

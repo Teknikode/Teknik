@@ -23,12 +23,14 @@ namespace Teknik.Models
         public DbSet<Group> Groups { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<TransferType> TransferTypes { get; set; }
-        public DbSet<RecoveryEmailVerification> RecoveryEmailVerifications { get; set; }
-        public DbSet<ResetPasswordVerification> ResetPasswordVerifications { get; set; }
         // User Settings
         public DbSet<UserSettings> UserSettings { get; set; }
+        public DbSet<SecuritySettings> SecuritySettings { get; set; }
         public DbSet<BlogSettings> BlogSettings { get; set; }
         public DbSet<UploadSettings> UploadSettings { get; set; }
+        // Authentication and Sessions
+        public DbSet<RecoveryEmailVerification> RecoveryEmailVerifications { get; set; }
+        public DbSet<ResetPasswordVerification> ResetPasswordVerifications { get; set; }
         // Blogs
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
@@ -56,6 +58,9 @@ namespace Teknik.Models
                 .HasRequired(a => a.UserSettings)
                 .WithRequiredPrincipal(a => a.User);
             modelBuilder.Entity<User>()
+                .HasRequired(a => a.SecuritySettings)
+                .WithRequiredPrincipal(a => a.User);
+            modelBuilder.Entity<User>()
                 .HasRequired(a => a.BlogSettings)
                 .WithRequiredPrincipal(a => a.User);
             modelBuilder.Entity<User>()
@@ -63,12 +68,22 @@ namespace Teknik.Models
                 .WithRequiredPrincipal(a => a.User);
 
             modelBuilder.Entity<UserSettings>()
+                .HasRequired(a => a.SecuritySettings)
+                .WithRequiredPrincipal(a => a.UserSettings);
+            modelBuilder.Entity<UserSettings>()
                 .HasRequired(a => a.BlogSettings)
                 .WithRequiredPrincipal(a => a.UserSettings);
             modelBuilder.Entity<UserSettings>()
                 .HasRequired(a => a.UploadSettings)
                 .WithRequiredPrincipal(a => a.UserSettings);
-            
+
+            modelBuilder.Entity<SecuritySettings>()
+                .HasRequired(a => a.BlogSettings)
+                .WithRequiredPrincipal(a => a.SecuritySettings);
+            modelBuilder.Entity<SecuritySettings>()
+                .HasRequired(a => a.UploadSettings)
+                .WithRequiredPrincipal(a => a.SecuritySettings);
+
             modelBuilder.Entity<BlogSettings>()
                 .HasRequired(a => a.UploadSettings)
                 .WithRequiredPrincipal(a => a.BlogSettings);
@@ -101,6 +116,7 @@ namespace Teknik.Models
             modelBuilder.Entity<ResetPasswordVerification>().ToTable("ResetPasswordVerifications");
             // User Settings
             modelBuilder.Entity<UserSettings>().ToTable("Users");
+            modelBuilder.Entity<SecuritySettings>().ToTable("Users");
             modelBuilder.Entity<BlogSettings>().ToTable("Users");
             modelBuilder.Entity<UploadSettings>().ToTable("Users");
             // Blogs

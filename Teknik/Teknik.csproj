@@ -211,6 +211,7 @@
     <Compile Include="Areas\User\Models\BlogSettings.cs" />
     <Compile Include="Areas\User\Models\ResetPasswordVerification.cs" />
     <Compile Include="Areas\User\Models\RecoveryEmailVerification.cs" />
+    <Compile Include="Areas\User\Models\SecuritySettings.cs" />
     <Compile Include="Models\TransferTypes.cs" />
     <Compile Include="Areas\User\Models\UploadSettings.cs" />
     <Compile Include="Areas\User\Models\UserSettings.cs" />

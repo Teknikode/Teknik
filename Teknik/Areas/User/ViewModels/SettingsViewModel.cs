@@ -13,11 +13,9 @@ namespace Teknik.Areas.Users.ViewModels
 
         public string Username { get; set; }
 
-        public string RecoveryEmail { get; set; }
-
-        public bool RecoveryVerified { get; set; }
-
         public UserSettings UserSettings { get; set; }
+
+        public SecuritySettings SecuritySettings { get; set; }
 
         public BlogSettings BlogSettings { get; set; }
 

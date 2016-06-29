@@ -60,6 +60,7 @@ namespace Teknik.Areas.Users.Controllers
                     model.LastSeen = UserHelper.GetLastAccountActivity(db, Config, user);
 
                     model.UserSettings = user.UserSettings;
+                    model.SecuritySettings = user.SecuritySettings;
                     model.BlogSettings = user.BlogSettings;
                     model.UploadSettings = user.UploadSettings;
 
@@ -103,10 +104,9 @@ namespace Teknik.Areas.Users.Controllers
 
                     model.UserID = user.UserId;
                     model.Username = user.Username;
-                    model.RecoveryEmail = user.RecoveryEmail;
-                    model.RecoveryVerified = user.RecoveryVerified;
 
                     model.UserSettings = user.UserSettings;
+                    model.SecuritySettings = user.SecuritySettings;
                     model.BlogSettings = user.BlogSettings;
                     model.UploadSettings = user.UploadSettings;
 
@@ -129,9 +129,9 @@ namespace Teknik.Areas.Users.Controllers
             User user = UserHelper.GetUser(db, username);
             if (user != null)
             {
-                if (!string.IsNullOrEmpty(user.UserSettings.PGPSignature))
+                if (!string.IsNullOrEmpty(user.SecuritySettings.PGPSignature))
                 {
-                    return Content(user.UserSettings.PGPSignature, "text/plain");
+                    return Content(user.SecuritySettings.PGPSignature, "text/plain");
                 }
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
@@ -241,13 +241,15 @@ namespace Teknik.Areas.Users.Controllers
                         User newUser = db.Users.Create();
                         newUser.JoinDate = DateTime.Now;
                         newUser.Username = model.Username;
-                        if (!string.IsNullOrEmpty(model.RecoveryEmail))
-                            newUser.RecoveryEmail = model.RecoveryEmail;
                         newUser.UserSettings = new UserSettings();
-                        if (!string.IsNullOrEmpty(model.PublicKey))
-                            newUser.UserSettings.PGPSignature = model.PublicKey;
+                        newUser.SecuritySettings = new SecuritySettings();
                         newUser.BlogSettings = new BlogSettings();
                         newUser.UploadSettings = new UploadSettings();
+
+                        if (!string.IsNullOrEmpty(model.PublicKey))
+                            newUser.SecuritySettings.PGPSignature = model.PublicKey;
+                        if (!string.IsNullOrEmpty(model.RecoveryEmail))
+                            newUser.SecuritySettings.RecoveryEmail = model.RecoveryEmail;
 
                         UserHelper.AddAccount(db, Config, newUser, model.Password);
                         
@@ -304,14 +306,14 @@ namespace Teknik.Areas.Users.Controllers
                         {
                             return Json(new { error = "Invalid PGP Public Key" });
                         }
-                        user.UserSettings.PGPSignature = pgpPublicKey;
+                        user.SecuritySettings.PGPSignature = pgpPublicKey;
 
                         bool newRecovery = false;
-                        if (recoveryEmail != user.RecoveryEmail)
+                        if (recoveryEmail != user.SecuritySettings.RecoveryEmail)
                         {
                             newRecovery = true;
-                            user.RecoveryEmail = recoveryEmail;
-                            user.RecoveryVerified = false;
+                            user.SecuritySettings.RecoveryEmail = recoveryEmail;
+                            user.SecuritySettings.RecoveryVerified = false;
                         }
 
                         user.UserSettings.Website = website;
@@ -331,7 +333,7 @@ namespace Teknik.Areas.Users.Controllers
                             string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, user);
                             string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
                             string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
-                            UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.RecoveryEmail, resetUrl, verifyUrl);
+                            UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl, verifyUrl);
                         }
                         return Json(new { result = true });
                     }
@@ -394,14 +396,14 @@ namespace Teknik.Areas.Users.Controllers
                     if (user != null)
                     {
                         // If they have a recovery email, let's send a verification
-                        if (!string.IsNullOrEmpty(user.RecoveryEmail))
+                        if (!string.IsNullOrEmpty(user.SecuritySettings.RecoveryEmail))
                         {
-                            if (!user.RecoveryVerified)
+                            if (!user.SecuritySettings.RecoveryVerified)
                             {
                                 string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, user);
                                 string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
                                 string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
-                                UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.RecoveryEmail, resetUrl, verifyUrl);
+                                UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl, verifyUrl);
                                 return Json(new { result = true });
                             }
                             return Json(new { error = "The recovery email is already verified" });
@@ -438,11 +440,11 @@ namespace Teknik.Areas.Users.Controllers
                     if (user != null)
                     {
                         // If they have a recovery email, let's send a verification
-                        if (!string.IsNullOrEmpty(user.RecoveryEmail) && user.RecoveryVerified)
+                        if (!string.IsNullOrEmpty(user.SecuritySettings.RecoveryEmail) && user.SecuritySettings.RecoveryVerified)
                         {
                             string verifyCode = UserHelper.CreateResetPasswordVerification(db, Config, user);
                             string resetUrl = Url.SubRouteUrl("user", "User.VerifyResetPassword", new { Username = user.Username, Code = verifyCode });
-                            UserHelper.SendResetPasswordVerification(Config, user.Username, user.RecoveryEmail, resetUrl);
+                            UserHelper.SendResetPasswordVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl);
                             return Json(new { result = true });
                         }
                         return Json(new { error = "The username doesn't have a recovery email specified" });

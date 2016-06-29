@@ -17,10 +17,6 @@ namespace Teknik.Areas.Users.Models
         [CaseSensitive]
         public string HashedPassword { get; set; }
 
-        public string RecoveryEmail { get; set; }
-
-        public bool RecoveryVerified { get; set; }
-
         public virtual ICollection<TransferType> Transfers { get; set; }
 
         public DateTime JoinDate { get; set; }
@@ -30,7 +26,9 @@ namespace Teknik.Areas.Users.Models
         public virtual ICollection<Group> Groups { get; set; }
         
         public virtual UserSettings UserSettings { get; set; }
-        
+
+        public virtual SecuritySettings SecuritySettings { get; set; }
+
         public virtual BlogSettings BlogSettings { get; set; }
         
         public virtual UploadSettings UploadSettings { get; set; }
@@ -43,15 +41,10 @@ namespace Teknik.Areas.Users.Models
         {
             Username = string.Empty;
             HashedPassword = string.Empty;
-            RecoveryEmail = string.Empty;
-            RecoveryVerified = false;
             Transfers = new List<TransferType>();
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;
             Groups = new List<Group>();
-            //UserSettings = new UserSettings();
-            //BlogSettings = new BlogSettings();
-            //UploadSettings = new UploadSettings();
         }
     }
 }
