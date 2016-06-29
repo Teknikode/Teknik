@@ -19,117 +19,117 @@
             <div class="col-sm-12">
                 <form class="form" action="##" method="post" id="updateForm">
                     <input name="update_userid" id="update_userid" type="hidden" value="@Model.UserID" />
-                    <!-- Profile Settings -->
-                    <div class="row">
-                        <div class="col-sm-12 text-center">
-                            <h3>Profile Settings</h3>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-4">
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs" id="settingTabs">
+                        <li class="active"><a href="#profile" data-toggle="tab"> Profile </a></li>
+                        <li><a href="#security" data-toggle="tab"> Security </a></li>
+                        <li><a href="#blog" data-toggle="tab"> Blog </a></li>
+                        <li><a href="#uploads" data-toggle="tab"> Uploads </a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <!-- Profile Settings -->
+                        <div class="tab-pane active" id="profile">                            
                             <div class="row">
-                                <div class="form-group col-sm-12">
-                                    <label for="update_password_current"><h4>Current Password</h4></label>
-                                    <input class="form-control" name="update_password_current" id="update_password_current" placeholder="current password" title="enter your current password." type="password" />
+                                <div class="form-group col-sm-4">
+                                    <label for="update_website"><h4>Website</h4></label>
+                                    <input class="form-control" id="update_website" name="update_website" placeholder="http://www.noneofyourbusiness.com/" title="enter your website" type="text" value="@Model.UserSettings.Website" />
+                                </div>
+                                <div class="form-group col-sm-8">
+                                    <label for="update_quote"><h4>Quote</h4></label>
+                                    <input class="form-control" id="update_quote" name="update_quote" placeholder="I have a dream!" title="enter a memorable quote" type="text" value="@Model.UserSettings.Quote" maxlength="140" />
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="form-group col-sm-12">
-                                    <label for="update_password"><h4>New Password</h4></label>
-                                    <input class="form-control" name="update_password" id="update_password" placeholder="new password" title="enter your password." type="password" />
+                                    <label for="update_about"><h4>About Yourself</h4></label>
+                                    <textarea class="form-control" name="update_about" id="update_about" placeholder="I'm awesome" title="enter any information you want to share with the world." data-provide="markdown" rows="10">@Model.UserSettings.About</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Security Settings -->
+                        <div class="tab-pane" id="security">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="row">
+                                        <div class="form-group col-sm-12">
+                                            <label for="update_password_current"><h4>Current Password</h4></label>
+                                            <input class="form-control" name="update_password_current" id="update_password_current" placeholder="current password" title="enter your current password." type="password" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm-12">
+                                            <label for="update_password"><h4>New Password</h4></label>
+                                            <input class="form-control" name="update_password" id="update_password" placeholder="new password" title="enter your password." type="password" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm-12">
+                                            <label for="update_password_confirm"><h4>Verify New Password</h4></label>
+                                            <input class="form-control" name="update_password_confirm" id="update_password_confirm" placeholder="new password confirmed" title="enter your password again." type="password" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <label for="update_pgp_public_key"><h4>Public Key</h4></label>
+                                    <textarea class="form-control" id="update_pgp_public_key" name="update_pgp_public_key" placeholder="Public Key Here" title="enter your pgp public key" rows="15">@Model.UserSettings.PGPSignature</textarea>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-sm-12">
-                                    <label for="update_password_confirm"><h4>Verify New Password</h4></label>
-                                    <input class="form-control" name="update_password_confirm" id="update_password_confirm" placeholder="new password confirmed" title="enter your password again." type="password" />
+                                <div class="col-sm-4">
+                                    <div class="row">
+                                        <div class="form-group col-sm-12">
+                                            <label for="update_recovery_email"><h4>Recovery Email</h4></label>
+                                            <input class="form-control" name="update_recovery_email" id="update_recovery_email" placeholder="user@example.com" title="enter a recovery email." type="text" value="@Model.RecoveryEmail" />
+                                            @if (!string.IsNullOrEmpty(Model.RecoveryEmail))
+                                            {
+                                                <p class="form-control-static">
+                                                    @if (Model.RecoveryVerified)
+                                                    {
+                                                        <span class="text-success"><i class="fa fa-check"></i> Verified</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-danger"><i class="fa fa-ban"></i> Unverified</span> <small><a href="#" class="text-primary" id="ResendVerification"><i class="fa fa-repeat"></i> Resend</a></small>
+                                                    }
+                                                </p>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-sm-8">
-                            <label for="update_pgp_public_key"><h4>Public Key</h4></label>
-                            <textarea class="form-control" id="update_pgp_public_key" name="update_pgp_public_key" placeholder="Public Key Here" title="enter your pgp public key" rows="15">@Model.UserSettings.PGPSignature</textarea>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
+                        </div>                        
+                        <!-- Blog Settings -->
+                        <div class="tab-pane" id="blog">
                             <div class="row">
-                                <div class="form-group col-sm-12">
-                                    <label for="update_recovery_email"><h4>Recovery Email</h4></label>
-                                    <input class="form-control" name="update_recovery_email" id="update_recovery_email" placeholder="user@example.com" title="enter a recovery email." type="text" value="@Model.RecoveryEmail" />
-                                    @if (!string.IsNullOrEmpty(Model.RecoveryEmail))
-                                    {
-                                    <p class="form-control-static">
-                                        @if (Model.RecoveryVerified)
-                                        {
-                                            <span class="text-success"><i class="fa fa-check"></i> Verified</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-danger"><i class="fa fa-ban"></i> Unverified</span> <small><a href="#" class="text-primary" id="ResendVerification"><i class="fa fa-repeat"></i> Resend</a></small>
-                                        }
-                                    </p>
-                                    }
+                                <div class="form-group col-sm-6">
+                                    <label for="update_blog_title"><h4>Title</h4></label>
+                                    <input class="form-control" id="update_blog_title" name="update_blog_title" placeholder="click bait" title="enter your blog's title" type="text" value="@Model.BlogSettings.Title" />
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label for="update_blog_description"><h4>Description</h4></label>
+                                    <input class="form-control" id="update_blog_description" name="update_blog_description" placeholder="This blog is not worth reading." title="enter your blog's description" type="text" value="@Model.BlogSettings.Description" />
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-sm-4">
-                            <label for="update_website"><h4>Website</h4></label>
-                            <input class="form-control" id="update_website" name="update_website" placeholder="http://www.noneofyourbusiness.com/" title="enter your website" type="text" value="@Model.UserSettings.Website" />
-                        </div>
-                        <div class="form-group col-sm-8">
-                            <label for="update_quote"><h4>Quote</h4></label>
-                            <input class="form-control" id="update_quote" name="update_quote" placeholder="I have a dream!" title="enter a memorable quote" type="text" value="@Model.UserSettings.Quote" maxlength="140" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-sm-12">
-                            <label for="update_about"><h4>About Yourself</h4></label>
-                            <textarea class="form-control" name="update_about" id="update_about" placeholder="I'm awesome" title="enter any information you want to share with the world." data-provide="markdown" rows="10">@Model.UserSettings.About</textarea>
-                        </div>
-                    </div>
-                    <!-- Blog Settings -->
-                    <div class="row">
-                        <div class="col-sm-12 text-center">
-                            <h3>Blog Settings</h3>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="form-group col-sm-6">
-                            <label for="update_blog_title"><h4>Title</h4></label>
-                            <input class="form-control" id="update_blog_title" name="update_blog_title" placeholder="click bait" title="enter your blog's title" type="text" value="@Model.BlogSettings.Title" />
-                        </div>
-                        <div class="form-group col-sm-6">
-                            <label for="update_blog_description"><h4>Description</h4></label>
-                            <input class="form-control" id="update_blog_description" name="update_blog_description" placeholder="This blog is not worth reading." title="enter your blog's description" type="text" value="@Model.BlogSettings.Description" />
-                        </div>
-                    </div>
-                    <!-- Upload Settings -->
-                    <div class="row">
-                        <div class="col-sm-12 text-center">
-                            <h3>Upload Settings</h3>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="checkbox">
-                                <label>
-                                    <label for="update_upload_saveKey"><h4>Save Key on Server</h4></label>
-                                    <input id="update_upload_saveKey" name="update_upload_saveKey" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.UploadSettings.SaveKey ? "checked" : string.Empty) />
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="checkbox">
-                                <label>
-                                    <label for="update_upload_serverSideEncrypt"><h4>Encrypt on Server Side</h4></label>
-                                    <input id="update_upload_serverSideEncrypt" name="update_upload_serverSideEncrypt" title="whether the file should be encrypted server side or client side" type="checkbox" value="true" @(Model.UploadSettings.ServerSideEncrypt ? "checked" : string.Empty) />
-                                </label>
+                        </div>                        
+                        <!-- Upload Settings -->
+                        <div class="tab-pane" id="uploads">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="checkbox">
+                                        <label>
+                                            <label for="update_upload_saveKey"><h4>Save Key on Server</h4></label>
+                                            <input id="update_upload_saveKey" name="update_upload_saveKey" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.UploadSettings.SaveKey ? "checked" : string.Empty) />
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="checkbox">
+                                        <label>
+                                            <label for="update_upload_serverSideEncrypt"><h4>Encrypt on Server Side</h4></label>
+                                            <input id="update_upload_serverSideEncrypt" name="update_upload_serverSideEncrypt" title="whether the file should be encrypted server side or client side" type="checkbox" value="true" @(Model.UploadSettings.ServerSideEncrypt ? "checked" : string.Empty) />
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
