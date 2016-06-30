@@ -20,6 +20,9 @@ using System.Windows;
 using System.Net;
 using Teknik.Areas.Users.Utility;
 using Teknik.Filters;
+using QRCoder;
+using System.Text;
+using TwoStepsAuthenticator;
 
 namespace Teknik.Areas.Users.Controllers
 {
@@ -274,7 +277,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string recoveryEmail, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
+        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string recoveryEmail, bool twoFactorEnabled, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
         {
             if (ModelState.IsValid)
             {
@@ -315,6 +318,14 @@ namespace Teknik.Areas.Users.Controllers
                             user.SecuritySettings.RecoveryEmail = recoveryEmail;
                             user.SecuritySettings.RecoveryVerified = false;
                         }
+
+                        user.SecuritySettings.TwoFactorEnabled = twoFactorEnabled;
+                        string newKey = string.Empty;
+                        if (twoFactorEnabled)
+                        {
+                            newKey = Authenticator.GenerateKey();
+                        }
+                        user.SecuritySettings.TwoFactorKey = newKey;
 
                         user.UserSettings.Website = website;
                         user.UserSettings.Quote = quote;
@@ -516,6 +527,36 @@ namespace Teknik.Areas.Users.Controllers
                 }
             }
             return Json(new { error = "Unable to reset user password" });
+        }
+
+        [HttpPost]
+        public ActionResult ConfirmAuthenticatorCode(string code)
+        {
+            User user = UserHelper.GetUser(db, User.Identity.Name);
+            if (user != null)
+            {
+                if (user.SecuritySettings.TwoFactorEnabled)
+                {
+                    string key = user.SecuritySettings.TwoFactorKey;
+
+                    TimeAuthenticator ta = new TimeAuthenticator();
+                    bool isValid = false;
+
+                    return Json(new { result = true });
+                }
+                return Json(new { error = "User does not have Two Factor Authentication enabled" });
+            }
+            return Json(new { error = "User does not exist" });
+        }
+
+        [HttpPost]
+        public ActionResult GenerateQrCode(string content)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.Q);
+            SvgQRCode qrCode = new SvgQRCode(qrCodeData);
+            string qrCodeImage = qrCode.GetGraphic(20);
+            return File(Encoding.UTF8.GetBytes(qrCodeImage), "image/svg+xml");
         }
     }
 }

@@ -62,6 +62,7 @@
         password = $("#update_password").val();
         password_confirm = $("#update_password_confirm").val();
         update_pgp_public_key = $("#update_pgp_public_key").val();
+        update_security_two_factor = $("#update_security_two_factor").val();
         recovery = $("#update_recovery_email").val();
         website = $("#update_website").val();
         quote = $("#update_quote").val();
