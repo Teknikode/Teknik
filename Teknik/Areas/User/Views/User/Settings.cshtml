@@ -7,6 +7,7 @@
     var editUserURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Edit" })';
     var deleteUserURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Delete" })';
     var resendVerifyURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ResendVerifyRecoveryEmail"})';
+    var confirmAuthSetupURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "VerifyAuthenticatorCode" })';
 </script>
 
 @Styles.Render("~/Content/user")
@@ -23,45 +24,44 @@
                         <h4 class="modal-title" id="authSetupTitleLabel">Set Up a Third Party App to Generate Codes</h4>
                     </div>
                     <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <div id="authSetupStatus"></div>
+                            </div>
+                        </div>
                         @if (Model.SecuritySettings.TwoFactorEnabled)
                         {
-                        <form class="form" action="@Url.SubRouteUrl("user", "User.Action", new { action = "ConfirmAuthenticatorCode" })" method="post" id="confirmAuthSetup">
+                        <form class="form" action="##" method="post" id="confirmAuthSetup">
                             <p>To get a third party app working, either scan the QR code below or type the secret key into the app.</p>
                             <div class="row">
-                                <div class="col-sm-2">
-                                    QR Code:
+                                <div class="col-sm-4">
+                                    <p class="text-muted">QR Code:</p>
                                 </div>
-                                <div class="col-sm-10 text-right">
-                                    <!-- QR Code -->
-                                    <img src="@Url.SubRouteUrl("user", "User.Action", new { action = "GenerateQRCode", content = Model.SecuritySettings.TwoFactorKey })" alt="qr code" />
+                                <div class="col-sm-8">
+                                    <img src="@Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = Model.SecuritySettings.TwoFactorKey })" width="200" height="200" alt="qr code" />
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-2">
-                                    Secret Key:
+                                <div class="col-sm-4">
+                                    <p class="text-muted">Secret Key:</p>
                                 </div>
-                                <div class="col-sm-10">
-                                    <span class="text-success" id="authSetupSecretKey"></span>
+                                <div class="col-sm-8">
+                                    <span class="text-success" id="authSetupSecretKey">@Model.SecuritySettings.TwoFactorKey</span>
                                 </div>
                             </div>
                             <hr />
                             <p>To confirm the third party app is set up correctly, enter the security code that appears on your phone.</p>
                             <div class="row">
-                                <div class="col-sm-2">
-                                    Security Code:
+                                <div class="col-sm-4">
+                                    <p class="text-muted">Security Code:</p>
                                 </div>
-                                <div class="col-sm-10">
+                                <div class="col-sm-6">
                                     <input class="form-control" id="auth_setup_code" name="auth_setup_code" title="Authenticator Security Code" type="text" />
                                 </div>
                             </div>
                             <hr />
-                            <br />
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group text-right">
-                                        <button class="btn btn-primary" id="auth_setup_confirm" type="submit" name="auth_setup_confirm">Confirm</button>
-                                    </div>
-                                </div>
+                            <div class="form-group text-right">
+                                <button class="btn btn-primary" id="auth_setup_confirm" type="button" name="auth_setup_confirm">Confirm</button>
                             </div>
                         </form>
                         }
@@ -129,6 +129,22 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="col-sm-6 text-left">
+                                    <label for="update_security_two_factor"><h4>Enable Two Factor Authentication</h4></label>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="update_security_two_factor" name="update_security_two_factor" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.SecuritySettings.TwoFactorEnabled ? "checked" : string.Empty) />
+                                        </label>
+                                    </div>
+                                    @if (Model.SecuritySettings.TwoFactorEnabled)
+                                    {
+                                        <p class="form-control-static">
+                                            <small><a href="#" class="text-primary" id="SetupAuthenticator" data-toggle="modal" data-target="#authenticatorSetup"><i class="fa fa-lock"></i> Set Up Authenticator</a></small>
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-sm-4">
                                     <div class="row">
                                         <div class="form-group col-sm-12">
@@ -151,23 +167,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="checkbox">
-                                        <label>
-                                            <label for="update_security_two_factor"><h4>Enable Two Factor Authentication</h4></label>
-                                            <input id="update_security_two_factor" name="update_security_two_factor" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.SecuritySettings.TwoFactorEnabled ? "checked" : string.Empty) />
-                                            @if (Model.SecuritySettings.TwoFactorEnabled)
-                                            {
-                                                <p class="form-control-static">
-                                                    <small><a href="#" class="text-primary" id="SetupAuthenticator"><i class="fa fa-lock"></i> Set Up Authenticator</a></small>
-                                                </p>
-                                            }
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                        
+                        </div>
                         <!-- Blog Settings -->
                         <div class="tab-pane" id="blog">
                             <div class="row">

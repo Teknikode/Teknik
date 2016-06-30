@@ -1,0 +1,42 @@
+﻿@model Teknik.Areas.Users.ViewModels.LoginViewModel
+
+@using Teknik.Helpers
+
+<script>
+    var confirmAuthCodeURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ConfirmAuthenticatorCode" })';
+</script>
+
+@Scripts.Render("~/bundles/checkAuthCode")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center">
+                <h1>Two-factor authentication</h1>
+                <div class="col-md-4 col-md-offset-4">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    <div id="authCheckStatus"></div>
+                                </div>
+                            </div>
+                            <form role="form" id="twoFactorCheckForm" action="##" method="post" accept-charset="UTF-8">
+                                <input name="returnUrl" id="returnUrl" type="hidden" value="@Model.ReturnUrl" />
+                                <input name="rememberMe" id="rememberMe" type="hidden" value="@Model.RememberMe" />
+                                <div class="form-group text-left">
+                                    <label for="update_website">Authentication code</label>
+                                    <input type="text" class="form-control" id="code" name="code" data-val-required="The Authentication Code is required." data-val="true" />
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary btn-block" id="verifyCodeSubmit" type="button" name="verifyCodeSubmit">Verify</button>
+                                </div>
+                            </form>
+                            <p class="text-left">Open the two-factor authentication app on your device to view your authentication code and verify your identity.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

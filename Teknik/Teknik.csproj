@@ -342,6 +342,7 @@
     <Content Include="Areas\Podcast\Content\Podcast.css" />
     <Content Include="Areas\Podcast\Scripts\Podcast.js" />
     <Content Include="Areas\Transparency\Scripts\Transparency.js" />
+    <Content Include="Areas\User\Scripts\CheckAuthCode.js" />
     <Content Include="Areas\User\Scripts\User.js" />
     <Content Include="Areas\Shortener\Scripts\Shortener.js" />
     <Content Include="Areas\Upload\Scripts\Download.js" />
@@ -556,7 +557,7 @@
     <Content Include="Areas\User\Views\User\ViewRecoveryEmailVerification.cshtml" />
     <Content Include="Areas\User\Views\User\ResetPasswordVerification.cshtml" />
     <Content Include="Areas\User\Views\User\ResetPassword.cshtml" />
-    <Content Include="Areas\User\Views\User\AuthenticatorSetup.cshtml" />
+    <Content Include="Areas\User\Views\User\TwoFactorCheck.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

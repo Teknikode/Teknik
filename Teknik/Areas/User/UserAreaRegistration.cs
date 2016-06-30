@@ -75,6 +75,14 @@ namespace Teknik.Areas.Users
                  new[] { typeof(Controllers.UserController).Namespace }
             );
             context.MapSubdomainRoute(
+                 "User.CheckAuthenticatorCode", // Route name
+                 new List<string>() { "user" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "CheckAuthCode",    // URL with parameters 
+                 new { controller = "User", action = "ConfirmTwoFactorAuth" },  // Parameter defaults 
+                 new[] { typeof(Controllers.UserController).Namespace }
+            );
+            context.MapSubdomainRoute(
                  "User.Index", // Route name
                  new List<string>() { "user" }, // Subdomains
                  new List<string>() { config.Host }, // domains
@@ -105,6 +113,10 @@ namespace Teknik.Areas.Users
                       "~/Scripts/jquery.blockUI.js",
                       "~/Scripts/bootstrap-switch.js",
                       "~/Areas/User/Scripts/User.js"));
+
+            // Register Script Bundle
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/checkAuthCode").Include(
+                      "~/Areas/User/Scripts/CheckAuthCode.js"));
 
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/user").Include(

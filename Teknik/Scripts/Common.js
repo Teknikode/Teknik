@@ -20,7 +20,7 @@
             },
             success: function (html) {
                 if (html.result) {
-                    window.location.reload();
+                    window.location = html.result;
                 }
                 else {
                     $("#loginStatus").css('display', 'inline', 'important');

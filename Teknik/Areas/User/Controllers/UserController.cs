@@ -28,6 +28,7 @@ namespace Teknik.Areas.Users.Controllers
 {
     public class UserController : DefaultController
     {
+        private static readonly UsedCodesManager usedCodesManager = new UsedCodesManager();
         private TeknikEntities db = new TeknikEntities();
 
         // GET: Profile/Profile
@@ -102,6 +103,8 @@ namespace Teknik.Areas.Users.Controllers
 
                 if (user != null)
                 {
+                    Session["AuthenticatedUser"] = user;
+
                     ViewBag.Title = "Settings - " + Config.Title;
                     ViewBag.Description = "Your " + Config.Title + " Settings";
 
@@ -164,16 +167,31 @@ namespace Teknik.Areas.Users.Controllers
                     bool userValid = UserHelper.UserPasswordCorrect(db, Config, user, model.Password);
                     if (userValid)
                     {
-                        UserHelper.TransferUser(db, Config, user, model.Password);
-                        user.LastSeen = DateTime.Now;
-                        db.Entry(user).State = EntityState.Modified;
-                        db.SaveChanges();
-                        HttpCookie authcookie = UserHelper.CreateAuthCookie(model.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
-                        Response.Cookies.Add(authcookie);
+                        string returnUrl = model.ReturnUrl;
+                        if (user.SecuritySettings.TwoFactorEnabled)
+                        {
+                            // We need to check their device, and two factor them
+                            Session["AuthenticatedUser"] = user;
+                            if (string.IsNullOrEmpty(model.ReturnUrl))
+                                returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
+                            returnUrl = Url.SubRouteUrl("user", "User.CheckAuthenticatorCode", new { returnUrl = returnUrl, rememberMe = model.RememberMe });
+                            model.ReturnUrl = string.Empty;
+                        }
+                        else
+                        {
+                            returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
+                            // They don't need two factor auth.
+                            UserHelper.TransferUser(db, Config, user, model.Password);
+                            user.LastSeen = DateTime.Now;
+                            db.Entry(user).State = EntityState.Modified;
+                            db.SaveChanges();
+                            HttpCookie authcookie = UserHelper.CreateAuthCookie(model.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
+                            Response.Cookies.Add(authcookie);
+                        }
 
                         if (string.IsNullOrEmpty(model.ReturnUrl))
                         {
-                            return Json(new { result = "true" });
+                            return Json(new { result = returnUrl });
                         }
                         else
                         {
@@ -188,7 +206,7 @@ namespace Teknik.Areas.Users.Controllers
         public ActionResult Logout()
         {
             // Get cookie
-            HttpCookie authCookie = Utility.UserHelper.CreateAuthCookie(User.Identity.Name, false, Request.Url.Host.GetDomain(), Request.IsLocal);
+            HttpCookie authCookie = UserHelper.CreateAuthCookie(User.Identity.Name, false, Request.Url.Host.GetDomain(), Request.IsLocal);
 
             // Signout
             FormsAuthentication.SignOut();
@@ -529,8 +547,52 @@ namespace Teknik.Areas.Users.Controllers
             return Json(new { error = "Unable to reset user password" });
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult ConfirmTwoFactorAuth(string returnUrl, bool rememberMe)
+        {
+            ViewBag.Title = "Unknown Device - " + Config.Title;
+            ViewBag.Description = "We do not recognize this device.";
+            LoginViewModel model = new LoginViewModel();
+            model.ReturnUrl = returnUrl;
+            model.RememberMe = rememberMe;
+
+            return View("/Areas/User/Views/User/TwoFactorCheck.cshtml", model);
+        }
+
         [HttpPost]
-        public ActionResult ConfirmAuthenticatorCode(string code)
+        [AllowAnonymous]
+        public ActionResult ConfirmAuthenticatorCode(string code, string returnUrl, bool rememberMe)
+        {
+            User user = (User)Session["AuthenticatedUser"];
+            if (user != null)
+            {
+                if (user.SecuritySettings.TwoFactorEnabled)
+                {
+                    string key = user.SecuritySettings.TwoFactorKey;
+
+                    TimeAuthenticator ta = new TimeAuthenticator(usedCodeManager: usedCodesManager);
+                    bool isValid = ta.CheckCode(key, code, user);
+
+                    if (isValid)
+                    {
+                        // the code was valid, let's log them in!
+                        HttpCookie authcookie = UserHelper.CreateAuthCookie(user.Username, rememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
+                        Response.Cookies.Add(authcookie);
+
+                        if (string.IsNullOrEmpty(returnUrl))
+                            returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
+                        return Json(new { result = returnUrl });
+                    }
+                    return Json(new { error = "Invalid Authentication Code" });
+                }
+                return Json(new { error = "User does not have Two Factor Authentication enabled" });
+            }
+            return Json(new { error = "User does not exist" });
+        }
+
+        [HttpPost]
+        public ActionResult VerifyAuthenticatorCode(string code)
         {
             User user = UserHelper.GetUser(db, User.Identity.Name);
             if (user != null)
@@ -539,21 +601,27 @@ namespace Teknik.Areas.Users.Controllers
                 {
                     string key = user.SecuritySettings.TwoFactorKey;
 
-                    TimeAuthenticator ta = new TimeAuthenticator();
-                    bool isValid = false;
+                    TimeAuthenticator ta = new TimeAuthenticator(usedCodeManager: usedCodesManager);
+                    bool isValid = ta.CheckCode(key, code, user);
 
-                    return Json(new { result = true });
+                    if (isValid)
+                    {
+                        return Json(new { result = true });
+                    }
+                    return Json(new { error = "Invalid Authentication Code" });
                 }
                 return Json(new { error = "User does not have Two Factor Authentication enabled" });
             }
             return Json(new { error = "User does not exist" });
         }
 
-        [HttpPost]
-        public ActionResult GenerateQrCode(string content)
+        [HttpGet]
+        public ActionResult GenerateAuthQrCode(string key)
         {
+            var ProvisionUrl = string.Format("otpauth://totp/{0}:{1}?secret={2}", Config.Title, User.Identity.Name, key);
+
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.Q);
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(ProvisionUrl, QRCodeGenerator.ECCLevel.Q);
             SvgQRCode qrCode = new SvgQRCode(qrCodeData);
             string qrCodeImage = qrCode.GetGraphic(20);
             return File(Encoding.UTF8.GetBytes(qrCodeImage), "image/svg+xml");

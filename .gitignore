@@ -194,3 +194,4 @@ ModelManifest.xml
 /Teknik/TransformWebConfig/assist/Web.config
 /Teknik/Properties/PublishProfiles/IIS.pubxml
 /Teknik/App_Data/ConnectionStrings.config
+/Teknik/App_Data/Config.json.old

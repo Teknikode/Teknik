@@ -1,6 +1,7 @@
 ﻿$(document).ready(function () {
     $("[name='update_upload_saveKey']").bootstrapSwitch();
     $("[name='update_upload_serverSideEncrypt']").bootstrapSwitch();
+    $("[name='update_security_two_factor']").bootstrapSwitch();
 
     $('#ResendVerification').click(function () {
         $.ajax({
@@ -21,6 +22,41 @@
                     }
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                }
+            }
+        });
+    });
+
+
+    $('#authenticatorSetup').on('hide.bs.modal', function (e) {
+        $("#authSetupStatus").css('display', 'none', 'important');
+        $("#authSetupStatus").html('');
+        $('#auth_setup_code').val('');
+    });
+
+    $('#auth_setup_confirm').click(function () {
+        setCode = $("#auth_setup_code").val();
+        $.ajax({
+            type: "POST",
+            url: confirmAuthSetupURL,
+            data: {
+                code: setCode
+            },
+            success: function (html) {
+                if (html.result) {
+                    $("#authSetupStatus").css('display', 'inline', 'important');
+                    $("#authSetupStatus").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Success!</div>');
+                }
+                else {
+                    errorMsg = html;
+                    if (html.error) {
+                        errorMsg = html.error;
+                        if (html.error.message) {
+                            errorMsg = html.error.message;
+                        }
+                    }
+                    $("#authSetupStatus").css('display', 'inline', 'important');
+                    $("#authSetupStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
                 }
             }
         });
@@ -62,7 +98,7 @@
         password = $("#update_password").val();
         password_confirm = $("#update_password_confirm").val();
         update_pgp_public_key = $("#update_pgp_public_key").val();
-        update_security_two_factor = $("#update_security_two_factor").val();
+        update_security_two_factor = $("#update_security_two_factor").is(":checked");
         recovery = $("#update_recovery_email").val();
         website = $("#update_website").val();
         quote = $("#update_quote").val();
@@ -79,6 +115,7 @@
                 newPass: password,
                 newPassConfirm: password_confirm,
                 pgpPublicKey: update_pgp_public_key,
+                twoFactorEnabled: update_security_two_factor,
                 recoveryEmail: recovery,
                 website: website,
                 quote: quote,
