@@ -337,6 +337,7 @@ namespace Teknik.Areas.Users.Controllers
                             user.SecuritySettings.RecoveryVerified = false;
                         }
 
+                        bool oldTwoFactor = user.SecuritySettings.TwoFactorEnabled;
                         user.SecuritySettings.TwoFactorEnabled = twoFactorEnabled;
                         string newKey = string.Empty;
                         if (twoFactorEnabled)
@@ -363,6 +364,11 @@ namespace Teknik.Areas.Users.Controllers
                             string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
                             string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
                             UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl, verifyUrl);
+                        }
+
+                        if (!oldTwoFactor && twoFactorEnabled)
+                        {
+                            return Json(new { result = new { checkAuth = true, key = newKey, qrUrl = Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = newKey }) } });
                         }
                         return Json(new { result = true });
                     }

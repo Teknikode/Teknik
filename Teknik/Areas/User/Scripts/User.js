@@ -128,7 +128,17 @@
             success: function (html) {
                 $.unblockUI();
                 if (html.result) {
-                    window.location.reload();
+                    if (html.result.checkAuth)
+                    {
+                        $('#setupAuthenticatorLink').removeClass('hide');
+                        $('#authSetupSecretKey').text(html.result.key);
+                        $('#authQRCode').attr("src", html.result.qrUrl);
+                        $('#authenticatorSetup').modal('show');
+                    }
+                    else
+                    {
+                        window.location.reload();
+                    }
                 }
                 else {
                     var error = html;

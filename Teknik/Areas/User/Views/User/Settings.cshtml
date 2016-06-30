@@ -29,8 +29,6 @@
                                 <div id="authSetupStatus"></div>
                             </div>
                         </div>
-                        @if (Model.SecuritySettings.TwoFactorEnabled)
-                        {
                         <form class="form" action="##" method="post" id="confirmAuthSetup">
                             <p>To get a third party app working, either scan the QR code below or type the secret key into the app.</p>
                             <div class="row">
@@ -38,7 +36,7 @@
                                     <p class="text-muted">QR Code:</p>
                                 </div>
                                 <div class="col-sm-8">
-                                    <img src="@Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = Model.SecuritySettings.TwoFactorKey })" width="200" height="200" alt="qr code" />
+                                    <img id="authQRCode" src="@Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = Model.SecuritySettings.TwoFactorKey })" width="200" height="200" alt="qr code" />
                                 </div>
                             </div>
                             <div class="row">
@@ -64,7 +62,6 @@
                                 <button class="btn btn-primary" id="auth_setup_confirm" type="button" name="auth_setup_confirm">Confirm</button>
                             </div>
                         </form>
-                        }
                     </div>
                 </div>
             </div>
@@ -136,12 +133,9 @@
                                             <input id="update_security_two_factor" name="update_security_two_factor" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.SecuritySettings.TwoFactorEnabled ? "checked" : string.Empty) />
                                         </label>
                                     </div>
-                                    @if (Model.SecuritySettings.TwoFactorEnabled)
-                                    {
-                                        <p class="form-control-static">
-                                            <small><a href="#" class="text-primary" id="SetupAuthenticator" data-toggle="modal" data-target="#authenticatorSetup"><i class="fa fa-lock"></i> Set Up Authenticator</a></small>
-                                        </p>
-                                    }
+                                    <p class="form-control-static @(Model.SecuritySettings.TwoFactorEnabled ? string.Empty : "hide")" id="setupAuthenticatorLink">
+                                        <small><a href="#" class="text-primary" id="SetupAuthenticator" data-toggle="modal" data-target="#authenticatorSetup"><i class="fa fa-lock"></i> Set Up Authenticator</a></small>
+                                    </p>
                                 </div>
                             </div>
                             <div class="row">
