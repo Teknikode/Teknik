@@ -4,10 +4,7 @@
     $("#verifyCodeSubmit").click(function () {
         setCode = $("#code").val();
         returnUrl = $("#returnUrl").val();
-        rememberMe = $("#rememberMe").val();
-        if (rememberMe == '') {
-            rememberMe = false;
-        }
+        rememberMe = ($("#rememberMe").val() == 'True');
         $.ajax({
             type: "POST",
             url: confirmAuthCodeURL,
