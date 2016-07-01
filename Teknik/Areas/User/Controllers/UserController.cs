@@ -168,6 +168,12 @@ namespace Teknik.Areas.Users.Controllers
                     bool userValid = UserHelper.UserPasswordCorrect(db, Config, user, model.Password);
                     if (userValid)
                     {
+                        // Perform transfer actions on the account
+                        UserHelper.TransferUser(db, Config, user, model.Password);
+                        user.LastSeen = DateTime.Now;
+                        db.Entry(user).State = EntityState.Modified;
+                        db.SaveChanges();
+
                         bool twoFactor = false;
                         string returnUrl = model.ReturnUrl;
                         if (user.SecuritySettings.TwoFactorEnabled)
@@ -202,10 +208,6 @@ namespace Teknik.Areas.Users.Controllers
                         {
                             returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
                             // They don't need two factor auth.
-                            UserHelper.TransferUser(db, Config, user, model.Password);
-                            user.LastSeen = DateTime.Now;
-                            db.Entry(user).State = EntityState.Modified;
-                            db.SaveChanges();
                             HttpCookie authcookie = UserHelper.CreateAuthCookie(model.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
                             Response.Cookies.Add(authcookie);
                         }
