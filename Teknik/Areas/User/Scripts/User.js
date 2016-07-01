@@ -28,6 +28,9 @@
         });
     });
 
+    $('#authenticatorSetup').on('shown.bs.modal', function (e) {
+        $('#auth_setup_code').focus();
+    });
 
     $('#authenticatorSetup').on('hide.bs.modal', function (e) {
         $("#authSetupStatus").css('display', 'none', 'important');
@@ -35,7 +38,7 @@
         $('#auth_setup_code').val('');
     });
 
-    $('#auth_setup_confirm').click(function () {
+    $('#auth_setup_verify').click(function () {
         setCode = $("#auth_setup_code").val();
         $.ajax({
             type: "POST",

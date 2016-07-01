@@ -1,5 +1,6 @@
 ﻿$(document).ready(function () {
     $("#authCheckStatus").css('display', 'none', 'important');
+    $('#Code').focus();
 
     $("#verifyCodeSubmit").click(function () {
         setCode = $("#Code").val();
