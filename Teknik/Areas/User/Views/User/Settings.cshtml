@@ -8,6 +8,7 @@
     var deleteUserURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Delete" })';
     var resendVerifyURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ResendVerifyRecoveryEmail"})';
     var confirmAuthSetupURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "VerifyAuthenticatorCode" })';
+    var clearTrustedDevicesURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ClearTrustedDevices" })';
 </script>
 
 @Styles.Render("~/Content/user")
@@ -167,6 +168,9 @@
                                             <input id="update_security_allow_trusted" name="update_security_allow_trusted" title="whether a device could be cached to bypass two factor authentication" type="checkbox" value="true" @(Model.SecuritySettings.AllowTrustedDevices ? "checked" : string.Empty) />
                                         </label>
                                     </div>
+                                    <p class="form-control-static @(Model.SecuritySettings.AllowTrustedDevices ? string.Empty : "hide")" id="ClearDevicesLink">
+                                        <small><a href="#" class="text-primary" id="ClearDevices">Clear Trusted Devices (@Model.TrustedDeviceCount)</a></small>
+                                    </p>
                                 </div>
                             </div>
                         </div>

@@ -111,6 +111,7 @@ namespace Teknik.Areas.Users.Controllers
 
                     model.UserID = user.UserId;
                     model.Username = user.Username;
+                    model.TrustedDeviceCount = user.TrustedDevices.Count;
 
                     model.UserSettings = user.UserSettings;
                     model.SecuritySettings = user.SecuritySettings;
@@ -710,6 +711,41 @@ namespace Teknik.Areas.Users.Controllers
             QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
             return File(Helpers.Utility.ImageToByte(qrCodeImage), "image/png");
+        }
+
+        [HttpPost]
+        public ActionResult ClearTrustedDevices()
+        {
+            try
+            {
+                User user = UserHelper.GetUser(db, User.Identity.Name);
+                if (user != null)
+                {
+                    if (user.SecuritySettings.AllowTrustedDevices)
+                    {
+                        // let's clear the trusted devices
+                        user.TrustedDevices.Clear();
+                        List<TrustedDevice> foundDevices = db.TrustedDevices.Where(d => d.UserId == user.UserId).ToList();
+                        if (foundDevices != null)
+                        {
+                            foreach (TrustedDevice device in foundDevices)
+                            {
+                                db.TrustedDevices.Remove(device);
+                            }
+                        }
+                        db.Entry(user).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                        return Json(new { result = true });
+                    }
+                    return Json(new { error = "User does not allow trusted devices" });
+                }
+                return Json(new { error = "User does not exist" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
         }
     }
 }

@@ -66,6 +66,32 @@
         });
     });
 
+    $('#ClearDevices').click(function () {
+        $.ajax({
+            type: "POST",
+            url: clearTrustedDevicesURL,
+            data: {},
+            success: function (html) {
+                if (html.result) {
+                    $('#ClearDevices').html('Clear Trusted Devices (0)');
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Successfully Cleared Trusted Devices</div>');
+                }
+                else {
+                    errorMsg = html;
+                    if (html.error) {
+                        errorMsg = html.error;
+                        if (html.error.message) {
+                            errorMsg = html.error.message;
+                        }
+                    }
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                }
+            }
+        });
+    });
+
     $('#delete_account').click(function () {
         bootbox.confirm("Are you sure you want to delete your account?", function (result) {
             if (result) {

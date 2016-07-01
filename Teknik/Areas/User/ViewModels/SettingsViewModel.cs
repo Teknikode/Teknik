@@ -13,6 +13,8 @@ namespace Teknik.Areas.Users.ViewModels
 
         public string Username { get; set; }
 
+        public int TrustedDeviceCount { get; set; }
+
         public UserSettings UserSettings { get; set; }
 
         public SecuritySettings SecuritySettings { get; set; }

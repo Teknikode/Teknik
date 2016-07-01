@@ -117,7 +117,7 @@
                     </div><!--/tab-pane-->
                     @if (OwnProfile)
                     {
-                    <div class="tab-pane" id="uploads">
+                    <div class="tab-pane" id="uploads" style="overflow-y: auto; max-height: 500px;">
                         @foreach (Teknik.Areas.Upload.Models.Upload upload in Model.Uploads)
                         {
                             <div class="panel panel-default">
@@ -149,7 +149,7 @@
                             </div>
                         }
                     </div><!--/tab-pane-->
-                    <div class="tab-pane" id="pastes">
+                    <div class="tab-pane" id="pastes" style="overflow-y: auto; max-height: 500px;">
                         @foreach (Teknik.Areas.Paste.Models.Paste paste in Model.Pastes)
                         {
                             <div class="panel panel-default">
@@ -188,7 +188,7 @@
                             </div>
                         }
                     </div>
-                    <div class="tab-pane" id="shortenedUrls">
+                    <div class="tab-pane" id="shortenedUrls" style="overflow-y: auto; max-height: 500px;">
                         @foreach (Teknik.Areas.Shortener.Models.ShortenedUrl url in Model.ShortenedUrls)
                         {
                             string shortUrl = Url.SubRouteUrl(string.Empty, "Shortener.View", new { url = url.ShortUrl });
