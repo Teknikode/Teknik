@@ -23,6 +23,7 @@ using Teknik.Filters;
 using QRCoder;
 using System.Text;
 using TwoStepsAuthenticator;
+using System.Drawing;
 
 namespace Teknik.Areas.Users.Controllers
 {
@@ -167,10 +168,30 @@ namespace Teknik.Areas.Users.Controllers
                     bool userValid = UserHelper.UserPasswordCorrect(db, Config, user, model.Password);
                     if (userValid)
                     {
+                        bool twoFactor = false;
                         string returnUrl = model.ReturnUrl;
                         if (user.SecuritySettings.TwoFactorEnabled)
                         {
+                            twoFactor = true;
                             // We need to check their device, and two factor them
+                            if (user.SecuritySettings.AllowTrustedDevices)
+                            {
+                                // Check for the trusted device cookie
+                                HttpCookie cookie = Request.Cookies[Constants.TRUSTEDDEVICECOOKIE + "_" + username];
+                                if (cookie != null)
+                                {
+                                    string token = cookie.Value;
+                                    if (user.TrustedDevices.Where(d => d.Token == token).FirstOrDefault() != null)
+                                    {
+                                        // The device token is attached to the user, let's let it slide
+                                        twoFactor = false;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (twoFactor)
+                        {
                             Session["AuthenticatedUser"] = user;
                             if (string.IsNullOrEmpty(model.ReturnUrl))
                                 returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
@@ -295,7 +316,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string recoveryEmail, bool twoFactorEnabled, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
+        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string recoveryEmail, bool allowTrustedDevices, bool twoFactorEnabled, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
         {
             if (ModelState.IsValid)
             {
@@ -329,6 +350,7 @@ namespace Teknik.Areas.Users.Controllers
                         }
                         user.SecuritySettings.PGPSignature = pgpPublicKey;
 
+                        // Recovery Email
                         bool newRecovery = false;
                         if (recoveryEmail != user.SecuritySettings.RecoveryEmail)
                         {
@@ -337,24 +359,56 @@ namespace Teknik.Areas.Users.Controllers
                             user.SecuritySettings.RecoveryVerified = false;
                         }
 
+                        // Trusted Devices
+                        user.SecuritySettings.AllowTrustedDevices = allowTrustedDevices;
+                        if (!allowTrustedDevices)
+                        {
+                            // They turned it off, let's clear the trusted devices
+                            user.TrustedDevices.Clear();
+                            List<TrustedDevice> foundDevices = db.TrustedDevices.Where(d => d.UserId == user.UserId).ToList();
+                            if (foundDevices != null)
+                            {
+                                foreach (TrustedDevice device in foundDevices)
+                                {
+                                    db.TrustedDevices.Remove(device);
+                                }
+                            }
+                        }
+
+                        // Two Factor Authentication
                         bool oldTwoFactor = user.SecuritySettings.TwoFactorEnabled;
                         user.SecuritySettings.TwoFactorEnabled = twoFactorEnabled;
                         string newKey = string.Empty;
-                        if (twoFactorEnabled)
+                        if (!oldTwoFactor && twoFactorEnabled)
                         {
+                            // They just enabled it, let's regen the key
                             newKey = Authenticator.GenerateKey();
+                        }
+                        else if (!twoFactorEnabled)
+                        {
+                            // remove the key when it's disabled
+                            newKey = string.Empty;
+                        }
+                        else
+                        {
+                            // No change, let's use the old value
+                            newKey = user.SecuritySettings.TwoFactorKey;
                         }
                         user.SecuritySettings.TwoFactorKey = newKey;
 
+                        // Profile Info
                         user.UserSettings.Website = website;
                         user.UserSettings.Quote = quote;
                         user.UserSettings.About = about;
 
+                        // Blogs
                         user.BlogSettings.Title = blogTitle;
                         user.BlogSettings.Description = blogDesc;
 
+                        // Uploads
                         user.UploadSettings.SaveKey = saveKey;
                         user.UploadSettings.ServerSideEncrypt = serverSideEncrypt;
+
                         UserHelper.EditAccount(db, Config, user, changePass, newPass);
 
                         // If they have a recovery email, let's send a verification
@@ -557,18 +611,24 @@ namespace Teknik.Areas.Users.Controllers
         [AllowAnonymous]
         public ActionResult ConfirmTwoFactorAuth(string returnUrl, bool rememberMe)
         {
-            ViewBag.Title = "Unknown Device - " + Config.Title;
-            ViewBag.Description = "We do not recognize this device.";
-            LoginViewModel model = new LoginViewModel();
-            model.ReturnUrl = returnUrl;
-            model.RememberMe = rememberMe;
+            User user = (User)Session["AuthenticatedUser"];
+            if (user != null)
+            {
+                ViewBag.Title = "Unknown Device - " + Config.Title;
+                ViewBag.Description = "We do not recognize this device.";
+                TwoFactorViewModel model = new TwoFactorViewModel();
+                model.ReturnUrl = returnUrl;
+                model.RememberMe = rememberMe;
+                model.AllowTrustedDevice = user.SecuritySettings.AllowTrustedDevices;
 
-            return View("/Areas/User/Views/User/TwoFactorCheck.cshtml", model);
+                return View("/Areas/User/Views/User/TwoFactorCheck.cshtml", model);
+            }
+            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult ConfirmAuthenticatorCode(string code, string returnUrl, bool rememberMe)
+        public ActionResult ConfirmAuthenticatorCode(string code, string returnUrl, bool rememberMe, bool rememberDevice, string deviceName)
         {
             User user = (User)Session["AuthenticatedUser"];
             if (user != null)
@@ -585,6 +645,23 @@ namespace Teknik.Areas.Users.Controllers
                         // the code was valid, let's log them in!
                         HttpCookie authcookie = UserHelper.CreateAuthCookie(user.Username, rememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
                         Response.Cookies.Add(authcookie);
+
+                        if (user.SecuritySettings.AllowTrustedDevices && rememberDevice)
+                        {
+                            // They want to remember the device, and have allow trusted devices on
+                            HttpCookie trustedDeviceCookie = UserHelper.CreateTrustedDeviceCookie(user.Username, Request.Url.Host.GetDomain(), Request.IsLocal);
+                            Response.Cookies.Add(trustedDeviceCookie);
+
+                            TrustedDevice device = new TrustedDevice();
+                            device.UserId = user.UserId;
+                            device.Name = (string.IsNullOrEmpty(deviceName)) ? "Unknown" : deviceName;
+                            device.DateSeen = DateTime.Now;
+                            device.Token = trustedDeviceCookie.Value;
+
+                            // Add the token
+                            db.TrustedDevices.Add(device);
+                            db.SaveChanges();
+                        }
 
                         if (string.IsNullOrEmpty(returnUrl))
                             returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
@@ -628,9 +705,9 @@ namespace Teknik.Areas.Users.Controllers
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(ProvisionUrl, QRCodeGenerator.ECCLevel.Q);
-            SvgQRCode qrCode = new SvgQRCode(qrCodeData);
-            string qrCodeImage = qrCode.GetGraphic(20);
-            return File(Encoding.UTF8.GetBytes(qrCodeImage), "image/svg+xml");
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+            return File(Helpers.Utility.ImageToByte(qrCodeImage), "image/png");
         }
     }
 }

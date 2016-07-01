@@ -126,19 +126,6 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-6 text-left">
-                                    <label for="update_security_two_factor"><h4>Enable Two Factor Authentication</h4></label>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input id="update_security_two_factor" name="update_security_two_factor" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.SecuritySettings.TwoFactorEnabled ? "checked" : string.Empty) />
-                                        </label>
-                                    </div>
-                                    <p class="form-control-static @(Model.SecuritySettings.TwoFactorEnabled ? string.Empty : "hide")" id="setupAuthenticatorLink">
-                                        <small><a href="#" class="text-primary" id="SetupAuthenticator" data-toggle="modal" data-target="#authenticatorSetup"><i class="fa fa-lock"></i> Set Up Authenticator</a></small>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-sm-4">
                                     <div class="row">
                                         <div class="form-group col-sm-12">
@@ -158,6 +145,27 @@
                                                 </p>
                                             }
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 text-left">
+                                    <label for="update_security_two_factor"><h4>Enable Two Factor Authentication</h4></label>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="update_security_two_factor" name="update_security_two_factor" title="whether two factor authentication should occur for this account" type="checkbox" value="true" @(Model.SecuritySettings.TwoFactorEnabled ? "checked" : string.Empty) />
+                                        </label>
+                                    </div>
+                                    <p class="form-control-static @(Model.SecuritySettings.TwoFactorEnabled ? string.Empty : "hide")" id="setupAuthenticatorLink">
+                                        <small><a href="#" class="text-primary" id="SetupAuthenticator" data-toggle="modal" data-target="#authenticatorSetup"><i class="fa fa-lock"></i> Set Up Authenticator</a></small>
+                                    </p>
+                                </div>
+                                <div class="col-sm-4 text-left">
+                                    <label for="update_security_allow_trusted"><h4>Allow Trusted Device Saving</h4></label>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="update_security_allow_trusted" name="update_security_allow_trusted" title="whether a device could be cached to bypass two factor authentication" type="checkbox" value="true" @(Model.SecuritySettings.AllowTrustedDevices ? "checked" : string.Empty) />
+                                        </label>
                                     </div>
                                 </div>
                             </div>

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Teknik
+namespace Teknik.Helpers
 {
     public static class Utility
     {

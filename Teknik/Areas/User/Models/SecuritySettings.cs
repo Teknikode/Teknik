@@ -24,6 +24,8 @@ namespace Teknik.Areas.Users.Models
 
         public bool RecoveryVerified { get; set; }
 
+        public bool AllowTrustedDevices { get; set; }
+
         public bool TwoFactorEnabled { get; set; }
 
         [CaseSensitive]
@@ -35,6 +37,7 @@ namespace Teknik.Areas.Users.Models
         {
             RecoveryEmail = string.Empty;
             RecoveryVerified = false;
+            AllowTrustedDevices = false;
             TwoFactorEnabled = false;
             TwoFactorKey = string.Empty;
             PGPSignature = string.Empty;

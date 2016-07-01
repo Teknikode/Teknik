@@ -2,6 +2,7 @@
     $("[name='update_upload_saveKey']").bootstrapSwitch();
     $("[name='update_upload_serverSideEncrypt']").bootstrapSwitch();
     $("[name='update_security_two_factor']").bootstrapSwitch();
+    $("[name='update_security_allow_trusted']").bootstrapSwitch();
 
     $('#ResendVerification').click(function () {
         $.ajax({
@@ -98,6 +99,7 @@
         password = $("#update_password").val();
         password_confirm = $("#update_password_confirm").val();
         update_pgp_public_key = $("#update_pgp_public_key").val();
+        update_security_allow_trusted = $("#update_security_allow_trusted").is(":checked");
         update_security_two_factor = $("#update_security_two_factor").is(":checked");
         recovery = $("#update_recovery_email").val();
         website = $("#update_website").val();
@@ -115,6 +117,7 @@
                 newPass: password,
                 newPassConfirm: password_confirm,
                 pgpPublicKey: update_pgp_public_key,
+                allowTrustedDevices: update_security_allow_trusted,
                 twoFactorEnabled: update_security_two_factor,
                 recoveryEmail: recovery,
                 website: website,

@@ -224,7 +224,8 @@
     <Compile Include="Areas\User\Models\ResetPasswordVerification.cs" />
     <Compile Include="Areas\User\Models\RecoveryEmailVerification.cs" />
     <Compile Include="Areas\User\Models\SecuritySettings.cs" />
-    <Compile Include="Areas\User\Models\UserDevice.cs" />
+    <Compile Include="Areas\User\Models\TrustedDevice.cs" />
+    <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
     <Compile Include="Models\TransferTypes.cs" />
     <Compile Include="Areas\User\Models\UploadSettings.cs" />
     <Compile Include="Areas\User\Models\UserSettings.cs" />

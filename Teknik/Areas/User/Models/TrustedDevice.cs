@@ -6,9 +6,9 @@ using Teknik.Attributes;
 
 namespace Teknik.Areas.Users.Models
 {
-    public class UserDevice
+    public class TrustedDevice
     {
-        public int UserDeviceId { get; set; }
+        public int TrustedDeviceId { get; set; }
 
         public int UserId { get; set; }
 

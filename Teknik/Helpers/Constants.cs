@@ -9,6 +9,9 @@ namespace Teknik.Helpers
     public static class Constants
     {
         public const string SERVERUSER = "Server Admin";
+        public const string AUTHCOOKIE = "TeknikAuth";
+        public const string TRUSTEDDEVICECOOKIE = "TeknikTrustedDevice";
+
         // Paste Constants
         public static Dictionary<string, string> HIGHLIGHTFORMATS = new Dictionary<string, string>()
         {

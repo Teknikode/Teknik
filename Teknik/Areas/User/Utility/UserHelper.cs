@@ -437,7 +437,7 @@ namespace Teknik.Areas.Users.Utility
             }
 
             // Create a new verification code and add it
-            string verifyCode = Teknik.Utility.RandomString(24);
+            string verifyCode = Helpers.Utility.RandomString(24);
             RecoveryEmailVerification ver = new RecoveryEmailVerification();
             ver.UserId = user.UserId;
             ver.Code = verifyCode;
@@ -518,7 +518,7 @@ Thank you and enjoy!
             }
 
             // Create a new verification code and add it
-            string verifyCode = Teknik.Utility.RandomString(24);
+            string verifyCode = Helpers.Utility.RandomString(24);
             ResetPasswordVerification ver = new ResetPasswordVerification();
             ver.UserId = user.UserId;
             ver.Code = verifyCode;
@@ -858,7 +858,7 @@ If you recieved this email and you did not reset your password, you can ignore t
         {
             Config config = Config.Load();
             HttpCookie authcookie = FormsAuthentication.GetAuthCookie(username, remember);
-            authcookie.Name = "TeknikAuth";
+            authcookie.Name = Constants.AUTHCOOKIE;
             authcookie.HttpOnly = true;
             authcookie.Secure = true;
 
@@ -877,6 +877,36 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
 
             return authcookie;
+        }
+
+        public static HttpCookie CreateTrustedDeviceCookie(string username, string domain, bool local)
+        {
+            Config config = Config.Load();
+
+            byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
+            byte[] key = Guid.NewGuid().ToByteArray();
+            string token = Convert.ToBase64String(time.Concat(key).ToArray());
+            HttpCookie trustCookie = new HttpCookie(Constants.TRUSTEDDEVICECOOKIE + "_" + username);
+            trustCookie.Value = token;
+            trustCookie.HttpOnly = true;
+            trustCookie.Secure = true;
+            trustCookie.Expires = DateTime.Now.AddYears(1);
+
+            // Set domain dependent on where it's being ran from
+            if (local) // localhost
+            {
+                trustCookie.Domain = null;
+            }
+            else if (config.DevEnvironment) // dev.example.com
+            {
+                trustCookie.Domain = string.Format("dev.{0}", domain);
+            }
+            else // A production instance
+            {
+                trustCookie.Domain = string.Format(".{0}", domain);
+            }
+
+            return trustCookie;
         }
     }
 }

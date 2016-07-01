@@ -2,16 +2,18 @@
     $("#authCheckStatus").css('display', 'none', 'important');
 
     $("#verifyCodeSubmit").click(function () {
-        setCode = $("#code").val();
-        returnUrl = $("#returnUrl").val();
-        rememberMe = ($("#rememberMe").val() == 'True');
+        setCode = $("#Code").val();
+        returnUrl = $("#ReturnUrl").val();
+        rememberMe = ($("#RememberMe").val() == 'True');
+        rememberDevice = $("#RememberDevice").is(":checked");
         $.ajax({
             type: "POST",
             url: confirmAuthCodeURL,
             data: {
                 code: setCode,
                 returnUrl: returnUrl,
-                rememberMe: rememberMe
+                rememberMe: rememberMe,
+                rememberDevice: rememberDevice
             },
             xhrFields: {
                 withCredentials: true

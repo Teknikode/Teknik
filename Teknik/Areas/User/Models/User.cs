@@ -33,7 +33,7 @@ namespace Teknik.Areas.Users.Models
         
         public virtual UploadSettings UploadSettings { get; set; }
 
-        public virtual ICollection<UserDevice> Devices { get; set; }
+        public virtual ICollection<TrustedDevice> TrustedDevices { get; set; }
 
         public virtual ICollection<Upload.Models.Upload> Uploads { get; set; }
 
@@ -47,7 +47,7 @@ namespace Teknik.Areas.Users.Models
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;
             Groups = new List<Group>();
-            Devices = new List<UserDevice>();
+            TrustedDevices = new List<TrustedDevice>();
         }
     }
 }
