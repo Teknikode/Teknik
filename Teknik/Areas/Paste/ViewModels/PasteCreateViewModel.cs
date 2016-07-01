@@ -23,6 +23,7 @@ namespace Teknik.Areas.Paste.ViewModels
 
         public string ExpireUnit { get; set; }
 
+        [AllowHtml]
         public string Password { get; set; }
 
         public bool Hide { get; set; }

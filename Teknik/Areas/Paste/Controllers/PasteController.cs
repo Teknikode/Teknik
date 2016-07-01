@@ -152,7 +152,7 @@ namespace Teknik.Areas.Paste.Controllers
                         db.Pastes.Add(paste);
                         db.SaveChanges();
 
-                        return Redirect(Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url, password = model.Password }));
+                        return Redirect(Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url }));
                     }
                     catch (Exception ex)
                     {

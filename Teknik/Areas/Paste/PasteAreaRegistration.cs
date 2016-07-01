@@ -39,24 +39,24 @@ namespace Teknik.Areas.Paste
                  "Paste.Simple", // Route name
                  new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
-                 "Simple/{url}/{password}",    // URL with parameters 
-                 new { controller = "Paste", action = "ViewPaste", type = "Simple", password = UrlParameter.Optional },  // Parameter defaults 
+                 "Simple/{url}",    // URL with parameters 
+                 new { controller = "Paste", action = "ViewPaste", type = "Simple" },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Paste.Raw", // Route name
                  new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
-                 "Raw/{url}/{password}",    // URL with parameters 
-                 new { controller = "Paste", action = "ViewPaste", type = "Raw", password = UrlParameter.Optional },  // Parameter defaults 
+                 "Raw/{url}",    // URL with parameters 
+                 new { controller = "Paste", action = "ViewPaste", type = "Raw" },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Paste.Download", // Route name
                  new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
-                 "Download/{url}/{password}",    // URL with parameters 
-                 new { controller = "Paste", action = "ViewPaste", type = "Download", password = UrlParameter.Optional },  // Parameter defaults 
+                 "Download/{url}",    // URL with parameters 
+                 new { controller = "Paste", action = "ViewPaste", type = "Download" },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
             context.MapSubdomainRoute(
@@ -71,8 +71,8 @@ namespace Teknik.Areas.Paste
                  "Paste.View", // Route name
                  new List<string>() { "paste", "p" },
                  new List<string>() { config.Host }, // domains
-                 "{url}/{password}",    // URL with parameters 
-                 new { controller = "Paste", action = "ViewPaste", type = "Full", password = UrlParameter.Optional },  // Parameter defaults 
+                 "{url}",    // URL with parameters 
+                 new { controller = "Paste", action = "ViewPaste", type = "Full" },  // Parameter defaults 
                  new[] { typeof(Controllers.PasteController).Namespace }
              );
 
