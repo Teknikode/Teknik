@@ -61,7 +61,7 @@ namespace Teknik.Areas.RSS.Controllers
 
                 List<SyndicationItem> items = new List<SyndicationItem>();
 
-                foreach (BlogPost post in blog.BlogPosts)
+                foreach (BlogPost post in blog.BlogPosts.OrderByDescending(p => p.BlogPostId))
                 {
                     if (post.Published && post.System == isSystem)
                     {
@@ -89,7 +89,7 @@ namespace Teknik.Areas.RSS.Controllers
         public ActionResult Podcast()
         {
             List<SyndicationItem> items = new List<SyndicationItem>();
-            List<Podcast.Models.Podcast> podcasts = db.Podcasts.Where(p => p.Published).ToList();
+            List<Podcast.Models.Podcast> podcasts = db.Podcasts.Where(p => p.Published).OrderByDescending(p => p.Episode).ToList();
             if (podcasts != null)
             {
                 foreach (Podcast.Models.Podcast podcast in podcasts)
