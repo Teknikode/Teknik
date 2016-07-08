@@ -33,6 +33,7 @@ namespace Teknik.Attributes
             if (skipAuthorization)
                 return;
 
+            // Check the users auth
             if (base.AuthorizeCore(filterContext.HttpContext))
             {
                 // ** IMPORTANT **
@@ -51,27 +52,20 @@ namespace Teknik.Attributes
             }
             else if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
             {
-                // auth failed, redirect to login page
-                var request = filterContext.HttpContext.Request;
-                string redirectUrl = (request.Url != null) ? filterContext.HttpContext.Request.Url.AbsoluteUri.ToString() : string.Empty;
-
-                var userController = new UserController();
-                if (userController != null)
-                {
-                    filterContext.Result = userController.Login(redirectUrl);
-                    return;
-                }
+                this.HandleUnauthorizedRequest(filterContext);
             }
             else
             {
+                // uh oh, let's handle it the old way
                 base.HandleUnauthorizedRequest(filterContext);
             }
         }
 
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
+            // auth failed, redirect to login page
             var request = filterContext.HttpContext.Request;
-            string redirectUrl = (request.UrlReferrer != null) ? filterContext.HttpContext.Request.UrlReferrer.AbsoluteUri.ToString() : string.Empty;
+            string redirectUrl = (request.Url != null) ? filterContext.HttpContext.Request.Url.AbsoluteUri.ToString() : string.Empty;
 
             var userController = new UserController();
             if (userController != null)
