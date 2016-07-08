@@ -165,11 +165,11 @@ namespace Teknik
                 string jsonResult = string.Empty;
                 if (httpException == null)
                 {
-                    jsonResult = Json.Encode(new { error = new { type = "Exception", message = exception.Message } });
+                    jsonResult = Json.Encode(new { error = new { type = "Exception", message = exception.GetFullMessage(true) } });
                 }
                 else
                 {
-                    jsonResult = Json.Encode(new { error = new { type = "Http", statuscode = httpException.GetHttpCode(), message = exception.Message } });
+                    jsonResult = Json.Encode(new { error = new { type = "Http", statuscode = httpException.GetHttpCode(), message = exception.GetFullMessage(true) } });
                 }
                 Response.Write(jsonResult);
             }

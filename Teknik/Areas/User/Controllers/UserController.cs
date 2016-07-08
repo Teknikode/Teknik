@@ -89,41 +89,36 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [TrackPageView]
-        [AllowAnonymous]
         public ActionResult Settings()
         {
-            if (User.Identity.IsAuthenticated)
+            string username = User.Identity.Name;
+
+            SettingsViewModel model = new SettingsViewModel();
+            ViewBag.Title = "User Does Not Exist - " + Config.Title;
+            ViewBag.Description = "The User does not exist";
+
+            User user = UserHelper.GetUser(db, username);
+
+            if (user != null)
             {
-                string username = User.Identity.Name;
+                Session["AuthenticatedUser"] = user;
 
-                SettingsViewModel model = new SettingsViewModel();
-                ViewBag.Title = "User Does Not Exist - " + Config.Title;
-                ViewBag.Description = "The User does not exist";
+                ViewBag.Title = "Settings - " + Config.Title;
+                ViewBag.Description = "Your " + Config.Title + " Settings";
 
-                User user = UserHelper.GetUser(db, username);
+                model.UserID = user.UserId;
+                model.Username = user.Username;
+                model.TrustedDeviceCount = user.TrustedDevices.Count;
 
-                if (user != null)
-                {
-                    Session["AuthenticatedUser"] = user;
+                model.UserSettings = user.UserSettings;
+                model.SecuritySettings = user.SecuritySettings;
+                model.BlogSettings = user.BlogSettings;
+                model.UploadSettings = user.UploadSettings;
 
-                    ViewBag.Title = "Settings - " + Config.Title;
-                    ViewBag.Description = "Your " + Config.Title + " Settings";
-
-                    model.UserID = user.UserId;
-                    model.Username = user.Username;
-                    model.TrustedDeviceCount = user.TrustedDevices.Count;
-
-                    model.UserSettings = user.UserSettings;
-                    model.SecuritySettings = user.SecuritySettings;
-                    model.BlogSettings = user.BlogSettings;
-                    model.UploadSettings = user.UploadSettings;
-
-                    return View(model);
-                }
-                model.Error = true;
                 return View(model);
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            model.Error = true;
+            return View(model);
         }
 
         [HttpGet]
