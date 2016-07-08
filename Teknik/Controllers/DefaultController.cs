@@ -54,6 +54,16 @@ namespace Teknik.Controllers
             string imageFile = Server.MapPath("~/Images/favicon.ico");
             return File(imageFile, "image/x-icon");
         }
+
+        // Get the Logo
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Logo()
+        {
+            // Get favicon
+            string imageFile = Server.MapPath("~/Images/logo-black.svg");
+            return File(imageFile, "image/svg+xml");
+        }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

@@ -31,6 +31,16 @@ namespace Teknik.Areas.Home
                  new[] { typeof(DefaultController).Namespace }
              );
 
+            // Default Routes to be applied everywhere
+            context.MapSubdomainRoute(
+                 "Default.Logo", // Route name
+                 new List<string>() { "*" }, // Subdomains
+                 new List<string>() { config.Host, config.ShortenerConfig.ShortenerHost }, // domains
+                 "Logo",    // URL with parameters 
+                 new { controller = "Default", action = "Logo" },  // Parameter defaults 
+                 new[] { typeof(DefaultController).Namespace }
+             );
+
             context.MapSubdomainRoute(
                  "Home.Index", // Route name
                  new List<string>() { "www", string.Empty }, // Subdomains
