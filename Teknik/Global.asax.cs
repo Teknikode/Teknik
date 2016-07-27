@@ -34,6 +34,8 @@ namespace Teknik
 
             AreaRegistration.RegisterAllAreas();
 
+            AntiForgeryConfig.RequireSsl = true;
+
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
@@ -43,6 +45,7 @@ namespace Teknik
         {
             HttpContext context = HttpContext.Current;
             
+            // Start the generation time stopwatcher
             var stopwatch = new Stopwatch();
             HttpContext.Current.Items["Stopwatch"] = stopwatch;
             stopwatch.Start();
@@ -52,6 +55,7 @@ namespace Teknik
         {
             HttpContext context = HttpContext.Current;
 
+            // Set the generation time in the header
             Stopwatch stopwatch = (Stopwatch)context.Items["Stopwatch"];
             stopwatch.Stop();
 
