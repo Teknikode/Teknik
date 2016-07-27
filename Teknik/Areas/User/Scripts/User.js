@@ -8,7 +8,7 @@
         $.ajax({
             type: "POST",
             url: resendVerifyURL,
-            data: {},
+            data: AddAntiForgeryToken({}),
             success: function (html) {
                 if (html.result) {
                     window.location.reload();
@@ -43,9 +43,9 @@
         $.ajax({
             type: "POST",
             url: confirmAuthSetupURL,
-            data: {
+            data: AddAntiForgeryToken({
                 code: setCode
-            },
+            }),
             success: function (html) {
                 if (html.result) {
                     $("#authSetupStatus").css('display', 'inline', 'important');
@@ -70,7 +70,7 @@
         $.ajax({
             type: "POST",
             url: clearTrustedDevicesURL,
-            data: {},
+            data: AddAntiForgeryToken({}),
             success: function (html) {
                 if (html.result) {
                     $('#ClearDevices').html('Clear Trusted Devices (0)');
@@ -98,7 +98,7 @@
                 $.ajax({
                     type: "POST",
                     url: deleteUserURL,
-                    data: {},
+                    data: AddAntiForgeryToken({}),
                     success: function (html) {
                         if (html.result) {
                             window.location.replace(homeUrl);
@@ -141,7 +141,7 @@
         $.ajax({
             type: "POST",
             url: editUserURL,
-            data: {
+            data: AddAntiForgeryToken({
                 curPass: current_password,
                 newPass: password,
                 newPassConfirm: password_confirm,
@@ -156,7 +156,7 @@
                 blogDesc: blog_desc,
                 saveKey: upload_saveKey,
                 serverSideEncrypt: upload_serverSideEncrypt
-            },
+            }),
             success: function (html) {
                 $.unblockUI();
                 if (html.result) {
@@ -190,9 +190,9 @@
         $.ajax({
             type: "POST",
             url: form.attr('action'),
-            data: {
+            data: AddAntiForgeryToken({
                 username: username
-            },
+            }),
             success: function (html) {
                 if (html.result) {
                     $("#top_msg").css('display', 'inline', 'important');
@@ -217,10 +217,10 @@
         $.ajax({
             type: "POST",
             url: form.attr('action'),
-            data: {
+            data: AddAntiForgeryToken({
                 password: password,
                 confirmPassword: confirmPassword
-            },
+            }),
             success: function (html) {
                 if (html.result) {
                     $("#top_msg").css('display', 'inline', 'important');

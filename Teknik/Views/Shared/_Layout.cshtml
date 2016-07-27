@@ -63,6 +63,10 @@
                 </div>
             </noscript>
 
+            <!-- Anti-Forgery Token -->            
+            <!-- used for ajax in AddAntiForgeryToken() -->
+            <form id="__AjaxAntiForgeryForm" action="#" method="post">@Html.AntiForgeryToken()</form>
+
             @RenderBody()
         </div> 
         @Html.Partial("_Footer")

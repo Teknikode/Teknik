@@ -10,12 +10,12 @@
         $.ajax({
             type: "POST",
             url: confirmAuthCodeURL,
-            data: {
+            data: AddAntiForgeryToken({
                 code: setCode,
                 returnUrl: returnUrl,
                 rememberMe: rememberMe,
                 rememberDevice: rememberDevice
-            },
+            }),
             xhrFields: {
                 withCredentials: true
             },

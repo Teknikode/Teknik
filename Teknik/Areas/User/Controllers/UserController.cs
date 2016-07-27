@@ -314,6 +314,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string recoveryEmail, bool allowTrustedDevices, bool twoFactorEnabled, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
         {
             if (ModelState.IsValid)
@@ -435,6 +436,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete()
         {
             if (ModelState.IsValid)
@@ -473,6 +475,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ResendVerifyRecoveryEmail()
         {
             if (ModelState.IsValid)
@@ -517,6 +520,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public ActionResult SendResetPasswordVerification(string username)
         {
             if (ModelState.IsValid)
@@ -573,6 +577,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SetUserPassword(string password, string confirmPassword)
         {
             if (ModelState.IsValid)
@@ -626,6 +631,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public ActionResult ConfirmAuthenticatorCode(string code, string returnUrl, bool rememberMe, bool rememberDevice, string deviceName)
         {
             User user = (User)Session["AuthenticatedUser"];
@@ -673,6 +679,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult VerifyAuthenticatorCode(string code)
         {
             User user = UserHelper.GetUser(db, User.Identity.Name);
@@ -709,6 +716,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult ClearTrustedDevices()
         {
             try
