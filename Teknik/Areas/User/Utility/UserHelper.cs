@@ -797,7 +797,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                     string email = GetUserEmailAddress(config, username);
                     using (var client = new WebClient())
                     {
-                        var obj = new { source_id = config.GitConfig.SourceId, email = email, password = password };
+                        var obj = new { source_id = config.GitConfig.SourceId, email = email, login_name = email, password = password };
                         string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                         client.Headers[HttpRequestHeader.ContentType] = "application/json";
                         Uri baseUri = new Uri(config.GitConfig.Host);
