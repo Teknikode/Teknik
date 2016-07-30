@@ -170,6 +170,18 @@ namespace Teknik.Areas.Users.Controllers
                         db.Entry(user).State = EntityState.Modified;
                         db.SaveChanges();
 
+                        // Let's double check their email and git accounts to make sure they exist
+                        string email = UserHelper.GetUserEmailAddress(Config, username);
+                        if (Config.EmailConfig.Enabled && !UserHelper.UserEmailExists(Config, email))
+                        {
+                            UserHelper.AddUserEmail(Config, email, model.Password);
+                        }
+
+                        if (Config.GitConfig.Enabled && !UserHelper.UserGitExists(Config, username))
+                        {
+                            UserHelper.AddUserGit(Config, username, model.Password);
+                        }
+
                         bool twoFactor = false;
                         string returnUrl = model.ReturnUrl;
                         if (user.SecuritySettings.TwoFactorEnabled)
