@@ -1,7 +1,5 @@
 # Teknik Web Services
 
----------------
-
 Teknik is a suite of services with attractive and functional interfaces.
 
 ## Features
@@ -62,7 +60,7 @@ git clone https://git.teknik.io/Teknikode/Teknik
 You can view Teknik's [Development Branch](https://dev.teknik.io/) to see the current new features.  (It may not work, as it is a development branch)
 
 ## Contributing
-If you are a developer, we need your help. Teknik is a young project and we have lot's of stuff to do. Some developers are contributing with new features, others with bug fixes. But you can also dedicate yourself to refactoring the current codebase and improving what we already have.  Any help you can give would be greatly appreciated!
+If you are a developer, we need your help. Teknik is a young project and we have lot's of stuff to do. Some developers are contributing with new features, others with bug fixes. Any help you can give would be greatly appreciated!
 
 ## Further information
 If you want to know more about the features of Teknik, check the [Help](https://help.teknik.io/) page. Also, if you're having problems with Teknik, let us know through the [Contact](https://contact.teknik.io/) page. Don't forget to give feedback and suggest new features! :)
