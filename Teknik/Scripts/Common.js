@@ -90,6 +90,7 @@ $(function () {
     // Auo-select bitcoin address
     $('#bitcoin_address_footer').on('click', 'input[type=text]', function () { this.select(); });
 
+    // Setup anti-forgery functions
     $.appendAntiForgeryToken = function (data, token) {
         // Converts data if not already a string.
         if (data && typeof data !== "string") {
