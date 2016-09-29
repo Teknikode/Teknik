@@ -216,7 +216,7 @@ namespace Teknik.Areas.Users.Controllers
                         {
                             returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
                             // They don't need two factor auth.
-                            HttpCookie authcookie = UserHelper.CreateAuthCookie(model.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
+                            HttpCookie authcookie = UserHelper.CreateAuthCookie(user.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
                             Response.Cookies.Add(authcookie);
                         }
 
