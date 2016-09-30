@@ -1,72 +1,8 @@
 ﻿$(document).ready(function () {
-    $("#blog_submit").click(function () {
-        $('#newPost').modal('hide');
-        blogID = $("#blog_blogid").val();
-        title = $("#blog_title").val();
-        post = $("#blog_post").val();
-        $.ajax({
-            type: "POST",
-            url: addPostURL,
-            data: { blogID: blogID, title: title, article: post },
-            success: function (html) {
-                if (html.result) {
-                    window.location.reload();
-                }
-                else {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
-                }
-            }
-        });
-        return false;
-    });
-
-    $('#editPost').on('show.bs.modal', function (e) {
-        $("#edit_blog_post").val("");
-        postID = $(e.relatedTarget).attr("id");
-        $("#edit_blog_postid").val(postID);
-        $.ajax({
-            type: "POST",
-            url: getPostTitleURL,
-            data: { postID: postID },
-            success: function (html) {
-                if (html.result) {
-                    $("#edit_blog_title").val(html.result);
-                }
-            }
-        });
-        $.ajax({
-            type: "POST",
-            url: getPostArticleURL,
-            data: { postID: postID },
-            success: function (html) {
-                if (html.result) {
-                    $("#edit_blog_post").val(html.result);
-                }
-            }
-        });
-    });
-
-    $("#edit_submit").click(function () {
-        $('#editPost').modal('hide');
-        postID = $("#edit_blog_postid").val();
-        title = $("#edit_blog_title").val();
-        post = $("#edit_blog_post").val();
-        $.ajax({
-            type: "POST",
-            url: editPostURL,
-            data: { postID: postID, title: title, article: post },
-            success: function (html) {
-                if (html.result) {
-                    window.location.reload();
-                }
-                else {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
-                }
-            }
-        });
-        return false;
+    $("textarea.mdd_editor").MarkdownDeep({
+        help_location: helpURL,
+        disableTabHandling: false,
+        resizebar: false
     });
 
     $("#comment_submit").click(function () {

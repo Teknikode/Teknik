@@ -22,5 +22,20 @@ namespace Teknik.Areas.Blog.ViewModels
         public User User { get; set; }
 
         public bool HasPosts { get; set; }
+
+        public BlogViewModel()
+        {
+
+        }
+
+        public BlogViewModel(Models.Blog blog)
+        {
+            BlogId = blog.BlogId;
+            UserId = blog.UserId;
+            Title = blog.User.BlogSettings.Title;
+            Description = blog.User.BlogSettings.Description;
+            User = blog.User;
+            HasPosts = false;
+        }
     }
 }

@@ -90,6 +90,14 @@ namespace Teknik.Areas.Help
                  new { controller = "Help", action = "Upload" },  // Parameter defaults 
                  new[] { typeof(Controllers.HelpController).Namespace }
              );
+            context.MapSubdomainRoute(
+                 "Help.Markdown", // Route name
+                 new List<string>() { "help" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "Markdown",    // URL with parameters 
+                 new { controller = "Help", action = "Markdown" },  // Parameter defaults 
+                 new[] { typeof(Controllers.HelpController).Namespace }
+             );
 
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/help").Include(

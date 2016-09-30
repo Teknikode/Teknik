@@ -17,7 +17,7 @@
                 @if (Model.Blog.User.Username == User.Identity.Name || User.IsInRole("Admin"))
                 {
                     <br />
-                    <button type="button" class="btn btn-info edit_post" id="@Model.PostId" data-toggle="modal" data-target="#editPost">Edit</button>
+                    <a href="@Url.SubRouteUrl("blog", "Blog.Edit", new { username = Model.Blog.User.Username, id = Model.PostId })" role="button" class="btn btn-primary">Edit</a>
                     if (Model.Published)
                     {
                         <button type="button" class="btn btn-warning unpublish_post" id="@Model.PostId">Unpublish</button>

@@ -27,10 +27,26 @@ namespace Teknik.Areas.Blog
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
             context.MapSubdomainRoute(
+                 "Blog.New", // Route name
+                 new List<string>() { "blog" }, // Subdomains
+                 new List<string>() { config.Host },
+                 "{username}/New",    // URL with parameters 
+                 new { controller = "Blog", action = "NewPost", username = "" },  // Parameter defaults 
+                 new[] { typeof(Controllers.BlogController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Blog.Edit", // Route name
+                 new List<string>() { "blog" }, // Subdomains
+                 new List<string>() { config.Host },
+                 "{username}/Edit/{id}",    // URL with parameters 
+                 new { controller = "Blog", action = "EditPost", username = "", id = 0 },  // Parameter defaults 
+                 new[] { typeof(Controllers.BlogController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Blog.Post", // Route name
                  new List<string>() { "blog" }, // Subdomains
                  new List<string>() { config.Host },
-                 "{username}/{id}",    // URL with parameters 
+                 "{username}/p/{id}",    // URL with parameters 
                  new { controller = "Blog", action = "Post", username = "", id = 0 },  // Parameter defaults 
                  new[] { typeof(Controllers.BlogController).Namespace }
              );
@@ -50,6 +66,7 @@ namespace Teknik.Areas.Blog
                       "~/Areas/Blog/Scripts/Blog.js"));
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/blog").Include(
+                      "~/Scripts/mdd_styles.css",
                       "~/Areas/Blog/Content/Blog.css"));
         }
     }

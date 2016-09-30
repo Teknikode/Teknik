@@ -8,11 +8,7 @@
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
 
     var getPostsURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetPosts" })';
-    var getPostTitleURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetPostTitle" })';
-    var getPostArticleURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetPostArticle" })';
     var publishPostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "PublishPost" })';
-    var addPostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "CreatePost" })';
-    var editPostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "EditPost" })';
     var deletePostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "DeletePost" })';
 
     var getCommentsURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetComments" })';
@@ -45,69 +41,7 @@
         {
         <div class="row">
             <div class="col-sm-12 text-center">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newPost">Create Post</button>
-            </div>
-        </div>
-        <div class="modal fade" id="newPost" tabindex="-1" role="dialog" aria-labelledby="newPostLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form class="form" action="##" method="post" id="publishPost">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
-                            <h4 class="modal-title" id="newPostLabel">Create a New Post</h4>
-                        </div>
-                        <div class="modal-body">
-                            <input name="blog_blogid" id="blog_blogid" type="hidden" value="@Model.BlogId" />
-                            <div class="row">
-                                <div class="form-group col-sm-12">
-                                    <label for="blog_title"><h4>Title</h4></label>
-                                    <input class="form-control" name="blog_title" id="blog_title" placeholder="generic click bait" title="enter a title for your post." type="text" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-sm-12">
-                                    <label for="blog_post"><h4>Article</h4></label>
-                                    <textarea class="form-control wmd-input" name="blog_post" id="blog_post" placeholder="I ate a burger today." title="enter any information you want to share with the world." data-provide="markdown" rows="10"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" id="blog_submit">Create</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="editPost" tabindex="-1" role="dialog" aria-labelledby="editPostLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form class="form" action="##" method="post" id="editPostForm">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
-                            <h4 class="modal-title" id="editPostLabel">Edit Your Post</h4>
-                        </div>
-                        <div class="modal-body">
-                            <input name="edit_blog_postid" id="edit_blog_postid" type="hidden" />
-                            <div class="row">
-                                <div class="form-group col-sm-12">
-                                    <label for="edit_blog_title"><h4>Title</h4></label>
-                                    <input class="form-control" name="edit_blog_title" id="edit_blog_title" placeholder="generic click bait" title="enter a title for your post." type="text" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-sm-12">
-                                    <label for="edit_blog_post"><h4>Article</h4></label>
-                                    <textarea class="form-control" name="edit_blog_post" id="edit_blog_post" placeholder="I ate a burger today." title="enter any information you want to share with the world." data-provide="markdown" rows="10"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" id="edit_submit">Save</button>
-                        </div>
-                    </form>
-                </div>
+                <a href="@Url.SubRouteUrl("blog", "Blog.New", new { username = Model.User.Username })" role="button" class="btn btn-primary">Create Post</a>
             </div>
         </div>
         }

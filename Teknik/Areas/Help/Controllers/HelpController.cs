@@ -101,5 +101,14 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Upload.cshtml", model);
         }
+
+        [TrackPageView]
+        [AllowAnonymous]
+        public ActionResult Markdown()
+        {
+            ViewBag.Title = "Markdown Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/Markdown.cshtml", model);
+        }
     }
 }

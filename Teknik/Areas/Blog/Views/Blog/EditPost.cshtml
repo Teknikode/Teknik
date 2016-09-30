@@ -1,0 +1,59 @@
+﻿@model Teknik.Areas.Blog.ViewModels.PostViewModel
+
+@using Teknik.Helpers
+
+<script>
+    // We need to define the action URLs for the script
+    var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
+</script>
+
+@Styles.Render("~/Content/blog")
+@Scripts.Render("~/bundles/blog")
+
+<div class="container">
+    @if (Model.Error)
+    {
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1 text-center">
+                <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1 text-center">
+            <h2>Edit Post</h2>
+        </div>
+    </div>
+    <form class="form" action="@Url.SubRouteUrl("blog", "Blog.Action", new { action = "EditPost" })" method="post" id="newPost">
+        <input name="postID" id="postID" type="hidden" value="@Model.PostId" />
+        <div class="row">
+            <div class="form-group col-sm-10 col-sm-offset-1">
+                <label for="title"><h4>Title</h4></label>
+                <input class="form-control" name="title" id="title" placeholder="generic click bait" title="enter a title for your post." type="text" value="@Model.Title" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-10 col-sm-offset-1">
+                <label for="article"><h4>Article</h4></label>
+                <div class="mdd_toolbar"></div>
+                <textarea class="form-control mdd_editor" name="article" id="article" placeholder="I ate a burger today." title="enter any information you want to share with the world." data-provide="markdown" rows="10">@Model.Article</textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Preview</div>
+                    <div class="panel-body">
+                        <div class="mdd_preview"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-10 col-sm-offset-1">
+                <button type="submit" class="btn btn-primary" id="submit">Save</button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -115,6 +115,77 @@ namespace Teknik.Areas.Blog.Controllers
             model.ErrorMessage = "Blog Post does not exist.";
             return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
         }
+        
+        public ActionResult NewPost(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            BlogViewModel model = new BlogViewModel();
+            // find the post specified
+            bool isAuth = User.IsInRole("Admin");
+            var blog = db.Blogs.Where(p => (p.User.Username == username) && (p.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+            if (blog != null)
+            {
+                model = new BlogViewModel(blog);
+                if (blog.User.Username == Constants.SERVERUSER)
+                {
+                    ViewBag.Title = model.Title + " - " + Config.BlogConfig.Title + " - " + Config.Title;
+                    ViewBag.Description = Config.BlogConfig.Description;
+                }
+                else
+                {
+                    ViewBag.Title = username + "'s Blog - " + Config.Title;
+                    if (!string.IsNullOrEmpty(blog.User.BlogSettings.Title))
+                    {
+                        ViewBag.Title = blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                    }
+                    ViewBag.Title = model.Title + " - " + ViewBag.Title;
+                    ViewBag.Description = blog.User.BlogSettings.Description;
+                }
+                return View("~/Areas/Blog/Views/Blog/NewPost.cshtml", model);
+            }
+            model.Error = true;
+            model.ErrorMessage = "Blog does not exist.";
+            return View("~/Areas/Blog/Views/Blog/Blog.cshtml", model);
+        }
+        public ActionResult EditPost(string username, int id)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            PostViewModel model = new PostViewModel();
+            // find the post specified
+            bool isAuth = User.IsInRole("Admin");
+            var post = db.BlogPosts.Where(p => (p.Blog.User.Username == username && p.BlogPostId == id) &&
+                                                                                        (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+            if (post != null)
+            {
+                model = new PostViewModel(post);
+
+                if (post.System)
+                {
+                    ViewBag.Title = model.Title + " - " + Config.BlogConfig.Title + " - " + Config.Title;
+                    ViewBag.Description = Config.BlogConfig.Description;
+                }
+                else
+                {
+                    ViewBag.Title = username + "'s Blog - " + Config.Title;
+                    if (!string.IsNullOrEmpty(post.Blog.User.BlogSettings.Title))
+                    {
+                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                    }
+                    ViewBag.Title = model.Title + " - " + ViewBag.Title;
+                    ViewBag.Description = post.Blog.User.BlogSettings.Description;
+                }
+                return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);
+            }
+            model.Error = true;
+            model.ErrorMessage = "Blog Post does not exist.";
+            return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
+        }
 
         [HttpPost]
         [AllowAnonymous]
@@ -135,87 +206,112 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
-        public ActionResult GetPostTitle(int postID)
-        {
-            bool isAuth = User.IsInRole("Admin");
-            BlogPost post = db.BlogPosts.Where(p => (p.BlogPostId == postID) && (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
-            if (post != null)
-            {
-                return Json(new { result = post.Title });
-            }
-            return Json(new { error = "No title found" });
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public ActionResult GetPostArticle(int postID)
-        {
-            bool isAuth = User.IsInRole("Admin");
-            BlogPost post = db.BlogPosts.Where(p => (p.BlogPostId == postID) && (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
-            if (post != null)
-            {
-                return Json(new { result = post.Article });
-            }
-            return Json(new { error = "No article found" });
-        }
-
-        [HttpPost]
         public ActionResult CreatePost(int blogID, string title, string article)
         {
+            BlogViewModel model = new BlogViewModel();
             if (ModelState.IsValid)
             {
-                if (User.IsInRole("Admin") || db.Blogs.Where(b => b.User.Username == User.Identity.Name).FirstOrDefault() != null)
+                bool isAuth = User.IsInRole("Admin");
+                var blog = db.Blogs.Where(p => (p.BlogId == blogID) && (p.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+                if (blog != null)
                 {
-                    bool system = (blogID == Config.BlogConfig.ServerBlogId);
-                    if (system)
+                    if (User.IsInRole("Admin") || db.Blogs.Where(b => b.User.Username == User.Identity.Name).FirstOrDefault() != null)
                     {
-                        var user = db.Blogs.Where(b => b.User.Username == User.Identity.Name);
-                        if (user != null)
+                        // Validate the fields
+                        if (string.IsNullOrEmpty(title))
                         {
-                            blogID = user.First().BlogId;
+                            model.Error = true;
+                            model.ErrorMessage = "You must write something for the title";
+                            return View("~/Areas/Blog/Views/Blog/NewPost.cshtml", model);
                         }
-                    }
-                    BlogPost post = db.BlogPosts.Create();
-                    post.BlogId = blogID;
-                    post.Title = title;
-                    post.Article = article;
-                    post.System = system;
-                    post.DatePosted = DateTime.Now;
-                    post.DatePublished = DateTime.Now;
-                    post.DateEdited = DateTime.Now;
 
-                    db.BlogPosts.Add(post);
-                    db.SaveChanges();
-                    return Json(new { result = true });
+                        if (string.IsNullOrEmpty(article))
+                        {
+                            model.Error = true;
+                            model.ErrorMessage = "You must write something for the article";
+                            return View("~/Areas/Blog/Views/Blog/NewPost.cshtml", model);
+                        }
+
+                        bool system = (blogID == Config.BlogConfig.ServerBlogId);
+                        if (system)
+                        {
+                            var user = db.Blogs.Where(b => b.User.Username == User.Identity.Name);
+                            if (user != null)
+                            {
+                                blogID = user.First().BlogId;
+                            }
+                        }
+                        BlogPost post = db.BlogPosts.Create();
+                        post.BlogId = blogID;
+                        post.Title = title;
+                        post.Article = article;
+                        post.System = system;
+                        post.DatePosted = DateTime.Now;
+                        post.DatePublished = DateTime.Now;
+                        post.DateEdited = DateTime.Now;
+
+                        db.BlogPosts.Add(post);
+                        db.SaveChanges();
+                        return Post(blog.User.Username, post.BlogPostId);
+                    }
+                    model.Error = true;
+                    model.ErrorMessage = "You are not authorized to create a post for this blog";
+                    return View("~/Areas/Blog/Views/Blog/Blog.cshtml", model);
                 }
-                return Json(new { error = "You are not authorized to create a post for this blog" });
+                model.Error = true;
+                model.ErrorMessage = "Blog does not exist.";
+                return View("~/Areas/Blog/Views/Blog/Blog.cshtml", model);
             }
-            return Json(new { error = "No post created" });
+            model.Error = true;
+            model.ErrorMessage = "No post created";
+            return View("~/Areas/Blog/Views/Blog/NewPost.cshtml", model);
         }
 
         [HttpPost]
         public ActionResult EditPost(int postID, string title, string article)
         {
+            PostViewModel model = new PostViewModel();
             if (ModelState.IsValid)
             {
                 BlogPost post = db.BlogPosts.Where(p => p.BlogPostId == postID).FirstOrDefault();
                 if (post != null)
                 {
+                    model = new PostViewModel(post);
                     if (User.IsInRole("Admin") || post.Blog.User.Username == User.Identity.Name)
                     {
+                        // Validate the fields
+                        if (string.IsNullOrEmpty(title))
+                        {
+                            model.Error = true;
+                            model.ErrorMessage = "You must write something for the title";
+                            return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);
+                        }
+
+                        if (string.IsNullOrEmpty(article))
+                        {
+                            model.Error = true;
+                            model.ErrorMessage = "You must write something for the article";
+                            return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);
+                        }
+
                         post.Title = title;
                         post.Article = article;
                         post.DateEdited = DateTime.Now;
                         db.Entry(post).State = EntityState.Modified;
                         db.SaveChanges();
-                        return Json(new { result = true });
+                        return Post(post.Blog.User.Username, post.BlogPostId);
                     }
-                    return Json(new { error = "You are not authorized to edit this post" });
+                    model.Error = true;
+                    model.ErrorMessage = "You are not authorized to edit this post";
+                    return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);
                 }
-                return Json(new { error = "No post found" });
+                model.Error = true;
+                model.ErrorMessage = "Post does not exist.";
+                return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
             }
-            return Json(new { error = "Invalid Parameters" });
+            model.Error = true;
+            model.ErrorMessage = "Invalid Parameters";
+            return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);
         }
 
         [HttpPost]
