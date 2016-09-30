@@ -88,8 +88,7 @@ namespace Teknik.Areas.Blog.Controllers
             PostViewModel model = new PostViewModel();
             // find the post specified
             bool isAuth = User.IsInRole("Admin");
-            var post = db.BlogPosts.Where(p => (p.Blog.User.Username == username && p.BlogPostId == id) && 
-                                                                                        (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+            var post = db.BlogPosts.Where(p => p.BlogPostId == id && (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
             if (post != null)
             {
                 model = new PostViewModel(post);
