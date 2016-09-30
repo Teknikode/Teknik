@@ -116,7 +116,7 @@ namespace Teknik.Areas.Blog.Controllers
             return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
         }
         
-        public ActionResult NewPost(string username)
+        public ActionResult NewPost(string username, int blogID)
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -125,7 +125,7 @@ namespace Teknik.Areas.Blog.Controllers
             BlogViewModel model = new BlogViewModel();
             // find the post specified
             bool isAuth = User.IsInRole("Admin");
-            var blog = db.Blogs.Where(p => (p.User.Username == username) && (p.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+            var blog = db.Blogs.Where(p => (p.BlogId == blogID) && (p.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
             if (blog != null)
             {
                 model = new BlogViewModel(blog);

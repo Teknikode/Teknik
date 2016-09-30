@@ -4,8 +4,8 @@
 
 <script>
     // We need to define the action URLs for the script
-
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
+    var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
 
     var getPostsURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetPosts" })';
     var publishPostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "PublishPost" })';

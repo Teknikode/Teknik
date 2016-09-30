@@ -4,8 +4,8 @@
 
 <script>
     // We need to define the action URLs for the script
-
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
+    var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
 
     var getPostsURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "GetPosts" })';
     var publishPostURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "PublishPost" })';
@@ -41,7 +41,7 @@
         {
         <div class="row">
             <div class="col-sm-12 text-center">
-                <a href="@Url.SubRouteUrl("blog", "Blog.New", new { username = Model.User.Username })" role="button" class="btn btn-primary">Create Post</a>
+                <a href="@Url.SubRouteUrl("blog", "Blog.New", new { username = Model.User.Username, blogID = Model.BlogId })" role="button" class="btn btn-primary">Create Post</a>
             </div>
         </div>
         }
