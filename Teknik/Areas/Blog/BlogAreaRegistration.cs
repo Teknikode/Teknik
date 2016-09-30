@@ -46,6 +46,7 @@ namespace Teknik.Areas.Blog
             // Register Script Bundles
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/blog").Include(
                       "~/Scripts/bootbox/bootbox.min.js",
+                      "~/Scripts/MarkdownDeepLib.min.js",
                       "~/Areas/Blog/Scripts/Blog.js"));
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/blog").Include(
