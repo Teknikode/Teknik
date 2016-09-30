@@ -10,7 +10,7 @@ div.mdd_modal
 	z-index:1000;
 	display:none;
 	font-size:10pt;
-	background-image:url(mdd_modal_background.png);
+	background-image:url(../images/mdd_modal_background.png);
 }
 div.mdd_modal_frame
 {
@@ -68,7 +68,7 @@ div.mdd_modal_content
 div.mdd_ajax_loader
 {
 	background-position: center center;
-	background-image: url(mdd_ajax_loader.gif);
+	background-image: url(../images/mdd_ajax_loader.gif);
 	background-repeat: no-repeat;
 	width:100%;
 	height:200px;
@@ -122,7 +122,7 @@ div.mdd_toolbar li
 
 div.mdd_toolbar a.mdd_button
 {
-	background-image:url(mdd_toolbar.png);
+	background-image:url(../images/mdd_toolbar.png);
 	width:20px;
 	height:20px;
 	display:block;
@@ -198,7 +198,7 @@ div.mdd_resizer_wrap
 div.mdd_resizer
 {
 	background:#f8f8f8; 
-	background-image:url("mdd_gripper.png");
+	background-image:url("../images/mdd_gripper.png");
 	background-position:center center;
 	background-repeat:no-repeat;
 	padding-left:2px;

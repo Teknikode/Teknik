@@ -594,12 +594,11 @@
     <Content Include="Scripts\MarkdownDeep License.txt" />
     <Content Include="Scripts\MarkdownDeep Quick Reference.txt" />
     <Content Include="Scripts\MarkdownDeepLib.min.js" />
-    <Content Include="Scripts\mdd_ajax_loader.gif" />
-    <Content Include="Scripts\mdd_gripper.png" />
-    <Content Include="Scripts\mdd_help.htm" />
-    <Content Include="Scripts\mdd_modal_background.png" />
-    <Content Include="Scripts\mdd_styles.css" />
-    <Content Include="Scripts\mdd_toolbar.png" />
+    <Content Include="Images\mdd_ajax_loader.gif" />
+    <Content Include="Images\mdd_gripper.png" />
+    <Content Include="Images\mdd_modal_background.png" />
+    <Content Include="Content\mdd_styles.css" />
+    <Content Include="Images\mdd_toolbar.png" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\ocupload\1.1.2\ocupload.js" />
     <Content Include="Scripts\PageDown\Markdown.Converter.js" />

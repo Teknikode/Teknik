@@ -66,7 +66,7 @@ namespace Teknik.Areas.Blog
                       "~/Areas/Blog/Scripts/Blog.js"));
             // Register Style Bundles
             BundleTable.Bundles.Add(new StyleBundle("~/Content/blog").Include(
-                      "~/Scripts/mdd_styles.css",
+                      "~/Content/mdd_styles.css",
                       "~/Areas/Blog/Content/Blog.css"));
         }
     }
