@@ -67,6 +67,14 @@ namespace Teknik.Areas.Help
                  new[] { typeof(Controllers.HelpController).Namespace }
              );
             context.MapSubdomainRoute(
+                 "Help.Markdown", // Route name
+                 new List<string>() { "help" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "Markdown",    // URL with parameters 
+                 new { controller = "Help", action = "Markdown" },  // Parameter defaults 
+                 new[] { typeof(Controllers.HelpController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Help.Mumble", // Route name
                  new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
@@ -83,19 +91,19 @@ namespace Teknik.Areas.Help
                  new[] { typeof(Controllers.HelpController).Namespace }
              );
             context.MapSubdomainRoute(
+                 "Help.Tools", // Route name
+                 new List<string>() { "help" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "Tools",    // URL with parameters 
+                 new { controller = "Help", action = "Tools" },  // Parameter defaults 
+                 new[] { typeof(Controllers.HelpController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Help.Upload", // Route name
                  new List<string>() { "help" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "Upload",    // URL with parameters 
                  new { controller = "Help", action = "Upload" },  // Parameter defaults 
-                 new[] { typeof(Controllers.HelpController).Namespace }
-             );
-            context.MapSubdomainRoute(
-                 "Help.Markdown", // Route name
-                 new List<string>() { "help" }, // Subdomains
-                 new List<string>() { config.Host }, // domains
-                 "Markdown",    // URL with parameters 
-                 new { controller = "Help", action = "Markdown" },  // Parameter defaults 
                  new[] { typeof(Controllers.HelpController).Namespace }
              );
 

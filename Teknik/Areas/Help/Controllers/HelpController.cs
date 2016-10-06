@@ -77,6 +77,15 @@ namespace Teknik.Areas.Help.Controllers
 
         [TrackPageView]
         [AllowAnonymous]
+        public ActionResult Markdown()
+        {
+            ViewBag.Title = "Markdown Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/Markdown.cshtml", model);
+        }
+
+        [TrackPageView]
+        [AllowAnonymous]
         public ActionResult Mumble()
         {
             ViewBag.Title = "Mumble Server Help - " + Config.Title;
@@ -95,20 +104,20 @@ namespace Teknik.Areas.Help.Controllers
 
         [TrackPageView]
         [AllowAnonymous]
+        public ActionResult Tools()
+        {
+            ViewBag.Title = "Tool Help - " + Config.Title;
+            HelpViewModel model = new HelpViewModel();
+            return View("~/Areas/Help/Views/Help/Tools.cshtml", model);
+        }
+
+        [TrackPageView]
+        [AllowAnonymous]
         public ActionResult Upload()
         {
             ViewBag.Title = "Upload Service Help - " + Config.Title;
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Upload.cshtml", model);
-        }
-
-        [TrackPageView]
-        [AllowAnonymous]
-        public ActionResult Markdown()
-        {
-            ViewBag.Title = "Markdown Help - " + Config.Title;
-            HelpViewModel model = new HelpViewModel();
-            return View("~/Areas/Help/Views/Help/Markdown.cshtml", model);
         }
     }
 }

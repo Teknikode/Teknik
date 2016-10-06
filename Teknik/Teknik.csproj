@@ -562,6 +562,7 @@
     <Content Include="Areas\Blog\Views\Blog\NewPost.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\EditPost.cshtml" />
     <Content Include="Areas\Help\Views\Help\Markdown.cshtml" />
+    <Content Include="Areas\Help\Views\Help\Tools.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

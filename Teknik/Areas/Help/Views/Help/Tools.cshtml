@@ -1,0 +1,62 @@
+﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
+
+<div class="container">
+    <div class="row">
+        <h2 class="text-center"><b>Tools Utilizing Teknik Services</b></h2>
+        <hr>
+        <p class="text-center">
+            There are a multitude of internally developed tools and 3rd party tools that utilize the Teknik services.
+        </p>
+
+        <h3 class="text-center">Internal Tools</h3>
+
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+                <h4 class="text-center">Uploads</h4>
+                <div class="list-group">
+                    <a class="list-group-item" href="https://git.teknik.io/Teknikode/Tools/src/master/Upload/teknik.sh">
+                        <h4 class="list-group-item-heading">Upload Script</h4>
+                        <p class="list-group-item-text">Upload files/scrots/urls to teknik using Bash</p>
+                    </a>
+                    <a class="list-group-item" href="https://git.teknik.io/Teknikode/Tools/src/master/Upload/upload.sh">
+                        <h4 class="list-group-item-heading">File Upload</h4>
+                        <p class="list-group-item-text">Bash script for uploading multiple files</p>
+                    </a>
+                </div>
+
+                <h4 class="text-center">Pastes</h4>
+                <div class="list-group">
+                    <a class="list-group-item" href="https://git.teknik.io/Teknikode/Tools/src/master/Paste/paste.sh">
+                        <h4 class="list-group-item-heading">Paste Script</h4>
+                        <p class="list-group-item-text">Bash script for creating a paste from text</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-center">3rd Party Tools</h3>
+
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+                <div class="list-group">
+                    <a class="list-group-item" href="https://gitlab.com/DanielFGray/dotfiles/raw/master/local/bin/tekup">
+                        <h4 class="list-group-item-heading">Tekup</h4>
+                        <p class="list-group-item-text">Bash script that uploads both text files to Paste and other files to Upload. Supports parallel uploading via xargs</p>
+                    </a>
+                    <a class="list-group-item" href="https://github.com/jschx/uguush">
+                        <h4 class="list-group-item-heading">Uguush</h4>
+                        <p class="list-group-item-text">Command-line uploader for teknik uploads</p>
+                    </a>
+                    <a class="list-group-item" href="https://github.com/dylanaraps/neofetch">
+                        <h4 class="list-group-item-heading">Neofetch</h4>
+                        <p class="list-group-item-text">A fast, highly customizable system info script with support to upload screenshots</p>
+                    </a>
+                    <a class="list-group-item" href="https://github.com/ShareX/CustomUploaders">
+                        <h4 class="list-group-item-heading">Sharex</h4>
+                        <p class="list-group-item-text">Screen capture, file sharing and productivity tool</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
