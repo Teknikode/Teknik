@@ -84,6 +84,16 @@ namespace Teknik.Helpers
             }
             return hashString;
         }
+
+        public static System.Security.Cryptography.SHA256 CreateHashAlgorithm()
+        {
+            if (CryptoConfig.AllowOnlyFipsAlgorithms)
+            {
+                return new SHA256CryptoServiceProvider();
+            }
+
+            return new SHA256Managed();
+        }
     }
 
     public class AES

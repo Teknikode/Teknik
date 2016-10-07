@@ -4,6 +4,7 @@ using System.Web.Optimization;
 using Teknik;
 using Teknik.Configuration;
 using Teknik.Controllers;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Home
 {
@@ -51,11 +52,11 @@ namespace Teknik.Areas.Home
              );
 
             // Register Style Bundles
-            BundleTable.Bundles.Add(new StyleBundle("~/Content/home").Include(
+            BundleTable.Bundles.Add(new AzureStyleBundle("~/Content/home", "https://cdn.teknik.io", "www").Include(
                       "~/Areas/Home/Content/Home.css"));
 
             // Register Script Bundles
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/home").Include(
+            BundleTable.Bundles.Add(new AzureScriptBundle("~/bundles/home", "https://cdn.teknik.io", "www").Include(
                       "~/Scripts/PageDown/Markdown.Converter.js",
                       "~/Scripts/PageDown/Markdown.Sanitizer.js"));
         }

@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Optimization;
+using Teknik.Helpers;
 
 namespace Teknik
 {
@@ -8,17 +9,19 @@ namespace Teknik
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
-            BundleTable.EnableOptimizations = false;
+            bundles.UseCdn = true;
+
+            BundleTable.EnableOptimizations = true;
 #if !DEBUG
             BundleTable.EnableOptimizations = true;
 #endif
 
-            bundles.Add(new StyleBundle("~/Content/Common").Include(
+            bundles.Add(new AzureStyleBundle("~/Content/Common", "https://cdn.teknik.io", "www").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/font-awesome.css",
                       "~/Content/common.css"));
 
-            bundles.Add(new ScriptBundle("~/bundles/common").Include(
+            bundles.Add(new AzureScriptBundle("~/bundles/common", "https://cdn.teknik.io", "www").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/jquery.validate*",
                         "~/Scripts/bootstrap.js",
@@ -26,16 +29,16 @@ namespace Teknik
                         "~/Scripts/common.js",
                         "~/Scripts/respond.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
+            bundles.Add(new AzureScriptBundle("~/bundles/jquery", "https://cdn.teknik.io", "www").Include(
                         "~/Scripts/jquery-{version}.js",
                         "~/Scripts/jquery.validate*"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
-            bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
+            bundles.Add(new AzureScriptBundle("~/bundles/modernizr", "https://cdn.teknik.io", "www").Include(
                         "~/Scripts/modernizr-*"));
 
-            bundles.Add(new ScriptBundle("~/bundles/markdown").Include(
+            bundles.Add(new AzureScriptBundle("~/bundles/markdown", "https://cdn.teknik.io", "www").Include(
                       "~/Scripts/PageDown/Markdown.Converter.js",
                       "~/Scripts/PageDown/Markdown.Sanitizer.js"));
         }
