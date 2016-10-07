@@ -53,6 +53,7 @@ namespace Teknik
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
+            Config config = Config.Load();
             HttpContext context = HttpContext.Current;
 
             // Set the generation time in the header
@@ -64,9 +65,9 @@ namespace Teknik
 
             context.Response.AppendHeader("GenerationTime", elapsedTime);
 
-            // Allow this domain
-            string origin = context.Request.Headers.Get("Origin");
-            if (!string.IsNullOrEmpty(origin) && !Request.IsLocal)
+            // Allow this domain, or everything if local
+            string origin = (Request.IsLocal) ? "*" : context.Request.Headers.Get("Origin");
+            if (!string.IsNullOrEmpty(origin))
             {
                 context.Response.AppendHeader("Access-Control-Allow-Origin", origin);
             }

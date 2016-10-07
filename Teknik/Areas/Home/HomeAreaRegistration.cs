@@ -52,11 +52,11 @@ namespace Teknik.Areas.Home
              );
 
             // Register Style Bundles
-            BundleTable.Bundles.Add(new AzureStyleBundle("~/Content/home", "https://cdn.teknik.io", "www").Include(
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/home", config.CdnHost).Include(
                       "~/Areas/Home/Content/Home.css"));
 
             // Register Script Bundles
-            BundleTable.Bundles.Add(new AzureScriptBundle("~/bundles/home", "https://cdn.teknik.io", "www").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/home", config.CdnHost).Include(
                       "~/Scripts/PageDown/Markdown.Converter.js",
                       "~/Scripts/PageDown/Markdown.Sanitizer.js"));
         }

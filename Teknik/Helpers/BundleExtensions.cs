@@ -1,6 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -8,47 +6,49 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Optimization;
+using Teknik.Configuration;
 
 namespace Teknik.Helpers
 {
-    public class AzureScriptBundle : Bundle
+    public class CdnScriptBundle : Bundle
     {
-        public AzureScriptBundle(string virtualPath, string cdnHost, string subdomain)
-            : base(virtualPath, null, new IBundleTransform[] { new JsMinify(), new AzureBundleTransform { CdnHost = cdnHost, Subdomain = subdomain } })
+        public CdnScriptBundle(string virtualPath, string cdnHost)
+            : base(virtualPath, null, new IBundleTransform[] { new JsMinify(), new CdnBundleTransform { CdnHost = cdnHost } })
         {
             ConcatenationToken = ";";
         }
     }
 
-    public class AzureStyleBundle : Bundle
+    public class CdnStyleBundle : Bundle
     {
-        public AzureStyleBundle(string virtualPath, string cdnHost, string subdomain)
-            : base(virtualPath, null, new IBundleTransform[] { new CssMinify(), new AzureBundleTransform { CdnHost = cdnHost, Subdomain = subdomain } })
+        public CdnStyleBundle(string virtualPath, string cdnHost)
+            : base(virtualPath, null, new IBundleTransform[] { new CssMinify(), new CdnBundleTransform { CdnHost = cdnHost } })
         {
         }
     }
 
-    public class AzureBundleTransform : IBundleTransform
+    public class CdnBundleTransform : IBundleTransform
     {
         public string CdnHost { get; set; }
 
-        public string Subdomain { get; set; }
-
-        static AzureBundleTransform()
+        static CdnBundleTransform()
         {
         }
 
         public virtual void Process(BundleContext context, BundleResponse response)
         {
-            var dir = VirtualPathUtility.GetDirectory(context.BundleVirtualPath).TrimStart('/').TrimStart('~').TrimStart('/').TrimEnd('/');
-            var file = VirtualPathUtility.GetFileName(context.BundleVirtualPath);
-
+           
+            // Don't continue if we aren't using a CDN
             if (!context.BundleCollection.UseCdn)
             {
                 return;
             }
 
-            if (string.IsNullOrEmpty(CdnHost) || string.IsNullOrEmpty(Subdomain))
+            // Get the directory and filename for the bundle
+            var dir = VirtualPathUtility.GetDirectory(context.BundleVirtualPath).TrimStart('/').TrimStart('~').TrimStart('/').TrimEnd('/');
+            var file = VirtualPathUtility.GetFileName(context.BundleVirtualPath);
+
+            if (string.IsNullOrEmpty(CdnHost))
             {
                 return;
             }            
@@ -56,7 +56,7 @@ namespace Teknik.Helpers
             using (var hashAlgorithm = SHA256.CreateHashAlgorithm())
             {
                 var hash = HttpServerUtility.UrlTokenEncode(hashAlgorithm.ComputeHash(Encoding.Unicode.GetBytes(response.Content)));
-                context.BundleCollection.GetBundleFor(context.BundleVirtualPath).CdnPath = string.Format("{0}/{1}/{2}?sub={3}&v={4}", CdnHost.TrimEnd('/'), dir, file, Subdomain, hash);
+                context.BundleCollection.GetBundleFor(context.BundleVirtualPath).CdnPath = string.Format("{0}/{1}/{2}?v={3}", CdnHost.TrimEnd('/'), dir, file, hash);
             }
         }
     }

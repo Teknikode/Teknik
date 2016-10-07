@@ -14,6 +14,7 @@ namespace Teknik.Configuration
 
         private bool                _DevEnvironment;
         private bool                _Migrate;
+        private bool                _UseCdn;
         private string              _Title;
         private string              _Description;
         private string              _Author;
@@ -23,6 +24,7 @@ namespace Teknik.Configuration
         private string              _BitcoinAddress;
         private string              _Salt1;
         private string              _Salt2;
+        private string              _CdnHost;
         private UserConfig          _UserConfig;
         private ContactConfig       _ContactConfig;
         private EmailConfig         _EmailConfig;
@@ -38,19 +40,21 @@ namespace Teknik.Configuration
         private DatabaseConfig      _DatabaseConfig;
         private PiwikConfig         _PiwikConfig;
 
-        public bool         DevEnvironment  { get { return _DevEnvironment; }   set { _DevEnvironment = value; } }
-        public bool         Migrate         { get { return _Migrate; }          set { _Migrate = value; } }
+        public bool         DevEnvironment  { get { return _DevEnvironment; }       set { _DevEnvironment = value; } }
+        public bool         Migrate         { get { return _Migrate; }              set { _Migrate = value; } }
+        public bool         UseCdn          { get { return _UseCdn; }               set { _UseCdn = value; } }
 
         // Site Information
-        public string       Title           { get { return _Title; }            set { _Title = value; } }
-        public string       Description     { get { return _Description; }      set { _Description = value; } }
-        public string       Author          { get { return _Author; }           set { _Author = value; } }
-        public string       Host            { get { return _Host; }             set { _Host = value; } }
-        public string       SupportEmail    { get { return _SupportEmail; }     set { _SupportEmail = value; } }
-        public string       NoReplyEmail    { get { return _NoReplyEmail; }     set { _NoReplyEmail = value; } }
-        public string       BitcoinAddress  { get { return _BitcoinAddress; }   set { _BitcoinAddress = value; } }
-        public string       Salt1           { get { return _Salt1; }            set { _Salt1 = value; } }
-        public string       Salt2           { get { return _Salt2; }            set { _Salt2 = value; } }
+        public string       Title           { get { return _Title; }                set { _Title = value; } }
+        public string       Description     { get { return _Description; }          set { _Description = value; } }
+        public string       Author          { get { return _Author; }               set { _Author = value; } }
+        public string       Host            { get { return _Host; }                 set { _Host = value; } }
+        public string       SupportEmail    { get { return _SupportEmail; }         set { _SupportEmail = value; } }
+        public string       NoReplyEmail    { get { return _NoReplyEmail; }         set { _NoReplyEmail = value; } }
+        public string       BitcoinAddress  { get { return _BitcoinAddress; }       set { _BitcoinAddress = value; } }
+        public string       Salt1           { get { return _Salt1; }                set { _Salt1 = value; } }
+        public string       Salt2           { get { return _Salt2; }                set { _Salt2 = value; } }
+        public string       CdnHost         { get { return _CdnHost; }              set { _CdnHost = value; } }
 
         // User Configuration
         public UserConfig           UserConfig          { get { return _UserConfig; }           set { _UserConfig = value; } }
@@ -108,6 +112,7 @@ namespace Teknik.Configuration
         {
             DevEnvironment      = false;
             Migrate             = false;
+            UseCdn              = false;
             Title               = string.Empty;
             Description         = string.Empty;
             Author              = string.Empty;
@@ -117,6 +122,7 @@ namespace Teknik.Configuration
             BitcoinAddress      = string.Empty;
             Salt1               = string.Empty;
             Salt2               = string.Empty;
+            CdnHost             = string.Empty;
             UserConfig          = new UserConfig();
             EmailConfig         = new EmailConfig();
             ContactConfig       = new ContactConfig();
