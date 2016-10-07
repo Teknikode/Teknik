@@ -8,6 +8,9 @@ namespace Teknik.Configuration
 {
     public class Config
     {
+        private static Config _Config { get; set; }
+        private static string _FileHash { get; set; }
+
         private ReaderWriterLockSlim _ConfigRWLock;
         private ReaderWriterLockSlim _ConfigFileRWLock;
         private JsonSerializerSettings _JsonSettings;
@@ -152,7 +155,17 @@ namespace Teknik.Configuration
         public static Config Load()
         {
             string path = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
-            return Load(path);
+            string newHash = string.Empty;
+            if (File.Exists(Path.Combine(path, "Config.json")))
+            {
+                newHash = Helpers.MD5.FileHash(Path.Combine(path, "Config.json"));
+            }
+            if (_Config == null || _FileHash == null || newHash != _FileHash)
+            {
+                _Config = Load(path);
+                _FileHash = newHash;
+            }
+            return _Config;
         }
 
         public static Config Load(string path)

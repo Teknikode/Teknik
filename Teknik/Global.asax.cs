@@ -53,7 +53,6 @@ namespace Teknik
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
-            Config config = Config.Load();
             HttpContext context = HttpContext.Current;
 
             // Set the generation time in the header

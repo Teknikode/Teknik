@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
 using Teknik.Controllers;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Upload
 {
@@ -61,18 +62,18 @@ namespace Teknik.Areas.Upload
              );
 
             // Register Script Bundles
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/upload").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/upload", config.CdnHost).Include(
                       "~/Scripts/Dropzone/dropzone.js",
                       "~/Areas/Upload/Scripts/Upload.js",
                       "~/Scripts/bootstrap-switch.js",
                       "~/Scripts/bootbox/bootbox.min.js"));
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/download").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/download", config.CdnHost).Include(
                       "~/Scripts/Blob.js",
                       "~/Scripts/FileSaver.js",
                       "~/Areas/Upload/Scripts/Download.js"));
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/cryptoWorker").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/cryptoWorker", config.CdnHost).Include(
                       "~/Areas/Upload/Scripts/EncryptionWorker.js"));
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/crypto").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/crypto", config.CdnHost).Include(
                       "~/Scripts/Crypto-js/aes.js",
                       "~/Scripts/Crypto-js/enc-base64.js",
                       "~/Scripts/Crypto-js/mode-ctr.js",
@@ -80,7 +81,7 @@ namespace Teknik.Areas.Upload
                       "~/Scripts/Crypto-js/pad-nopadding.js"));
 
             // Register Style Bundles
-            BundleTable.Bundles.Add(new StyleBundle("~/Content/upload").Include(
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/upload", config.CdnHost).Include(
                       "~/Content/dropzone.css",
                       "~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css",
                       "~/Areas/Upload/Content/Upload.css"));

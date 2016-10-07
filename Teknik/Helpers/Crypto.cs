@@ -39,6 +39,44 @@ namespace Teknik.Helpers
             return sBuilder.ToString();
 
         }
+
+        public static string FileHash(string filename)
+        {
+            try
+            {
+                using (var md5 = System.Security.Cryptography.MD5.Create())
+                {
+                    using (var stream = File.OpenRead(filename))
+                    {
+                        return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+
+        public static string DataHash(string data)
+        {
+            try
+            {
+                using (var md5 = System.Security.Cryptography.MD5.Create())
+                {
+                    // convert string to stream
+                    byte[] byteArray = Encoding.UTF8.GetBytes(data);
+                    using (MemoryStream stream = new MemoryStream(byteArray))
+                    {
+                        return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
     }
 
     public class SHA384
@@ -55,6 +93,16 @@ namespace Teknik.Helpers
 
     public class SHA256
     {
+        public static string Hash(string value)
+        {
+            byte[] valueBytes = Encoding.Unicode.GetBytes(value);
+            HashAlgorithm hash = new SHA256CryptoServiceProvider();
+
+            byte[] hashBytes = hash.ComputeHash(valueBytes);
+
+            return Convert.ToBase64String(hashBytes);
+        }
+
         public static string Hash(string value, string salt1, string salt2)
         {
             SHA256Managed hash = new SHA256Managed();
