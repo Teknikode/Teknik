@@ -2,6 +2,21 @@
 
 @Html.Partial("../../Areas/User/Views/User/_LoginModalPartial", Model)
 
+@using Teknik.Helpers
+
+@{ 
+    string logoPath = Url.SubRouteUrl("www", "Default.Logo");
+
+    // If we are using a CDN, let's replace it
+    if (Model.Config.UseCdn)
+    {
+        if (!string.IsNullOrEmpty(Model.Config.CdnHost))
+        {
+            logoPath = Model.Config.CdnHost.TrimEnd('/') + Constants.LOGO_PATH.TrimStart('~');
+        }
+    }
+}
+
 <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -10,7 +25,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="@Url.SubRouteUrl("www", "Home.Index")"><img src="@Url.SubRouteUrl("www", "Default.Logo", true)" height="20" alt="Teknik"></a>
+            <a class="navbar-brand" href="@Url.SubRouteUrl("www", "Home.Index")"><img src="@logoPath" height="20" alt="Teknik"></a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
