@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Shortener
 {
@@ -44,7 +45,7 @@ namespace Teknik.Areas.Shortener
              );
 
             // Register Script Bundles
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/shortener").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/shortener", config.CdnHost).Include(
                       "~/Areas/Shortener/Scripts/Shortener.js"));
         }
     }

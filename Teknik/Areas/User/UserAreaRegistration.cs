@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Users
 {
@@ -108,18 +109,18 @@ namespace Teknik.Areas.Users
             );
 
             // Register Script Bundle
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/user").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user", config.CdnHost).Include(
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Scripts/jquery.blockUI.js",
                       "~/Scripts/bootstrap-switch.js",
                       "~/Areas/User/Scripts/User.js"));
 
             // Register Script Bundle
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/checkAuthCode").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/checkAuthCode", config.CdnHost).Include(
                       "~/Areas/User/Scripts/CheckAuthCode.js"));
 
             // Register Style Bundles
-            BundleTable.Bundles.Add(new StyleBundle("~/Content/user").Include(
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/user", config.CdnHost).Include(
                       "~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css"));
         }
     }

@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.UI;
+using Teknik.Configuration;
 
 namespace Teknik
 {
@@ -14,7 +15,17 @@ namespace Teknik
     {
         public static string SubRouteUrl(this UrlHelper url, string sub, string routeName)
         {
-            return url.SubRouteUrl(sub, routeName, null);
+            return url.SubRouteUrl(sub, routeName, null, false);
+        }
+
+        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, bool useCdn)
+        {
+            return url.SubRouteUrl(sub, routeName, null, useCdn);
+        }
+
+        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, object routeValues)
+        {
+            return url.SubRouteUrl(sub, routeName, routeValues, false);
         }
 
         /// <summary>
@@ -25,7 +36,7 @@ namespace Teknik
         /// <param name="routeName"></param>
         /// <param name="routeValues"></param>
         /// <returns></returns>
-        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, object routeValues)
+        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, object routeValues, bool useCdn)
         {
             string host = url.RequestContext.HttpContext.Request.Url.Authority;
             
@@ -71,7 +82,22 @@ namespace Teknik
 
             }
 
-            string absoluteAction = string.Format("{0}://{1}{2}", url.RequestContext.HttpContext.Request.Url.Scheme, domain, rightUrl);
+            string fullHost = string.Format("{0}://{1}", url.RequestContext.HttpContext.Request.Url.Scheme, domain);
+
+            if (useCdn)
+            {
+                // If we are using a CDN, let's replace it
+                Config config = Config.Load();
+                if (config.UseCdn)
+                {
+                    if (!string.IsNullOrEmpty(config.CdnHost))
+                    {
+                        fullHost = config.CdnHost.TrimEnd('/');
+                    }
+                }
+            }
+
+            string absoluteAction = string.Format("{0}{1}", fullHost, rightUrl);
 
             if (!string.IsNullOrEmpty(subParam))
             {
@@ -80,6 +106,7 @@ namespace Teknik
   
             return absoluteAction;
         }
+
         public static string GetUrlParameters(this string url)
         {
             Uri uri = new Uri(url);

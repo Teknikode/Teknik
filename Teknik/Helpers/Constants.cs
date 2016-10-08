@@ -11,6 +11,8 @@ namespace Teknik.Helpers
         public const string SERVERUSER = "Server Admin";
         public const string AUTHCOOKIE = "TeknikAuth";
         public const string TRUSTEDDEVICECOOKIE = "TeknikTrustedDevice";
+        public const string LOGO_PATH = "~/Images/logo-black.svg";
+        public const string FAVICON_PATH = "~/Images/favicon.ico";
 
         // Paste Constants
         public static Dictionary<string, string> HIGHLIGHTFORMATS = new Dictionary<string, string>()

@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Help
 {
@@ -108,7 +109,7 @@ namespace Teknik.Areas.Help
              );
 
             // Register Style Bundles
-            BundleTable.Bundles.Add(new StyleBundle("~/Content/help").Include(
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/help", config.CdnHost).Include(
                       "~/Areas/Help/Content/Help.css"));
         }
     }

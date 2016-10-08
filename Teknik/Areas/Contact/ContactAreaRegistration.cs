@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Contact
 {
@@ -36,7 +37,7 @@ namespace Teknik.Areas.Contact
              );
 
             // Register Bundles
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/contact").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/contact", config.CdnHost).Include(
                       "~/Areas/Contact/Scripts/Contact.js"));
         }
     }

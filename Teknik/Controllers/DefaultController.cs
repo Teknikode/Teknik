@@ -10,6 +10,7 @@ using Teknik.Configuration;
 
 using Piwik.Tracker;
 using Teknik.Filters;
+using Teknik.Helpers;
 
 namespace Teknik.Controllers
 {
@@ -51,7 +52,7 @@ namespace Teknik.Controllers
         public ActionResult Favicon()
         {
             // Get favicon
-            string imageFile = Server.MapPath("~/Images/favicon.ico");
+            string imageFile = Server.MapPath(Constants.FAVICON_PATH);
             return File(imageFile, "image/x-icon");
         }
 
@@ -61,7 +62,7 @@ namespace Teknik.Controllers
         public ActionResult Logo()
         {
             // Get favicon
-            string imageFile = Server.MapPath("~/Images/logo-black.svg");
+            string imageFile = Server.MapPath(Constants.LOGO_PATH);
             return File(imageFile, "image/svg+xml");
         }
     }

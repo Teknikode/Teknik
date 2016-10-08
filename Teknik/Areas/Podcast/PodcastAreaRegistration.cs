@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Podcast
 {
@@ -52,12 +53,12 @@ namespace Teknik.Areas.Podcast
              );
 
             // Register Script Bundles
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/podcast").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/podcast", config.CdnHost).Include(
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Scripts/jquery.blockUI.js",
                       "~/Areas/Podcast/Scripts/Podcast.js"));
             // Register Style Bundles
-            BundleTable.Bundles.Add(new StyleBundle("~/Content/podcast").Include(
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/podcast", config.CdnHost).Include(
                       "~/Areas/Podcast/Content/Podcast.css"));
         }
     }

@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Vault
 {
@@ -28,7 +29,7 @@ namespace Teknik.Areas.Vault
              );
 
             // Register Script Bundle
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/vault").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/vault", config.CdnHost).Include(
                       "~/Areas/Vault/Scripts/Vault.js"));
         }
     }

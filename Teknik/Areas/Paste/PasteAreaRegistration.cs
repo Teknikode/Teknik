@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
 using Teknik.Controllers;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Paste
 {
@@ -77,15 +78,15 @@ namespace Teknik.Areas.Paste
              );
 
             // Register Script Bundles
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/paste").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/paste", config.CdnHost).Include(
                       "~/Scripts/Highlight/highlight.pack.js",
                       "~/Areas/Paste/Scripts/Paste.js"));
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/syntaxWorker").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/syntaxWorker", config.CdnHost).Include(
                       "~/Areas/Paste/Scripts/SyntaxWorker.js"));
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/highlight").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/highlight", config.CdnHost).Include(
                       "~/Scripts/Highlight/highlight.pack.js"));
             // Register Style Bundles
-            BundleTable.Bundles.Add(new StyleBundle("~/Content/paste").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/Content/paste", config.CdnHost).Include(
                       "~/Content/Highlight/github-gist.css",
                       "~/Areas/Paste/Content/Paste.css"));
         }

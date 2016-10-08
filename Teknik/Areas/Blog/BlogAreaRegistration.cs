@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Blog
 {
@@ -60,12 +61,12 @@ namespace Teknik.Areas.Blog
              );
 
             // Register Script Bundles
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/blog").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/blog", config.CdnHost).Include(
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Scripts/MarkdownDeepLib.min.js",
                       "~/Areas/Blog/Scripts/Blog.js"));
             // Register Style Bundles
-            BundleTable.Bundles.Add(new StyleBundle("~/Content/blog").Include(
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/blog", config.CdnHost).Include(
                       "~/Content/mdd_styles.css",
                       "~/Areas/Blog/Content/Blog.css"));
         }

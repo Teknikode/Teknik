@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Transparency
 {
@@ -28,7 +29,7 @@ namespace Teknik.Areas.Transparency
              );
 
             // Register Script Bundle
-            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/transparency").Include(
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/transparency", config.CdnHost).Include(
                       "~/Areas/Transparency/Scripts/Transparency.js"));
         }
     }
