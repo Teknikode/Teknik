@@ -439,6 +439,7 @@
     <Content Include="Content\jquery.tocify.css" />
     <Content Include="Fonts\fontawesome-webfont.svg" />
     <Content Include="Fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Images\redbubble_icon.png" />
     <Content Include="Migrations\InitializeTransfers.sql" />
     <Content Include="Migrations\SetCaseSensitivity.sql" />
     <Content Include="Scripts\audioplayer.min.js" />

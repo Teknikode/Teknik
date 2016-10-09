@@ -2,6 +2,19 @@
 @using System.Reflection;
 @using Teknik.Helpers;
 
+@{
+    string redbubblePath = "/Images/redbubble_icon.png";
+
+    // If we are using a CDN, let's replace it
+    if (Model.Config.UseCdn)
+    {
+        if (!string.IsNullOrEmpty(Model.Config.CdnHost))
+        {
+            redbubblePath = Model.Config.CdnHost.TrimEnd('/') + redbubblePath;
+        }
+    }
+}
+
 <footer id="footer" class="footer navbar navbar-default">
     <div class="container">
         <div class="row">
@@ -13,8 +26,9 @@
                         </small>
                     </p>
                     <form class="form-inline">
-                        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MBG93VKQ343P4" role="button" class="btn btn-default btn-sm"><i class="fa fa-paypal"></i></a>
-                        <a href="https://gratipay.com/Teknik/" role="button" class="btn btn-default btn-sm"><i class="fa fa-gratipay"></i></a>
+                        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MBG93VKQ343P4" role="button" class="btn btn-default btn-sm" title="Paypal Donation"><i class="fa fa-paypal"></i></a>
+                        <a href="https://gratipay.com/Teknik/" role="button" class="btn btn-default btn-sm" title="Gratipay"><i class="fa fa-gratipay"></i></a>
+                        <a href="http://www.redbubble.com/people/teknikio" role="button" class="btn btn-default btn-sm" title="Teknik Redbubble Marketplace"><img src="@redbubblePath" alt="Teknik Redbubble" /></a>
                         <div class="form-group">
                             <div class="input-group">
                                 <span class="input-group-addon" id="basic-addon1"><i class="fa fa-bitcoin"></i></span>
