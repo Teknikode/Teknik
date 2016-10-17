@@ -251,7 +251,7 @@ namespace Teknik.Areas.Blog.Controllers
 
                         db.BlogPosts.Add(post);
                         db.SaveChanges();
-                        return Post(blog.User.Username, post.BlogPostId);
+                        return Redirect(Url.SubRouteUrl("blog", "Blog.Post", new { username = blog.User.Username, id = post.BlogPostId }));
                     }
                     model.Error = true;
                     model.ErrorMessage = "You are not authorized to create a post for this blog";
@@ -298,7 +298,7 @@ namespace Teknik.Areas.Blog.Controllers
                         post.DateEdited = DateTime.Now;
                         db.Entry(post).State = EntityState.Modified;
                         db.SaveChanges();
-                        return Post(post.Blog.User.Username, post.BlogPostId);
+                        return Redirect(Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId }));
                     }
                     model.Error = true;
                     model.ErrorMessage = "You are not authorized to edit this post";
