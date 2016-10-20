@@ -173,6 +173,21 @@ function getAnchor() {
     return (urlParts.length > 1) ? urlParts[1] : null;
 }
 
+function GenerateBlobURL(url) {
+    var cachedBlob = null;
+    jQuery.ajax({
+        url: url,
+        success: function (result) {
+            var workerJSBlob = new Blob([result], {
+                type: "text/javascript"
+            });
+            cachedBlob = window.URL.createObjectURL(workerJSBlob);
+        },
+        async: false
+    });
+    return cachedBlob;
+}
+
 AddAntiForgeryToken = function (data) {
     data.__RequestVerificationToken = $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val();
     return data;

@@ -40,13 +40,14 @@
     addEventListener('load', function () {
         var code = document.querySelector('#code');
         var language = document.querySelector('#syntaxLanguage');
-        var worker = new Worker('@Scripts.Url("~/bundles/syntaxWorker")');
+        var worker = new Worker(GenerateBlobURL('@Scripts.Url("~/bundles/syntaxWorker")'));
         worker.onmessage = function (event) {
             code.innerHTML = event.data.value;
             language.innerText = event.data.language;
         }
+        var scriptBlob = GenerateBlobURL('@Scripts.Url("~/bundles/highlight")');
         var obj = {
-            script: '@Scripts.Url("~/bundles/highlight")',
+            script: scriptBlob,
             code: code.textContent
         };
         worker.postMessage(obj);

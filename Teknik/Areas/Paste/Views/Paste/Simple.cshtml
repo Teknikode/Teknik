@@ -26,10 +26,11 @@
     <script>
         addEventListener('load', function () {
             var code = document.querySelector('#code');
-            var worker = new Worker('@Scripts.Url("~/bundles/syntaxWorker")');
+            var worker = new Worker(GenerateBlobURL('@Scripts.Url("~/bundles/syntaxWorker")'));
             worker.onmessage = function (event) {
                 code.innerHTML = event.data.value;
             }
+            var scriptBlob = GenerateBlobURL('@Scripts.Url("~/bundles/highlight")');
             var obj = {
                 script: '@Scripts.Url("~/bundles/highlight")',
                 code: code.textContent

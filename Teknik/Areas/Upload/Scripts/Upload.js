@@ -199,7 +199,7 @@ function encryptFile(file, callback) {
                 callback(e.target.result, keyStr, ivStr, filetype, fileExt, fileID, saveKey, serverSideEncrypt);
             }
             else {
-                var worker = new Worker(encScriptSrc);
+                var worker = new Worker(GenerateBlobURL(encScriptSrc));
 
                 worker.addEventListener('message', function (e) {
                     switch (e.data.cmd) {
@@ -227,11 +227,14 @@ function encryptFile(file, callback) {
                     $("#progress-" + fileID).children('.progress-bar').html('Error Occured');
                 }
 
+                // Generate the script to include as a blob
+                var scriptBlob = GenerateBlobURL(aesScriptSrc);
+
                 // Execute worker with data
                 var objData =
                     {
                         cmd: 'encrypt',
-                        script: aesScriptSrc,
+                        script: scriptBlob,
                         key: keyStr,
                         iv: ivStr,
                         chunkSize: chunkSize,
