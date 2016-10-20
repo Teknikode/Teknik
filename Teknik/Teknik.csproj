@@ -63,7 +63,7 @@
     </Reference>
     <Reference Include="FearTheCowboy.Pygments, Version=2.0.2.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FearTheCowboy.Pygments.2.0.2.2\lib\net40\FearTheCowboy.Pygments.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
