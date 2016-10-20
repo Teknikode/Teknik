@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using FearTheCowboy.Pygments;
 using Teknik.Areas.Error.Controllers;
 using Teknik.Areas.Paste.ViewModels;
 using Teknik.Areas.Users.Utility;
@@ -95,6 +96,17 @@ namespace Teknik.Areas.Paste.Controllers
                     byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
                     data = AES.Decrypt(data, keyBytes, ivBytes);
                     model.Content = Encoding.Unicode.GetString(data);
+                }
+
+                if (type.ToLower() == "full" || type.ToLower() == "simple")
+                {
+                    // Transform content into HTML
+                    if (Highlighter.Lexers.ToList().Exists(l => l.Name == model.Syntax))
+                    {
+                        Highlighter highlighter = new Highlighter();
+                        // Add a space in front of the content due to bug with pygment (No idea why yet)
+                        model.Content = highlighter.HighlightToHtml(" " + model.Content, model.Syntax, Config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
+                    }
                 }
 
                 switch (type.ToLower())

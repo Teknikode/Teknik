@@ -30,26 +30,6 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-sm-10 col-sm-offset-1">
-            <pre><code class="@syntax" id="code">@Model.Content</code></pre>
-        </div>
+        <div class="col-sm-10 col-sm-offset-1">@Html.Raw(Model.Content)</div>
     </div>
 </div>
-
-<script>
-    addEventListener('load', function () {
-        var code = document.querySelector('#code');
-        var language = document.querySelector('#syntaxLanguage');
-        var worker = new Worker(GenerateBlobURL('@Scripts.Url("~/bundles/syntaxWorker")'));
-        worker.onmessage = function (event) {
-            code.innerHTML = event.data.value;
-            language.innerText = event.data.language;
-        }
-        var scriptBlob = GenerateBlobURL('@Scripts.Url("~/bundles/highlight")');
-        var obj = {
-            script: scriptBlob,
-            code: code.textContent
-        };
-        worker.postMessage(obj);
-    })
-</script>

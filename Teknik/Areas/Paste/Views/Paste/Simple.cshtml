@@ -23,22 +23,8 @@
 
 </head>
 <body data-twttr-rendered="true">
-    <pre><code class="@syntax" id="code">@Model.Content</code></pre>
+    @Html.Raw(Model.Content)
     <script>
-        addEventListener('load', function () {
-            var code = document.querySelector('#code');
-            var worker = new Worker(GenerateBlobURL('@Scripts.Url("~/bundles/syntaxWorker")'));
-            worker.onmessage = function (event) {
-                code.innerHTML = event.data.value;
-            }
-            var scriptBlob = GenerateBlobURL('@Scripts.Url("~/bundles/highlight")');
-            var obj = {
-                script: '@Scripts.Url("~/bundles/highlight")',
-                code: code.textContent
-            };
-            worker.postMessage(obj);
-        })
-
         function pageloadStopTimer() { }
     </script>
 </body>
