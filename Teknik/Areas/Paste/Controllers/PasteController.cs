@@ -103,10 +103,11 @@ namespace Teknik.Areas.Paste.Controllers
                     // Transform content into HTML
                     if (Highlighter.Lexers.ToList().Exists(l => l.Name == model.Syntax))
                     {
-                        Highlighter highlighter = new Highlighter();
-                        // Add a space in front of the content due to bug with pygment (No idea why yet)
-                        model.Content = highlighter.HighlightToHtml(" " + model.Content, model.Syntax, Config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
+                        model.Syntax = "Text only";
                     }
+                    Highlighter highlighter = new Highlighter();
+                    // Add a space in front of the content due to bug with pygment (No idea why yet)
+                    model.Content = highlighter.HighlightToHtml(" " + model.Content, model.Syntax, Config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
                 }
 
                 switch (type.ToLower())
