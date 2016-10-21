@@ -1,7 +1,7 @@
 ﻿@model Teknik.Areas.Paste.ViewModels.PasteCreateViewModel
 
 @using Teknik.Helpers
-@using FearTheCowboy.Pygments
+@using Teknik.Pygments
 
 @Styles.Render("~/Content/paste")
 @Scripts.Render("~/bundles/paste")
@@ -33,11 +33,11 @@
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Syntax</label>
                     <div class="col-sm-4">
                         <select class="form-control" name="Syntax" id="syntax">
-                            <option value="Text only">Text only</option>
+                            <option value="text">Text only</option>
                             @{ 
                                 foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
                                 {
-                                    <option value="@format.Name">@format.Name</option>
+                                    <option value="@format.Aliases.FirstOrDefault()">@format.Name</option>
                                 }
                             }
                         </select>

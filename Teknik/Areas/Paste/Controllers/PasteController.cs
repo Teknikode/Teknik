@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using FearTheCowboy.Pygments;
+using Teknik.Pygments;
 using Teknik.Areas.Error.Controllers;
 using Teknik.Areas.Paste.ViewModels;
 using Teknik.Areas.Users.Utility;
@@ -101,9 +101,9 @@ namespace Teknik.Areas.Paste.Controllers
                 if (type.ToLower() == "full" || type.ToLower() == "simple")
                 {
                     // Transform content into HTML
-                    if (Highlighter.Lexers.ToList().Exists(l => l.Name == model.Syntax))
+                    if (!Highlighter.Lexers.ToList().Exists(l => l.Aliases.Contains(model.Syntax)))
                     {
-                        model.Syntax = "Text only";
+                        model.Syntax = "text";
                     }
                     Highlighter highlighter = new Highlighter();
                     // Add a space in front of the content due to bug with pygment (No idea why yet)
