@@ -14,7 +14,7 @@ function downloadFile() {
         if (this.status == 200) {
 
             if (iv != '' && key != '') {
-                var worker = new Worker(encScriptSrc);
+                var worker = new Worker(GenerateBlobURL(encScriptSrc));
 
                 worker.addEventListener('message', function (e) {
                     switch (e.data.cmd) {
