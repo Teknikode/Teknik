@@ -42,6 +42,17 @@ namespace Teknik.Areas.Home
                  new[] { typeof(DefaultController).Namespace }
              );
 
+            // Register fallback for all bad requests
+            context.MapSubdomainRoute(
+                 "Default.NotFound", // Route name
+                 new List<string>() { "*" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "{url}",    // URL with parameters 
+                 new { controller = "Default", action = "NotFound" },  // Parameter defaults 
+                 new { url = "{*url}" },
+                 new[] { typeof(DefaultController).Namespace }
+             );
+
             context.MapSubdomainRoute(
                  "Home.Index", // Route name
                  new List<string>() { "www", string.Empty }, // Subdomains

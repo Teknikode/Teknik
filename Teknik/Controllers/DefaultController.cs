@@ -65,6 +65,18 @@ namespace Teknik.Controllers
             string imageFile = Server.MapPath(Constants.LOGO_PATH);
             return File(imageFile, "image/svg+xml");
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult NotFound()
+        {
+            var errorController = new ErrorController();
+            if (errorController != null)
+            {
+                return errorController.Http404(new Exception("Page Not Found"));
+            }
+            return null;
+        }
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
