@@ -27,7 +27,7 @@ namespace Teknik.Areas.Error.Controllers
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
-            return View(model);
+            return View("/Areas/Error/Views/Error/Exception.cshtml", model);
         }
 
         [TrackPageView]
@@ -47,7 +47,7 @@ namespace Teknik.Areas.Error.Controllers
             model.Description = exception.Message;
             model.Exception = exception;
 
-            return View(model);
+            return View("/Areas/Error/Views/Error/General.cshtml", model);
         }
         
         [AllowAnonymous]
@@ -65,7 +65,7 @@ namespace Teknik.Areas.Error.Controllers
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
-            return View(model);
+            return View("/Areas/Error/Views/Error/Http403.cshtml", model);
         }
         
         [AllowAnonymous]
@@ -83,7 +83,7 @@ namespace Teknik.Areas.Error.Controllers
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
-            return View(model);
+            return View("/Areas/Error/Views/Error/Http404.cshtml", model);
         }
 
         [TrackPageView]
@@ -102,7 +102,7 @@ namespace Teknik.Areas.Error.Controllers
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
-            return View(model);
+            return View("/Areas/Error/Views/Error/Http500.cshtml", model);
         }
     }
 }

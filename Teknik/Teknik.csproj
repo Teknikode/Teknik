@@ -183,6 +183,11 @@
     <Compile Include="Areas\About\AboutAreaRegistration.cs" />
     <Compile Include="Areas\About\Controllers\AboutController.cs" />
     <Compile Include="Areas\About\ViewModels\AboutViewModel.cs" />
+    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminController.cs" />
+    <Compile Include="Areas\Admin\ViewModels\DashboardViewModel.cs" />
+    <Compile Include="Areas\Admin\ViewModels\SearchResultViewModel.cs" />
+    <Compile Include="Areas\Admin\ViewModels\SearchViewModel.cs" />
     <Compile Include="Areas\API\APIAreaRegistration.cs" />
     <Compile Include="Areas\API\Controllers\APIController.cs" />
     <Compile Include="Areas\API\Controllers\APIv1Controller.cs" />
@@ -338,6 +343,7 @@
     <Content Include="App_Data\reservedUsernames.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Areas\Admin\Scripts\Search.js" />
     <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
     <Content Include="Areas\Contact\Scripts\Contact.js" />
@@ -574,6 +580,12 @@
     <Content Include="Areas\Blog\Views\Blog\EditPost.cshtml" />
     <Content Include="Areas\Help\Views\Help\Markdown.cshtml" />
     <Content Include="Areas\Help\Views\Help\Tools.cshtml" />
+    <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="Areas\Admin\Views\Admin\Search.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\Dashboard.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\SearchResult.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\SearchResults.cshtml" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -646,6 +658,8 @@
   <ItemGroup>
     <Folder Include="Areas\About\Models\" />
     <Folder Include="Areas\About\Views\Shared\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\API\Models\" />
     <Folder Include="Areas\API\Views\APIv1\" />
     <Folder Include="Areas\API\Views\API\" />

@@ -4,11 +4,13 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Teknik.Areas.Error.Controllers;
+using Teknik.Helpers;
 using Teknik.Areas.Users.Controllers;
 
 namespace Teknik.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
     public class TeknikAuthorizeAttribute : AuthorizeAttribute
     {
         public override void OnAuthorization(AuthorizationContext filterContext)
@@ -56,8 +58,8 @@ namespace Teknik.Attributes
             }
             else
             {
-                // uh oh, let's handle it the old way
-                base.HandleUnauthorizedRequest(filterContext);
+                // uh oh, they are authorized, but don't have access.   ABORT ABORT ABORT
+                HandleInvalidAuthRequest(filterContext);
             }
         }
 
@@ -71,6 +73,21 @@ namespace Teknik.Attributes
             if (userController != null)
             {
                 filterContext.Result = userController.Login(redirectUrl);
+                return;
+            }
+            filterContext.Result = new HttpUnauthorizedResult();
+        }
+
+        protected void HandleInvalidAuthRequest(AuthorizationContext filterContext)
+        {
+            // auth failed, redirect to login page
+            var request = filterContext.HttpContext.Request;
+            string redirectUrl = (request.Url != null) ? filterContext.HttpContext.Request.Url.AbsoluteUri.ToString() : string.Empty;
+
+            var errorController = new ErrorController();
+            if (errorController != null)
+            {
+                filterContext.Result = errorController.Http403(new Exception("Not Authorized"));
                 return;
             }
             filterContext.Result = new HttpUnauthorizedResult();

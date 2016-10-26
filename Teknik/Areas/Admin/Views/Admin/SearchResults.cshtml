@@ -1,0 +1,6 @@
+﻿@model List<Teknik.Areas.Admin.ViewModels.SearchResultViewModel>
+
+@foreach (var post in Model)
+{
+    @Html.Partial("SearchResult", post)
+}
