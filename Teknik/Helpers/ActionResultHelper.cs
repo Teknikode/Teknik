@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.ViewModels;
 
 namespace Teknik.Helpers
 {
@@ -83,5 +84,11 @@ namespace Teknik.Helpers
 
             _innerResult.ExecuteResult(context);
         }
+    }
+
+    public enum ResultType
+    {
+        Passthrough,
+        Json
     }
 }

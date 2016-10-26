@@ -11,6 +11,7 @@ using Teknik.Configuration;
 using Piwik.Tracker;
 using Teknik.Filters;
 using Teknik.Helpers;
+using Teknik.ViewModels;
 
 namespace Teknik.Controllers
 {
@@ -76,6 +77,20 @@ namespace Teknik.Controllers
                 return errorController.Http404(new Exception("Page Not Found"));
             }
             return null;
+        }
+
+        protected ActionResult GenerateActionResult(object json)
+        {
+            return GenerateActionResult(json, View());
+        }
+
+        protected ActionResult GenerateActionResult(object json, ActionResult result)
+        {
+            if (Request.IsAjaxRequest())
+            {
+                return Json(json);
+            }
+            return result;
         }
     }
 

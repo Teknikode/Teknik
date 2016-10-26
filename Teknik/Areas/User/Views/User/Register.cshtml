@@ -4,7 +4,12 @@
 {
     <div class="row">
         <div class="col-sm-12 text-center">
-            <div id="registerStatus"></div>
+            <div id="registerStatus">
+                @if (Model.Error)
+                {
+                    <div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>@Model.ErrorMessage</div>
+                }
+            </div>
         </div>
     </div>
     <form role="form" id="registrationForm" action="@Url.SubRouteUrl("user", "User.Register")" method="post" accept-charset="UTF-8">

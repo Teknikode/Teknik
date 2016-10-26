@@ -222,7 +222,7 @@ namespace Teknik.Areas.Users.Controllers
 
                         if (string.IsNullOrEmpty(model.ReturnUrl))
                         {
-                            return Json(new { result = returnUrl });
+                            return GenerateActionResult(new { result = returnUrl }, Redirect(returnUrl));
                         }
                         else
                         {
@@ -231,7 +231,10 @@ namespace Teknik.Areas.Users.Controllers
                     }
                 }
             }
-            return Json(new { error = "Invalid Username or Password." });
+            model.Error = true;
+            model.ErrorMessage = "Invalid Username or Password.";
+
+            return GenerateActionResult(new { error = model.ErrorMessage }, View("/Areas/User/Views/User/ViewLogin.cshtml", model));
         }
 
         public ActionResult Logout()
@@ -265,64 +268,81 @@ namespace Teknik.Areas.Users.Controllers
         [AllowAnonymous]
         public ActionResult Register([Bind(Prefix="Register")]RegisterViewModel model)
         {
+            model.Error = false;
+            model.ErrorMessage = string.Empty;
             if (ModelState.IsValid)
             {
                 if (Config.UserConfig.RegistrationEnabled)
                 {
-                    if (!UserHelper.ValidUsername(Config, model.Username))
+                    if (!model.Error && !UserHelper.ValidUsername(Config, model.Username))
                     {
-                        return Json(new { error = "That username is not valid" });
+                        model.Error = true;
+                        model.ErrorMessage = "That username is not valid";
                     }
-                    if (!UserHelper.UsernameAvailable(db, Config, model.Username))
+                    if (!model.Error && !UserHelper.UsernameAvailable(db, Config, model.Username))
                     {
-                        return Json(new { error = "That username is not available" });
+                        model.Error = true;
+                        model.ErrorMessage = "That username is not available";
                     }
-                    if (model.Password != model.ConfirmPassword)
+                    if (!model.Error && model.Password != model.ConfirmPassword)
                     {
-                        return Json(new { error = "Passwords must match" });
+                        model.Error = true;
+                        model.ErrorMessage = "Passwords must match";
                     }
 
                     // PGP Key valid?
-                    if (!string.IsNullOrEmpty(model.PublicKey) && !PGP.IsPublicKey(model.PublicKey))
+                    if (!model.Error && !string.IsNullOrEmpty(model.PublicKey) && !PGP.IsPublicKey(model.PublicKey))
                     {
-                        return Json(new { error = "Invalid PGP Public Key" });
+                        model.Error = true;
+                        model.ErrorMessage = "Invalid PGP Public Key";
                     }
 
-                    try
+                    if (!model.Error)
                     {
-                        User newUser = db.Users.Create();
-                        newUser.JoinDate = DateTime.Now;
-                        newUser.Username = model.Username;
-                        newUser.UserSettings = new UserSettings();
-                        newUser.SecuritySettings = new SecuritySettings();
-                        newUser.BlogSettings = new BlogSettings();
-                        newUser.UploadSettings = new UploadSettings();
-
-                        if (!string.IsNullOrEmpty(model.PublicKey))
-                            newUser.SecuritySettings.PGPSignature = model.PublicKey;
-                        if (!string.IsNullOrEmpty(model.RecoveryEmail))
-                            newUser.SecuritySettings.RecoveryEmail = model.RecoveryEmail;
-
-                        UserHelper.AddAccount(db, Config, newUser, model.Password);
-                        
-                        // If they have a recovery email, let's send a verification
-                        if (!string.IsNullOrEmpty(model.RecoveryEmail))
+                        try
                         {
-                            string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, newUser);
-                            string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = model.Username });
-                            string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
-                            UserHelper.SendRecoveryEmailVerification(Config, model.Username, model.RecoveryEmail, resetUrl, verifyUrl);
+                            User newUser = db.Users.Create();
+                            newUser.JoinDate = DateTime.Now;
+                            newUser.Username = model.Username;
+                            newUser.UserSettings = new UserSettings();
+                            newUser.SecuritySettings = new SecuritySettings();
+                            newUser.BlogSettings = new BlogSettings();
+                            newUser.UploadSettings = new UploadSettings();
+
+                            if (!string.IsNullOrEmpty(model.PublicKey))
+                                newUser.SecuritySettings.PGPSignature = model.PublicKey;
+                            if (!string.IsNullOrEmpty(model.RecoveryEmail))
+                                newUser.SecuritySettings.RecoveryEmail = model.RecoveryEmail;
+
+                            UserHelper.AddAccount(db, Config, newUser, model.Password);
+
+                            // If they have a recovery email, let's send a verification
+                            if (!string.IsNullOrEmpty(model.RecoveryEmail))
+                            {
+                                string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, newUser);
+                                string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = model.Username });
+                                string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
+                                UserHelper.SendRecoveryEmailVerification(Config, model.Username, model.RecoveryEmail, resetUrl, verifyUrl);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            model.Error = true;
+                            model.ErrorMessage = ex.GetFullMessage(true);
+                        }
+                        if (!model.Error)
+                        {
+                            return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false, ReturnUrl = model.ReturnUrl });
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        return Json(new { error = ex.GetFullMessage(true) });
-                    }
-                    return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false, ReturnUrl = model.ReturnUrl });
                 }
-                return Json(new { error = "User Registration is Disabled" });
+                if (!model.Error)
+                {
+                    model.Error = true;
+                    model.ErrorMessage = "User Registration is Disabled";
+                }
             }
-            return Json(new { error = "You must include all fields." });
+            return GenerateActionResult(new { error = model.ErrorMessage }, View("/Areas/User/Views/User/ViewRegistration.cshtml", model));
         }
 
         [HttpPost]
