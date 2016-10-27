@@ -7,7 +7,7 @@
         <div class="blog-post">
             <h2 class="blog-post-title text-center"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = Model.Blog.User.Username, id = Model.PostId })" id="title_@Model.PostId">@Html.Markdown(@Model.Title)</a></h2>
             <p class="blog-post-meta text-center text-muted">
-                Posted on <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("MMMM dd, yyyy")</time>
+                Posted on <time datetime="@Model.DatePosted.ToString("s")">@Model.DatePosted.ToString("MMMM dd, yyyy")</time>
                 @if (!Model.System)
                 {
                     <text>

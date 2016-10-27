@@ -70,10 +70,10 @@
             <div class="col-sm-3"><!--left col-->
                 <ul class="list-group">
                     <li class="list-group-item text-muted">Profile</li>
-                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.JoinDate.ToString("MMMM dd, yyyy")</time></li>
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.LastSeen.ToString("s")">@Model.JoinDate.ToString("MMMM dd, yyyy")</time></li>
                     @if (OwnProfile && User.Identity.IsAuthenticated)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("o")">@Model.LastSeen.ToString("MMMM dd, yyyy hh:mm tt")</time></li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("s")">@Model.LastSeen.ToString("MMMM dd, yyyy hh:mm tt")</time></li>
                     }
                     @if (!string.IsNullOrEmpty(pgpFingerprint))
                     {
@@ -135,7 +135,7 @@
                                     </div>
                                     <div class="col-sm-3 text-center">
                                         <label for="dateUploaded">Date Uploaded</label>
-                                        <p id="dateUploaded"><time datetime="@upload.DateUploaded.ToString("o")">@upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
+                                        <p id="dateUploaded"><time datetime="@upload.DateUploaded.ToString("s")">@upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
                                     </div>
                                     <div class="col-sm-2 text-center">
                                         <label for="downloads">Downloads</label>
@@ -163,7 +163,7 @@
                                     </div>
                                     <div class="col-sm-3 text-center">
                                         <label for="datePosted">Date Posted</label>
-                                        <p id="datePosted"><time datetime="@paste.DatePosted.ToString("o")">@paste.DatePosted.ToString("MMMM dd, yyyy")</time></p>
+                                        <p id="datePosted"><time datetime="@paste.DatePosted.ToString("s")">@paste.DatePosted.ToString("MMMM dd, yyyy")</time></p>
                                     </div>
                                     <div class="col-sm-3 text-center">
                                         <label for="expireDate">Expire Date</label>
@@ -171,7 +171,7 @@
                                             string expireDate = "Never";
                                             if (paste.ExpireDate != null)
                                             {
-                                                expireDate = "<time datetime=\"" + paste.ExpireDate.Value.ToString("o") + "\">" + paste.ExpireDate.Value.ToString("MMMM dd, yyyy") + "</time>";
+                                                expireDate = "<time datetime=\"" + paste.ExpireDate.Value.ToString("s") + "\">" + paste.ExpireDate.Value.ToString("MMMM dd, yyyy") + "</time>";
                                             }
                                         }
                                         <p id="expireDate">@expireDate</p>
@@ -207,7 +207,7 @@
                                     </div>
                                     <div class="col-sm-5 text-center">
                                         <label for="dateAdded">Date Added</label>
-                                        <p id="dateAdded"><time datetime="@url.DateAdded.ToString("o")">@url.DateAdded.ToString("MMMM dd, yyyy")</time></p>
+                                        <p id="dateAdded"><time datetime="@url.DateAdded.ToString("s")">@url.DateAdded.ToString("MMMM dd, yyyy")</time></p>
                                     </div>
                                     <div class="col-sm-2 text-center">
                                         <label for="views">Views</label>

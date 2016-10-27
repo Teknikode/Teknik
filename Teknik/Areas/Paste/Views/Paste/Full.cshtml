@@ -13,7 +13,7 @@
 <div class="container">
     <div class="row text-center">
         <div class="col-sm-12 text-center">
-            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Posted on <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage">@Model.Syntax</b></small></h2>
+            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Posted on <time datetime="@Model.DatePosted.ToString("s")">@Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage">@Model.Syntax</b></small></h2>
         </div>
     </div>
     <hr />

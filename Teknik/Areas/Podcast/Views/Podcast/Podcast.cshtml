@@ -8,7 +8,7 @@
         <div class="podcast-post">
             <h2 class="podcast-post-title text-center"><a href="@Url.SubRouteUrl("podcast", "Podcast.View", new { episode = Model.Episode })" id="title_@Model.PodcastId">Episode @Model.Episode - @Model.Title</a></h2>
             <p class="podcast-post-meta text-center text-muted">
-                Posted on <time datetime="@Model.DatePosted.ToString("o")">@Model.DatePosted.ToString("MMMM dd, yyyy")</time>
+                Posted on <time datetime="@Model.DatePosted.ToString("s")">@Model.DatePosted.ToString("MMMM dd, yyyy")</time>
                 @if (User.IsInRole("Podcast"))
                 {
                 <br />
