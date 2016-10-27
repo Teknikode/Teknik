@@ -6,14 +6,8 @@ using Teknik.ViewModels;
 
 namespace Teknik.Areas.Admin.ViewModels
 {
-    public class SearchResultViewModel : ViewModelBase
+    public class UserInfoViewModel : ViewModelBase
     {
         public string Username { get; set; }
-
-        public string Email { get; set; }
-
-        public DateTime JoinDate { get; set; }
-
-        public DateTime LastSeen { get; set; }
     }
 }

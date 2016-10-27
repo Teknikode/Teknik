@@ -1,7 +1,12 @@
 ﻿@model Teknik.Areas.Admin.ViewModels.SearchResultViewModel
 
 <div class="row">
-    <div class="col-sm-10 col-sm-offset-1">
-        <a href="@Url.SubRouteUrl("admin", "Admin.UserInfo", new { username = Model.Username })">@Model.Username</a>
+    <div class="row">
+        <div class="col-sm-3">
+            <a href="@Url.SubRouteUrl("admin", "Admin.UserInfo", new { username = Model.Username })">@Model.Username</a>
+        </div>
+        <div class="col-sm-3">@Model.Email</div>
+        <div class="col-sm-3"><time datetime="@Model.JoinDate.ToString("s")">@Model.JoinDate.ToString("MMMM dd, yyyy hh:mm tt")</time></div>
+        <div class="col-sm-3"><time datetime="@Model.LastSeen.ToString("s")">@Model.LastSeen.ToString("MMMM dd, yyyy hh:mm tt")</time></div>
     </div>
 </div>

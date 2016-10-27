@@ -1,6 +1,19 @@
 ﻿@model List<Teknik.Areas.Admin.ViewModels.SearchResultViewModel>
 
-@foreach (var post in Model)
+@if (Model.Any())
 {
-    @Html.Partial("SearchResult", post)
+    <div class="row text-center">
+        <div class="col-sm-3"><b>Username</b></div>
+        <div class="col-sm-3"><b>Email</b></div>
+        <div class="col-sm-3"><b>Join Date</b></div>
+        <div class="col-sm-3"><b>Last Seen</b></div>
+    </div>
+    foreach (var post in Model)
+    {
+        @Html.Partial("SearchResult", post)
+    }
+}
+else
+{
+    <h3>No Results</h3>
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Teknik.Modules
 {
@@ -28,17 +29,17 @@ namespace Teknik.Modules
                 timer.Stop();
                 // Don't interfere with non-HTML responses 
 
-                if (requestContext.Response.ContentType == "text/html" && requestContext.Response.StatusCode == 200)
+                if (requestContext.Response.ContentType == "text/html" && requestContext.Response.StatusCode == 200 && !new HttpRequestWrapper(requestContext.Request).IsAjaxRequest())
                 {
                     double ms = (double)timer.ElapsedMilliseconds;
                     string result = string.Format("{0:F0}", ms);
 
                     requestContext.Response.Write(
-                            "<script type=\"text/javascript\">" + 
+                            "<script type=\"text/javascript\">" +
                                 "var pageGenerationTime = '" + result + "';" +
                                 "pageloadStopTimer();" +
                             "</script >");
-                   }
+                }
             };
         }
     }

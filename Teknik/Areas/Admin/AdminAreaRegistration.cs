@@ -24,7 +24,7 @@ namespace Teknik.Areas.Admin
                  new List<string>() { "admin" }, // Subdomains
                  new List<string>() { config.Host },
                  "",    // URL with parameters 
-                 new { controller = "Admin", action = "Dashboard", username = string.Empty },  // Parameter defaults 
+                 new { controller = "Admin", action = "Dashboard" },  // Parameter defaults 
                  new[] { typeof(Controllers.AdminController).Namespace }
              );
             context.MapSubdomainRoute(
@@ -32,12 +32,20 @@ namespace Teknik.Areas.Admin
                  new List<string>() { "admin" }, // Subdomains
                  new List<string>() { config.Host },
                  "Search",    // URL with parameters 
-                 new { controller = "Admin", action = "Search", username = string.Empty },  // Parameter defaults 
+                 new { controller = "Admin", action = "Search" },  // Parameter defaults 
+                 new[] { typeof(Controllers.AdminController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Admin.UserInfo", // Route name
+                 new List<string>() { "admin" }, // Subdomains
+                 new List<string>() { config.Host },
+                 "User/{username}",    // URL with parameters 
+                 new { controller = "Admin", action = "UserInfo", username = string.Empty },  // Parameter defaults 
                  new[] { typeof(Controllers.AdminController).Namespace }
              );
             context.MapSubdomainRoute(
                  "Admin.Action", // Route name
-                 new List<string>() { "blog" }, // Subdomains
+                 new List<string>() { "admin" }, // Subdomains
                  new List<string>() { config.Host },
                  "Action/{controller}/{action}",    // URL with parameters 
                  new { controller = "Admin", action = "Dashboard" },  // Parameter defaults 
