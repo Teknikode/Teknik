@@ -15,6 +15,7 @@
             type: "POST",
             url: form.attr('action'),
             data: form.serialize(),
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
             xhrFields: {
                 withCredentials: true
             },
@@ -45,6 +46,7 @@
             type: "POST",
             url: form.attr('action'),
             data: form.serialize(),
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
             xhrFields: {
                 withCredentials: true
             },
