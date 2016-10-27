@@ -43,8 +43,6 @@ namespace Teknik
 
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-            HttpContext context = HttpContext.Current;
-            
             // Start the generation time stopwatcher
             var stopwatch = new Stopwatch();
             HttpContext.Current.Items["Stopwatch"] = stopwatch;

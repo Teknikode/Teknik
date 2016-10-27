@@ -236,6 +236,7 @@
     <Compile Include="Areas\User\Models\TrustedDevice.cs" />
     <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
+    <Compile Include="Filters\CORSActionFilter.cs" />
     <Compile Include="Helpers\BundleExtensions.cs" />
     <Compile Include="Models\TransferTypes.cs" />
     <Compile Include="Areas\User\Models\UploadSettings.cs" />

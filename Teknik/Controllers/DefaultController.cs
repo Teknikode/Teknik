@@ -15,6 +15,7 @@ using Teknik.ViewModels;
 
 namespace Teknik.Controllers
 {
+    [CORSActionFilter]
     public class DefaultController : Controller
     {
         private Config _config;

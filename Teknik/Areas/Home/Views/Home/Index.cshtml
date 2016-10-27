@@ -18,13 +18,10 @@
 }
 
 @Styles.Render("~/Content/home")
-@Scripts.Render("~/bundles/home")
 
 <div class="container">
     <div class="row">
-        <center>
-            <img src="@logoPath" class="img-responsive" alt="Teknik">
-        </center>
+        <img src="@logoPath" class="img-responsive center-block" alt="Teknik">
     </div>
     <br />
     <div class="row text-center">
@@ -137,47 +134,38 @@
                 <h3 class="panel-title text-center">Recent News</h3>
             </div>
             <div class="panel-body">
-                <p>
-                    <ul class="list-group">
-                        @if (Model.SitePosts.Any())
-                        {
-                            foreach (BlogPost post in Model.SitePosts)
-                            {
-                                <script>
-                                    var converter = new Markdown.getSanitizingConverter();
-                                    // Title Conversion
-                                    var old_post = $("#title_@post.BlogPostId").text();
-                                    var new_post = converter.makeHtml(old_post);
-                                    $("#title_@post.BlogPostId").html(new_post);
-                                </script>
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="blog-post-sm">
-                                                <h2 class="blog-post-title-sm text-left">
-                                                    <a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId })" id="title_@post.BlogPostId">@post.Title</a>
-                                                </h2>
-                                                <p class="blog-post-meta-sm text-left text-muted">
-                                                    Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        }
-                        else
+                <ul class="list-group">
+                    @if (Model.SitePosts.Any())
+                    {
+                        foreach (BlogPost post in Model.SitePosts)
                         {
                             <li class="list-group-item">
                                 <div class="row">
-                                    <div class="col-sm-12 text-center">
-                                        <h4>No News Available</h4>
+                                    <div class="col-sm-12">
+                                        <div class="blog-post-sm">
+                                            <h2 class="blog-post-title-sm text-left">
+                                                <a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId })" id="title_@post.BlogPostId">@Html.Markdown(post.Title)</a>
+                                            </h2>
+                                            <p class="blog-post-meta-sm text-left text-muted">
+                                                Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </li>
                         }
-                    </ul>
-                </p>
+                    }
+                    else
+                    {
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    <h4>No News Available</h4>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
             </div>
         </div>
     </div>
@@ -188,47 +176,38 @@
                 <h3 class="panel-title text-center">Recent Podcasts</h3>
             </div>
             <div class="panel-body">
-                <p>
-                    <ul class="list-group">
-                        @if (Model.Podcasts.Any())
-                        {
-                            foreach (Podcast podcast in Model.Podcasts)
-                            {
-                                <script>
-                                    var converter = new Markdown.getSanitizingConverter();
-                                    // Title Conversion
-                                    var old_post = $("#title_@podcast.PodcastId").text();
-                                    var new_post = converter.makeHtml(old_post);
-                                    $("#title_@podcast.PodcastId").html(new_post);
-                                </script>
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="blog-post-sm">
-                                                <h2 class="blog-post-title-sm text-left">
-                                                    <a href="@Url.SubRouteUrl("podcast", "Podcast.View", new { episode = podcast.Episode })" id="title_@podcast.PodcastId">@podcast.Title</a>
-                                                </h2>
-                                                <p class="blog-post-meta-sm text-left text-muted">
-                                                    Posted on <time datetime="@podcast.DatePosted.ToString("o")">@podcast.DatePosted.ToString("MMMM dd, yyyy")</time>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        }
-                        else
+                <ul class="list-group">
+                    @if (Model.Podcasts.Any())
+                    {
+                        foreach (Podcast podcast in Model.Podcasts)
                         {
                             <li class="list-group-item">
                                 <div class="row">
-                                    <div class="col-sm-12 text-center">
-                                        <h4>No Podcasts Available</h4>
+                                    <div class="col-sm-12">
+                                        <div class="blog-post-sm">
+                                            <h2 class="blog-post-title-sm text-left">
+                                                <a href="@Url.SubRouteUrl("podcast", "Podcast.View", new { episode = podcast.Episode })" id="title_@podcast.PodcastId">@Html.Markdown(podcast.Title)</a>
+                                            </h2>
+                                            <p class="blog-post-meta-sm text-left text-muted">
+                                                Posted on <time datetime="@podcast.DatePosted.ToString("o")">@podcast.DatePosted.ToString("MMMM dd, yyyy")</time>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </li>
                         }
-                    </ul>
-                </p>
+                    }
+                    else
+                    {
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    <h4>No Podcasts Available</h4>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
             </div>
         </div>
     </div>
@@ -239,46 +218,37 @@
                 <h3 class="panel-title text-center">Recent Blog Posts</h3>
             </div>
             <div class="panel-body">
-                <p>
-                    <ul class="list-group">
-                        @if (Model.BlogPosts.Any())
-                        {
-                            foreach (BlogPost post in Model.BlogPosts)
-                            {
-                                <script>
-                                    var converter = new Markdown.getSanitizingConverter();
-                                    // Title Conversion
-                                    var old_post = $("#title_@post.BlogPostId").text();
-                                    var new_post = converter.makeHtml(old_post);
-                                    $("#title_@post.BlogPostId").html(new_post);
-                                </script>
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="blog-post-sm">
-                                                <h2 class="blog-post-title-sm text-left"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId })" id="title_@post.BlogPostId">@post.Title</a>
-                                                </h2>
-                                                <p class="blog-post-meta-sm text-left text-muted">
-                                                    Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("user", "User.Index", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        }
-                        else
+                <ul class="list-group">
+                    @if (Model.BlogPosts.Any())
+                    {
+                        foreach (BlogPost post in Model.BlogPosts)
                         {
                             <li class="list-group-item">
                                 <div class="row">
-                                    <div class="col-sm-12 text-center">
-                                        <h4>No Posts Available</h4>
+                                    <div class="col-sm-12">
+                                        <div class="blog-post-sm">
+                                            <h2 class="blog-post-title-sm text-left"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId })" id="title_@post.BlogPostId">@Html.Markdown(post.Title)</a>
+                                            </h2>
+                                            <p class="blog-post-meta-sm text-left text-muted">
+                                                Posted on <time datetime="@post.DatePosted.ToString("o")">@post.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("user", "User.Index", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </li>
                         }
-                    </ul>
-                </p>
+                    }
+                    else
+                    {
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    <h4>No Posts Available</h4>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
             </div>
         </div>
     </div>
