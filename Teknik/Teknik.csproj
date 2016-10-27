@@ -587,6 +587,7 @@
     <Content Include="Areas\Admin\Views\Admin\SearchResult.cshtml" />
     <Content Include="Areas\Admin\Views\Admin\SearchResults.cshtml" />
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
+    <Content Include="App_Data\MachineKey.config" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

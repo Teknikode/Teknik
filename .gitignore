@@ -195,3 +195,4 @@ ModelManifest.xml
 /Teknik/Properties/PublishProfiles/IIS.pubxml
 /Teknik/App_Data/ConnectionStrings.config
 /Teknik/App_Data/Config.json.old
+/Teknik/App_Data/MachineKey.config
