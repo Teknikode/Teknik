@@ -11,7 +11,7 @@ namespace Teknik.Configuration
         public bool UploadEnabled { get; set; }
         public bool DownloadEnabled { get; set; }
         // Max upload size in bytes
-        public int MaxUploadSize { get; set; }
+        public long MaxUploadSize { get; set; }
         // Location of the upload directory
         public string UploadDirectory { get; set; }
         // File Extension for saved files
