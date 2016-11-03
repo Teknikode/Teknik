@@ -283,7 +283,14 @@ namespace Teknik.Areas.Upload.Controllers
 
                                 Response.AppendHeader("Content-Disposition", cd.ToString());
 
-                                return File(data, upload.ContentType);
+                                string contentType = upload.ContentType;
+                                // We need to prevent html (make cleaner later)
+                                if (contentType == "text/html")
+                                {
+                                    contentType = "text/plain";
+                                }
+
+                                return File(data, contentType);
                             }
                         }
                     }
