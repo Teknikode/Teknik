@@ -35,7 +35,7 @@ git clone https://git.teknik.io/Teknikode/Teknik
 
   * Open the `Teknik.sln` file to build the project
   * Copy the build files to your `wwwroot` directory
-  * Create a `ConnectionStrings.config` file in the `App_Data` directory and fill it with the following template and put in your SQL server conenction details
+  * Create a `ConnectionStrings.config` file in the `App_Data` directory and fill it with the following template and put in your SQL server connection details
 
   ```nohighlight
   <connectionStrings>
@@ -64,4 +64,3 @@ If you are a developer, we need your help. Teknik is a young project and we have
 
 ## Further information
 If you want to know more about the features of Teknik, check the [Help](https://help.teknik.io/) page. Also, if you're having problems with Teknik, let us know through the [Contact](https://contact.teknik.io/) page. Don't forget to give feedback and suggest new features! :)
-
