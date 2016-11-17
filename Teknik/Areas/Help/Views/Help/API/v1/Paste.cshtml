@@ -69,7 +69,7 @@
                         <select name="format" class="selectpicker">
                             @foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
                             {
-                                <option value="@format.Aliases.FirstOrDefault()">@format.Name</option>
+                                <option value="@format.Aliases.FirstOrDefault()">@format.Aliases.FirstOrDefault()</option>
                             }
                         </select>
                     </td>
