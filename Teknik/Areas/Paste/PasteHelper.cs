@@ -11,7 +11,7 @@ namespace Teknik.Areas.Paste
 {
     public static class PasteHelper
     {
-        public static Models.Paste CreatePaste(string content, string title = "", string syntax = "auto-detect", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
+        public static Models.Paste CreatePaste(string content, string title = "", string syntax = "text", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
         {
             TeknikEntities db = new TeknikEntities();
             Config config = Config.Load();

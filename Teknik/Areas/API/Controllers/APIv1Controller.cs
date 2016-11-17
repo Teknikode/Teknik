@@ -162,7 +162,7 @@ namespace Teknik.Areas.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [TrackPageView]
-        public ActionResult Paste(string code, string title = "", string syntax = "auto", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false, bool doNotTrack = false)
+        public ActionResult Paste(string code, string title = "", string syntax = "text", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false, bool doNotTrack = false)
         {
             try
             {

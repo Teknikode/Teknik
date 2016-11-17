@@ -1,6 +1,7 @@
 ﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
 
 @using Teknik.Helpers
+@using Teknik.Pygments
 
 @Styles.Render("~/Content/help");
 
@@ -59,16 +60,16 @@
                         <code>string</code>
                     </td>
                     <td>
-                        auto-detect
+                        text
                     </td>
                     <td>
                         The syntax of the pasted code.
                         <br />
                         This can be one of the following:
                         <select name="format" class="selectpicker">
-                            @foreach (KeyValuePair<string, string> format in Constants.HIGHLIGHTFORMATS)
+                            @foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
                             {
-                                <option value="@format.Value">@format.Key</option>
+                                <option value="@format.Aliases.FirstOrDefault()">@format.Name</option>
                             }
                         </select>
                     </td>
@@ -146,7 +147,7 @@
             </tbody>
         </table>
         <h4>Response</h4>
-        <pre><code>{"result":{"id":<var>id</var>, "url":"<var>url</var>", "title":"<var>title</var>", "syntax":"<var>auto-detect</var>", "expiration":"<var>datetime</var>", "password":"<var>password</var>"}}</code></pre>
+        <pre><code>{"result":{"id":<var>id</var>, "url":"<var>url</var>", "title":"<var>title</var>", "syntax":"<var>text</var>", "expiration":"<var>datetime</var>", "password":"<var>password</var>"}}</code></pre>
         <table>
             <thead>
                 <tr>
