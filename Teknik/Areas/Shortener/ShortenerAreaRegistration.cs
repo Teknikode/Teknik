@@ -43,6 +43,14 @@ namespace Teknik.Areas.Shortener
                  new { controller = "Shortener", action = "RedirectToUrl" },  // Parameter defaults 
                  new[] { typeof(Controllers.ShortenerController).Namespace }
              );
+            context.MapSubdomainRoute(
+                 "Shortener.Verify", // Route name
+                 new List<string>() { string.Empty }, // Subdomains
+                 new List<string>() { config.ShortenerConfig.ShortenerHost }, // domains
+                 "",    // URL with parameters 
+                 new { controller = "Shortener", action = "Verify" },  // Parameter defaults 
+                 new[] { typeof(Controllers.ShortenerController).Namespace }
+             );
 
             // Register Script Bundles
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/shortener", config.CdnHost).Include(

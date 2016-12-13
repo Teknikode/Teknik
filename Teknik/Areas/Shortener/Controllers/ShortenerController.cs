@@ -69,5 +69,13 @@ namespace Teknik.Areas.Shortener.Controllers
             }
             return Json(new { error = "Must be a valid Url" });
         }
+
+        [AllowAnonymous]
+        public ActionResult Verify()
+        {
+            ViewBag.Title = "Url Shortener Verification - " + Config.Title;
+            ShortenViewModel model = new ShortenViewModel();
+            return View(model);
+        }
     }
 }
