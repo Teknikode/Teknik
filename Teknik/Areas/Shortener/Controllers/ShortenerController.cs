@@ -74,8 +74,7 @@ namespace Teknik.Areas.Shortener.Controllers
         public ActionResult Verify()
         {
             ViewBag.Title = "Url Shortener Verification - " + Config.Title;
-            ShortenViewModel model = new ShortenViewModel();
-            return View(model);
+            return View();
         }
     }
 }

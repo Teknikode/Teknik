@@ -590,7 +590,7 @@
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="App_Data\MachineKey.config" />
     <Content Include="Areas\Admin\Views\Admin\UserInfo.cshtml" />
-    <Content Include="Areas\Shortener\Views\Shortener\View.cshtml" />
+    <Content Include="Areas\Shortener\Views\Shortener\Verify.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
