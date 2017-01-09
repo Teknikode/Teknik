@@ -75,7 +75,7 @@ namespace Teknik.Controllers
         {
             // Get favicon
             string file = Server.MapPath(Constants.ROBOTS_PATH);
-            return File(file, "plain/text");
+            return File(file, "text/plain");
         }
 
         [HttpGet]
