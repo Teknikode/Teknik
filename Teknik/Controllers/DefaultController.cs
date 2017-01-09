@@ -68,6 +68,16 @@ namespace Teknik.Controllers
             return File(imageFile, "image/svg+xml");
         }
 
+        // Get the Logo
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Robots()
+        {
+            // Get favicon
+            string file = Server.MapPath(Constants.ROBOTS_PATH);
+            return File(file, "plain/text");
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public ActionResult NotFound()

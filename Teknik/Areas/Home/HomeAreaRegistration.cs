@@ -42,6 +42,16 @@ namespace Teknik.Areas.Home
                  new[] { typeof(DefaultController).Namespace }
              );
 
+            // Handle robots.txt file requests
+            context.MapSubdomainRoute(
+                 "Default.Robots", // Route name
+                 new List<string>() { "*" }, // Subdomains
+                 new List<string>() { config.Host, config.ShortenerConfig.ShortenerHost }, // domains
+                 "robots.txt",    // URL with parameters 
+                 new { controller = "Default", action = "Robots" },  // Parameter defaults 
+                 new[] { typeof(DefaultController).Namespace }
+             );
+
             // Register fallback for all bad requests
             context.MapSubdomainRoute(
                  "Default.NotFound", // Route name

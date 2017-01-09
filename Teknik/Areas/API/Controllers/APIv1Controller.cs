@@ -14,6 +14,7 @@ using System.Text;
 using Teknik.Areas.Shortener.Models;
 using nClam;
 using Teknik.Filters;
+using Teknik.Areas.API.Models;
 
 namespace Teknik.Areas.API.Controllers
 {
@@ -30,22 +31,21 @@ namespace Teknik.Areas.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [TrackPageView]
-        public ActionResult Upload(HttpPostedFileWrapper file, string contentType = null, bool encrypt = true, bool saveKey = true, string key = null, int keySize = 0, string iv = null, int blockSize = 0, bool genDeletionKey = false, bool doNotTrack = false)
+        public ActionResult Upload(APIv1UploadModel model)
         {
             try
             {
-                ViewBag.Title = "Upload";
-                if (file != null)
+                if (model.file != null)
                 {
-                    if (file.ContentLength <= Config.UploadConfig.MaxUploadSize)
+                    if (model.file.ContentLength <= Config.UploadConfig.MaxUploadSize)
                     {
                         // convert file to bytes
                         byte[] fileData = null;
-                        string fileExt = Path.GetExtension(file.FileName);
-                        int contentLength = file.ContentLength;
-                        using (var binaryReader = new BinaryReader(file.InputStream))
+                        string fileExt = Path.GetExtension(model.file.FileName);
+                        int contentLength = model.file.ContentLength;
+                        using (var binaryReader = new BinaryReader(model.file.InputStream))
                         {
-                            fileData = binaryReader.ReadBytes(file.ContentLength);
+                            fileData = binaryReader.ReadBytes(model.file.ContentLength);
                         }
 
                         // Scan the file to detect a virus
@@ -53,13 +53,13 @@ namespace Teknik.Areas.API.Controllers
                         {
                             byte[] scanData = fileData;
                             // If it was encrypted client side, decrypt it
-                            if (!encrypt && key != null)
+                            if (!model.encrypt && model.key != null)
                             {
                                 // If the IV is set, and Key is set, then decrypt it
-                                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
+                                if (!string.IsNullOrEmpty(model.key) && !string.IsNullOrEmpty(model.iv))
                                 {
                                     // Decrypt the data
-                                    scanData = AES.Decrypt(scanData, key, iv);
+                                    scanData = AES.Decrypt(scanData, model.key, model.iv);
                                 }
                             }
                             ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
@@ -80,32 +80,32 @@ namespace Teknik.Areas.API.Controllers
                         }
 
                         // Need to grab the contentType if it's empty
-                        if (string.IsNullOrEmpty(contentType))
+                        if (string.IsNullOrEmpty(model.contentType))
                         {
-                            contentType = (string.IsNullOrEmpty(file.ContentType)) ? "application/octet-stream" : file.ContentType;
+                            model.contentType = (string.IsNullOrEmpty(model.file.ContentType)) ? "application/octet-stream" : model.file.ContentType;
                         }
 
                         // Initialize the key size and block size if empty
-                        if (keySize <= 0)
-                            keySize = Config.UploadConfig.KeySize;
-                        if (blockSize <= 0)
-                            blockSize = Config.UploadConfig.BlockSize;
+                        if (model.keySize <= 0)
+                            model.keySize = Config.UploadConfig.KeySize;
+                        if (model.blockSize <= 0)
+                            model.blockSize = Config.UploadConfig.BlockSize;
 
                         byte[] data = null;
                         // If they want us to encrypt the file first, do that here
-                        if (encrypt)
+                        if (model.encrypt)
                         {
                             // Generate key and iv if empty
-                            if (string.IsNullOrEmpty(key))
+                            if (string.IsNullOrEmpty(model.key))
                             {
-                                key = Utility.RandomString(keySize / 8);
+                                model.key = Utility.RandomString(model.keySize / 8);
                             }
-                            if (string.IsNullOrEmpty(iv))
+                            if (string.IsNullOrEmpty(model.iv))
                             {
-                                iv = Utility.RandomString(blockSize / 8);
+                                model.iv = Utility.RandomString(model.blockSize / 8);
                             }
 
-                            data = AES.Encrypt(fileData, key, iv);
+                            data = AES.Encrypt(fileData, model.key, model.iv);
                             if (data == null || data.Length <= 0)
                             {
                                 return Json(new { error = new { message = "Unable to encrypt file" } });
@@ -113,12 +113,12 @@ namespace Teknik.Areas.API.Controllers
                         }
 
                         // Save the file data
-                        Upload.Models.Upload upload = Uploader.SaveFile(db, Config, (encrypt) ? data : fileData, contentType, contentLength, fileExt, iv, (saveKey) ? key : null, keySize, blockSize);
+                        Upload.Models.Upload upload = Uploader.SaveFile(db, Config, (model.encrypt) ? data : fileData, model.contentType, contentLength, fileExt, model.iv, (model.saveKey) ? model.key : null, model.keySize, model.blockSize);
 
                         if (upload != null)
                         {
                             // Generate delete key if asked to
-                            if (genDeletionKey)
+                            if (model.genDeletionKey)
                             {
                                 string delKey = Utility.RandomString(Config.UploadConfig.DeleteKeyLength);
                                 upload.DeleteKey = delKey;
@@ -130,14 +130,14 @@ namespace Teknik.Areas.API.Controllers
                             string fullUrl = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url });
                             var returnData = new
                             {
-                                url = (saveKey || string.IsNullOrEmpty(key)) ? fullUrl : fullUrl + "#" + key,
+                                url = (model.saveKey || string.IsNullOrEmpty(model.key)) ? fullUrl : fullUrl + "#" + model.key,
                                 fileName = upload.Url,
-                                contentType = contentType,
+                                contentType = model.contentType,
                                 contentLength = contentLength,
-                                key = key,
-                                keySize = keySize,
-                                iv = iv,
-                                blockSize = blockSize,
+                                key = model.key,
+                                keySize = model.keySize,
+                                iv = model.iv,
+                                blockSize = model.blockSize,
                                 deletionKey = upload.DeleteKey
 
                             };
@@ -150,7 +150,6 @@ namespace Teknik.Areas.API.Controllers
                         return Json(new { error = new { message = "File Too Large" } });
                     }
                 }
-
                 return Json(new { error = new { message = "Invalid Upload Request" } });
             }
             catch(Exception ex)
@@ -162,28 +161,31 @@ namespace Teknik.Areas.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [TrackPageView]
-        public ActionResult Paste(string code, string title = "", string syntax = "text", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false, bool doNotTrack = false)
+        public ActionResult Paste(APIv1PasteModel model)
         {
             try
             {
-                ViewBag.Title = "Paste";
-                Paste.Models.Paste paste = PasteHelper.CreatePaste(code, title, syntax, expireUnit, expireLength, password, hide);
-
-                db.Pastes.Add(paste);
-                db.SaveChanges();
-
-                return Json(new
+                if (model != null && model.code != null)
                 {
-                    result = new
+                    Paste.Models.Paste paste = PasteHelper.CreatePaste(model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password, model.hide);
+
+                    db.Pastes.Add(paste);
+                    db.SaveChanges();
+
+                    return Json(new
                     {
-                        id = paste.Url,
-                        url = Url.SubRouteUrl("paste", "Paste.View", new { type = "Full", url = paste.Url, password = password }),
-                        title = paste.Title,
-                        syntax = paste.Syntax,
-                        expiration = paste.ExpireDate,
-                        password = password
-                    }
-                });
+                        result = new
+                        {
+                            id = paste.Url,
+                            url = Url.SubRouteUrl("paste", "Paste.View", new { type = "Full", url = paste.Url, password = model.password }),
+                            title = paste.Title,
+                            syntax = paste.Syntax,
+                            expiration = paste.ExpireDate,
+                            password = model.password
+                        }
+                    });
+                }
+                return Json(new { error = new { message = "Invalid Paste Request" } });
             }
             catch (Exception ex)
             {
@@ -194,14 +196,13 @@ namespace Teknik.Areas.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [TrackPageView]
-        public ActionResult Shorten(string url, bool doNotTrack = false)
+        public ActionResult Shorten(APIv1ShortenModel model)
         {
             try
             {
-                ViewBag.Title = "Shorten";
-                if (url.IsValidUrl())
+                if (model.url.IsValidUrl())
                 {
-                    ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(url, Config.ShortenerConfig.UrlLength);
+                    ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(model.url, Config.ShortenerConfig.UrlLength);
 
                     db.ShortenedUrls.Add(newUrl);
                     db.SaveChanges();
@@ -217,7 +218,7 @@ namespace Teknik.Areas.API.Controllers
                         result = new
                         {
                             shortUrl = shortUrl,
-                            originalUrl = url
+                            originalUrl = model.url
                         }
                     });
                 }

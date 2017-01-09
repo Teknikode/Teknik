@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Error.ViewModels;
 using Teknik.Controllers;
 using Teknik.Filters;
+using Teknik.Helpers;
 
 namespace Teknik.Areas.Error.Controllers
 {
@@ -148,7 +149,7 @@ Message: {0}
 
 Source: {1}
 
-Stack Trace: {2}", ex.Message, ex.Source, ex.StackTrace);
+Stack Trace: {2}", ex.GetFullMessage(true), ex.Source, ex.StackTrace);
                 mail.BodyEncoding = UTF8Encoding.UTF8;
                 mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
