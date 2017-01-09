@@ -349,7 +349,9 @@
     <Content Include="App_Data\reservedUsernames.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="App_Data\robots.txt" />
+    <Content Include="App_Data\robots.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Areas\Admin\Scripts\Search.js" />
     <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
