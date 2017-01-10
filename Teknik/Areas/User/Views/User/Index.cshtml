@@ -1,6 +1,7 @@
 ﻿@model Teknik.Areas.Users.ViewModels.ProfileViewModel
 
 @using Teknik.Helpers
+@using Teknik.Utilities
 @using Teknik.Areas.Paste
 @using Teknik.Areas.Upload
 
@@ -127,7 +128,7 @@
                                 <div class="panel-body">
                                     <div class="col-sm-2 text-center">
                                         <label for="size">Size</label>
-                                        <p id="size">@Utility.GetBytesReadable(upload.ContentLength)</p>
+                                        <p id="size">@StringHelper.GetBytesReadable(upload.ContentLength)</p>
                                     </div>
                                     <div class="col-sm-3 text-center">
                                         <label for="type">Type</label>

@@ -1,6 +1,6 @@
 ﻿@model Teknik.Areas.Transparency.ViewModels.TransparencyViewModel
 
-@using Teknik.Helpers
+@using Teknik.Utilities
 @using Teknik.Areas.Transparency.Models
 
 @Scripts.Render("~/bundles/transparency")
@@ -28,7 +28,7 @@
                     <div class="col-sm-6">
                         <h3>Uploads</h3>
                         <p>Number of Uploads: @Model.UploadCount</p>
-                        <p>Total Size: @Utility.GetBytesReadable(Model.UploadSize)</p>
+                        <p>Total Size: @StringHelper.GetBytesReadable(Model.UploadSize)</p>
                     </div>
                     <div class="col-sm-6">
                         <h3>Pastes</h3>

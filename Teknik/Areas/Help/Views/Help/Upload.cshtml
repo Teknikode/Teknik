@@ -1,6 +1,6 @@
 ﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
 
-@using Teknik.Helpers
+@using Teknik.Utilities
 
 <div class="container">
     <div class="row">
@@ -36,7 +36,7 @@
             </p>
             <h3>Upload Requirements</h3>
             <p>
-                The maximum file size per upload is <b>@Utility.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</b>
+                The maximum file size per upload is <b>@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</b>
             </p>
             <p>
                 Each file is scanned for viruses at upload.  If it fails, it will cancel the upload.  Currently only files that are unencrypted when being sent to the server will be scanned successfully for viruses.  If the file is encrypted client side, the encrypted data will be checked.  This could create a false positive, but since the key is randomly generated, the next attempt should not be flagged.

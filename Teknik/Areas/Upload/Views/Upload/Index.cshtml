@@ -1,6 +1,6 @@
 ﻿@model Teknik.Areas.Upload.ViewModels.UploadViewModel
 
-@using Teknik.Helpers
+@using Teknik.Utilities
 
 <script>
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
@@ -68,7 +68,7 @@
             To view the file decrypted, you must use the direct Teknik link in a javascript enabled browser or save the key to the server.
         </p>
         <p>
-            The maximum file size per upload is <b>@Utility.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</b>
+            The maximum file size per upload is <b>@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</b>
         </p>
     </div>
     <div class="text-center">

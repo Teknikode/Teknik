@@ -1,6 +1,6 @@
 ﻿@model Teknik.Areas.Upload.ViewModels.DownloadViewModel
 
-@using Teknik.Helpers
+@using Teknik.Utilities
 
 <script>
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
@@ -24,7 +24,7 @@
                     <dt>Content-Type</dt>
                     <dd>@Model.ContentType</dd>
                     <dt>File Size</dt>
-                    <dd>@(Utility.GetBytesReadable(Model.ContentLength))</dd>
+                    <dd>@(StringHelper.GetBytesReadable(Model.ContentLength))</dd>
                 </dl>
             </div>
         </div>
