@@ -17,6 +17,7 @@ using Teknik.Areas.Users.Models;
 using Teknik.Configuration;
 using Teknik.Helpers;
 using Teknik.Models;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Users.Utility
 {
@@ -437,7 +438,7 @@ namespace Teknik.Areas.Users.Utility
             }
 
             // Create a new verification code and add it
-            string verifyCode = Helpers.Utility.RandomString(24);
+            string verifyCode = StringHelper.RandomString(24);
             RecoveryEmailVerification ver = new RecoveryEmailVerification();
             ver.UserId = user.UserId;
             ver.Code = verifyCode;
@@ -518,7 +519,7 @@ Thank you and enjoy!
             }
 
             // Create a new verification code and add it
-            string verifyCode = Helpers.Utility.RandomString(24);
+            string verifyCode = StringHelper.RandomString(24);
             ResetPasswordVerification ver = new ResetPasswordVerification();
             ver.UserId = user.UserId;
             ver.Code = verifyCode;

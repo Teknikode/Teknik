@@ -17,6 +17,7 @@ using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Helpers;
 using Teknik.Models;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Upload.Controllers
 {
@@ -102,7 +103,7 @@ namespace Teknik.Areas.Upload.Controllers
                             // Generate key and iv if empty
                             if (string.IsNullOrEmpty(key))
                             {
-                                key = Utility.RandomString(keySize / 8);
+                                key = StringHelper.RandomString(keySize / 8);
                             }
 
                             fileData = AES.Encrypt(fileData, key, iv);
@@ -380,7 +381,7 @@ namespace Teknik.Areas.Upload.Controllers
             Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
             if (upload != null)
             {
-                string delKey = Utility.RandomString(Config.UploadConfig.DeleteKeyLength);
+                string delKey = StringHelper.RandomString(Config.UploadConfig.DeleteKeyLength);
                 upload.DeleteKey = delKey;
                 db.Entry(upload).State = EntityState.Modified;
                 db.SaveChanges();

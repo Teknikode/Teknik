@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.IO;
-using Teknik.Configuration;
-using Teknik.Models;
-using Teknik.Helpers;
-using Teknik.Utilities;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Teknik.Areas.Upload
+namespace Teknik.Utilities
 {
-    public static class Uploader
+    public class Uploader
     {
         public static Models.Upload SaveFile(TeknikEntities db, Config config, byte[] file, string contentType, int contentLength)
         {
@@ -47,10 +44,10 @@ namespace Teknik.Areas.Upload
 
             // Generate a unique url
             string extension = (config.UploadConfig.IncludeExtension) ? Utility.GetDefaultExtension(contentType, defaultExtension) : string.Empty;
-            string url = StringHelper.RandomString(config.UploadConfig.UrlLength) + extension;
+            string url = Utility.RandomString(config.UploadConfig.UrlLength) + extension;
             while (db.Uploads.Where(u => u.Url == url).FirstOrDefault() != null)
             {
-                url = StringHelper.RandomString(config.UploadConfig.UrlLength) + extension;
+                url = Utility.RandomString(config.UploadConfig.UrlLength) + extension;
             }
 
             // Now we need to update the database with the new upload information

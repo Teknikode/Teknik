@@ -6,6 +6,7 @@ using System.Web;
 using Teknik.Configuration;
 using Teknik.Helpers;
 using Teknik.Models;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Paste
 {
@@ -21,10 +22,10 @@ namespace Teknik.Areas.Paste
             paste.Views = 0;
 
             // Generate random url
-            string url = Utility.RandomString(config.PasteConfig.UrlLength);
+            string url = StringHelper.RandomString(config.PasteConfig.UrlLength);
             while (db.Pastes.Where(p => p.Url == url).FirstOrDefault() != null)
             {
-                url = Utility.RandomString(config.PasteConfig.UrlLength);
+                url = StringHelper.RandomString(config.PasteConfig.UrlLength);
             }
             paste.Url = url;
 
@@ -58,8 +59,8 @@ namespace Teknik.Areas.Paste
             // Set the hashed password if one is provided and encrypt stuff
             if (!string.IsNullOrEmpty(password))
             {
-                string key = Utility.RandomString(config.PasteConfig.KeySize / 8);
-                string iv = Utility.RandomString(config.PasteConfig.BlockSize / 16);
+                string key = StringHelper.RandomString(config.PasteConfig.KeySize / 8);
+                string iv = StringHelper.RandomString(config.PasteConfig.BlockSize / 16);
                 paste.HashedPassword = SHA384.Hash(key, password).ToHex();
 
                 // Encrypt Content

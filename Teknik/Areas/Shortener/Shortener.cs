@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Teknik.Areas.Shortener.Models;
 using Teknik.Helpers;
 using Teknik.Models;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Shortener
 {
@@ -16,10 +17,10 @@ namespace Teknik.Areas.Shortener
             TeknikEntities db = new TeknikEntities();
             
             // Generate the shortened url
-            string shortUrl = Utility.RandomString(length);
+            string shortUrl = StringHelper.RandomString(length);
             while (db.ShortenedUrls.Where(s => s.ShortUrl == shortUrl).FirstOrDefault() != null)
             {
-                shortUrl = Utility.RandomString(length);
+                shortUrl = StringHelper.RandomString(length);
             }
 
             ShortenedUrl newUrl = new ShortenedUrl();

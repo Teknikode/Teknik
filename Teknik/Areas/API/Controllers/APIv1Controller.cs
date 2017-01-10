@@ -14,6 +14,7 @@ using System.Text;
 using Teknik.Areas.Shortener.Models;
 using nClam;
 using Teknik.Filters;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.API.Controllers
 {
@@ -98,11 +99,11 @@ namespace Teknik.Areas.API.Controllers
                             // Generate key and iv if empty
                             if (string.IsNullOrEmpty(key))
                             {
-                                key = Utility.RandomString(keySize / 8);
+                                key = StringHelper.RandomString(keySize / 8);
                             }
                             if (string.IsNullOrEmpty(iv))
                             {
-                                iv = Utility.RandomString(blockSize / 8);
+                                iv = StringHelper.RandomString(blockSize / 8);
                             }
 
                             data = AES.Encrypt(fileData, key, iv);
@@ -120,7 +121,7 @@ namespace Teknik.Areas.API.Controllers
                             // Generate delete key if asked to
                             if (genDeletionKey)
                             {
-                                string delKey = Utility.RandomString(Config.UploadConfig.DeleteKeyLength);
+                                string delKey = StringHelper.RandomString(Config.UploadConfig.DeleteKeyLength);
                                 upload.DeleteKey = delKey;
                                 db.Entry(upload).State = EntityState.Modified;
                                 db.SaveChanges();
