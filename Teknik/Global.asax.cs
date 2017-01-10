@@ -108,8 +108,10 @@ namespace Teknik
 
         protected void Application_Error(object sender, EventArgs e)
         {
+            // Get the last exception
             Exception exception = Server.GetLastError();
-
+            
+            // Clear the response
             Response.Clear();
 
             HttpException httpException = exception as HttpException;

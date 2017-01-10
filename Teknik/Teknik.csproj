@@ -192,6 +192,10 @@
     <Compile Include="Areas\API\APIAreaRegistration.cs" />
     <Compile Include="Areas\API\Controllers\APIController.cs" />
     <Compile Include="Areas\API\Controllers\APIv1Controller.cs" />
+    <Compile Include="Areas\API\Models\APIv1BaseModel.cs" />
+    <Compile Include="Areas\API\Models\APIv1PasteModel.cs" />
+    <Compile Include="Areas\API\Models\APIv1ShortenModel.cs" />
+    <Compile Include="Areas\API\Models\APIv1UploadModel.cs" />
     <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
     <Compile Include="Areas\Blog\Models\BlogPostComment.cs" />
     <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
@@ -343,6 +347,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\reservedUsernames.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\robots.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Areas\Admin\Scripts\Search.js" />
@@ -665,7 +672,6 @@
     <Folder Include="Areas\About\Views\Shared\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
-    <Folder Include="Areas\API\Models\" />
     <Folder Include="Areas\API\Views\APIv1\" />
     <Folder Include="Areas\API\Views\API\" />
     <Folder Include="Areas\API\Views\Shared\" />
