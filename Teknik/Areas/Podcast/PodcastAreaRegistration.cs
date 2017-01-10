@@ -31,7 +31,7 @@ namespace Teknik.Areas.Podcast
                  "Podcast.View", // Route name
                  new List<string>() { "podcast" }, // Subdomains
                  new List<string>() { config.Host }, // domains
-                 "{episode}",    // URL with parameters 
+                 "ep/{episode}",    // URL with parameters 
                  new { controller = "Podcast", action = "View" },  // Parameter defaults 
                  new[] { typeof(Controllers.PodcastController).Namespace }
              );
