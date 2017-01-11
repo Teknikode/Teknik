@@ -12,5 +12,14 @@ namespace Teknik.Logging
         {
 
         }
+
+        public void WriteEntry(Exception ex)
+        {
+            // write an entry to the logs
+        }
+
+        public void WriteEntry(string message, LogLevel level)
+        {
+        }
     }
 }

@@ -41,6 +41,7 @@ namespace Teknik.Configuration
         private ShortenerConfig     _ShortenerConfig;
         private TransparencyConfig  _TransparencyConfig;
         private DatabaseConfig      _DatabaseConfig;
+        private LoggingConfig       _LoggingConfig;
         private PiwikConfig         _PiwikConfig;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }       set { _DevEnvironment = value; } }
@@ -98,6 +99,9 @@ namespace Teknik.Configuration
         // Database Configuration
         public DatabaseConfig       DatabaseConfig      { get { return _DatabaseConfig; }       set { _DatabaseConfig = value; } }
 
+        // Logging Configuration
+        public LoggingConfig        LoggingConfig       { get { return _LoggingConfig; }        set { _LoggingConfig = value; } }
+
         // Piwik Configuration
         public PiwikConfig          PiwikConfig         { get { return _PiwikConfig; }          set { _PiwikConfig = value; } }
 
@@ -139,6 +143,7 @@ namespace Teknik.Configuration
             ShortenerConfig     = new ShortenerConfig();
             TransparencyConfig  = new TransparencyConfig();
             DatabaseConfig      = new DatabaseConfig();
+            LoggingConfig       = new LoggingConfig();
             PiwikConfig         = new PiwikConfig();
         }
 
