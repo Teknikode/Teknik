@@ -593,13 +593,9 @@ namespace Teknik.Areas.Users.Controllers
 
             if (verified)
             {
-                // The password reset code is valid, let's log them in
+                // The password reset code is valid, let's get their user account for this session
                 User user = UserHelper.GetUser(db, username);
-                user.LastSeen = DateTime.Now;
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
-                HttpCookie authcookie = UserHelper.CreateAuthCookie(user.Username, false, Request.Url.Host.GetDomain(), Request.IsLocal);
-                Response.Cookies.Add(authcookie);
+                Session["AuthenticatedUser"] = user;
             }
 
             ResetPasswordVerificationViewModel model = new ResetPasswordVerificationViewModel();
@@ -609,6 +605,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult SetUserPassword(string password, string confirmPassword)
         {
@@ -616,7 +613,7 @@ namespace Teknik.Areas.Users.Controllers
             {
                 try
                 {
-                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    User user = (User)Session["AuthenticatedUser"];
                     if (user != null)
                     {
                         if (string.IsNullOrEmpty(password))
