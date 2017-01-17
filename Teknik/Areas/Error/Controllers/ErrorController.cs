@@ -151,7 +151,7 @@ Source: {1}
 IP Address: {2}
 Referer Address: {3} 
 
-Stack Trace: {4}", ex.GetFullMessage(true), ex.Source, GetIPAddress(), Request.UrlReferrer.AbsoluteUri, ex.StackTrace);
+Stack Trace: {4}", ex.GetFullMessage(true), ex.Source, GetIPAddress(), Request.UrlReferrer != null ? Request.UrlReferrer.AbsoluteUri : string.Empty, ex.StackTrace);
                 mail.BodyEncoding = UTF8Encoding.UTF8;
                 mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
@@ -162,8 +162,7 @@ Stack Trace: {4}", ex.GetFullMessage(true), ex.Source, GetIPAddress(), Request.U
 
         private string GetIPAddress()
         {
-            System.Web.HttpContext context = System.Web.HttpContext.Current;
-            string ipAddress = context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            string ipAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
 
             if (!string.IsNullOrEmpty(ipAddress))
             {
@@ -174,7 +173,7 @@ Stack Trace: {4}", ex.GetFullMessage(true), ex.Source, GetIPAddress(), Request.U
                 }
             }
 
-            return context.Request.ServerVariables["REMOTE_ADDR"];
+            return Request.ServerVariables["REMOTE_ADDR"];
         }
     }
 }
