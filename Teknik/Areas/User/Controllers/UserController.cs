@@ -625,7 +625,8 @@ namespace Teknik.Areas.Users.Controllers
                             return Json(new { error = "Passwords must match" });
                         }
 
-                        UserHelper.EditAccount(db, Config, user, true, password);
+                        User newUser = UserHelper.GetUser(db, user.Username);
+                        UserHelper.EditAccount(db, Config, newUser, true, password);
 
                         return Json(new { result = true });
                     }
