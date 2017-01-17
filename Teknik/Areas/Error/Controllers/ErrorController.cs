@@ -148,14 +148,33 @@ namespace Teknik.Areas.Error.Controllers
 Message: {0}
 
 Source: {1}
+IP Address: {2}
+Referer Address: {3} 
 
-Stack Trace: {2}", ex.GetFullMessage(true), ex.Source, ex.StackTrace);
+Stack Trace: {4}", ex.GetFullMessage(true), ex.Source, GetIPAddress(), Request.UrlReferrer.AbsoluteUri, ex.StackTrace);
                 mail.BodyEncoding = UTF8Encoding.UTF8;
                 mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
                 client.Send(mail);
             }
             catch (Exception) { /* don't handle something in the handler */ }
+        }
+
+        private string GetIPAddress()
+        {
+            System.Web.HttpContext context = System.Web.HttpContext.Current;
+            string ipAddress = context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+
+            if (!string.IsNullOrEmpty(ipAddress))
+            {
+                string[] addresses = ipAddress.Split(',');
+                if (addresses.Length != 0)
+                {
+                    return addresses[0];
+                }
+            }
+
+            return context.Request.ServerVariables["REMOTE_ADDR"];
         }
     }
 }
