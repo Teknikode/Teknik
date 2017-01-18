@@ -9,6 +9,7 @@ using Teknik.Areas.Error.ViewModels;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Utilities;
+using Teknik.Logging;
 
 namespace Teknik.Areas.Error.Controllers
 {
@@ -27,10 +28,18 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
+            string errorMessage = "General Exception";
+            if (Request != null && Request.Url != null)
+            {
+                errorMessage += " on page: " + Request.Url.AbsoluteUri;
+            }
+
+            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
-            return View("/Areas/Error/Views/Error/Exception.cshtml", model);
+            return View("~/Areas/Error/Views/Error/Exception.cshtml", model);
         }
 
         [TrackPageView]
@@ -46,11 +55,19 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
+            string errorMessage = "General HTTP Exception";
+            if (Request != null && Request.Url != null)
+            {
+                errorMessage += " on page: " + Request.Url.AbsoluteUri;
+            }
+
+            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+
             ErrorViewModel model = new ErrorViewModel();
             model.Description = exception.Message;
             model.Exception = exception;
 
-            return View("/Areas/Error/Views/Error/General.cshtml", model);
+            return View("~/Areas/Error/Views/Error/General.cshtml", model);
         }
         
         [AllowAnonymous]
@@ -65,10 +82,18 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
+            string errorMessage = "Access Denied";
+            if (Request != null && Request.Url != null)
+            {
+                errorMessage += " on page: " + Request.Url.AbsoluteUri;
+            }
+
+            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
-            return View("/Areas/Error/Views/Error/Http403.cshtml", model);
+            return View("~/Areas/Error/Views/Error/Http403.cshtml", model);
         }
         
         [AllowAnonymous]
@@ -83,10 +108,18 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
+            string errorMessage = "Page Not Found";
+            if (Request != null && Request.Url != null)
+            {
+                errorMessage += " for page: " + Request.Url.AbsoluteUri;
+            }
+
+            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
-            return View("/Areas/Error/Views/Error/Http404.cshtml", model);
+            return View("~/Areas/Error/Views/Error/Http404.cshtml", model);
         }
 
         [TrackPageView]
@@ -102,10 +135,18 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
+            string errorMessage = "Server Error";
+            if (Request != null && Request.Url != null)
+            {
+                errorMessage += " on page: " + Request.Url.AbsoluteUri;
+            }
+
+            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
-            return View("/Areas/Error/Views/Error/Http500.cshtml", model);
+            return View("~/Areas/Error/Views/Error/Http500.cshtml", model);
         }
 
         private string GetIPAddress()

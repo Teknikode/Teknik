@@ -10,8 +10,10 @@ using Teknik.Utilities;
 
 namespace Teknik.Logging
 {
-    public static class Logging
+    public static class Logger
     {
+        private static object Locker = new object();
+
         private static Config m_Config
         {
             get
@@ -61,45 +63,49 @@ namespace Teknik.Logging
 
                 if (log.Level >= minLogLevel)
                 {
-                    if (!Directory.Exists(m_Config.LoggingConfig.OutputDirectory))
+                    // Lock the file processing so only 1 thread is working on the log file at a time
+                    lock (Locker)
                     {
-                        Directory.CreateDirectory(m_Config.LoggingConfig.OutputDirectory);
-                    }
-                    // Get current log file
-                    string fileName = Constants.LOG_FILE_NAME_PREFIX + Constants.LOG_FILE_EXT;
-                    string logFile = Path.Combine(m_Config.LoggingConfig.OutputDirectory, fileName);
-
-                    if (File.Exists(logFile))
-                    {
-                        // File already exists, so lets see if we need to rotate it
-                        if (m_Config.LoggingConfig.RotateLogs)
+                        if (!Directory.Exists(m_Config.LoggingConfig.OutputDirectory))
                         {
-                            FileInfo info = new FileInfo(logFile);
-                            if (m_Config.LoggingConfig.MaxSize < info.Length && m_Config.LoggingConfig.MaxSize > 0)
-                            {
-                                // File is too large, so let's create a new name for it based on todays date
-                                string newFileName = Constants.LOG_FILE_NAME_PREFIX + "_" + DateTime.Now.ToString("yyyyMMdd") + Constants.LOG_FILE_EXT;
-                                newFileName = FileHelper.MakeUniqueFilename(newFileName, m_Config.LoggingConfig.OutputDirectory);
-                                string newLog = Path.Combine(m_Config.LoggingConfig.OutputDirectory, newFileName);
+                            Directory.CreateDirectory(m_Config.LoggingConfig.OutputDirectory);
+                        }
+                        // Get current log file
+                        string fileName = Constants.LOG_FILE_NAME_PREFIX + Constants.LOG_FILE_EXT;
+                        string logFile = Path.Combine(m_Config.LoggingConfig.OutputDirectory, fileName);
 
-                                // Move the current file to the new file
-                                File.Move(logFile, newLog);
-                            }
-
-                            // Make sure we have less than the max number of logs
-                            List<string> totalFiles = Directory.GetFiles(m_Config.LoggingConfig.OutputDirectory, string.Format("{0}*{1}", Constants.LOG_FILE_NAME_PREFIX, Constants.LOG_FILE_EXT), SearchOption.TopDirectoryOnly).ToList();
-                            if (totalFiles.Count + 1 > m_Config.LoggingConfig.MaxCount && m_Config.LoggingConfig.MaxCount > 0)
+                        if (File.Exists(logFile))
+                        {
+                            // File already exists, so lets see if we need to rotate it
+                            if (m_Config.LoggingConfig.RotateLogs)
                             {
-                                // We will have too many logs, so let's remove the last one
-                                totalFiles.Sort();
-                                string fileToRemove = totalFiles[totalFiles.Count - 1];
-                                File.Delete(fileToRemove);
+                                FileInfo info = new FileInfo(logFile);
+                                if (m_Config.LoggingConfig.MaxSize < info.Length && m_Config.LoggingConfig.MaxSize > 0)
+                                {
+                                    // File is too large, so let's create a new name for it based on todays date
+                                    string newFileName = Constants.LOG_FILE_NAME_PREFIX + "_" + DateTime.Now.ToString("yyyyMMdd") + Constants.LOG_FILE_EXT;
+                                    newFileName = FileHelper.MakeUniqueFilename(newFileName, m_Config.LoggingConfig.OutputDirectory);
+                                    string newLog = Path.Combine(m_Config.LoggingConfig.OutputDirectory, newFileName);
+
+                                    // Move the current file to the new file
+                                    File.Move(logFile, newLog);
+                                }
+
+                                // Make sure we have less than the max number of logs
+                                List<string> totalFiles = Directory.GetFiles(m_Config.LoggingConfig.OutputDirectory, string.Format("{0}*{1}", Constants.LOG_FILE_NAME_PREFIX, Constants.LOG_FILE_EXT), SearchOption.TopDirectoryOnly).ToList();
+                                if (totalFiles.Count + 1 > m_Config.LoggingConfig.MaxCount && m_Config.LoggingConfig.MaxCount > 0)
+                                {
+                                    // We will have too many logs, so let's remove the last one
+                                    totalFiles.Sort();
+                                    string fileToRemove = totalFiles[totalFiles.Count - 1];
+                                    File.Delete(fileToRemove);
+                                }
                             }
                         }
-                    }
 
-                    // We have rotated if needed, so let's write the entry
-                    File.AppendAllText(logFile, log.ToString());
+                        // We have rotated if needed, so let's write the entry
+                        File.AppendAllText(logFile, log.ToString() + Environment.NewLine);
+                    }
                 }
 
                 // Send Email Message if enabled
@@ -110,7 +116,7 @@ namespace Teknik.Logging
                     Enum.TryParse(m_Config.LoggingConfig.EmailLevel, out minEmailLevel);
                     if (log.Level >= minEmailLevel)
                     {
-                        string subject = string.Format("{0} Log Message");
+                        string subject = string.Format("{0} Log Message", log.Level);
                         string message = "Message: " + log.Message;
                         if (log.Exception != null)
                         {
@@ -144,7 +150,8 @@ namespace Teknik.Logging
 
                 client.Send(mail);
             }
-            catch (Exception) { /* don't handle something in the handler */ }
+            catch (Exception ex) { /* don't handle something in the handler */
+            }
         }
     }
 }

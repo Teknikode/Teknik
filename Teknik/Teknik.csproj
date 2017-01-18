@@ -692,6 +692,10 @@
       <Project>{f0da1b67-af92-4b4a-8669-7e81645ff996}</Project>
       <Name>Configuration</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Utilities\Logging\Logging.csproj">
+      <Project>{77e865fd-f08b-4f07-9676-bc2fdcc7244c}</Project>
+      <Name>Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Piwik\Piwik.csproj">
       <Project>{c492c2c6-d45a-498b-84a2-6d4c8bf9de77}</Project>
       <Name>Piwik</Name>
