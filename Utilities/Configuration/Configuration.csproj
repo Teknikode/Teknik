@@ -51,6 +51,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="ContactConfig.cs" />
     <Compile Include="DatabaseConfig.cs" />
+    <Compile Include="EmailAccount.cs" />
     <Compile Include="EmailConfig.cs" />
     <Compile Include="GitConfig.cs" />
     <Compile Include="LoggingConfig.cs" />

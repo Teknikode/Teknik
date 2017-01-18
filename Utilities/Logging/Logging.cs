@@ -3,27 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Teknik.Configuration;
 
 namespace Teknik.Logging
 {
     public static class Logging
     {
-        private static Logger m_Logger { get; set; }
         public static Logger Logger
         {
             get
             {
-                if (m_Logger == null)
-                {
-                    Create();
-                }
-                return m_Logger;
+                return Create();
             }
         }
 
-        public static void Create()
+        public static Logger Create()
         {
-            m_Logger = new Logger();
+            Config curConfig = Config.Load();
+            return new Logger(curConfig);
         }
     }
 }

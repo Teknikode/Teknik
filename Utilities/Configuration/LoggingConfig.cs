@@ -19,6 +19,14 @@ namespace Teknik.Configuration
 
         public int MaxCount { get; set; }
 
+        public bool SendEmail { get; set; }
+
+        public string EmailLevel { get; set; }
+
+        public EmailAccount SenderAccount { get; set; }
+
+        public string RecipientEmailAddress { get; set; }
+
         public LoggingConfig()
         {
             SetDefaults();
@@ -32,6 +40,10 @@ namespace Teknik.Configuration
             RotateLogs = false;
             MaxSize = -1;
             MaxCount = -1;
+            SendEmail = false;
+            EmailLevel = "Error";
+            SenderAccount = new EmailAccount();
+            RecipientEmailAddress = string.Empty;
         }
     }
 }

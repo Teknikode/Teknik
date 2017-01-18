@@ -27,11 +27,6 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
-            if (exception != null)
-            {
-                SendErrorEmail(exception);
-            }
-
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
@@ -51,11 +46,6 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
-            if (exception != null)
-            {
-                SendErrorEmail(exception);
-            }
-
             ErrorViewModel model = new ErrorViewModel();
             model.Description = exception.Message;
             model.Exception = exception;
@@ -73,11 +63,6 @@ namespace Teknik.Areas.Error.Controllers
             {
                 Response.StatusCode = 403;
                 Response.TrySkipIisCustomErrors = true;
-            }
-
-            if (exception != null)
-            {
-                SendErrorEmail(exception);
             }
 
             ErrorViewModel model = new ErrorViewModel();
@@ -117,47 +102,10 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
-            if (exception != null)
-            {
-                SendErrorEmail(exception);
-            }
-
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
             return View("/Areas/Error/Views/Error/Http500.cshtml", model);
-        }
-
-        private void SendErrorEmail(Exception ex)
-        {
-            try
-            {
-                // Let's also email the message to support
-                SmtpClient client = new SmtpClient();
-                client.Host = Config.ContactConfig.Host;
-                client.Port = Config.ContactConfig.Port;
-                client.EnableSsl = Config.ContactConfig.SSL;
-                client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                client.UseDefaultCredentials = true;
-                client.Credentials = new System.Net.NetworkCredential(Config.ContactConfig.Username, Config.ContactConfig.Password);
-                client.Timeout = 5000;
-
-                MailMessage mail = new MailMessage(Config.SupportEmail, Config.SupportEmail);
-                mail.Subject = string.Format("Exception Occured on: {0}", Request.Url.AbsoluteUri);
-                mail.Body = string.Format(@"
-Message: {0}
-
-Source: {1}
-IP Address: {2}
-Referer Address: {3} 
-
-Stack Trace: {4}", ex.GetFullMessage(true), ex.Source, GetIPAddress(), Request.UrlReferrer != null ? Request.UrlReferrer.AbsoluteUri : string.Empty, ex.StackTrace);
-                mail.BodyEncoding = UTF8Encoding.UTF8;
-                mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
-
-                client.Send(mail);
-            }
-            catch (Exception) { /* don't handle something in the handler */ }
         }
 
         private string GetIPAddress()

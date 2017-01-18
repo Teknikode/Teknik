@@ -17,7 +17,6 @@ using Teknik.Areas.Users.Models;
 using Teknik.Configuration;
 using Teknik.Utilities;
 using Teknik.Models;
-using Teknik.Utilities;
 
 namespace Teknik.Areas.Users.Utility
 {
@@ -452,15 +451,15 @@ namespace Teknik.Areas.Users.Utility
         public static void SendRecoveryEmailVerification(Config config, string username, string email, string resetUrl, string verifyUrl)
         {
             SmtpClient client = new SmtpClient();
-            client.Host = config.ContactConfig.Host;
-            client.Port = config.ContactConfig.Port;
-            client.EnableSsl = config.ContactConfig.SSL;
+            client.Host = config.ContactConfig.EmailAccount.Host;
+            client.Port = config.ContactConfig.EmailAccount.Port;
+            client.EnableSsl = config.ContactConfig.EmailAccount.SSL;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.UseDefaultCredentials = true;
-            client.Credentials = new NetworkCredential(config.NoReplyEmail, config.ContactConfig.Password);
+            client.Credentials = new NetworkCredential(config.ContactConfig.EmailAccount.Username, config.ContactConfig.EmailAccount.Password);
             client.Timeout = 5000;
 
-            MailMessage mail = new MailMessage(config.NoReplyEmail, email);
+            MailMessage mail = new MailMessage(config.ContactConfig.EmailAccount.EmailAddress, email);
             mail.Subject = "Recovery Email Validation";
             mail.Body = string.Format(@"Hello {0},
 
@@ -533,15 +532,15 @@ Thank you and enjoy!
         public static void SendResetPasswordVerification(Config config, string username, string email, string resetUrl)
         {
             SmtpClient client = new SmtpClient();
-            client.Host = config.ContactConfig.Host;
-            client.Port = config.ContactConfig.Port;
-            client.EnableSsl = config.ContactConfig.SSL;
+            client.Host = config.ContactConfig.EmailAccount.Host;
+            client.Port = config.ContactConfig.EmailAccount.Port;
+            client.EnableSsl = config.ContactConfig.EmailAccount.SSL;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.UseDefaultCredentials = true;
-            client.Credentials = new NetworkCredential(config.NoReplyEmail, config.ContactConfig.Password);
+            client.Credentials = new NetworkCredential(config.ContactConfig.EmailAccount.Username, config.ContactConfig.EmailAccount.Password);
             client.Timeout = 5000;
 
-            MailMessage mail = new MailMessage(config.NoReplyEmail, email);
+            MailMessage mail = new MailMessage(config.ContactConfig.EmailAccount.EmailAddress, email);
             mail.Subject = "Password Reset Request";
             mail.Body = string.Format(@"Hello {0},
 

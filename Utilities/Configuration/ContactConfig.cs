@@ -10,11 +10,7 @@ namespace Teknik.Configuration
     public class ContactConfig
     {
         public bool Enabled { get; set; }
-        public string Host { get; set; }
-        public int Port { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public bool SSL { get; set; }
+        public EmailAccount EmailAccount { get; set; }
 
         public ContactConfig()
         {
@@ -24,11 +20,7 @@ namespace Teknik.Configuration
         public void SetDefaults()
         {
             Enabled = true;
-            Host = string.Empty;
-            Port = 25;
-            Username = string.Empty;
-            Password = string.Empty;
-            SSL = false;
+            EmailAccount = new EmailAccount();
         }
     }
 }

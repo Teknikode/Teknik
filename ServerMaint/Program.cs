@@ -216,17 +216,17 @@ namespace ServerMaint
                 string email = UserHelper.GetUserEmailAddress(config, account);
                 
                 SmtpClient client = new SmtpClient();
-                client.Host = config.ContactConfig.Host;
-                client.Port = config.ContactConfig.Port;
-                client.EnableSsl = config.ContactConfig.SSL;
+                client.Host = config.ContactConfig.EmailAccount.Host;
+                client.Port = config.ContactConfig.EmailAccount.Port;
+                client.EnableSsl = config.ContactConfig.EmailAccount.SSL;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.UseDefaultCredentials = true;
-                client.Credentials = new NetworkCredential(config.ContactConfig.Username, config.ContactConfig.Password);
+                client.Credentials = new NetworkCredential(config.ContactConfig.EmailAccount.Username, config.ContactConfig.EmailAccount.Password);
                 client.Timeout = 5000;
 
                 try
                 {
-                    MailMessage mail = new MailMessage(config.SupportEmail, email);
+                    MailMessage mail = new MailMessage(config.ContactConfig.EmailAccount.EmailAddress, email);
                     mail.Subject = "Invalid Account Notice";
                     mail.Body = string.Format(@"
 The account {0} does not meet the requirements for a valid username.  

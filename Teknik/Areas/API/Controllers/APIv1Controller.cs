@@ -15,7 +15,6 @@ using Teknik.Areas.Shortener.Models;
 using nClam;
 using Teknik.Filters;
 using Teknik.Areas.API.Models;
-using Teknik.Utilities;
 
 namespace Teknik.Areas.API.Controllers
 {

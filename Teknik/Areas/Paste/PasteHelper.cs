@@ -6,7 +6,6 @@ using System.Web;
 using Teknik.Configuration;
 using Teknik.Utilities;
 using Teknik.Models;
-using Teknik.Utilities;
 
 namespace Teknik.Areas.Paste
 {

@@ -12,7 +12,6 @@ using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Filters;
-using Teknik.Utilities;
 using QRCoder;
 using TwoStepsAuthenticator;
 using System.Drawing;

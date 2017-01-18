@@ -6,7 +6,6 @@ using System.IO;
 using Teknik.Configuration;
 using Teknik.Models;
 using Teknik.Utilities;
-using Teknik.Utilities;
 
 namespace Teknik.Areas.Upload
 {

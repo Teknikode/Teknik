@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Teknik.Areas.Shortener.Models;
 using Teknik.Utilities;
 using Teknik.Models;
-using Teknik.Utilities;
 
 namespace Teknik.Areas.Shortener
 {

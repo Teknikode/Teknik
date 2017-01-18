@@ -50,15 +50,15 @@ namespace Teknik.Areas.Contact.Controllers
 
                         // Let's also email the message to support
                         SmtpClient client = new SmtpClient();
-                        client.Host = Config.ContactConfig.Host;
-                        client.Port = Config.ContactConfig.Port;
-                        client.EnableSsl = Config.ContactConfig.SSL;
+                        client.Host = Config.ContactConfig.EmailAccount.Host;
+                        client.Port = Config.ContactConfig.EmailAccount.Port;
+                        client.EnableSsl = Config.ContactConfig.EmailAccount.SSL;
                         client.DeliveryMethod = SmtpDeliveryMethod.Network;
                         client.UseDefaultCredentials = true;
-                        client.Credentials = new System.Net.NetworkCredential(Config.ContactConfig.Username, Config.ContactConfig.Password);
+                        client.Credentials = new System.Net.NetworkCredential(Config.ContactConfig.EmailAccount.Username, Config.ContactConfig.EmailAccount.Password);
                         client.Timeout = 5000;
 
-                        MailMessage mail = new MailMessage(Config.SupportEmail, Config.SupportEmail);
+                        MailMessage mail = new MailMessage(Config.ContactConfig.EmailAccount.EmailAddress, Config.SupportEmail);
                         mail.Subject = string.Format("Support Message from: {0} <{1}>", model.Name, model.Email);
                         mail.Body = string.Format(@"
 New Support Message from: {0} <{1}>
