@@ -15,7 +15,6 @@ using Teknik.Areas.Users.Utility;
 using Teknik.Configuration;
 using Teknik.Utilities;
 using Teknik.Models;
-using Teknik.Utilities;
 
 namespace ServerMaint
 {
@@ -150,7 +149,7 @@ namespace ServerMaint
                     }
 
                     // We have the data, let's scan it
-                    ClamScanResult scanResult = clam.SendAndScanFileAsync(data).Result;
+                    ClamScanResult scanResult = clam.SendAndScanFile(data);
 
                     switch (scanResult.Result)
                     {
