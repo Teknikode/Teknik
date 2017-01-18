@@ -693,7 +693,7 @@
       <Name>Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Piwik\Piwik.csproj">
-      <Project>{C492C2C6-D45A-498B-84A2-6D4C8BF9DE77}</Project>
+      <Project>{c492c2c6-d45a-498b-84a2-6d4c8bf9de77}</Project>
       <Name>Piwik</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities\Utilities.csproj">
