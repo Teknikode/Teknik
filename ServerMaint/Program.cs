@@ -13,8 +13,9 @@ using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Configuration;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
+using Teknik.Utilities;
 
 namespace ServerMaint
 {
@@ -149,7 +150,7 @@ namespace ServerMaint
                     }
 
                     // We have the data, let's scan it
-                    ClamScanResult scanResult = clam.SendAndScanFile(data);
+                    ClamScanResult scanResult = clam.SendAndScanFileAsync(data).Result;
 
                     switch (scanResult.Result)
                     {
@@ -552,7 +553,7 @@ Thank you for your continued use of Teknik!
                     {
                         string email = UserHelper.GetUserEmailAddress(config, user.Username);
                         // We need to check the actual git database
-                        MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
+                        MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
                         string sql = @"SELECT * FROM gogs.repository
                                         LEFT JOIN gogs.action ON gogs.user.id = gogs.action.act_user_id
                                         WHERE gogs.user.login_name = {0}";
@@ -610,7 +611,7 @@ Thank you for your continued use of Teknik!
                 List<User> curUsers = db.Users.ToList();
 
                 // We need to check the actual git database
-                MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
+                MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
                 string sql = @"SELECT gogs.user.login_name AS login_name, gogs.user.lower_name AS username FROM gogs.user";
                 var results = mySQL.Query(sql);
 

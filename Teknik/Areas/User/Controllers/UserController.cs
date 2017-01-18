@@ -2,26 +2,18 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
-using Teknik.Areas.Shortener.Models;
-using Teknik.Areas.Blog.Models;
-using Teknik.Areas.Error.Controllers;
-using Teknik.Areas.Error.ViewModels;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.ViewModels;
 using Teknik.Controllers;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
-using Teknik.ViewModels;
-using System.Windows;
-using System.Net;
 using Teknik.Areas.Users.Utility;
 using Teknik.Filters;
+using Teknik.Utilities;
 using QRCoder;
-using System.Text;
 using TwoStepsAuthenticator;
 using System.Drawing;
 
@@ -596,6 +588,7 @@ namespace Teknik.Areas.Users.Controllers
                 // The password reset code is valid, let's get their user account for this session
                 User user = UserHelper.GetUser(db, username);
                 Session["AuthenticatedUser"] = user;
+                Session["AuthCode"] = code;
             }
 
             ResetPasswordVerificationViewModel model = new ResetPasswordVerificationViewModel();
@@ -613,24 +606,29 @@ namespace Teknik.Areas.Users.Controllers
             {
                 try
                 {
-                    User user = (User)Session["AuthenticatedUser"];
-                    if (user != null)
+                    string code = Session["AuthCode"].ToString();
+                    if (!string.IsNullOrEmpty(code))
                     {
-                        if (string.IsNullOrEmpty(password))
+                        User user = (User)Session["AuthenticatedUser"];
+                        if (user != null)
                         {
-                            return Json(new { error = "Password must not be empty" });
-                        }
-                        if (password != confirmPassword)
-                        {
-                            return Json(new { error = "Passwords must match" });
-                        }
+                            if (string.IsNullOrEmpty(password))
+                            {
+                                return Json(new { error = "Password must not be empty" });
+                            }
+                            if (password != confirmPassword)
+                            {
+                                return Json(new { error = "Passwords must match" });
+                            }
 
-                        User newUser = UserHelper.GetUser(db, user.Username);
-                        UserHelper.EditAccount(db, Config, newUser, true, password);
+                            User newUser = UserHelper.GetUser(db, user.Username);
+                            UserHelper.EditAccount(db, Config, newUser, true, password);
 
-                        return Json(new { result = true });
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "User does not exist" });
                     }
-                    return Json(new { error = "User does not exist" });
+                    return Json(new { error = "Invalid Code" });
                 }
                 catch (Exception ex)
                 {
@@ -742,7 +740,7 @@ namespace Teknik.Areas.Users.Controllers
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(ProvisionUrl, QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
-            return File(Helpers.Utility.ImageToByte(qrCodeImage), "image/png");
+            return File(ByteHelper.ImageToByte(qrCodeImage), "image/png");
         }
 
         [HttpPost]

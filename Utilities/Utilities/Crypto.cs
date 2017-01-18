@@ -3,7 +3,6 @@ using SecurityDriven.Inferno.Hash;
 using SecurityDriven.Inferno.Mac;
 using System.IO;
 using System.Security.Cryptography;
-using Teknik.Configuration;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
@@ -16,7 +15,7 @@ using Org.BouncyCastle.Utilities.IO;
 using System;
 using System.Collections.Generic;
 
-namespace Teknik.Helpers
+namespace Teknik.Utilities
 {
     public class MD5
     {

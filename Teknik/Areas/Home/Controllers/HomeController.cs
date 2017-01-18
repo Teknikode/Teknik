@@ -7,7 +7,7 @@ using Teknik.Areas.Podcast.Models;
 using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Home.ViewModels;
 using Teknik.Controllers;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Filters;
 

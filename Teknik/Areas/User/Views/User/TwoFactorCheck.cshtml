@@ -1,6 +1,6 @@
 ﻿@model Teknik.Areas.Users.ViewModels.TwoFactorViewModel
 
-@using Teknik.Helpers
+@using Teknik.Utilities
 
 <script>
     var confirmAuthCodeURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ConfirmAuthenticatorCode" })';

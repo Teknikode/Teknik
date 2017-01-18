@@ -6,9 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Optimization;
-using Teknik.Configuration;
 
-namespace Teknik.Helpers
+namespace Teknik.Utilities
 {
     public class CdnScriptBundle : Bundle
     {

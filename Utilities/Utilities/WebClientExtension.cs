@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 
-namespace Teknik.Helpers
+namespace Teknik.Utilities
 {
     public class WebDownload : WebClient
     {

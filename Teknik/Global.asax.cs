@@ -8,18 +8,11 @@ using System.Web.Routing;
 using Teknik.Models;
 using System.Data.Entity;
 using System.Web.Security;
-using Teknik.Migrations;
-using System.Data.Entity.Migrations;
 using Teknik.Areas.Users.Models;
-using System.ComponentModel;
 using Teknik.Areas.Error.Controllers;
 using System.Web.Helpers;
 using System.Diagnostics;
-using System.Collections.Specialized;
-using Teknik.Configuration;
-using Piwik.Tracker;
-using System.Web.UI;
-using Teknik.Helpers;
+using Teknik.Utilities;
 
 namespace Teknik
 {

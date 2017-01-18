@@ -8,7 +8,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Error.ViewModels;
 using Teknik.Controllers;
 using Teknik.Filters;
-using Teknik.Helpers;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Error.Controllers
 {

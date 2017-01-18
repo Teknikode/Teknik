@@ -73,8 +73,8 @@
       <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
+    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.2.0.4\lib\net45\Microsoft.Azure.KeyVault.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -95,8 +95,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationFramework" />
-    <Reference Include="QRCoder, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\QRCoder.1.2.2\lib\net40\QRCoder.dll</HintPath>
+    <Reference Include="QRCoder, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\QRCoder.1.2.3\lib\net40\QRCoder.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SecurityDriven.Inferno, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -167,7 +167,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\QRCoder.1.2.2\lib\net40\UnityEngine.dll</HintPath>
+      <HintPath>..\packages\QRCoder.1.2.3\lib\net40\UnityEngine.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -241,9 +241,7 @@
     <Compile Include="Areas\User\Models\TrustedDevice.cs" />
     <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
-    <Compile Include="Configuration\LoggingConfig.cs" />
     <Compile Include="Filters\CORSActionFilter.cs" />
-    <Compile Include="Helpers\BundleExtensions.cs" />
     <Compile Include="Models\TransferTypes.cs" />
     <Compile Include="Areas\User\Models\UploadSettings.cs" />
     <Compile Include="Areas\User\Models\UserSettings.cs" />
@@ -291,22 +289,7 @@
     <Compile Include="Areas\Vault\VaultAreaRegistration.cs" />
     <Compile Include="Areas\Vault\ViewModels\VaultViewModel.cs" />
     <Compile Include="Attributes\EntityAttribute.cs" />
-    <Compile Include="Configuration\PiwikConfig.cs" />
-    <Compile Include="Configuration\ShortenerConfig.cs" />
-    <Compile Include="Configuration\TransparencyConfig.cs" />
-    <Compile Include="Configuration\StreamConfig.cs" />
-    <Compile Include="Configuration\ApiConfig.cs" />
-    <Compile Include="Configuration\DatabaseConfig.cs" />
-    <Compile Include="Configuration\EmailConfig.cs" />
-    <Compile Include="Configuration\GitConfig.cs" />
-    <Compile Include="Configuration\PodcastConfig.cs" />
-    <Compile Include="Configuration\BlogConfig.cs" />
-    <Compile Include="Configuration\Config.cs" />
     <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
-    <Compile Include="Configuration\PasteConfig.cs" />
-    <Compile Include="Configuration\ContactConfig.cs" />
-    <Compile Include="Configuration\UploadConfig.cs" />
-    <Compile Include="Configuration\UserConfig.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Areas\Dev\Controllers\DevController.cs" />
     <Compile Include="Filters\TrackLink.cs" />
@@ -315,24 +298,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\ActionResultHelper.cs" />
-    <Compile Include="Helpers\Constants.cs" />
-    <Compile Include="Helpers\Crypto.cs" />
     <Compile Include="Areas\User\Models\Group.cs" />
     <Compile Include="Areas\Blog\Models\BlogPost.cs" />
     <Compile Include="Areas\User\Models\Role.cs" />
-    <Compile Include="Helpers\ExceptionExtensions.cs" />
-    <Compile Include="Helpers\HttpRequestExtensions.cs" />
-    <Compile Include="Helpers\MysqlDatabase.cs" />
-    <Compile Include="Helpers\MarkdownHelper.cs" />
-    <Compile Include="Helpers\RequestHelper.cs" />
-    <Compile Include="Helpers\RSSFeedResult.cs" />
-    <Compile Include="Helpers\Tracking.cs" />
-    <Compile Include="Helpers\UrlExtensions.cs" />
-    <Compile Include="Helpers\Utility.cs" />
-    <Compile Include="Helpers\WebClientExtension.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\TeknikEntities.cs" />
     <Compile Include="Areas\User\Models\User.cs" />
@@ -572,11 +540,6 @@
     <Content Include="Areas\User\Views\User\ResetPasswordVerification.cshtml" />
     <Content Include="Areas\User\Views\User\ResetPassword.cshtml" />
     <Content Include="Areas\User\Views\User\TwoFactorCheck.cshtml" />
-    <Content Include="Fonts\FontAwesome.otf" />
-    <Content Include="Fonts\fontawesome-webfont.woff2" />
-    <Content Include="Fonts\fontawesome-webfont.woff" />
-    <Content Include="Fonts\fontawesome-webfont.ttf" />
-    <Content Include="Fonts\fontawesome-webfont.eot" />
     <Content Include="Fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Fonts\glyphicons-halflings-regular.ttf" />
@@ -598,6 +561,11 @@
     <Content Include="App_Data\MachineKey.config" />
     <Content Include="Areas\Admin\Views\Admin\UserInfo.cshtml" />
     <Content Include="Areas\Shortener\Views\Shortener\Verify.cshtml" />
+    <Content Include="Fonts\FontAwesome.otf" />
+    <Content Include="Fonts\fontawesome-webfont.woff2" />
+    <Content Include="Fonts\fontawesome-webfont.woff" />
+    <Content Include="Fonts\fontawesome-webfont.ttf" />
+    <Content Include="Fonts\fontawesome-webfont.eot" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -720,6 +688,14 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Utilities\Configuration\Configuration.csproj">
+      <Project>{f0da1b67-af92-4b4a-8669-7e81645ff996}</Project>
+      <Name>Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Piwik\Piwik.csproj">
+      <Project>{C492C2C6-D45A-498B-84A2-6D4C8BF9DE77}</Project>
+      <Name>Piwik</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities\Utilities.csproj">
       <Project>{f45de6fc-3754-4954-a20a-4277362cc6c1}</Project>
       <Name>Utilities</Name>
@@ -771,12 +747,12 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="..\packages\GitVersionTask.3.6.4\build\dotnet\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.3.6.4\build\dotnet\GitVersionTask.targets')" />
+  <Import Project="..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\GitVersionTask.3.6.4\build\dotnet\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.3.6.4\build\dotnet\GitVersionTask.targets'))" />
+    <Error Condition="!Exists('..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

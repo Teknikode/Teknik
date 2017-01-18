@@ -1,9 +1,6 @@
 namespace Teknik.Migrations
 {
-    using Areas.Paste;
-    using Areas.Upload;
     using Areas.Users.Utility;
-    using Helpers;
     using System;
     using System.Collections.Generic;
     using System.Data.Entity;
@@ -12,6 +9,7 @@ namespace Teknik.Migrations
     using System.Linq;
     using System.Net;
     using Teknik.Configuration;
+    using Utilities;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Models.TeknikEntities>
     {

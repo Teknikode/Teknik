@@ -12,7 +12,7 @@ using Teknik.Areas.Paste.ViewModels;
 using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
 using Teknik.Filters;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Utilities;
 
@@ -69,7 +69,7 @@ namespace Teknik.Areas.Paste.Controllers
                     string hash = string.Empty;
                     if (!string.IsNullOrEmpty(password))
                     {
-                        byte[] passBytes = Helpers.SHA384.Hash(paste.Key, password);
+                        byte[] passBytes = Utilities.SHA384.Hash(paste.Key, password);
                         hash = passBytes.ToHex();
                         // We need to convert old pastes to the new password scheme
                         if (paste.Transfers.ToList().Exists(t => t.Type == TransferTypes.ASCIIPassword))

@@ -6,9 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using Teknik.ViewModels;
 
-namespace Teknik.Helpers
+namespace Teknik.Utilities
 {
     /// <summary>
     /// Result for relaying an HttpWebResponse

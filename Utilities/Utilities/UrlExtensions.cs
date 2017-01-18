@@ -7,25 +7,24 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.UI;
-using Teknik.Configuration;
 
-namespace Teknik
+namespace Teknik.Utilities
 {
     public static class UrlExtensions
     {
         public static string SubRouteUrl(this UrlHelper url, string sub, string routeName)
         {
-            return url.SubRouteUrl(sub, routeName, null, false);
+            return url.SubRouteUrl(sub, routeName, null, string.Empty);
         }
 
-        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, bool useCdn)
+        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, string hostOverride)
         {
-            return url.SubRouteUrl(sub, routeName, null, useCdn);
+            return url.SubRouteUrl(sub, routeName, null, hostOverride);
         }
 
         public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, object routeValues)
         {
-            return url.SubRouteUrl(sub, routeName, routeValues, false);
+            return url.SubRouteUrl(sub, routeName, routeValues, string.Empty);
         }
 
         /// <summary>
@@ -36,7 +35,7 @@ namespace Teknik
         /// <param name="routeName"></param>
         /// <param name="routeValues"></param>
         /// <returns></returns>
-        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, object routeValues, bool useCdn)
+        public static string SubRouteUrl(this UrlHelper url, string sub, string routeName, object routeValues, string hostOverride)
         {
             string host = url.RequestContext.HttpContext.Request.Url.Authority;
             
@@ -83,18 +82,10 @@ namespace Teknik
             }
 
             string fullHost = string.Format("{0}://{1}", url.RequestContext.HttpContext.Request.Url.Scheme, domain);
-
-            if (useCdn)
+            
+            if (!string.IsNullOrEmpty(hostOverride))
             {
-                // If we are using a CDN, let's replace it
-                Config config = Config.Load();
-                if (config.UseCdn)
-                {
-                    if (!string.IsNullOrEmpty(config.CdnHost))
-                    {
-                        fullHost = config.CdnHost.TrimEnd('/');
-                    }
-                }
+                fullHost = hostOverride.TrimEnd('/');
             }
 
             string absoluteAction = string.Format("{0}{1}", fullHost, rightUrl);
@@ -130,6 +121,7 @@ namespace Teknik
         {
             return url.AbsoluteUri.Split('?').FirstOrDefault() ?? String.Empty;
         }
+
         public static string GetSubdomain(this string host)
         {
             if (host.IndexOf(":") >= 0)

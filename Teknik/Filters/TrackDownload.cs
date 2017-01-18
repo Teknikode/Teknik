@@ -7,7 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
 using Teknik.Configuration;
-using Teknik.Helpers;
+using Teknik.Utilities;
+using Teknik.Piwik;
 
 namespace Teknik.Filters
 {

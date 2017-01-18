@@ -15,7 +15,7 @@ using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Shortener.Models;
 using Teknik.Areas.Users.Models;
 using Teknik.Configuration;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Utilities;
 
@@ -738,7 +738,7 @@ If you recieved this email and you did not reset your password, you can ignore t
             {
                 string email = GetUserEmailAddress(config, username);
                 // We need to check the actual git database
-                MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database);
+                MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
                 string sql = @"SELECT 
 	                                CASE
 		                                WHEN MAX(gogs.action.created) >= MAX(gogs.user.updated) THEN MAX(gogs.action.created)

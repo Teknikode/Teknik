@@ -9,8 +9,9 @@ using System.Xml.Linq;
 using Teknik.Areas.Blog.Models;
 using Teknik.Controllers;
 using Teknik.Filters;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.RSS.Controllers
 {

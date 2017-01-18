@@ -5,7 +5,7 @@ using System.Web;
 using System.IO;
 using Teknik.Configuration;
 using Teknik.Models;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Utilities;
 
 namespace Teknik.Areas.Upload
@@ -39,14 +39,14 @@ namespace Teknik.Areas.Upload
             }
 
             // Generate a unique file name that does not currently exist
-            string filePath = Utility.GenerateUniqueFileName(config.UploadConfig.UploadDirectory, config.UploadConfig.FileExtension, 10);
+            string filePath = FileHelper.GenerateUniqueFileName(config.UploadConfig.UploadDirectory, config.UploadConfig.FileExtension, 10);
             string fileName = Path.GetFileName(filePath);
 
             // once we have the filename, lets save the file
             File.WriteAllBytes(filePath, file);
 
             // Generate a unique url
-            string extension = (config.UploadConfig.IncludeExtension) ? Utility.GetDefaultExtension(contentType, defaultExtension) : string.Empty;
+            string extension = (config.UploadConfig.IncludeExtension) ? FileHelper.GetDefaultExtension(contentType, defaultExtension) : string.Empty;
             string url = StringHelper.RandomString(config.UploadConfig.UrlLength) + extension;
             while (db.Uploads.Where(u => u.Url == url).FirstOrDefault() != null)
             {

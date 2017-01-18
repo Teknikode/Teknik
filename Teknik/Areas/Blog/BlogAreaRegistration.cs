@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
-using Teknik.Helpers;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Blog
 {

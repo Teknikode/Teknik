@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Teknik.Configuration;
-using Teknik.Helpers;
+using Teknik.Utilities;
 
 namespace Teknik.ViewModels
 {

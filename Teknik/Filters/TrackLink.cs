@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI;
 using Teknik.Configuration;
-using Teknik.Helpers;
+using Teknik.Piwik;
 
 namespace Teknik.Filters
 {

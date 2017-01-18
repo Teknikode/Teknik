@@ -12,8 +12,9 @@ using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
 using Teknik.Filters;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Blog.Controllers
 {

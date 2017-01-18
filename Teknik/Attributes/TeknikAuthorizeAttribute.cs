@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Teknik.Areas.Error.Controllers;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Areas.Users.Controllers;
 
 namespace Teknik.Attributes

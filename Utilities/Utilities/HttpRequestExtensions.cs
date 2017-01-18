@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
-namespace Teknik.Helpers
+namespace Teknik.Utilities
 {
     public static class HttpRequestExtensions
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using System.Web;
 using Newtonsoft.Json;
+using Teknik.Utilities;
 
 namespace Teknik.Configuration
 {
@@ -163,7 +163,7 @@ namespace Teknik.Configuration
             string newHash = string.Empty;
             if (File.Exists(Path.Combine(path, "Config.json")))
             {
-                newHash = Helpers.MD5.FileHash(Path.Combine(path, "Config.json"));
+                newHash = MD5.FileHash(Path.Combine(path, "Config.json"));
             }
             if (_Config == null || _FileHash == null || newHash != _FileHash)
             {

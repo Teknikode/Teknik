@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using MarkdownDeep;
 
-namespace Teknik.Helpers
+namespace Teknik.Utilities
 {
 	/// <summary>
 	/// Helper class for transforming Markdown.

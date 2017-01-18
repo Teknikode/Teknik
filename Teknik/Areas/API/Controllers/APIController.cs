@@ -7,7 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Upload;
 using Teknik.Controllers;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
 
 namespace Teknik.Areas.API.Controllers

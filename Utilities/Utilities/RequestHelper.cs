@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Teknik.Helpers
+namespace Teknik.Utilities
 {
     public static class RequestHelper
     {

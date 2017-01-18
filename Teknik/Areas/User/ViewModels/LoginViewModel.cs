@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.ViewModels;
 

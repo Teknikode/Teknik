@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Teknik.Areas.Users.Models;
-using Teknik.Helpers;
+using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.ViewModels;
 

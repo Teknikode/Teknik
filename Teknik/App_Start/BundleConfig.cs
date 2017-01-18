@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 using Teknik.Configuration;
-using Teknik.Helpers;
+using Teknik.Utilities;
 
 namespace Teknik
 {

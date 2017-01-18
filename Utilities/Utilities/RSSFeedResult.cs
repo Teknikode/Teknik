@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Xml;
 
-namespace Teknik.Helpers
+namespace Teknik.Utilities
 {
     public class RssResult : ActionResult
     {

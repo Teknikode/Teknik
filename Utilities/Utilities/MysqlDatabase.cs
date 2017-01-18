@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Teknik.Configuration;
 using MySql.Data.MySqlClient;
 
-namespace Teknik.Helpers
+namespace Teknik.Utilities
 {
     public class MysqlDatabase
     {
@@ -14,12 +13,12 @@ namespace Teknik.Helpers
         private MySqlConnection Connection { get; set; }
         private ReaderWriterLockSlim DatabaseLock { get; set; }
 
-        public MysqlDatabase(DatabaseConfig config)
+        public MysqlDatabase(string server, string database, string username, string password, int port)
         {
             Connected = false;
             Connection = null;
             DatabaseLock = new ReaderWriterLockSlim();
-            Connect(config);
+            Connect(server, database, username, password, port);
         }
 
         public List<Dictionary<string, object>> Query(string query, params object[] args)
@@ -122,13 +121,13 @@ namespace Teknik.Helpers
             }
         }
 
-        private void Connect(DatabaseConfig config)
+        private void Connect(string server, string database, string username, string password, int port)
         {
             if (Connection == null)
             {
-                if (config.Server != string.Empty && config.Database != string.Empty && config.Username != string.Empty && config.Password != string.Empty)
+                if (!string.IsNullOrEmpty(server) && !string.IsNullOrEmpty(database) && !string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
                 {
-                    string strCon = string.Format("Server={0}; database={1}; user={2}; password={3}; port={4}; charset=utf8; Allow Zero Datetime=true;", config.Server, config.Database, config.Username, config.Password, config.Port);
+                    string strCon = string.Format("Server={0}; database={1}; user={2}; password={3}; port={4}; charset=utf8; Allow Zero Datetime=true;", server, database, username, password, port);
                     Connection = new MySqlConnection(strCon);
                     try
                     {
