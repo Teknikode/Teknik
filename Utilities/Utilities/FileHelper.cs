@@ -10,7 +10,7 @@ namespace Teknik.Utilities
 {
     public static class FileHelper
     {
-        public static string GenerateUniqueFileName(string path, string extension, int length)
+        public static string GenerateRandomFileName(string path, string extension, int length)
         {
             if (Directory.Exists(path))
             {
@@ -36,6 +36,39 @@ namespace Teknik.Utilities
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Append a number to the end of a file name to make it unique, incrementing the number if needed
+        /// </summary>
+        /// <param name="file">the name of the file, including extension</param>
+        /// <param name="destinationFolder">the destination folder in which to check for uniqueness</param>
+        /// <returns>the file name, without folder, with extension, with a unique index as the suffix, if necessary</returns>
+        public static string MakeUniqueFilename(string file, string destinationFolder)
+        {
+            string fileName = string.Empty;
+            try
+            {
+                string fileBase = Path.GetFileNameWithoutExtension(file);
+                string fileExt = Path.GetExtension(file);
+                fileName = string.Format("{0}{1}", fileBase, fileExt);
+                string filePath = Path.Combine(destinationFolder, fileName);
+
+                int iteration = 1;
+                while (File.Exists(filePath))
+                {
+                    fileName = string.Format("{0} ({1}){2}", fileBase, iteration, fileExt);
+                    filePath = Path.Combine(destinationFolder, fileName);
+                    iteration++;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Throw up exception to parent
+                throw new Exception(string.Format("Exception occured in FileHelper.MakeUniqueFilename({0}, {1})", file, destinationFolder), ex);
+            }
+
+            return fileName;
         }
 
         public static string GetDefaultExtension(string mimeType)

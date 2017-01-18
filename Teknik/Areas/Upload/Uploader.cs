@@ -38,7 +38,7 @@ namespace Teknik.Areas.Upload
             }
 
             // Generate a unique file name that does not currently exist
-            string filePath = FileHelper.GenerateUniqueFileName(config.UploadConfig.UploadDirectory, config.UploadConfig.FileExtension, 10);
+            string filePath = FileHelper.GenerateRandomFileName(config.UploadConfig.UploadDirectory, config.UploadConfig.FileExtension, 10);
             string fileName = Path.GetFileName(filePath);
 
             // once we have the filename, lets save the file
