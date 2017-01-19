@@ -134,6 +134,22 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
+        public static string GenerateAuthToken(Config config, User user)
+        {
+            try
+            {
+                string username = user.Username.ToLower();
+                byte[] hashBytes = SHA384.Hash(username, StringHelper.RandomString(24));
+                string hash = hashBytes.ToHex();
+
+                return hash;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to generate user auth token.", ex);
+            }
+        }
+
         public static void AddAccount(TeknikEntities db, Config config, User user, string password)
         {
             try
@@ -210,6 +226,13 @@ namespace Teknik.Areas.Users.Utility
             }
 
             return user;
+        }
+
+        public static User GetUserFromToken(TeknikEntities db, Config config, string token)
+        {
+            string hashedToken = SHA256.Hash(token);
+            User foundUser = db.Users.FirstOrDefault(u => u.AuthTokens.Select(a => a.HashedToken).Contains(hashedToken));
+            return foundUser;
         }
 
         public static bool UserExists(TeknikEntities db, string username)

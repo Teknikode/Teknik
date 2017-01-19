@@ -35,6 +35,8 @@ namespace Teknik.Areas.Users.Models
 
         public virtual ICollection<TrustedDevice> TrustedDevices { get; set; }
 
+        public virtual ICollection<AuthToken> AuthTokens { get; set; }
+
         public virtual ICollection<Upload.Models.Upload> Uploads { get; set; }
 
         public virtual ICollection<Paste.Models.Paste> Pastes { get; set; }
@@ -48,6 +50,7 @@ namespace Teknik.Areas.Users.Models
             LastSeen = DateTime.Now;
             Groups = new List<Group>();
             TrustedDevices = new List<TrustedDevice>();
+            AuthTokens = new List<AuthToken>();
         }
     }
 }

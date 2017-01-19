@@ -15,6 +15,8 @@ using Teknik.Areas.Shortener.Models;
 using nClam;
 using Teknik.Filters;
 using Teknik.Areas.API.Models;
+using Teknik.Areas.Users.Models;
+using Teknik.Areas.Users.Utility;
 
 namespace Teknik.Areas.API.Controllers
 {
@@ -117,6 +119,18 @@ namespace Teknik.Areas.API.Controllers
 
                         if (upload != null)
                         {
+                            // Associate this with the user if they provided an auth key
+                            if (!string.IsNullOrEmpty(model.authToken))
+                            {
+                                User foundUser = UserHelper.GetUserFromToken(db, Config, model.authToken);
+                                if (foundUser != null)
+                                {
+                                    upload.UserId = foundUser.UserId;
+                                    db.Entry(upload).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                            }
+
                             // Generate delete key if asked to
                             if (model.genDeletionKey)
                             {
@@ -169,6 +183,16 @@ namespace Teknik.Areas.API.Controllers
                 {
                     Paste.Models.Paste paste = PasteHelper.CreatePaste(model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password, model.hide);
 
+                    // Associate this with the user if they provided an auth key
+                    if (!string.IsNullOrEmpty(model.authToken))
+                    {
+                        User foundUser = UserHelper.GetUserFromToken(db, Config, model.authToken);
+                        if (foundUser != null)
+                        {
+                            paste.UserId = foundUser.UserId;
+                        }
+                    }
+
                     db.Pastes.Add(paste);
                     db.SaveChanges();
 
@@ -203,6 +227,16 @@ namespace Teknik.Areas.API.Controllers
                 if (model.url.IsValidUrl())
                 {
                     ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(model.url, Config.ShortenerConfig.UrlLength);
+
+                    // Associate this with the user if they provided an auth key
+                    if (!string.IsNullOrEmpty(model.authToken))
+                    {
+                        User foundUser = UserHelper.GetUserFromToken(db, Config, model.authToken);
+                        if (foundUser != null)
+                        {
+                            newUrl.UserId = foundUser.UserId;
+                        }
+                    }
 
                     db.ShortenedUrls.Add(newUrl);
                     db.SaveChanges();
