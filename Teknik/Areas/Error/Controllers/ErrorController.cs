@@ -114,7 +114,7 @@ namespace Teknik.Areas.Error.Controllers
                 errorMessage += " for page: " + Request.Url.AbsoluteUri;
             }
 
-            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+            Logger.WriteEntry(LogLevel.Warning, errorMessage, exception);
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
