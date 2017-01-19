@@ -228,7 +228,7 @@ namespace Teknik.Areas.Users.Utility
             return user;
         }
 
-        public static User GetUserFromToken(TeknikEntities db, Config config, string token)
+        public static User GetUserFromToken(TeknikEntities db, string token)
         {
             string hashedToken = SHA256.Hash(token);
             User foundUser = db.Users.FirstOrDefault(u => u.AuthTokens.Select(a => a.HashedToken).Contains(hashedToken));

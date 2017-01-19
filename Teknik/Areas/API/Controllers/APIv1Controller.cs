@@ -122,7 +122,7 @@ namespace Teknik.Areas.API.Controllers
                             // Associate this with the user if they provided an auth key
                             if (!string.IsNullOrEmpty(model.authToken))
                             {
-                                User foundUser = UserHelper.GetUserFromToken(db, Config, model.authToken);
+                                User foundUser = UserHelper.GetUserFromToken(db, model.authToken);
                                 if (foundUser != null)
                                 {
                                     upload.UserId = foundUser.UserId;
@@ -186,7 +186,7 @@ namespace Teknik.Areas.API.Controllers
                     // Associate this with the user if they provided an auth key
                     if (!string.IsNullOrEmpty(model.authToken))
                     {
-                        User foundUser = UserHelper.GetUserFromToken(db, Config, model.authToken);
+                        User foundUser = UserHelper.GetUserFromToken(db, model.authToken);
                         if (foundUser != null)
                         {
                             paste.UserId = foundUser.UserId;
@@ -231,7 +231,7 @@ namespace Teknik.Areas.API.Controllers
                     // Associate this with the user if they provided an auth key
                     if (!string.IsNullOrEmpty(model.authToken))
                     {
-                        User foundUser = UserHelper.GetUserFromToken(db, Config, model.authToken);
+                        User foundUser = UserHelper.GetUserFromToken(db, model.authToken);
                         if (foundUser != null)
                         {
                             newUrl.UserId = foundUser.UserId;
