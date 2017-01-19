@@ -54,7 +54,7 @@ namespace Teknik.Logging
                 {
                     // Do we want to write a log for this level? (Default to Error)
                     LogLevel minLogLevel = LogLevel.Error;
-                    Enum.TryParse(config.LoggingConfig.EmailLevel, out minLogLevel);
+                    Enum.TryParse(config.LoggingConfig.LogLevel, out minLogLevel);
 
                     try
                     {
