@@ -100,6 +100,7 @@ namespace Teknik.Areas.Users.Controllers
                 model.UserID = user.UserId;
                 model.Username = user.Username;
                 model.TrustedDeviceCount = user.TrustedDevices.Count;
+                model.AuthTokens = user.AuthTokens.ToList();
 
                 model.UserSettings = user.UserSettings;
                 model.SecuritySettings = user.SecuritySettings;
@@ -769,6 +770,39 @@ namespace Teknik.Areas.Users.Controllers
                         return Json(new { result = true });
                     }
                     return Json(new { error = "User does not allow trusted devices" });
+                }
+                return Json(new { error = "User does not exist" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult GenerateToken(string name)
+        {
+            try
+            {
+                User user = UserHelper.GetUser(db, User.Identity.Name);
+                if (user != null)
+                {
+                    string newTokenStr = UserHelper.GenerateAuthToken(Config, user.Username);
+
+                    if (!string.IsNullOrEmpty(newTokenStr))
+                    {
+                        AuthToken token = db.AuthTokens.Create();
+                        token.UserId = user.UserId;
+                        token.HashedToken = SHA256.Hash(newTokenStr);
+                        token.Name = name;
+                        token.LastDateUsed = DateTime.Now;
+
+                        db.AuthTokens.Add(token);
+                        db.SaveChanges();
+                        return Json(new { result = newTokenStr });
+                    }
+                    return Json(new { error = "Unable to generate Auth Token" });
                 }
                 return Json(new { error = "User does not exist" });
             }

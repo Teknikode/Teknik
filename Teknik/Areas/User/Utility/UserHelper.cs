@@ -134,11 +134,11 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static string GenerateAuthToken(Config config, User user)
+        public static string GenerateAuthToken(Config config, string username)
         {
             try
             {
-                string username = user.Username.ToLower();
+                username = username.ToLower();
                 byte[] hashBytes = SHA384.Hash(username, StringHelper.RandomString(24));
                 string hash = hashBytes.ToHex();
 

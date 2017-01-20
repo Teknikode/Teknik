@@ -92,6 +92,68 @@
         });
     });
 
+    $('#generate_token').click(function () {
+        bootbox.prompt("Specify a name for this Auth Token", function (result) {
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: generateTokenURL,
+                    data: AddAntiForgeryToken({ name: result }),
+                    success: function (response) {
+                        if (response.result) {
+                            bootbox.dialog({
+                                title: "Authentication Token",
+                                message: '<label for="authToken">Make sure to copy your new personal access token now.<br />You won\'t be able to see it again!</label><input type="text" class="form-control" id="authToken" onClick="this.select();" value="' + response.result + '">',
+                                callback: function () {
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                        else {
+                            errorMsg = response;
+                            if (response.error) {
+                                errorMsg = response.error;
+                                if (response.error.message) {
+                                    errorMsg = response.error.message;
+                                }
+                            }
+                            $("#top_msg").css('display', 'inline', 'important');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    $('#revoke_all_tokens').click(function () {
+        bootbox.confirm("Are you sure you want to revoke all your auth tokens?<br /><br />This is <b>irreversable</b> and all applications using a token will stop working.", function (result) {
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: revokeAllTokensURL,
+                    data: AddAntiForgeryToken({}),
+                    success: function (response) {
+                        if (response.result) {
+                            window.location.reload();
+                        }
+                        else {
+                            errorMsg = response;
+                            if (response.error) {
+                                errorMsg = response.error;
+                                if (response.error.message) {
+                                    errorMsg = response.error.message;
+                                }
+                            }
+                            $("#top_msg").css('display', 'inline', 'important');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                        }
+                    }
+                });
+            }
+        });
+    });
+
     $('#delete_account').click(function () {
         bootbox.confirm("Are you sure you want to delete your account?", function (result) {
             if (result) {
