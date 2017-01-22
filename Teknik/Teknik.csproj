@@ -570,6 +570,7 @@
     <Content Include="Fonts\fontawesome-webfont.eot" />
     <Content Include="Areas\User\Views\User\AuthToken.cshtml" />
     <Content Include="Areas\Error\Views\Error\Http401.cshtml" />
+    <Content Include="Areas\Transparency\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
