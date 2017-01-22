@@ -10,7 +10,7 @@ namespace Teknik
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             //filters.Add(new HandleErrorAttribute());
-            filters.Add(new TeknikAuthorizeAttribute());
+            //filters.Add(new TeknikAuthorizeAttribute());
             filters.Add(new RequireHttpsAttribute());
         }
     }

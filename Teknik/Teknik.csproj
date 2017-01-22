@@ -240,6 +240,7 @@
     <Compile Include="Areas\User\Models\SecuritySettings.cs" />
     <Compile Include="Areas\User\Models\AuthToken.cs" />
     <Compile Include="Areas\User\Models\TrustedDevice.cs" />
+    <Compile Include="Areas\User\ViewModels\AuthTokenViewModel.cs" />
     <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
     <Compile Include="Filters\CORSActionFilter.cs" />
@@ -567,6 +568,8 @@
     <Content Include="Fonts\fontawesome-webfont.woff" />
     <Content Include="Fonts\fontawesome-webfont.ttf" />
     <Content Include="Fonts\fontawesome-webfont.eot" />
+    <Content Include="Areas\User\Views\User\AuthToken.cshtml" />
+    <Content Include="Areas\Error\Views\Error\Http401.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

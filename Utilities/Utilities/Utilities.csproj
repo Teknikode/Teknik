@@ -123,6 +123,7 @@
     <Compile Include="StringExtensions.cs" />
     <Compile Include="StringHelper.cs" />
     <Compile Include="UrlExtensions.cs" />
+    <Compile Include="ViewExtensions.cs" />
     <Compile Include="WebClientExtension.cs">
       <SubType>Component</SubType>
     </Compile>

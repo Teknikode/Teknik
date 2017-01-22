@@ -134,15 +134,27 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static string GenerateAuthToken(Config config, string username)
+        public static string GenerateAuthToken(TeknikEntities db, string username)
         {
             try
             {
-                username = username.ToLower();
-                byte[] hashBytes = SHA384.Hash(username, StringHelper.RandomString(24));
-                string hash = hashBytes.ToHex();
+                bool validToken = false;
+                string token = string.Empty;
+                while (!validToken)
+                {
+                    username = username.ToLower();
+                    byte[] hashBytes = SHA384.Hash(username, StringHelper.RandomString(24));
+                    token = hashBytes.ToHex();
 
-                return hash;
+                    // Make sure it isn't a duplicate
+                    string hashedToken = SHA256.Hash(token);
+                    if (!db.AuthTokens.Where(t => t.HashedToken == hashedToken).Any())
+                    {
+                        validToken = true;
+                    }
+                }
+
+                return token;
             }
             catch (Exception ex)
             {
@@ -228,11 +240,14 @@ namespace Teknik.Areas.Users.Utility
             return user;
         }
 
-        public static User GetUserFromToken(TeknikEntities db, string token)
+        public static User GetUserFromToken(TeknikEntities db, string username, string token)
         {
-            string hashedToken = SHA256.Hash(token);
-            User foundUser = db.Users.FirstOrDefault(u => u.AuthTokens.Select(a => a.HashedToken).Contains(hashedToken));
-            return foundUser;
+            if (token != null && !string.IsNullOrEmpty(username))
+            {
+                string hashedToken = SHA256.Hash(token);
+                return db.Users.FirstOrDefault(u => u.AuthTokens.Select(a => a.HashedToken).Contains(hashedToken) && u.Username == username);
+            }
+            return null;
         }
 
         public static bool UserExists(TeknikEntities db, string username)
@@ -263,6 +278,25 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
+        public static void UpdateTokenLastUsed(TeknikEntities db, string username, string token, DateTime lastUsed)
+        {
+            User foundUser = GetUser(db, username);
+            if (foundUser != null)
+            {
+                string hashedToken = SHA256.Hash(token);
+                List<AuthToken> tokens = foundUser.AuthTokens.Where(t => t.HashedToken == hashedToken).ToList();
+                if (tokens != null)
+                {
+                    foreach (AuthToken foundToken in tokens)
+                    {
+                        foundToken.LastDateUsed = lastUsed;
+                        db.Entry(foundToken).State = EntityState.Modified;
+                    }
+                    db.SaveChanges();
+                }
+            }
+        }
+
         public static bool UserPasswordCorrect(TeknikEntities db, Config config, User user, string password)
         {
             try
@@ -274,6 +308,59 @@ namespace Teknik.Areas.Users.Utility
             {
                 throw new Exception("Unable to determine if password is correct.", ex);
             }
+        }
+
+        public static bool UserTokenCorrect(TeknikEntities db, string username, string token)
+        {
+            User foundUser = GetUserFromToken(db, username, token);
+            if (foundUser != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool UserHasRoles(TeknikEntities db, User user, params string[] roles)
+        {
+            bool hasRole = true;
+            if (user != null)
+            {
+                // Check if they have the role specified
+                if (roles.Any())
+                {
+                    foreach (string role in roles)
+                    {
+                        if (!string.IsNullOrEmpty(role))
+                        {
+                            if (user.Groups.Where(g => g.Roles.Where(r => role == r.Name).Any()).Any())
+                            {
+                                // They have the role!
+                                return true;
+                            }
+                            else
+                            {
+                                // They don't have this role, so let's reset the hasRole
+                                hasRole = false;
+                            }
+                        }
+                        else
+                        {
+                            // Only set this if we haven't failed once already
+                            hasRole &= true;
+                        }
+                    }
+                }
+                else
+                {
+                    // No roles to check, so they pass!
+                    return true;
+                }
+            }
+            else
+            {
+                hasRole = false;
+            }
+            return hasRole;
         }
 
         public static void TransferUser(TeknikEntities db, Config config, User user, string password)

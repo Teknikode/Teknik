@@ -13,6 +13,8 @@ using Teknik.Areas.Error.Controllers;
 using System.Web.Helpers;
 using System.Diagnostics;
 using Teknik.Utilities;
+using System.Text;
+using Teknik.Areas.Users.Utility;
 
 namespace Teknik
 {
@@ -65,37 +67,89 @@ namespace Teknik
 
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
         {
-            if (FormsAuthentication.CookiesSupported == true)
+            // We support both Auth Tokens and Cookie Authentication
+
+            // Username and Roles for the current user
+            string username = string.Empty;
+            List<string> roles = new List<string>();
+            
+            bool hasAuthToken = false;
+            if (Request != null)
+            {
+                if (Request.Headers.HasKeys())
+                {
+                    string auth = Request.Headers["Authorization"];
+                    if (!string.IsNullOrEmpty(auth))
+                    {
+                        string[] parts = auth.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        string type = string.Empty;
+                        string value = string.Empty;
+                        if (parts.Length > 0)
+                        {
+                            type = parts[0].ToLower();
+                        }
+                        if (parts.Length > 1)
+                        {
+                            value = parts[1];
+                        }
+
+                        using (TeknikEntities entities = new TeknikEntities())
+                        {
+                            // Get the user information based on the auth type
+                            switch (type)
+                            {
+                                case "basic":
+                                    KeyValuePair<string, string> authCreds = StringHelper.ParseBasicAuthHeader(value);
+
+                                    bool tokenValid = UserHelper.UserTokenCorrect(entities, authCreds.Key, authCreds.Value);
+                                    if (tokenValid)
+                                    {
+                                        // it's valid, so let's update it's Last Used date
+                                        UserHelper.UpdateTokenLastUsed(entities, authCreds.Key, authCreds.Value, DateTime.Now);
+
+                                        // Set the username
+                                        username = authCreds.Key;
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (FormsAuthentication.CookiesSupported == true && !hasAuthToken)
             {
                 if (Request.Cookies[FormsAuthentication.FormsCookieName] != null)
                 {
                     //let us take out the username now                
-                    string username = FormsAuthentication.Decrypt(Request.Cookies[FormsAuthentication.FormsCookieName].Value).Name;
-                    List<string> roles = new List<string>();
+                    username = FormsAuthentication.Decrypt(Request.Cookies[FormsAuthentication.FormsCookieName].Value).Name;
+                }
+            }
 
-                    using (TeknikEntities entities = new TeknikEntities())
+            // Create the new user if we found one from the supplied auth info
+            if (!string.IsNullOrEmpty(username))
+            {
+                using (TeknikEntities entities = new TeknikEntities())
+                {
+                    User user = UserHelper.GetUser(entities, username);
+
+                    // Grab all their roles
+                    foreach (Group grp in user.Groups)
                     {
-                        User user = entities.Users.SingleOrDefault(u => u.Username == username);
-
-                        if (user != null)
+                        foreach (Role role in grp.Roles)
                         {
-                            foreach (Group grp in user.Groups)
+                            if (!roles.Contains(role.Name))
                             {
-                                foreach (Role role in grp.Roles)
-                                {
-                                    if (!roles.Contains(role.Name))
-                                    {
-                                        roles.Add(role.Name);
-                                    }
-                                }
+                                roles.Add(role.Name);
                             }
                         }
                     }
-
-                    //Let us set the Pricipal with our user specific details
-                    HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(
-                        new System.Security.Principal.GenericIdentity(username, "Forms"), roles.ToArray());
                 }
+
+                HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(
+                    new System.Security.Principal.GenericIdentity(username, "Forms"), roles.ToArray());
             }
         }
 

@@ -4,11 +4,13 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Help.ViewModels;
+using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Filters;
 
 namespace Teknik.Areas.Help.Controllers
 {
+    [TeknikAuthorize]
     public class HelpController : DefaultController
     {
         // GET: Help/Help

@@ -5,12 +5,14 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Transparency.Models;
 using Teknik.Areas.Transparency.ViewModels;
+using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Models;
 
 namespace Teknik.Areas.Transparency.Controllers
 {
+    [TeknikAuthorize]
     public class TransparencyController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();

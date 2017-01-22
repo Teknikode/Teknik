@@ -15,7 +15,7 @@ namespace Teknik.Areas.Users.ViewModels
 
         public int TrustedDeviceCount { get; set; }
 
-        public List<AuthToken> AuthTokens { get; set; }
+        public List<AuthTokenViewModel> AuthTokens { get; set; }
 
         public UserSettings UserSettings { get; set; }
 

@@ -11,9 +11,11 @@ using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Utilities;
 using Teknik.Models;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.RSS.Controllers
 {
+    [TeknikAuthorize(AuthType.Basic)]
     public class RSSController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();

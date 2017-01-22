@@ -4,11 +4,13 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.About.ViewModels;
+using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Filters;
 
 namespace Teknik.Areas.About.Controllers
 {
+    [TeknikAuthorize]
     public class AboutController : DefaultController
     {
         [AllowAnonymous]

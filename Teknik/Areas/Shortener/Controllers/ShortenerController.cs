@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Shortener.Models;
 using Teknik.Areas.Shortener.ViewModels;
 using Teknik.Areas.Users.Utility;
+using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Models;
@@ -13,6 +14,7 @@ using Teknik.Utilities;
 
 namespace Teknik.Areas.Shortener.Controllers
 {
+    [TeknikAuthorize]
     public class ShortenerController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();

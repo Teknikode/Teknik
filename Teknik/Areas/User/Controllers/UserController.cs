@@ -15,9 +15,11 @@ using Teknik.Filters;
 using QRCoder;
 using TwoStepsAuthenticator;
 using System.Drawing;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.Users.Controllers
 {
+    [TeknikAuthorize]
     public class UserController : DefaultController
     {
         private static readonly UsedCodesManager usedCodesManager = new UsedCodesManager();
@@ -100,7 +102,16 @@ namespace Teknik.Areas.Users.Controllers
                 model.UserID = user.UserId;
                 model.Username = user.Username;
                 model.TrustedDeviceCount = user.TrustedDevices.Count;
-                model.AuthTokens = user.AuthTokens.ToList();
+                model.AuthTokens = new List<AuthTokenViewModel>();
+                foreach (AuthToken token in user.AuthTokens)
+                {
+                    AuthTokenViewModel tokenModel = new AuthTokenViewModel();
+                    tokenModel.AuthTokenId = token.AuthTokenId;
+                    tokenModel.Name = token.Name;
+                    tokenModel.LastDateUsed = token.LastDateUsed;
+
+                    model.AuthTokens.Add(tokenModel);
+                }
 
                 model.UserSettings = user.UserSettings;
                 model.SecuritySettings = user.SecuritySettings;
@@ -788,7 +799,7 @@ namespace Teknik.Areas.Users.Controllers
                 User user = UserHelper.GetUser(db, User.Identity.Name);
                 if (user != null)
                 {
-                    string newTokenStr = UserHelper.GenerateAuthToken(Config, user.Username);
+                    string newTokenStr = UserHelper.GenerateAuthToken(db, user.Username);
 
                     if (!string.IsNullOrEmpty(newTokenStr))
                     {
@@ -796,13 +807,106 @@ namespace Teknik.Areas.Users.Controllers
                         token.UserId = user.UserId;
                         token.HashedToken = SHA256.Hash(newTokenStr);
                         token.Name = name;
-                        token.LastDateUsed = DateTime.Now;
 
                         db.AuthTokens.Add(token);
                         db.SaveChanges();
-                        return Json(new { result = newTokenStr });
+
+                        AuthTokenViewModel model = new AuthTokenViewModel();
+                        model.AuthTokenId = token.AuthTokenId;
+                        model.Name = token.Name;
+                        model.LastDateUsed = token.LastDateUsed;
+
+                        return Json(new { result = new { token = newTokenStr, html = PartialView("~/Areas/User/Views/User/AuthToken.cshtml", model).RenderToString() } });
                     }
                     return Json(new { error = "Unable to generate Auth Token" });
+                }
+                return Json(new { error = "User does not exist" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RevokeAllTokens()
+        {
+            try
+            {
+                User user = UserHelper.GetUser(db, User.Identity.Name);
+                if (user != null)
+                {
+                    user.AuthTokens.Clear();
+                    List<AuthToken> foundTokens = db.AuthTokens.Where(d => d.UserId == user.UserId).ToList();
+                    if (foundTokens != null)
+                    {
+                        foreach (AuthToken token in foundTokens)
+                        {
+                            db.AuthTokens.Remove(token);
+                        }
+                    }
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    return Json(new { result = true });
+                }
+                return Json(new { error = "User does not exist" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditTokenName(int tokenId, string name)
+        {
+            try
+            {
+                User user = UserHelper.GetUser(db, User.Identity.Name);
+                if (user != null)
+                {
+                    AuthToken foundToken = db.AuthTokens.Where(d => d.UserId == user.UserId && d.AuthTokenId == tokenId).FirstOrDefault();
+                    if (foundToken != null)
+                    {
+                        foundToken.Name = name;
+                        db.Entry(foundToken).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                        return Json(new { result = new { name = name } });
+                    }
+                    return Json(new { error = "Authentication Token does not exist" });
+                }
+                return Json(new { error = "User does not exist" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteToken(int tokenId)
+        {
+            try
+            {
+                User user = UserHelper.GetUser(db, User.Identity.Name);
+                if (user != null)
+                {
+                    AuthToken foundToken = db.AuthTokens.Where(d => d.UserId == user.UserId && d.AuthTokenId == tokenId).FirstOrDefault();
+                    if (foundToken != null)
+                    {
+                        db.AuthTokens.Remove(foundToken);
+                        user.AuthTokens.Remove(foundToken);
+                        db.Entry(user).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                        return Json(new { result = true });
+                    }
+                    return Json(new { error = "Authentication Token does not exist" });
                 }
                 return Json(new { error = "User does not exist" });
             }

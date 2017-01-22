@@ -20,6 +20,6 @@ namespace Teknik.Areas.Users.Models
         [CaseSensitive]
         public string HashedToken { get; set; }
 
-        public DateTime LastDateUsed { get; set; }
+        public DateTime? LastDateUsed { get; set; }
     }
 }

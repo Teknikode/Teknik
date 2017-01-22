@@ -17,9 +17,11 @@ using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Utilities;
 using Teknik.Models;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.Upload.Controllers
 {
+    [TeknikAuthorize]
     public class UploadController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();

@@ -14,9 +14,11 @@ using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Utilities;
 using Teknik.Models;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.Paste.Controllers
 {
+    [TeknikAuthorize]
     public class PasteController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();

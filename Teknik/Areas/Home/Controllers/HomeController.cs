@@ -10,9 +10,11 @@ using Teknik.Controllers;
 using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Filters;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.Home.Controllers
 {
+    [TeknikAuthorize]
     public class HomeController : DefaultController
     {
         // GET: Home/Home

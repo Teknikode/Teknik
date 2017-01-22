@@ -17,9 +17,11 @@ using Teknik.Filters;
 using Teknik.Areas.API.Models;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.API.Controllers
 {
+    [TeknikAuthorize(AuthType.Basic)]
     public class APIv1Controller : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();
@@ -27,7 +29,7 @@ namespace Teknik.Areas.API.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            return Redirect(Url.SubRouteUrl("help", "Help.Topic", new { topic = "API" }));
+            return Redirect(Url.SubRouteUrl("help", "Help.API"));
         }
 
         [HttpPost]
@@ -120,9 +122,9 @@ namespace Teknik.Areas.API.Controllers
                         if (upload != null)
                         {
                             // Associate this with the user if they provided an auth key
-                            if (!string.IsNullOrEmpty(model.authToken))
+                            if (User.Identity.IsAuthenticated)
                             {
-                                User foundUser = UserHelper.GetUserFromToken(db, model.authToken);
+                                User foundUser = UserHelper.GetUser(db, User.Identity.Name);
                                 if (foundUser != null)
                                 {
                                     upload.UserId = foundUser.UserId;
@@ -183,10 +185,10 @@ namespace Teknik.Areas.API.Controllers
                 {
                     Paste.Models.Paste paste = PasteHelper.CreatePaste(model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password, model.hide);
 
-                    // Associate this with the user if they provided an auth key
-                    if (!string.IsNullOrEmpty(model.authToken))
+                    // Associate this with the user if they are logged in
+                    if (User.Identity.IsAuthenticated)
                     {
-                        User foundUser = UserHelper.GetUserFromToken(db, model.authToken);
+                        User foundUser = UserHelper.GetUser(db, User.Identity.Name);
                         if (foundUser != null)
                         {
                             paste.UserId = foundUser.UserId;
@@ -228,10 +230,10 @@ namespace Teknik.Areas.API.Controllers
                 {
                     ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(model.url, Config.ShortenerConfig.UrlLength);
 
-                    // Associate this with the user if they provided an auth key
-                    if (!string.IsNullOrEmpty(model.authToken))
+                    // Associate this with the user if they are logged in
+                    if (User.Identity.IsAuthenticated)
                     {
-                        User foundUser = UserHelper.GetUserFromToken(db, model.authToken);
+                        User foundUser = UserHelper.GetUser(db, User.Identity.Name);
                         if (foundUser != null)
                         {
                             newUrl.UserId = foundUser.UserId;

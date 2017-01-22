@@ -17,6 +17,5 @@ namespace Teknik.Utilities
             }
             return null;
         }
-
     }
 }

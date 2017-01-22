@@ -10,9 +10,11 @@ using Teknik.Areas.Contact.Models;
 using Teknik.Models;
 using System.Text;
 using Teknik.Filters;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.Contact.Controllers
 {
+    [TeknikAuthorize]
     public class ContactController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();

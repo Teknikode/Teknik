@@ -9,9 +9,11 @@ using Teknik.Areas.Upload;
 using Teknik.Controllers;
 using Teknik.Utilities;
 using Teknik.Models;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.API.Controllers
 {
+    [TeknikAuthorize]
     public class APIController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();

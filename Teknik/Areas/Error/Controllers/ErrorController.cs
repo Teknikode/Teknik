@@ -10,9 +10,11 @@ using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Utilities;
 using Teknik.Logging;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.Error.Controllers
 {
+    [TeknikAuthorize]
     public class ErrorController : DefaultController
     {
         [TrackPageView]
@@ -69,7 +71,33 @@ namespace Teknik.Areas.Error.Controllers
 
             return View("~/Areas/Error/Views/Error/General.cshtml", model);
         }
-        
+
+        [AllowAnonymous]
+        public ActionResult Http401(Exception exception)
+        {
+            ViewBag.Title = "401 - " + Config.Title;
+            ViewBag.Description = "Unauthorized";
+
+            if (Response != null)
+            {
+                Response.StatusCode = 401;
+                Response.TrySkipIisCustomErrors = true;
+            }
+
+            string errorMessage = "Unauthorized";
+            if (Request != null && Request.Url != null)
+            {
+                errorMessage += " for page: " + Request.Url.AbsoluteUri;
+            }
+
+            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+
+            ErrorViewModel model = new ErrorViewModel();
+            model.Exception = exception;
+
+            return View("~/Areas/Error/Views/Error/Http401.cshtml", model);
+        }
+
         [AllowAnonymous]
         public ActionResult Http403(Exception exception)
         {

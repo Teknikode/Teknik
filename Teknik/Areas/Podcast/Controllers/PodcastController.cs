@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using Teknik.Areas.Podcast.Models;
 using Teknik.Areas.Podcast.ViewModels;
 using Teknik.Areas.Users.Utility;
+using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Models;
@@ -15,6 +16,7 @@ using Teknik.Utilities;
 
 namespace Teknik.Areas.Podcast.Controllers
 {
+    [TeknikAuthorize]
     public class PodcastController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();

@@ -1,7 +1,7 @@
 ﻿@model Teknik.Areas.Users.ViewModels.SettingsViewModel
 
 @using Teknik.Utilities
-@using Teknik.Areas.Users.Models
+@using Teknik.Areas.Users.ViewModels
 
 <script>
     var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
@@ -12,7 +12,7 @@
     var clearTrustedDevicesURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ClearTrustedDevices" })';
     var generateTokenURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "GenerateToken" })';
     var revokeAllTokensURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "RevokeAllTokens" })';
-    var editTokenName = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditTokenName" })';
+    var editTokenNameURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditTokenName" })';
     var deleteTokenURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "DeleteToken" })';
 </script>
 
@@ -181,26 +181,19 @@
                                 </div>
                                 <div class="col-sm-8">
                                     <br />
-                                    <label for="authCodes"><h4>Authentication Tokens</h4></label><span class="pull-right"><button type="button" class="btn btn-default" id="generate_token">Generate Token</button> <button type="button" class="btn btn-danger" id="revoke_all_tokens">Revoke All</button></span>
-                                    <div id="authCodes" style="overflow-y: auto; max-height: 400px;">
-                                        <ul class="list-group">
+                                    <label for="authTokens"><h4>Authentication Tokens</h4></label><span class="pull-right"><button type="button" class="btn btn-default" id="generate_token">Generate Token</button> <button type="button" class="btn btn-danger" id="revoke_all_tokens">Revoke All</button></span>
+                                    <div id="authTokens" style="overflow-y: auto; max-height: 400px;">
+                                        <ul class="list-group" id="authTokenList">
                                         @if (Model.AuthTokens.Any())
                                         {
-                                            foreach (AuthToken token in Model.AuthTokens)
+                                            foreach (AuthTokenViewModel token in Model.AuthTokens)
                                             {
-                                                <li class="list-group-item">
-                                                    <div class="btn-group btn-group-sm pull-right" role="group" aria-label="...">
-                                                        <button type="button" class="btn btn-default">Edit</button>
-                                                        <button type="button" class="btn btn-danger text-danger">Delete</button>
-                                                    </div>
-                                                    <h4 class="list-group-item-heading" id="update_auth_token_name">@token.Name</h4>
-                                                    <p class="list-group-item-text">Last Used on <time datetime="@token.LastDateUsed.ToString("s")">@token.LastDateUsed.ToString("MMMM dd, yyyy hh:mm tt")</time></p>
-                                                </li>
+                                                @Html.Partial("AuthToken", token)
                                             }
                                         }
                                         else
                                         {
-                                            <li class="list-group-item text-center">No Auth Codes</li>
+                                            <li class="list-group-item text-center" id="noAuthTokens">No Authentication Tokens</li>
                                         }
                                         </ul>
                                     </div>

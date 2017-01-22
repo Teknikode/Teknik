@@ -85,5 +85,28 @@ namespace Teknik.Utilities
             // Return formatted number with suffix
             return readable.ToString("0.### ") + suffix;
         }
+
+        public static KeyValuePair<string, string> ParseBasicAuthHeader(string value)
+        {
+            return ParseBasicAuthHeader(value, Encoding.UTF8);
+        }
+
+        public static KeyValuePair<string, string> ParseBasicAuthHeader(string value, Encoding encoding)
+        {
+            KeyValuePair<string, string> result = new KeyValuePair<string, string>();
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                byte[] rawVal = Convert.FromBase64String(value);
+                string stringVal = encoding.GetString(rawVal);
+                string[] parts = stringVal.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 1)
+                {
+                    result = new KeyValuePair<string, string>(parts[0], parts[1]);
+                }
+            }
+
+            return result;
+        }
     }
 }

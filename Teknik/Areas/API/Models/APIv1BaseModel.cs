@@ -9,15 +9,9 @@ namespace Teknik.Areas.API.Models
     {
         public bool doNotTrack { get; set; }
 
-        public string username { get; set; }
-
-        public string authToken { get; set; }
-
         public APIv1BaseModel()
         {
             doNotTrack = false;
-            username = string.Empty;
-            authToken = string.Empty;
         }
     }
 }

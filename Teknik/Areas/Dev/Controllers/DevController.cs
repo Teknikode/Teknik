@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Utilities;
 
 namespace Teknik.Areas.Dev.Controllers
 {
+    [TeknikAuthorize]
     public class DevController : DefaultController
     {
         [TrackPageView]

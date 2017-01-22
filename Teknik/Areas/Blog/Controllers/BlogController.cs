@@ -14,9 +14,11 @@ using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Utilities;
 using Teknik.Models;
+using Teknik.Attributes;
 
 namespace Teknik.Areas.Blog.Controllers
 {
+    [TeknikAuthorize]
     public class BlogController : DefaultController
     {
         private TeknikEntities db = new TeknikEntities();

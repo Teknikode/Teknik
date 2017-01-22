@@ -6,12 +6,45 @@
 @Styles.Render("~/Content/help");
 
 <div class="container">
+    <ol class="breadcrumb">
+        <li><a href="@Url.SubRouteUrl("help", "Help.Index")">Help Index</a></li>
+        <li><a href="@Url.SubRouteUrl("help", "Help.API", new { version = string.Empty, service = string.Empty })">API</a></li>
+        <li>v1</li>
+        <li class="active"><a href="#">Paste Service</a></li>
+    </ol>
     <div class="row api">
         <h2><b>Paste Service</b></h2>
         <hr>
         <p>This is a description of the API commands available for the Paste service.</p>
         <h3>Submit a Paste</h3>
         <pre><code>POST @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
+        <h4>Headers</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Default Value</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>Authorize</code>
+                    </td>
+                    <td>
+                        <code>Basic <i>Encoding.Base64</i>(&lt;username&gt;:&lt;token&gt;)</code>
+                    </td>
+                    <td>
+                        <var>NULL</var>
+                    </td>
+                    <td>
+                        Basic Authentication to associate the paste with your account.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <h4>Parameters</h4>
         <table>
             <thead>
