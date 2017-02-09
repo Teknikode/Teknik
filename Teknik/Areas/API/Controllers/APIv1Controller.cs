@@ -44,31 +44,25 @@ namespace Teknik.Areas.API.Controllers
                     if (model.file.ContentLength <= Config.UploadConfig.MaxUploadSize)
                     {
                         // convert file to bytes
-                        byte[] fileData = null;
                         string fileExt = Path.GetExtension(model.file.FileName);
                         int contentLength = model.file.ContentLength;
-                        using (var binaryReader = new BinaryReader(model.file.InputStream))
-                        {
-                            fileData = binaryReader.ReadBytes(model.file.ContentLength);
-                        }
 
                         // Scan the file to detect a virus
                         if (Config.UploadConfig.VirusScanEnable)
                         {
-                            byte[] scanData = fileData;
                             // If it was encrypted client side, decrypt it
-                            if (!model.encrypt && model.key != null)
-                            {
-                                // If the IV is set, and Key is set, then decrypt it
-                                if (!string.IsNullOrEmpty(model.key) && !string.IsNullOrEmpty(model.iv))
-                                {
-                                    // Decrypt the data
-                                    scanData = AES.Decrypt(scanData, model.key, model.iv);
-                                }
-                            }
+                            //if (!model.encrypt && model.key != null)
+                            //{
+                            //    // If the IV is set, and Key is set, then decrypt it
+                            //    if (!string.IsNullOrEmpty(model.key) && !string.IsNullOrEmpty(model.iv))
+                            //    {
+                            //        // Decrypt the data
+                            //        scanData = AES.Decrypt(scanData, model.key, model.iv);
+                            //    }
+                            //}
                             ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
                             clam.MaxStreamSize = Config.UploadConfig.MaxUploadSize;
-                            ClamScanResult scanResult = clam.SendAndScanFile(scanData);
+                            ClamScanResult scanResult = clam.SendAndScanFile(model.file.InputStream);
 
                             switch (scanResult.Result)
                             {
@@ -95,29 +89,8 @@ namespace Teknik.Areas.API.Controllers
                         if (model.blockSize <= 0)
                             model.blockSize = Config.UploadConfig.BlockSize;
 
-                        byte[] data = null;
-                        // If they want us to encrypt the file first, do that here
-                        if (model.encrypt)
-                        {
-                            // Generate key and iv if empty
-                            if (string.IsNullOrEmpty(model.key))
-                            {
-                                model.key = StringHelper.RandomString(model.keySize / 8);
-                            }
-                            if (string.IsNullOrEmpty(model.iv))
-                            {
-                                model.iv = StringHelper.RandomString(model.blockSize / 8);
-                            }
-
-                            data = AES.Encrypt(fileData, model.key, model.iv);
-                            if (data == null || data.Length <= 0)
-                            {
-                                return Json(new { error = new { message = "Unable to encrypt file" } });
-                            }
-                        }
-
                         // Save the file data
-                        Upload.Models.Upload upload = Uploader.SaveFile(db, Config, (model.encrypt) ? data : fileData, model.contentType, contentLength, fileExt, model.iv, (model.saveKey) ? model.key : null, model.keySize, model.blockSize);
+                        Upload.Models.Upload upload = Uploader.SaveFile(db, Config, model.file.InputStream, model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.saveKey, model.keySize, model.blockSize);
 
                         if (upload != null)
                         {

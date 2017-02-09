@@ -60,30 +60,24 @@ namespace Teknik.Areas.Upload.Controllers
                     if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
                     {
                         // convert file to bytes
-                        byte[] fileData = null;
                         int contentLength = data.ContentLength;
-                        using (var binaryReader = new BinaryReader(data.InputStream))
-                        {
-                            fileData = binaryReader.ReadBytes(data.ContentLength);
-                        }
 
                         // Scan the file to detect a virus
                         if (Config.UploadConfig.VirusScanEnable)
                         {
-                            byte[] scanData = fileData;
                             // If it was encrypted client side, decrypt it
-                            if (!encrypt && key != null)
-                            {
-                                // If the IV is set, and Key is set, then decrypt it
-                                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
-                                {
-                                    // Decrypt the data
-                                    scanData = AES.Decrypt(scanData, key, iv);
-                                }
-                            }
+                            //if (!encrypt && key != null)
+                            //{
+                            //    // If the IV is set, and Key is set, then decrypt it
+                            //    if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
+                            //    {
+                            //        // Decrypt the data
+                            //        scanData = AES.Decrypt(scanData, key, iv);
+                            //    }
+                            //}
                             ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
                             clam.MaxStreamSize = Config.UploadConfig.MaxUploadSize;
-                            ClamScanResult scanResult = clam.SendAndScanFile(scanData);
+                            ClamScanResult scanResult = clam.SendAndScanFile(data.InputStream);
 
                             switch (scanResult.Result)
                             {
@@ -97,23 +91,8 @@ namespace Teknik.Areas.Upload.Controllers
                                     return Json(new { error = new { message = string.Format("Unknown result while scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
                             }
                         }
-
-                        // if they want us to encrypt it, we do so here
-                        if (encrypt)
-                        {
-                            // Generate key and iv if empty
-                            if (string.IsNullOrEmpty(key))
-                            {
-                                key = StringHelper.RandomString(keySize / 8);
-                            }
-
-                            fileData = AES.Encrypt(fileData, key, iv);
-                            if (fileData == null || fileData.Length <= 0)
-                            {
-                                return Json(new { error = new { message = "Unable to encrypt file" } });
-                            }
-                        }
-                        Models.Upload upload = Uploader.SaveFile(db, Config, fileData, fileType, contentLength, fileExt, iv, (saveKey) ? key : null, keySize, blockSize);
+                        
+                        Models.Upload upload = Uploader.SaveFile(db, Config, data.InputStream, fileType, contentLength, encrypt, fileExt, iv, key, saveKey, keySize, blockSize);
                         if (upload != null)
                         {
                             if (User.Identity.IsAuthenticated)

@@ -155,19 +155,12 @@ namespace Teknik.Utilities
             byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
             return Decrypt(data, keyBytes, ivBytes, "CTR", "NoPadding");
         }
-        public static byte[] DecryptCBC(byte[] data, string key, string iv)
-        {
-            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-            byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-            return Decrypt(data, keyBytes, ivBytes, "CBC", "PKCS5PADDING");
-        }
         public static byte[] Decrypt(byte[] data, byte[] key, byte[] iv, string mode, string padding)
         {
-            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/" + mode + "/" + padding);
-
-            cipher.Init(false, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
-
-            return cipher.DoFinal(data);
+            using (MemoryStream stream = new MemoryStream(data))
+            {
+                return ProcessCipher(false, stream, 1024, key, iv, mode, padding);
+            }
         }
 
 
@@ -181,19 +174,96 @@ namespace Teknik.Utilities
             byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
             return Encrypt(data, keyBytes, ivBytes, "CTR", "NoPadding");
         }
-        public static byte[] EncryptCBC(byte[] data, string key, string iv)
-        {
-            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-            byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-            return Encrypt(data, keyBytes, ivBytes, "CBC", "PKCS5PADDING");
-        }
         public static byte[] Encrypt(byte[] data, byte[] key, byte[] iv, string mode, string padding)
+        {
+            using (MemoryStream stream = new MemoryStream(data))
+            {
+                return ProcessCipher(true, stream, 1024, key, iv, mode, padding);
+            }
+        }
+
+        public static byte[] ProcessCipher(bool encrypt, Stream input, int blockSize, byte[] key, byte[] iv, string mode, string padding)
+        {
+            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/" + mode + "/" + padding);
+
+            cipher.Init(encrypt, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
+
+            // Make sure the input stream is at the beginning
+            input.Seek(0, SeekOrigin.Begin);
+
+            // Initialize variables
+            byte[] output = new byte[input.Length];
+            int cipherOffset = 0;
+            int processedBytes = 0;
+
+            // Process the stream and save the bytes to the output
+            do
+            {
+                processedBytes = ProcessCipherBlock(cipher, input, blockSize, output, cipherOffset);
+                cipherOffset += processedBytes;
+            }
+            while (processedBytes > 0);
+
+            // Finalize processing of the cipher
+            cipher.DoFinal(output, cipherOffset);
+
+            return output;
+        }
+
+        public static void EncryptToFile(string filePath, Stream input, int blockSize, byte[] key, byte[] iv, string mode, string padding)
         {
             IBufferedCipher cipher = CipherUtilities.GetCipher("AES/" + mode + "/" + padding);
 
             cipher.Init(true, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
 
-            return cipher.DoFinal(data);
+            // Make sure the input stream is at the beginning
+            input.Seek(0, SeekOrigin.Begin);
+
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                int processedBytes = 0;
+                byte[] buffer = new byte[blockSize];
+                do
+                {
+                    processedBytes = ProcessCipherBlock(cipher, input, blockSize, buffer, 0);
+                    if (processedBytes > 0)
+                    {
+                        // We have bytes, lets write them to the file
+                        fileStream.Write(buffer, 0, processedBytes);
+
+                        // Clear the buffer
+                        Array.Clear(buffer, 0, blockSize);
+                    }
+                }
+                while (processedBytes > 0);
+
+                // Clear the buffer
+                Array.Clear(buffer, 0, blockSize);
+
+                // Do the final output
+                processedBytes = cipher.DoFinal(buffer, 0);
+                if (processedBytes > 0)
+                {
+                    // We have bytes, lets write them to the file
+                    fileStream.Write(buffer, 0, processedBytes);
+                }
+            }
+        }
+
+        public static int ProcessCipherBlock(IBufferedCipher cipher, Stream input, int blockSize, byte[] output, int outputOffset)
+        {
+            // Initialize buffer
+            byte[] buffer = new byte[blockSize];
+
+            // Read the next block of data
+            int bytesRead = input.Read(buffer, 0, blockSize);
+            if (bytesRead > 0)
+            {
+                // process the cipher for the read block and add it to the output
+                return cipher.ProcessBytes(buffer, 0, bytesRead, output, outputOffset);
+            }
+
+            return 0;
         }
 
         public static byte[] CreateKey(string password, string iv, int keySize = 256)
