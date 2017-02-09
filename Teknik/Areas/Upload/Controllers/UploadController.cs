@@ -18,6 +18,8 @@ using Teknik.Filters;
 using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Attributes;
+using System.Text;
+using Org.BouncyCastle.Crypto;
 
 namespace Teknik.Areas.Upload.Controllers
 {
@@ -174,104 +176,149 @@ namespace Teknik.Areas.Upload.Controllers
                             if (System.IO.File.Exists(filePath))
                             {
                                 // Read in the file
-                                byte[] data = System.IO.File.ReadAllBytes(filePath);
-                                // If the IV is set, and Key is set, then decrypt it
-                                if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
+                                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                                 {
-                                    // Decrypt the data
-                                    data = AES.Decrypt(data, upload.Key, upload.IV);
-                                }
+                                    // We accept ranges
+                                    Response.AddHeader("Accept-Ranges", "0-" + upload.ContentLength);
 
-                                // We accept ranges
-                                Response.AddHeader("Accept-Ranges", "0-" + upload.ContentLength);
-
-                                // check to see if we need to pass a specified range
-                                if (byRange)
-                                {
-                                    long anotherStart = startByte;
-                                    long anotherEnd = endByte;
-                                    string[] arr_split = Request.ServerVariables["HTTP_RANGE"].Split(new char[] { '=' });
-                                    string range = arr_split[1];
-
-                                    // Make sure the client hasn't sent us a multibyte range 
-                                    if (range.IndexOf(",") > -1)
+                                    // check to see if we need to pass a specified range
+                                    if (byRange)
                                     {
-                                        // (?) Shoud this be issued here, or should the first 
-                                        // range be used? Or should the header be ignored and 
-                                        // we output the whole content? 
-                                        Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
-                                        throw new HttpException(416, "Requested Range Not Satisfiable");
+                                        long anotherStart = startByte;
+                                        long anotherEnd = endByte;
+                                        string[] arr_split = Request.ServerVariables["HTTP_RANGE"].Split(new char[] { '=' });
+                                        string range = arr_split[1];
 
+                                        // Make sure the client hasn't sent us a multibyte range 
+                                        if (range.IndexOf(",") > -1)
+                                        {
+                                            // (?) Shoud this be issued here, or should the first 
+                                            // range be used? Or should the header be ignored and 
+                                            // we output the whole content? 
+                                            Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
+                                            throw new HttpException(416, "Requested Range Not Satisfiable");
+
+                                        }
+
+                                        // If the range starts with an '-' we start from the beginning 
+                                        // If not, we forward the file pointer 
+                                        // And make sure to get the end byte if spesified 
+                                        if (range.StartsWith("-"))
+                                        {
+                                            // The n-number of the last bytes is requested 
+                                            anotherStart = startByte - Convert.ToInt64(range.Substring(1));
+                                        }
+                                        else
+                                        {
+                                            arr_split = range.Split(new char[] { '-' });
+                                            anotherStart = Convert.ToInt64(arr_split[0]);
+                                            long temp = 0;
+                                            anotherEnd = (arr_split.Length > 1 && Int64.TryParse(arr_split[1].ToString(), out temp)) ? Convert.ToInt64(arr_split[1]) : upload.ContentLength;
+                                        }
+
+                                        /* Check the range and make sure it's treated according to the specs. 
+                                         * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html 
+                                         */
+                                        // End bytes can not be larger than $end. 
+                                        anotherEnd = (anotherEnd > endByte) ? endByte : anotherEnd;
+                                        // Validate the requested range and return an error if it's not correct. 
+                                        if (anotherStart > anotherEnd || anotherStart > upload.ContentLength - 1 || anotherEnd >= upload.ContentLength)
+                                        {
+
+                                            Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
+                                            throw new HttpException(416, "Requested Range Not Satisfiable");
+                                        }
+                                        startByte = anotherStart;
+                                        endByte = anotherEnd;
+
+                                        length = endByte - startByte + 1; // Calculate new content length 
+
+                                        // grab the portion of the data we want
+                                        byte[] dataRange = new byte[length];
+                                        //Array.Copy(data, startByte, dataRange, 0, length);
+                                        //data = dataRange;
+
+                                        // Ranges are response of 206
+                                        Response.StatusCode = 206;
                                     }
 
-                                    // If the range starts with an '-' we start from the beginning 
-                                    // If not, we forward the file pointer 
-                                    // And make sure to get the end byte if spesified 
-                                    if (range.StartsWith("-"))
+                                    // Add cache parameters
+                                    Response.Cache.SetCacheability(HttpCacheability.Public);
+                                    Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
+                                    Response.Cache.SetLastModified(upload.DateUploaded);
+
+                                    // Notify the client the byte range we'll be outputting 
+                                    Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
+                                    Response.AddHeader("Content-Length", length.ToString());
+
+                                    // Create content disposition
+                                    var cd = new System.Net.Mime.ContentDisposition
                                     {
-                                        // The n-number of the last bytes is requested 
-                                        anotherStart = startByte - Convert.ToInt64(range.Substring(1));
+                                        FileName = upload.Url,
+                                        Inline = true
+                                    };
+
+                                    Response.AppendHeader("Content-Disposition", cd.ToString());
+
+                                    string contentType = upload.ContentType;
+                                    // We need to prevent html (make cleaner later)
+                                    if (contentType == "text/html")
+                                    {
+                                        contentType = "text/plain";
+                                    }
+
+                                    // Reset file stream to starting position
+                                    fs.Seek(0, SeekOrigin.Begin);
+
+                                    Response.BufferOutput = true;
+
+                                    // If the IV is set, and Key is set, then decrypt it before sending
+                                    if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
+                                    {
+                                        byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
+                                        byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
+
+                                        IBufferedCipher cipher = AES.CreateCipher(false, keyBytes, ivBytes, "CTR", "NoPadding");
+
+                                        int chunkSize = 1024;
+
+                                        // Make sure the input stream is at the beginning
+                                        fs.Seek(0, SeekOrigin.Begin);
+                                        int processedBytes = 0;
+                                        byte[] buffer = new byte[chunkSize];
+                                        do
+                                        {
+                                            processedBytes = AES.ProcessCipherBlock(cipher, fs, chunkSize, buffer, 0);
+                                            if (processedBytes > 0)
+                                            {
+                                                Response.OutputStream.Write(buffer, 0, processedBytes);
+
+                                                // Clear the buffer
+                                                Array.Clear(buffer, 0, chunkSize);
+                                            }
+                                        }
+                                        while (processedBytes > 0);
+
+                                        // Clear the buffer
+                                        Array.Clear(buffer, 0, chunkSize);
+
+                                        // Finalize processing of the cipher
+                                        processedBytes = AES.FinalizeCipherBlock(cipher, buffer, 0);
+                                        if (processedBytes > 0)
+                                        {
+                                            // We have bytes, lets write them to the output
+                                            Response.OutputStream.Write(buffer, 0, processedBytes);
+                                        }
+                                        HttpContext.ApplicationInstance.CompleteRequest();
+
+                                        return Content("");
                                     }
                                     else
                                     {
-                                        arr_split = range.Split(new char[] { '-' });
-                                        anotherStart = Convert.ToInt64(arr_split[0]);
-                                        long temp = 0;
-                                        anotherEnd = (arr_split.Length > 1 && Int64.TryParse(arr_split[1].ToString(), out temp)) ? Convert.ToInt64(arr_split[1]) : upload.ContentLength;
+                                        // Otherwise just send it
+                                        return File(fs, contentType);
                                     }
-
-                                    /* Check the range and make sure it's treated according to the specs. 
-                                     * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html 
-                                     */
-                                    // End bytes can not be larger than $end. 
-                                    anotherEnd = (anotherEnd > endByte) ? endByte : anotherEnd;
-                                    // Validate the requested range and return an error if it's not correct. 
-                                    if (anotherStart > anotherEnd || anotherStart > upload.ContentLength - 1 || anotherEnd >= upload.ContentLength)
-                                    {
-
-                                        Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
-                                        throw new HttpException(416, "Requested Range Not Satisfiable");
-                                    }
-                                    startByte = anotherStart;
-                                    endByte = anotherEnd;
-
-                                    length = endByte - startByte + 1; // Calculate new content length 
-
-                                    // grab the portion of the data we want
-                                    byte[] dataRange = new byte[length];
-                                    Array.Copy(data, startByte, dataRange, 0, length);
-                                    data = dataRange;
-
-                                    // Ranges are response of 206
-                                    Response.StatusCode = 206;
                                 }
-
-                                // Add cache parameters
-                                Response.Cache.SetCacheability(HttpCacheability.Public);
-                                Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
-                                Response.Cache.SetLastModified(upload.DateUploaded);
-
-                                // Notify the client the byte range we'll be outputting 
-                                Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
-                                Response.AddHeader("Content-Length", length.ToString());
-
-                                // Create content disposition
-                                var cd = new System.Net.Mime.ContentDisposition
-                                {
-                                    FileName = upload.Url,
-                                    Inline = true
-                                };
-
-                                Response.AppendHeader("Content-Disposition", cd.ToString());
-
-                                string contentType = upload.ContentType;
-                                // We need to prevent html (make cleaner later)
-                                if (contentType == "text/html")
-                                {
-                                    contentType = "text/plain";
-                                }
-
-                                return File(data, contentType);
                             }
                         }
                     }

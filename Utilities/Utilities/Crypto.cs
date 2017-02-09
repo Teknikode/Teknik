@@ -212,9 +212,7 @@ namespace Teknik.Utilities
 
         public static void EncryptToFile(string filePath, Stream input, int chunkSize, byte[] key, byte[] iv, string mode, string padding)
         {
-            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/" + mode + "/" + padding);
-
-            cipher.Init(true, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
+            IBufferedCipher cipher = CreateCipher(true, key, iv, mode, padding);
 
             // Make sure the input stream is at the beginning
             input.Seek(0, SeekOrigin.Begin);
