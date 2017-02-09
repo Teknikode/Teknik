@@ -14,6 +14,7 @@ using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Utilities.IO;
 using System;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
 
 namespace Teknik.Utilities
 {
@@ -182,11 +183,10 @@ namespace Teknik.Utilities
             }
         }
 
-        public static byte[] ProcessCipher(bool encrypt, Stream input, int blockSize, byte[] key, byte[] iv, string mode, string padding)
+        public static byte[] ProcessCipher(bool encrypt, Stream input, int chunkSize, byte[] key, byte[] iv, string mode, string padding)
         {
-            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/" + mode + "/" + padding);
-
-            cipher.Init(encrypt, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
+            // Create the cipher we are going to use
+            IBufferedCipher cipher = CreateCipher(encrypt, key, iv, mode, padding);
 
             // Make sure the input stream is at the beginning
             input.Seek(0, SeekOrigin.Begin);
@@ -199,18 +199,18 @@ namespace Teknik.Utilities
             // Process the stream and save the bytes to the output
             do
             {
-                processedBytes = ProcessCipherBlock(cipher, input, blockSize, output, cipherOffset);
+                processedBytes = ProcessCipherBlock(cipher, input, chunkSize, output, cipherOffset);
                 cipherOffset += processedBytes;
             }
             while (processedBytes > 0);
 
             // Finalize processing of the cipher
-            cipher.DoFinal(output, cipherOffset);
+            FinalizeCipherBlock(cipher, output, cipherOffset);
 
             return output;
         }
 
-        public static void EncryptToFile(string filePath, Stream input, int blockSize, byte[] key, byte[] iv, string mode, string padding)
+        public static void EncryptToFile(string filePath, Stream input, int chunkSize, byte[] key, byte[] iv, string mode, string padding)
         {
             IBufferedCipher cipher = CipherUtilities.GetCipher("AES/" + mode + "/" + padding);
 
@@ -222,26 +222,26 @@ namespace Teknik.Utilities
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 int processedBytes = 0;
-                byte[] buffer = new byte[blockSize];
+                byte[] buffer = new byte[chunkSize];
                 do
                 {
-                    processedBytes = ProcessCipherBlock(cipher, input, blockSize, buffer, 0);
+                    processedBytes = ProcessCipherBlock(cipher, input, chunkSize, buffer, 0);
                     if (processedBytes > 0)
                     {
                         // We have bytes, lets write them to the file
                         fileStream.Write(buffer, 0, processedBytes);
 
                         // Clear the buffer
-                        Array.Clear(buffer, 0, blockSize);
+                        Array.Clear(buffer, 0, chunkSize);
                     }
                 }
                 while (processedBytes > 0);
 
                 // Clear the buffer
-                Array.Clear(buffer, 0, blockSize);
-
-                // Do the final output
-                processedBytes = cipher.DoFinal(buffer, 0);
+                Array.Clear(buffer, 0, chunkSize);
+                
+                // Finalize processing of the cipher
+                processedBytes = FinalizeCipherBlock(cipher, buffer, 0);
                 if (processedBytes > 0)
                 {
                     // We have bytes, lets write them to the file
@@ -250,13 +250,22 @@ namespace Teknik.Utilities
             }
         }
 
-        public static int ProcessCipherBlock(IBufferedCipher cipher, Stream input, int blockSize, byte[] output, int outputOffset)
+        public static IBufferedCipher CreateCipher(bool encrypt, byte[] key, byte[] iv, string mode, string padding)
+        {
+            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/" + mode + "/" + padding);
+
+            cipher.Init(encrypt, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
+
+            return cipher;
+        }
+
+        public static int ProcessCipherBlock(IBufferedCipher cipher, Stream input, int chunkSize, byte[] output, int outputOffset)
         {
             // Initialize buffer
-            byte[] buffer = new byte[blockSize];
+            byte[] buffer = new byte[chunkSize];
 
             // Read the next block of data
-            int bytesRead = input.Read(buffer, 0, blockSize);
+            int bytesRead = input.Read(buffer, 0, chunkSize);
             if (bytesRead > 0)
             {
                 // process the cipher for the read block and add it to the output
@@ -264,6 +273,12 @@ namespace Teknik.Utilities
             }
 
             return 0;
+        }
+
+        public static int FinalizeCipherBlock(IBufferedCipher cipher, byte[] output, int outputOffset)
+        {
+            // perform final action on cipher
+            return cipher.DoFinal(output, outputOffset);
         }
 
         public static byte[] CreateKey(string password, string iv, int keySize = 256)
