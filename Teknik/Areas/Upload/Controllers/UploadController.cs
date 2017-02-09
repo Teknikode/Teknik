@@ -264,19 +264,22 @@ namespace Teknik.Areas.Upload.Controllers
                                 // Reset file stream to starting position (or start of range)
                                 fs.Seek(startByte, SeekOrigin.Begin);
 
-                                // If the IV is set, and Key is set, then decrypt it before sending
+                                // If the IV is set, and Key is set, then decrypt it while sending
                                 if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                                 {
                                     byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
                                     byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
 
-                                    return new FileDecryptResult(upload.Url, contentType, (response) => this.GenerateExportFile(response, fs, (int)length, keyBytes, ivBytes, "CTR", "NoPadding", 4 * 1024), false);
+                                    return new FileGenerateResult(upload.Url, 
+                                                                contentType, 
+                                                                (response) => this.DecryptStreamToOutput(response, fs, (int)length, keyBytes, ivBytes, "CTR", "NoPadding", Config.UploadConfig.ChunkSize), 
+                                                                false);
                                 }
-                                else
+                                else // Otherwise just send it
                                 {
                                     // Don't buffer the response
                                     Response.Buffer = false;
-                                    // Otherwise just send it
+                                    // Send the file
                                     return File(fs, contentType);
                                 }
                             }
@@ -288,48 +291,73 @@ namespace Teknik.Areas.Upload.Controllers
             return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
         }
 
-        public void GenerateExportFile(HttpResponseBase response, System.IO.Stream fileStream, int length, byte[] key, byte[] iv, string mode, string padding, int chunkSize)
+        public void DecryptStreamToOutput(HttpResponseBase response, System.IO.Stream fileStream, int length, byte[] key, byte[] iv, string mode, string padding, int chunkSize)
         {
-            response.Flush();
-            IBufferedCipher cipher = AES.CreateCipher(false, key, iv, mode, padding);
-
-            int curByte = 0;
-            int processedBytes = 0;
-            byte[] buffer = new byte[chunkSize];
-            int bytesToRead = chunkSize;
-            do
+            try
             {
-                if (curByte + chunkSize > length)
-                {
-                    bytesToRead = chunkSize - ((curByte + bytesToRead) - length);
-                }
-                processedBytes = AES.ProcessCipherBlock(cipher, fileStream, bytesToRead, buffer, 0);
-                if (processedBytes > 0)
-                {
-                    response.OutputStream.Write(buffer, 0, processedBytes);
-                    response.Flush();
+                response.Flush();
+                IBufferedCipher cipher = AES.CreateCipher(false, key, iv, mode, padding);
 
+                int curByte = 0;
+                int processedBytes = 0;
+                byte[] buffer = new byte[chunkSize];
+                int bytesRemaining = length;
+                int bytesToRead = chunkSize;
+                do
+                {
+                    if (chunkSize > bytesRemaining)
+                    {
+                        bytesToRead = bytesRemaining;
+                    }
+                    processedBytes = AES.ProcessCipherBlock(cipher, fileStream, bytesToRead, buffer, 0);
+                    if (processedBytes > 0)
+                    {
+                        response.OutputStream.Write(buffer, 0, processedBytes);
+                        response.Flush();
+
+                        // Clear the buffer
+                        Array.Clear(buffer, 0, chunkSize);
+                    }
+                    curByte += processedBytes;
+                    bytesRemaining -= processedBytes;
+                }
+                while (processedBytes > 0 && bytesRemaining > 0);
+
+                if (bytesRemaining > 0)
+                {
                     // Clear the buffer
                     Array.Clear(buffer, 0, chunkSize);
+
+                    // Finalize processing of the cipher
+                    processedBytes = AES.FinalizeCipherBlock(cipher, buffer, 0);
+                    if (processedBytes > 0)
+                    {
+                        // We have bytes, lets write them to the output
+                        response.OutputStream.Write(buffer, 0, processedBytes);
+                        response.Flush();
+                    }
                 }
-                curByte += processedBytes;
             }
-            while (processedBytes > 0 && curByte <= length);
-
-            // Clear the buffer
-            Array.Clear(buffer, 0, chunkSize);
-
-            // Finalize processing of the cipher
-            processedBytes = AES.FinalizeCipherBlock(cipher, buffer, 0);
-            if (processedBytes > 0)
+            catch (HttpException httpEx)
             {
-                // We have bytes, lets write them to the output
-                response.OutputStream.Write(buffer, 0, processedBytes);
-                response.Flush();
+                if (httpEx.ErrorCode == -2147023667)
+                {
+                    // do nothing
+                }
+                else
+                {
+                    Logging.Logger.WriteEntry(httpEx);
+                }
             }
-
-            // dispose of file stream
-            fileStream.Dispose();
+            catch (Exception ex)
+            {
+                Logging.Logger.WriteEntry(ex);
+            }
+            finally
+            {
+                // dispose of file stream
+                fileStream.Dispose();
+            }
         }
 
         [HttpPost]
@@ -345,24 +373,8 @@ namespace Teknik.Areas.Upload.Controllers
                     string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, upload.FileName);
                     if (System.IO.File.Exists(filePath))
                     {
-                        byte[] buffer;
                         FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                        try
-                        {
-                            int length = (int)fileStream.Length;  // get file length
-                            buffer = new byte[length];            // create buffer
-                            int count;                            // actual number of bytes read
-                            int sum = 0;                          // total number of bytes read
-
-                            // read until Read method returns 0 (end of the stream has been reached)
-                            while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
-                                sum += count;  // sum is a buffer offset for next reading
-                        }
-                        finally
-                        {
-                            fileStream.Close();
-                        }
-                        return File(buffer, System.Net.Mime.MediaTypeNames.Application.Octet, file);
+                        return File(fileStream, System.Net.Mime.MediaTypeNames.Application.Octet, file);
                     }
                 }
                 Redirect(Url.SubRouteUrl("error", "Error.Http404"));

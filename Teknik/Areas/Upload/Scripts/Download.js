@@ -45,11 +45,14 @@ function downloadFile() {
                     $("#progress").children('.progress-bar').html('Error Occured');
                 }
 
+                // Create a blob for the aes script
+                var scriptBlob = GenerateBlobURL(aesScriptSrc);
+
                 // Execute worker with data
                 var objData =
                     {
                         cmd: 'decrypt',
-                        script: aesScriptSrc,
+                        script: scriptBlob,
                         key: key,
                         iv: iv,
                         chunkSize: chunkSize,

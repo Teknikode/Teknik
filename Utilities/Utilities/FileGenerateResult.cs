@@ -13,7 +13,7 @@ namespace Teknik.Utilities
     /// <summary>
     /// MVC action result that generates the file content using a delegate that writes the content directly to the output stream.
     /// </summary>
-    public class FileDecryptResult : FileResult
+    public class FileGenerateResult : FileResult
     {
         private readonly Action<HttpResponseBase> responseDelegate;
 
@@ -26,7 +26,7 @@ namespace Teknik.Utilities
         /// <param name="contentType">Type of the content.</param>
         /// <param name="content">Delegate with Stream parameter. This is the stream to which content should be written.</param>
         /// <param name="bufferOutput">use output buffering. Set to false for large files to prevent OutOfMemoryException.</param>
-        public FileDecryptResult(string fileName, string contentType, Action<HttpResponseBase> response, bool bufferOutput)
+        public FileGenerateResult(string fileName, string contentType, Action<HttpResponseBase> response, bool bufferOutput)
             : base(contentType)
         {
             if (response == null)
