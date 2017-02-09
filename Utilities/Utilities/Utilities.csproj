@@ -105,7 +105,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileGeneratingResult.cs" />
+    <Compile Include="FileDecryptResult.cs" />
     <Compile Include="HttpWebResponseResult.cs" />
     <Compile Include="BundleExtensions.cs" />
     <Compile Include="ByteExtensions.cs" />
