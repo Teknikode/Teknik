@@ -178,7 +178,7 @@ namespace Teknik.Areas.Upload.Controllers
                                 // Read in the file
                                 FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
                                 // We accept ranges
-                                Response.AddHeader("Accept-Ranges", "0-" + upload.ContentLength);
+                                Response.AddHeader("Accept-Ranges", "0-" + length);
 
                                 // check to see if we need to pass a specified range
                                 if (byRange)
@@ -296,13 +296,14 @@ namespace Teknik.Areas.Upload.Controllers
             int curByte = 0;
             int processedBytes = 0;
             byte[] buffer = new byte[chunkSize];
+            int bytesToRead = chunkSize;
             do
             {
                 if (curByte + chunkSize > length)
                 {
-                    chunkSize = length - curByte;
+                    bytesToRead = chunkSize - ((curByte + bytesToRead) - length);
                 }
-                processedBytes = AES.ProcessCipherBlock(cipher, fileStream, chunkSize, buffer, 0);
+                processedBytes = AES.ProcessCipherBlock(cipher, fileStream, bytesToRead, buffer, 0);
                 if (processedBytes > 0)
                 {
                     response.OutputStream.Write(buffer, 0, processedBytes);
@@ -313,7 +314,7 @@ namespace Teknik.Areas.Upload.Controllers
                 }
                 curByte += processedBytes;
             }
-            while (processedBytes > 0 && curByte < length);
+            while (processedBytes > 0 && curByte <= length);
 
             // Clear the buffer
             Array.Clear(buffer, 0, chunkSize);
