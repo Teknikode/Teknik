@@ -89,10 +89,9 @@ namespace Teknik.Areas.Podcast.Controllers
                     if (System.IO.File.Exists(file.Path))
                     {
                         FileStream fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read);
-                        // Read in the file
-                        //byte[] data = System.IO.File.ReadAllBytes(file.Path);
 
-                        // Create File
+                        Response.AddHeader("Content-Length", file.ContentLength.ToString());
+
                         var cd = new System.Net.Mime.ContentDisposition
                         {
                             FileName = file.FileName,

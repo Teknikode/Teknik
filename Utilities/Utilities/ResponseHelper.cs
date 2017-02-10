@@ -42,21 +42,6 @@ namespace Teknik.Utilities
                     bytesRemaining -= processedBytes;
                 }
                 while (processedBytes > 0 && bytesRemaining > 0);
-
-                if (bytesRemaining > 0)
-                {
-                    // Clear the buffer
-                    Array.Clear(buffer, 0, chunkSize);
-
-                    // Finalize processing of the cipher
-                    processedBytes = stream.Read(buffer, 0, bytesToRead);
-                    if (processedBytes > 0)
-                    {
-                        // We have bytes, lets write them to the output
-                        response.OutputStream.Write(buffer, 0, processedBytes);
-                        response.Flush();
-                    }
-                }
             }
             catch (HttpException httpEx)
             {
