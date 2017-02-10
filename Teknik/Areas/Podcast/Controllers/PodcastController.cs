@@ -88,8 +88,9 @@ namespace Teknik.Areas.Podcast.Controllers
                 {
                     if (System.IO.File.Exists(file.Path))
                     {
+                        FileStream fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read);
                         // Read in the file
-                        byte[] data = System.IO.File.ReadAllBytes(file.Path);
+                        //byte[] data = System.IO.File.ReadAllBytes(file.Path);
 
                         // Create File
                         var cd = new System.Net.Mime.ContentDisposition
@@ -100,7 +101,8 @@ namespace Teknik.Areas.Podcast.Controllers
 
                         Response.AppendHeader("Content-Disposition", cd.ToString());
 
-                        return File(data, file.ContentType);
+                        return new FileGenerateResult(file.FileName, file.ContentType, (response) => ResponseHelper.StreamToOutput(response, fileStream, file.ContentLength, 4 * 1024), false);
+                        //return File(data, file.ContentType);
                     }
                 }
             }

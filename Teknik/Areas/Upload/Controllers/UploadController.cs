@@ -196,7 +196,6 @@ namespace Teknik.Areas.Upload.Controllers
                                         // we output the whole content? 
                                         Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
                                         throw new HttpException(416, "Requested Range Not Satisfiable");
-
                                     }
 
                                     // If the range starts with an '-' we start from the beginning 
@@ -272,7 +271,7 @@ namespace Teknik.Areas.Upload.Controllers
 
                                     return new FileGenerateResult(upload.Url, 
                                                                 contentType, 
-                                                                (response) => this.DecryptStreamToOutput(response, fs, (int)length, keyBytes, ivBytes, "CTR", "NoPadding", Config.UploadConfig.ChunkSize), 
+                                                                (response) => ResponseHelper.DecryptStreamToOutput(response, fs, (int)length, keyBytes, ivBytes, "CTR", "NoPadding", Config.UploadConfig.ChunkSize), 
                                                                 false);
                                 }
                                 else // Otherwise just send it
@@ -280,7 +279,10 @@ namespace Teknik.Areas.Upload.Controllers
                                     // Don't buffer the response
                                     Response.Buffer = false;
                                     // Send the file
-                                    return File(fs, contentType);
+                                    return new FileGenerateResult(upload.Url, 
+                                                                contentType, 
+                                                                (response) => ResponseHelper.StreamToOutput(response, fs, (int)length, Config.UploadConfig.ChunkSize), 
+                                                                false);
                                 }
                             }
                         }
@@ -289,75 +291,6 @@ namespace Teknik.Areas.Upload.Controllers
                 return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
-        }
-
-        public void DecryptStreamToOutput(HttpResponseBase response, System.IO.Stream fileStream, int length, byte[] key, byte[] iv, string mode, string padding, int chunkSize)
-        {
-            try
-            {
-                response.Flush();
-                IBufferedCipher cipher = AES.CreateCipher(false, key, iv, mode, padding);
-
-                int curByte = 0;
-                int processedBytes = 0;
-                byte[] buffer = new byte[chunkSize];
-                int bytesRemaining = length;
-                int bytesToRead = chunkSize;
-                do
-                {
-                    if (chunkSize > bytesRemaining)
-                    {
-                        bytesToRead = bytesRemaining;
-                    }
-                    processedBytes = AES.ProcessCipherBlock(cipher, fileStream, bytesToRead, buffer, 0);
-                    if (processedBytes > 0)
-                    {
-                        response.OutputStream.Write(buffer, 0, processedBytes);
-                        response.Flush();
-
-                        // Clear the buffer
-                        Array.Clear(buffer, 0, chunkSize);
-                    }
-                    curByte += processedBytes;
-                    bytesRemaining -= processedBytes;
-                }
-                while (processedBytes > 0 && bytesRemaining > 0);
-
-                if (bytesRemaining > 0)
-                {
-                    // Clear the buffer
-                    Array.Clear(buffer, 0, chunkSize);
-
-                    // Finalize processing of the cipher
-                    processedBytes = AES.FinalizeCipherBlock(cipher, buffer, 0);
-                    if (processedBytes > 0)
-                    {
-                        // We have bytes, lets write them to the output
-                        response.OutputStream.Write(buffer, 0, processedBytes);
-                        response.Flush();
-                    }
-                }
-            }
-            catch (HttpException httpEx)
-            {
-                if (httpEx.ErrorCode == -2147023667)
-                {
-                    // do nothing
-                }
-                else
-                {
-                    Logging.Logger.WriteEntry(httpEx);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logging.Logger.WriteEntry(ex);
-            }
-            finally
-            {
-                // dispose of file stream
-                fileStream.Dispose();
-            }
         }
 
         [HttpPost]
