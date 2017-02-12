@@ -219,16 +219,8 @@
                                 <div class="col-sm-6">
                                     <div class="checkbox">
                                         <label>
-                                            <label for="update_upload_saveKey"><h4>Save Key on Server</h4></label>
-                                            <input id="update_upload_saveKey" name="update_upload_saveKey" title="whether the key should be saved on the server or not" type="checkbox" value="true" @(Model.UploadSettings.SaveKey ? "checked" : string.Empty) />
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="checkbox">
-                                        <label>
-                                            <label for="update_upload_serverSideEncrypt"><h4>Encrypt on Server Side</h4></label>
-                                            <input id="update_upload_serverSideEncrypt" name="update_upload_serverSideEncrypt" title="whether the file should be encrypted server side or client side" type="checkbox" value="true" @(Model.UploadSettings.ServerSideEncrypt ? "checked" : string.Empty) />
+                                            <label for="update_upload_encrypt"><h4>Encrypt in Browser</h4></label>
+                                            <input id="update_upload_encrypt" name="update_upload_encrypt" title="whether the file should be encrypted in the browser before upload" type="checkbox" value="true" @(Model.UploadSettings.Encrypt ? "checked" : string.Empty) />
                                         </label>
                                     </div>
                                 </div>

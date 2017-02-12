@@ -96,11 +96,21 @@ namespace Teknik.Utilities
         public static string Hash(string value)
         {
             byte[] valueBytes = Encoding.Unicode.GetBytes(value);
-            HashAlgorithm hash = new SHA256CryptoServiceProvider();
+            return Hash(valueBytes);
+        }
 
-            byte[] hashBytes = hash.ComputeHash(valueBytes);
+        public static string Hash(byte[] value)
+        {
+            HashAlgorithm hash = new SHA256CryptoServiceProvider();
+            byte[] hashBytes = hash.ComputeHash(value);
 
             return Convert.ToBase64String(hashBytes);
+        }
+
+        public static byte[] Hash(Stream value)
+        {
+            HashAlgorithm hash = new SHA256CryptoServiceProvider();
+            return hash.ComputeHash(value);
         }
 
         public static string Hash(string value, string salt1, string salt2)

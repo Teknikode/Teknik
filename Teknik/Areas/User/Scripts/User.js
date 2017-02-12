@@ -1,6 +1,5 @@
 ﻿$(document).ready(function () {
-    $("[name='update_upload_saveKey']").bootstrapSwitch();
-    $("[name='update_upload_serverSideEncrypt']").bootstrapSwitch();
+    $("[name='update_upload_encrypt']").bootstrapSwitch();
     $("[name='update_security_two_factor']").bootstrapSwitch();
     $("[name='update_security_allow_trusted']").bootstrapSwitch();
 
@@ -208,8 +207,7 @@
         about = $("#update_about").val();
         blog_title = $("#update_blog_title").val();
         blog_desc = $("#update_blog_description").val();
-        upload_saveKey = $("#update_upload_saveKey").is(":checked");
-        upload_serverSideEncrypt = $("#update_upload_serverSideEncrypt").is(":checked");
+        upload_encrypt = $("#update_upload_encrypt").is(":checked");
         $.ajax({
             type: "POST",
             url: editUserURL,
@@ -226,8 +224,7 @@
                 about: about,
                 blogTitle: blog_title,
                 blogDesc: blog_desc,
-                saveKey: upload_saveKey,
-                serverSideEncrypt: upload_serverSideEncrypt
+                encrypt: upload_encrypt
             }),
             success: function (html) {
                 $.unblockUI();

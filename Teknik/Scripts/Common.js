@@ -195,6 +195,27 @@ AddAntiForgeryToken = function (data) {
     return data;
 };
 
+function copyTextToClipboard(text) {
+    var copyFrom = document.createElement("textarea");
+    copyFrom.textContent = text;
+    var body = document.getElementsByTagName('body')[0];
+    body.appendChild(copyFrom);
+    copyFrom.select();
+    document.execCommand('copy');
+    body.removeChild(copyFrom);
+}
+
+function getReadableBandwidthString(bandwidth) {
+
+    var i = -1;
+    var byteUnits = [' Kbps', ' Mbps', ' Gbps', ' Tbps', 'Pbps', 'Ebps', 'Zbps', 'Ybps'];
+    do {
+        bandwidth = bandwidth / 1024;
+        i++;
+    } while (bandwidth > 1024);
+
+    return Math.max(bandwidth, 0.1).toFixed(1) + byteUnits[i];
+}
 /***************************** TIMER Page Load *******************************/
 var loopTime;
 var startTime = new Date();

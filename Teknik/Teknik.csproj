@@ -334,6 +334,7 @@
     <Content Include="Areas\Podcast\Content\Podcast.css" />
     <Content Include="Areas\Podcast\Scripts\Podcast.js" />
     <Content Include="Areas\Transparency\Scripts\Transparency.js" />
+    <Content Include="Areas\Upload\Content\Upload.css" />
     <Content Include="Areas\User\Scripts\CheckAuthCode.js" />
     <Content Include="Areas\User\Scripts\User.js" />
     <Content Include="Areas\Shortener\Scripts\Shortener.js" />

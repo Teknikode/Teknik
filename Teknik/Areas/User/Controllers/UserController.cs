@@ -350,7 +350,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string recoveryEmail, bool allowTrustedDevices, bool twoFactorEnabled, string website, string quote, string about, string blogTitle, string blogDesc, bool saveKey, bool serverSideEncrypt)
+        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string recoveryEmail, bool allowTrustedDevices, bool twoFactorEnabled, string website, string quote, string about, string blogTitle, string blogDesc, bool encrypt)
         {
             if (ModelState.IsValid)
             {
@@ -440,8 +440,7 @@ namespace Teknik.Areas.Users.Controllers
                         user.BlogSettings.Description = blogDesc;
 
                         // Uploads
-                        user.UploadSettings.SaveKey = saveKey;
-                        user.UploadSettings.ServerSideEncrypt = serverSideEncrypt;
+                        user.UploadSettings.Encrypt = encrypt;
 
                         UserHelper.EditAccount(db, Config, user, changePass, newPass);
 

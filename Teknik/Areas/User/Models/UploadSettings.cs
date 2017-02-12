@@ -21,14 +21,11 @@ namespace Teknik.Areas.Users.Models
 
         public virtual UserSettings UserSettings { get; set; }
 
-        public bool SaveKey { get; set; }
-
-        public bool ServerSideEncrypt { get; set; }
+        public bool Encrypt { get; set; }
 
         public UploadSettings()
         {
-            SaveKey = true;
-            ServerSideEncrypt = true;
+            Encrypt = false;
         }
     }
 }

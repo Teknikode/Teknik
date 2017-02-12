@@ -10,8 +10,6 @@ namespace Teknik.Areas.Upload.ViewModels
     {
         public string CurrentSub { get; set; }
 
-        public bool SaveKey { get; set; }
-
-        public bool ServerSideEncrypt { get; set; }
+        public bool Encrypt { get; set; }
     }
 }

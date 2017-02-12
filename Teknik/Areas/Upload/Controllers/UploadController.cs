@@ -40,20 +40,18 @@ namespace Teknik.Areas.Upload.Controllers
             Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
             if (user != null)
             {
-                model.SaveKey = user.UploadSettings.SaveKey;
-                model.ServerSideEncrypt = user.UploadSettings.ServerSideEncrypt;
+                model.Encrypt = user.UploadSettings.Encrypt;
             }
             else
             {
-                model.SaveKey = true;
-                model.ServerSideEncrypt = true;
+                model.Encrypt = false;
             }
             return View(model);
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, bool saveKey, HttpPostedFileWrapper data, string key = null)
+        public ActionResult Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, HttpPostedFileWrapper data)
         {
             try
             {
@@ -67,16 +65,6 @@ namespace Teknik.Areas.Upload.Controllers
                         // Scan the file to detect a virus
                         if (Config.UploadConfig.VirusScanEnable)
                         {
-                            // If it was encrypted client side, decrypt it
-                            //if (!encrypt && key != null)
-                            //{
-                            //    // If the IV is set, and Key is set, then decrypt it
-                            //    if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
-                            //    {
-                            //        // Decrypt the data
-                            //        scanData = AES.Decrypt(scanData, key, iv);
-                            //    }
-                            //}
                             ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
                             clam.MaxStreamSize = Config.UploadConfig.MaxUploadSize;
                             ClamScanResult scanResult = clam.SendAndScanFile(data.InputStream);
@@ -94,7 +82,7 @@ namespace Teknik.Areas.Upload.Controllers
                             }
                         }
                         
-                        Models.Upload upload = Uploader.SaveFile(db, Config, data.InputStream, fileType, contentLength, encrypt, fileExt, iv, key, saveKey, keySize, blockSize);
+                        Models.Upload upload = Uploader.SaveFile(db, Config, data.InputStream, fileType, contentLength, encrypt, fileExt, iv, null, keySize, blockSize);
                         if (upload != null)
                         {
                             if (User.Identity.IsAuthenticated)
@@ -107,7 +95,7 @@ namespace Teknik.Areas.Upload.Controllers
                                     db.SaveChanges();
                                 }
                             }
-                            return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), key = key } }, "text/plain");
+                            return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), contentType = upload.ContentType, contentLength = StringHelper.GetBytesReadable(upload.ContentLength) } }, "text/plain");
                         }
                         return Json(new { error = new { message = "Unable to upload file" } });
                     }

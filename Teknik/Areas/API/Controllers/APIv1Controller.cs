@@ -50,16 +50,6 @@ namespace Teknik.Areas.API.Controllers
                         // Scan the file to detect a virus
                         if (Config.UploadConfig.VirusScanEnable)
                         {
-                            // If it was encrypted client side, decrypt it
-                            //if (!model.encrypt && model.key != null)
-                            //{
-                            //    // If the IV is set, and Key is set, then decrypt it
-                            //    if (!string.IsNullOrEmpty(model.key) && !string.IsNullOrEmpty(model.iv))
-                            //    {
-                            //        // Decrypt the data
-                            //        scanData = AES.Decrypt(scanData, model.key, model.iv);
-                            //    }
-                            //}
                             ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
                             clam.MaxStreamSize = Config.UploadConfig.MaxUploadSize;
                             ClamScanResult scanResult = clam.SendAndScanFile(model.file.InputStream);
@@ -90,7 +80,7 @@ namespace Teknik.Areas.API.Controllers
                             model.blockSize = Config.UploadConfig.BlockSize;
 
                         // Save the file data
-                        Upload.Models.Upload upload = Uploader.SaveFile(db, Config, model.file.InputStream, model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.saveKey, model.keySize, model.blockSize);
+                        Upload.Models.Upload upload = Uploader.SaveFile(db, Config, model.file.InputStream, model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.keySize, model.blockSize);
 
                         if (upload != null)
                         {
