@@ -2,30 +2,55 @@
 
 function downloadFile() {
     var key = window.location.hash.substring(1);
-    var fd = new FormData();
-    fd.append('file', fileName);
-    fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
+    if (key == null || key == '') {
+        bootbox.prompt("Enter the file's private key", function (result) {
+            if (result) {
+                key = result;
+            }
+            processDownload(key);
+        });
+    }
+    else {
+        processDownload(key);
+    }
+}
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', downloadDataUrl, true);
-    xhr.responseType = 'arraybuffer';
+function processDownload(key) {
+    if (key !== null && key !== '' && iv !== null && iv !== '') {
+        // speed info
+        var lastTime = (new Date()).getTime();
+        var lastData = 0;
 
-    xhr.onload = function (e) {
-        if (this.status == 200) {
+        var fd = new FormData();
+        fd.append('file', fileName);
+        fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
 
-            if (iv != '' && key != '') {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', downloadDataUrl, true);
+        xhr.responseType = 'arraybuffer';
+
+        xhr.onload = function (e) {
+            if (this.status == 200) {
+                lastTime = (new Date()).getTime();
+                lastData = 0;
+
                 var worker = new Worker(GenerateBlobURL(encScriptSrc));
 
                 worker.addEventListener('message', function (e) {
                     switch (e.data.cmd) {
                         case 'progress':
-                            var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
-                            $("#progress").children('.progress-bar').css('width', (percentComplete / 2) + 50 + '%');
-                            $("#progress").children('.progress-bar').html(percentComplete + '% Decrypted');
+                            var curTime = (new Date()).getTime();
+                            var elapsedTime = (curTime - lastTime) / 1000;
+                            if (elapsedTime >= 0.1) {
+                                var speed = ((e.data.processed - lastData) / elapsedTime);
+                                lastTime = curTime;
+                                lastData = e.data.processed;
+                                var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
+                                setProgress(percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Decrypting [' + getReadableBandwidthString(speed) + ']');
+                            }
                             break;
                         case 'finish':
-                            $('#progress').children('.progress-bar').css('width', '100%');
-                            $('#progress').children('.progress-bar').html('Complete');
+                            setProgress(100, 'progress-bar-success', '', 'Complete');
                             if (fileType == null || fileType == '') {
                                 fileType = "application/octet-stream";
                             }
@@ -39,10 +64,7 @@ function downloadFile() {
 
                 worker.onerror = function (err) {
                     // An error occured
-                    $("#progress").children('.progress-bar').css('width', '100%');
-                    $("#progress").children('.progress-bar').removeClass('progress-bar-success');
-                    $("#progress").children('.progress-bar').addClass('progress-bar-danger');
-                    $("#progress").children('.progress-bar').html('Error Occured');
+                    setProgress(100, 'progress-bar-danger', '', 'Error Occured');
                 }
 
                 // Create a blob for the aes script
@@ -60,41 +82,43 @@ function downloadFile() {
                     };
                 worker.postMessage(objData, [objData.file]);
             }
-            else {
-                $('#progress').children('.progress-bar').css('width', '100%');
-                $('#progress').children('.progress-bar').html('Complete');
-                if (fileType == null || fileType == '') {
-                    fileType = "application/octet-stream";
-                }
-                var blob = new Blob([this.response], { type: fileType });
+        };
 
-                // prompt save-as
-                saveAs(blob, fileName);
+        xhr.onprogress = function (e) {
+            if (e.lengthComputable) {
+                var curTime = (new Date()).getTime();
+                var elapsedTime = (curTime - lastTime) / 1000;
+                var speed = ((e.loaded - lastData) / elapsedTime);
+                lastTime = curTime;
+                lastData = e.loaded;
+                var percentComplete = Math.round(e.loaded * 100 / e.total);
+                setProgress(percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Downloading File [' + getReadableBandwidthString(speed) + ']');
             }
-        }
-    };
+        };
 
-    xhr.onprogress = function (e) {
-        if (e.lengthComputable) {
-            var percentComplete = Math.round(e.loaded * 100 / e.total);
-            $('#progress').children('.progress-bar').css('width', (percentComplete / 2) + '%');
-            $('#progress').children('.progress-bar').html(percentComplete + '% Downloaded');
-        }
-    };
+        xhr.onerror = function (e) {
+            setProgress(100, 'progress-bar-danger', '', 'Download Failed');
+        };
 
-    xhr.onerror = function (e) {
-        $('#progress').children('.progress-bar').css('width', '100%');
-        $('#progress').children('.progress-bar').removeClass('progress-bar-success');
-        $('#progress').children('.progress-bar').addClass('progress-bar-danger');
-        $('#progress').children('.progress-bar').html('Download Failed');
-    };
+        xhr.onabort = function (e) {
+            setProgress(100, 'progress-bar-warning', '', 'Download Aborted');
+        };
 
-    xhr.onabort = function (e) {
-        $('#progress').children('.progress-bar').css('width', '100%');
-        $('#progress').children('.progress-bar').removeClass('progress-bar-success');
-        $('#progress').children('.progress-bar').addClass('progress-bar-warning');
-        $('#progress').children('.progress-bar').html('Download Failed');
-    };
+        xhr.send(fd);
+    }
+    else {
+        setProgress(100, 'progress-bar-danger', '', 'Private Key Needed');
+    }
+}
 
-    xhr.send(fd);
+function setProgress(percentage, classes, barMessage, title) {
+    var progress = $('#progress-panel');
+    if (progress !== null) {
+        progress.find('#progress-bar').css('width', percentage + '%');
+        progress.find('#progress-bar').removeClass();
+        progress.find('#progress-bar').addClass('progress-bar');
+        progress.find('#progress-bar').addClass(classes);
+        progress.find('#progress-bar').html(barMessage);
+        progress.find('#progress-info').html(title);
+    }
 }

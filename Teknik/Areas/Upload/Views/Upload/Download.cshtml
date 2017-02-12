@@ -29,10 +29,19 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" id="progress-panel">
         <div class="col-sm-12">
-            <div class="progress" id="progress">
-                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <div class="progress" id="progress">
+                        <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1 text-center">
+                    <span id="progress-info"></span>
+                </div>
             </div>
         </div>
     </div>

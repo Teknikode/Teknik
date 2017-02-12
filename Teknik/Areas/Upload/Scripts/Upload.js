@@ -256,7 +256,6 @@ function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt)
 
 
 function uploadProgress(fileID, lastTime, lastData, evt) {
-    var serverSideEncrypt = $('#serverSideEncrypt').is(':checked');
     if (evt.lengthComputable) {
         var curTime = (new Date()).getTime();
         var elapsedTime = (curTime - lastTime) / 1000;

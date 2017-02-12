@@ -70,6 +70,7 @@ namespace Teknik.Areas.Upload
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/download", config.CdnHost).Include(
                       "~/Scripts/Blob.js",
                       "~/Scripts/FileSaver.js",
+                      "~/Scripts/bootbox/bootbox.min.js",
                       "~/Areas/Upload/Scripts/Download.js"));
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/cryptoWorker", config.CdnHost).Include(
                       "~/Areas/Upload/Scripts/EncryptionWorker.js"));
