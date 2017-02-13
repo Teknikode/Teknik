@@ -472,6 +472,18 @@ namespace Teknik.Areas.Users.Utility
                     db.SaveChanges();
                 }
 
+                // Update vaults
+                List<Vault.Models.Vault> vaults = db.Vaults.Where(u => u.User.Username == user.Username).ToList();
+                if (vaults != null)
+                {
+                    foreach (Vault.Models.Vault vault in vaults)
+                    {
+                        vault.UserId = null;
+                        db.Entry(vault).State = EntityState.Modified;
+                    }
+                    db.SaveChanges();
+                }
+
                 // Delete Blogs
                 Blog.Models.Blog blog = db.Blogs.Where(u => u.User.Username == user.Username).FirstOrDefault();
                 if (blog != null)

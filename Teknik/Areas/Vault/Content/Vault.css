@@ -1,0 +1,5 @@
+﻿.paste-content {
+    height: 100%;
+    max-height: 500px;
+    overflow-y: auto;
+}

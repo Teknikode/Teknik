@@ -41,6 +41,10 @@ namespace Teknik.Areas.Users.Models
 
         public virtual ICollection<Paste.Models.Paste> Pastes { get; set; }
 
+        public virtual ICollection<Shortener.Models.ShortenedUrl> ShortenedUrls { get; set; }
+
+        public virtual ICollection<Vault.Models.Vault> Vaults { get; set; }
+
         public User()
         {
             Username = string.Empty;

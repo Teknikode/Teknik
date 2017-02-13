@@ -7,23 +7,16 @@ using Teknik.ViewModels;
 
 namespace Teknik.Areas.Vault.ViewModels
 {
-    public class VaultViewModel : ViewModelBase
+    public class CreateVaultViewModel : ViewModelBase
     {
-        public string Url { get; set; }
-        public int? UserId { get; set; }
-        public Users.Models.User User { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime DateEdited { get; set; }
         public List<VaultItem> Items { get; set; }
 
-        public VaultViewModel()
+        public CreateVaultViewModel()
         {
             Title = string.Empty;
             Description = string.Empty;
-            DateCreated = DateTime.Now;
-            DateEdited = DateTime.Now;
             Items = new List<VaultItem>();
         }
     }

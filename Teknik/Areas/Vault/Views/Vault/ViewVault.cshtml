@@ -1,7 +1,126 @@
 ﻿@model Teknik.Areas.Vault.ViewModels.VaultViewModel
 
+@using Teknik.Areas.Vault.Models;
 @using Teknik.Utilities
+@using Teknik.Pygments
+
+@Styles.Render("~/Content/vault")
 
 <div class="container">
-    <p>Coming Soon!</p>
+    <div class="row text-center">
+        <div class="col-sm-12 text-center">
+            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Created on <time datetime="@Model.DateCreated.ToString("s")">@Model.DateCreated.ToString("dddd, MMMM d, yyyy") at @Model.DateCreated.ToString("h:mm:ss tt")</time></small></h2>
+        </div>
+    </div>
+    <br />
+
+    @foreach (VaultItem item in Model.Items)
+    {
+        Type itemType = item.GetType();
+        if (itemType == typeof(PasteItem))
+        {
+            PasteItem paste = (PasteItem)item;
+
+            // Transform content into HTML
+            if (!Highlighter.Lexers.ToList().Exists(l => l.Aliases.Contains(paste.Paste.Syntax)))
+            {
+                paste.Paste.Syntax = "text";
+            }
+            Highlighter highlighter = new Highlighter();
+            // Add a space in front of the content due to bug with pygment (No idea why yet)
+            paste.Paste.Content = highlighter.HighlightToHtml(" " + paste.Paste.Content, paste.Paste.Syntax, Model.Config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
+
+            <div class="panel panel-default">
+                <div class="panel-heading text-left">
+                    <h4><b><a href="@Url.SubRouteUrl("p", "Paste.View", new { file = paste.Paste.Url })" target="_blank">@((string.IsNullOrEmpty(paste.Title)) ? "Paste" : paste.Title)</a></b> <small>Pasted on <time datetime="@paste.Paste.DatePosted.ToString("s")">@paste.Paste.DatePosted.ToString("dddd, MMMM d, yyyy") at @paste.Paste.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage">@paste.Paste.Syntax</b></small></h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12 pull-left">
+                            <div class="btn-group" role="group">
+                                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Simple", new { url = paste.Paste.Url })">Simple</a>
+                                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Raw", new { url = paste.Paste.Url })">Raw</a>
+                                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Download", new { url = paste.Paste.Url })">Download</a>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row paste-item">
+                        <div class="col-sm-12 paste-content">@Html.Raw(paste.Paste.Content)</div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(paste.Description))
+                {
+                    <div class="panel-footer">
+                        <p>@paste.Description</p>
+                    </div>
+                }
+            </div>
+        }
+        else if (itemType == typeof(UploadItem))
+        {
+            UploadItem upload = (UploadItem)item;
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-12 text-left">
+                            <h4><b><a href="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" target="_blank">@((string.IsNullOrEmpty(upload.Title)) ? "Upload" : upload.Title)</a></b> <small>Uploaded on <time datetime="@upload.Upload.DateUploaded.ToString("s")">@upload.Upload.DateUploaded.ToString("dddd, MMMM d, yyyy") at @upload.Upload.DateUploaded.ToString("h:mm:ss tt")</time></small></h4>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="panel-body">
+                    @if (upload.Upload.ContentType.StartsWith("image"))
+                    {
+                        <a href="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" target="_blank">
+                            <img src="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" class="img-thumbnail center-block" />
+                        </a>
+                    }
+                    else if (upload.Upload.ContentType.StartsWith("audio"))
+                    {
+                        <div class="text-center">
+                            <audio preload="none" controls>
+                                <source src="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" type="@upload.Upload.ContentType" />
+                            </audio>
+                        </div>
+                    }
+                    else if (upload.Upload.ContentType.StartsWith("video"))
+                    {
+                        <div class="text-center">
+                            <video preload="none" controls>
+                                <source src="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" type="@upload.Upload.ContentType" />
+                            </video>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col-sm-4 text-center">
+                                <label for="size">Size</label>
+                                <p id="size">@StringHelper.GetBytesReadable(upload.Upload.ContentLength)</p>
+                            </div>
+                            <div class="col-sm-4 text-center">
+                                <label for="type">Type</label>
+                                <p id="type">@upload.Upload.ContentType</p>
+                            </div>
+                            <div class="col-sm-4 text-center">
+                                <label for="dateUploaded">Date Uploaded</label>
+                                <p id="dateUploaded"><time datetime="@upload.Upload.DateUploaded.ToString("s")">@upload.Upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @if (!string.IsNullOrEmpty(upload.Description))
+                {
+                    <div class="panel-footer">
+                        <p>@upload.Description</p>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            // Nothing to see here folks.  :)
+        }
+    }
 </div>

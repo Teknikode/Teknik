@@ -242,6 +242,7 @@
     <Compile Include="Areas\User\Models\TrustedDevice.cs" />
     <Compile Include="Areas\User\ViewModels\AuthTokenViewModel.cs" />
     <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
+    <Compile Include="Areas\Vault\ViewModels\CreateVaultViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
     <Compile Include="Filters\CORSActionFilter.cs" />
     <Compile Include="Models\TransferTypes.cs" />
@@ -339,6 +340,7 @@
     <Content Include="Areas\User\Scripts\User.js" />
     <Content Include="Areas\Shortener\Scripts\Shortener.js" />
     <Content Include="Areas\Upload\Scripts\Download.js" />
+    <Content Include="Areas\Vault\Content\Vault.css" />
     <Content Include="Content\audioplayer.css" />
     <Content Include="Content\Bootstra.386\bootstrap-theme.css" />
     <Content Include="Content\Bootstra.386\bootstrap.css" />
@@ -572,6 +574,7 @@
     <Content Include="Areas\User\Views\User\AuthToken.cshtml" />
     <Content Include="Areas\Error\Views\Error\Http401.cshtml" />
     <Content Include="Areas\Transparency\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Vault\Views\Vault\Create.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

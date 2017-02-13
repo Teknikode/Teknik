@@ -17,6 +17,10 @@ namespace Teknik.Areas.Paste.Models
 
         public virtual User User { get; set; }
 
+        public int? VaultId { get; set; }
+
+        public virtual Vault.Models.Vault Vault { get; set; }
+
         public DateTime DatePosted { get; set; }
 
         [CaseSensitive]

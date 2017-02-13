@@ -13,6 +13,7 @@ using Teknik.Areas.Shortener.Models;
 using Teknik.Attributes;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
+using Teknik.Areas.Vault.Models;
 
 namespace Teknik.Models
 {
@@ -52,6 +53,8 @@ namespace Teknik.Models
         public DbSet<Takedown> Takedowns { get; set; }
         // Url Shortener
         public DbSet<ShortenedUrl> ShortenedUrls { get; set; }
+        // Vaults
+        public DbSet<Vault> Vaults { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -101,12 +104,30 @@ namespace Teknik.Models
                 .WithOptional(u => u.User)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<User>()
+                .HasMany<ShortenedUrl>(u => u.ShortenedUrls)
+                .WithOptional(u => u.User)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<User>()
+                .HasMany<Vault>(u => u.Vaults)
+                .WithOptional(u => u.User)
+                .WillCascadeOnDelete(false);
+
             // Upload Mappings
             modelBuilder.Entity<Upload>()
                 .HasOptional(u => u.User);
 
             // Paste Mappings
             modelBuilder.Entity<Paste>()
+                .HasOptional(u => u.User);
+
+            // Shortened URL Mappings
+            modelBuilder.Entity<ShortenedUrl>()
+                .HasOptional(u => u.User);
+
+            // Vault Mappings
+            modelBuilder.Entity<Vault>()
                 .HasOptional(u => u.User);
 
             // Users
@@ -133,6 +154,10 @@ namespace Teknik.Models
             modelBuilder.Entity<Upload>().ToTable("Uploads");
             // Pastes
             modelBuilder.Entity<Paste>().ToTable("Pastes");
+            // Shortened Urls
+            modelBuilder.Entity<ShortenedUrl>().ToTable("ShortenedUrls");
+            // Vaults
+            modelBuilder.Entity<Vault>().ToTable("Vaults");
             // Podcasts
             modelBuilder.Entity<Podcast>().ToTable("Podcasts");
             modelBuilder.Entity<PodcastFile>().ToTable("PodcastFiles");
@@ -140,8 +165,6 @@ namespace Teknik.Models
             // Transparency
             modelBuilder.Entity<Transaction>().ToTable("Transactions");
             modelBuilder.Entity<Takedown>().ToTable("Takedowns");
-            // Shortened Urls
-            modelBuilder.Entity<ShortenedUrl>().ToTable("ShortenedUrls");
 
             // Custom Attributes
             modelBuilder.Conventions.Add(new AttributeToColumnAnnotationConvention<CaseSensitiveAttribute, bool>(

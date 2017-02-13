@@ -10,6 +10,7 @@ namespace Teknik.Areas.Vault.Models
         public int VaultId { get; set; }
         public int? UserId { get; set; }
         public virtual Users.Models.User User { get; set; }
+        public string Url { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }

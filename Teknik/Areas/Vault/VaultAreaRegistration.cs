@@ -20,13 +20,26 @@ namespace Teknik.Areas.Vault
         {
             Config config = Config.Load();
             context.MapSubdomainRoute(
-                 "Vault.Index",
+                 "Vault.Create",
                  new List<string>() { "vault", "v" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "",
-                 new { controller = "Vault", action = "Index" },
+                 new { controller = "Vault", action = "Create" },
                  new[] { typeof(Controllers.VaultController).Namespace }
              );
+
+            context.MapSubdomainRoute(
+                 "Vault.ViewVault",
+                 new List<string>() { "vault", "v" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "{id}",
+                 new { controller = "Vault", action = "ViewVault" },
+                 new[] { typeof(Controllers.VaultController).Namespace }
+             );
+
+            // Register style bundles
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/vault", config.CdnHost).Include(
+                      "~/Areas/Vault/Content/Vault.css"));
 
             // Register Script Bundle
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/vault", config.CdnHost).Include(
