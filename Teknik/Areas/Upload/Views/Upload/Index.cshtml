@@ -13,7 +13,8 @@
     var chunkSize = @Model.Config.UploadConfig.ChunkSize;
     var keySize = @Model.Config.UploadConfig.KeySize;
     var blockSize = @Model.Config.UploadConfig.BlockSize;
-    var shortenURL = '@Url.SubRouteUrl("shorten", "Shortener.Action", new { action= "ShortenUrl" })';
+    var shortenURL = '@Url.SubRouteUrl("shorten", "Shortener.Action", new { action = "ShortenUrl" })';
+    var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.NewVaultFromService", new { type = "Upload" })';
 </script>
 
 @Styles.Render("~/Content/upload")
@@ -50,9 +51,12 @@
             </div>
         </div>
     </div>
-    <div class="row" id="copy-all-button" style="display: none">
+    <div class="row" id="upload-action-buttons" style="display: none">
         <div class="col-sm-12">
-            <button type="button" class="btn btn-default btn-sm pull-right" id="copy-all"><i class="fa fa-clipboard"></i>&nbsp;Copy All Uploads</button>
+            <div class="btn-group pull-right" role="group">
+                <button type="button" class="btn btn-default btn-sm" id="copy-all"><i class="fa fa-clipboard"></i>&nbsp;Copy All Uploads</button>
+                <button type="button" class="btn btn-default btn-sm" id="create-vault"><i class="fa fa-clipboard"></i>&nbsp;Add to Vault</button>
+            </div>
         </div>
     </div>
     <div class="container" id="upload-links">
@@ -88,6 +92,7 @@
                 </div>
                 <div class="panel-body" id="upload-details">
                     <div class="row" id="upload-link-panel">
+                        <input type="hidden" id="upload-url" />
                         <div class="col-sm-8">
                             <dl class="dl-horizontal">
                                 <dt>Url</dt>

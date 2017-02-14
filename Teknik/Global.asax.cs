@@ -46,22 +46,30 @@ namespace Teknik
 
         protected void Application_EndRequest(object sender, EventArgs e)
         {
-            HttpContext context = HttpContext.Current;
-
-            // Set the generation time in the header
-            Stopwatch stopwatch = (Stopwatch)context.Items["Stopwatch"];
-            stopwatch.Stop();
-
-            TimeSpan ts = stopwatch.Elapsed;
-            string elapsedTime = String.Format("{0} seconds", ts.TotalSeconds);
-
-            context.Response.AppendHeader("GenerationTime", elapsedTime);
-
-            // Allow this domain, or everything if local
-            string origin = (Request.IsLocal) ? "*" : context.Request.Headers.Get("Origin");
-            if (!string.IsNullOrEmpty(origin))
+            try
             {
-                context.Response.AppendHeader("Access-Control-Allow-Origin", origin);
+                HttpContext context = HttpContext.Current;
+
+                // Set the generation time in the header
+                Stopwatch stopwatch = (Stopwatch)context.Items["Stopwatch"];
+                stopwatch.Stop();
+
+                TimeSpan ts = stopwatch.Elapsed;
+                string elapsedTime = String.Format("{0} seconds", ts.TotalSeconds);
+
+                context.Response.AppendHeader("GenerationTime", elapsedTime);
+
+                // Allow this domain, or everything if local
+                string origin = (Request.IsLocal) ? "*" : context.Request.Headers.Get("Origin");
+                if (!string.IsNullOrEmpty(origin))
+                {
+                    context.Response.AppendHeader("Access-Control-Allow-Origin", origin);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Just log it
+                Logging.Logger.WriteEntry(ex);
             }
         }
 

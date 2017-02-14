@@ -10,8 +10,7 @@
     var validateItemURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = "ValidateItem" })';
     var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = "CreateVault" })';
 
-
-    var itemCount = @Model.items.Count();
+    var itemCount = 0;
 
 </script>
 
@@ -120,75 +119,117 @@
     </div>
     <form class="form" action="@Url.SubRouteUrl("vault", "Vault.Action", new { action = "CreateVault" })" method="post" id="newVaultForm">
         <div class="row">
-            <div class="form-group col-sm-10 col-sm-offset-1">
-                <label for="title"><h4>Title</h4></label>
-                <input class="form-control" name="title" id="title" placeholder="Collection of items" title="enter a title for your vault." type="text" />
+            <div class="col-sm-10">
+                <div class="row">
+                    <div class="form-group col-sm-10 col-sm-offset-1">
+                        <label for="title"><h4>Title</h4></label>
+                        <input class="form-control" name="title" id="title" placeholder="Collection of items" title="enter a title for your vault." type="text" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-10 col-sm-offset-1">
+                        <label for="article"><h4>Description</h4></label>
+                        <textarea class="form-control" name="description" id="description" placeholder="This is a cool collection of uploads and pastes" title="enter the description for this vault" rows="5"></textarea>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-sm-10 col-sm-offset-1">
-                <label for="article"><h4>Description</h4></label>
-                <textarea class="form-control" name="description" id="description" placeholder="This is a cool collection of uploads and pastes" title="enter the description for this vault" rows="5"></textarea>
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-sm-8 col-sm-offset-2">
-                <button type="button" class="btn btn-primary pull-right" id="add-item" data-toggle="modal" data-target="#newItem">Add Item</button>
-            </div>
-            <div class="form-group col-sm-2">
-                <button type="submit" class="btn btn-primary pull-right" id="submit">Save Vault</button>
+            <div class="col-sm-2">
+                <br />
+                <br />
+                <div class="row">
+                    <div class="form-group col-sm-12">
+                        <button type="submit" class="btn btn-primary pull-left" id="submit">Save Vault</button>
+                    </div>
+                </div>
             </div>
         </div>
         <br />
-        <div class="container" id="vault-items">
-            @if (Model.items.Any())
-            {
-                int index = 0;
-                foreach (NewVaultItemViewModel item in Model.items)
+        <div class="col-sm-10">
+            <div class="row">
+                <div class="form-group col-sm-10 col-sm-offset-1">
+                    <button type="button" class="btn btn-default pull-right" id="add-item" data-toggle="modal" data-target="#newItem">Add Item</button>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-10" id="vault-items">
+                @if (Model.items.Any())
                 {
-                    <div class="row vault-item" id="vault-item-@index">
-                        <div class="col-sm-8 col-sm-offset-2">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <div class="row">
-                                        <div class="col-sm-8 text-left">
-                                            <h4><b id="item-title">@item.title</b></h4>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <div class="btn-group pull-right" role="group">
-                                                <button type="button" class="btn btn-default" id="edit-item" data-toggle="modal" data-target="#editItem">Edit</button>
-                                                <button type="button" class="btn btn-danger" id="remove-item">Remove</button>
+                    int index = 0;
+                    foreach (NewVaultItemViewModel item in Model.items)
+                    {
+                        <div class="row vault-item" id="vault-item-@index">
+                            <div class="col-sm-9 col-sm-offset-1">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-sm-8 text-left">
+                                                <h4><b id="item-title">@item.title</b></h4>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="btn-group pull-right" role="group">
+                                                    <button type="button" class="btn btn-default" id="@index" data-toggle="modal" data-target="#editItem">Edit</button>
+                                                    <button type="button" class="btn btn-danger" id="remove-item">Remove</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="row">
-                                        <div class="col-sm-10 col-sm-offset-1 text-left">
-                                            <dl class="dl-horizontal">
-                                                <dt>Type</dt>
-                                                <dd id="item-type">@item.type</dd>
-                                                <dt>Url</dt>
-                                                <dd id="item-url">@item.url</dd>
-                                            </dl>
-                                        </div>
+                                    <div class="panel-body">
+                                        <dl class="dl-horizontal pull-left">
+                                            <dt>Type</dt>
+                                            <dd id="item-type">@item.type</dd>
+                                            <dt>Url</dt>
+                                            <dd id="item-url">@item.url</dd>
+                                        </dl>
+                                    </div>
+                                    <div class="panel-footer">
+                                        <p id="item-description">@item.description</p>
                                     </div>
                                 </div>
-                                <div class="panel-footer" @((string.IsNullOrEmpty(item.description)) ? "style=\"display: none\"" : string.Empty)>
-                                    <p id="item-description">@item.description</p>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <button type="button" class="btn btn-default" id="move-up"><i class="fa fa-chevron-up"></i></button>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <button type="button" class="btn btn-default" id="move-down"><i class="fa fa-chevron-down"></i></button>
+                                    </div>
                                 </div>
                             </div>
+                            <script type="text/javascript">
+                                itemCount++;
+                                $(document).ready(function () {
+                                    var itemDiv = $('#vault-item-@index');
+
+                                    linkRemove(itemDiv);
+                                    linkMoveUp(itemDiv);
+                                    linkMoveDown(itemDiv);
+
+                                    @if (string.IsNullOrEmpty(item.description))
+                                    {
+                                        @:itemDiv.find('.panel-footer').hide();
+                                    }
+                                });
+                            </script>
                         </div>
-                    </div>
+                        {
+                            index++;
+                        }
+                    }
                 }
-            }
+            </div>
         </div>
     </form>
 </div>
 
 <div id="templates" style="display: none">
     <div class="row" id="item-template">
-        <div class="col-sm-8 col-sm-offset-2">
+        <div class="col-sm-9 col-sm-offset-1">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="row">
@@ -204,19 +245,28 @@
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-10 col-sm-offset-1 text-left">
-                            <dl class="dl-horizontal">
-                                <dt>Type</dt>
-                                <dd id="item-type"></dd>
-                                <dt>Url</dt>
-                                <dd id="item-url"></dd>
-                            </dl>
-                        </div>
-                    </div>
+                    <dl class="dl-horizontal">
+                        <dt>Type</dt>
+                        <dd id="item-type"></dd>
+                        <dt>Url</dt>
+                        <dd id="item-url"></dd>
+                    </dl>
                 </div>
                 <div class="panel-footer">
                     <p id="item-description"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-1">
+            <div class="row">
+                <div class="col-sm-12">
+                    <button type="button" class="btn btn-default" id="move-up"><i class="fa fa-chevron-up"></i></button>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-sm-12">
+                    <button type="button" class="btn btn-default" id="move-down"><i class="fa fa-chevron-down"></i></button>
                 </div>
             </div>
         </div>

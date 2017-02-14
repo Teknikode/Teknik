@@ -23,8 +23,17 @@ namespace Teknik.Areas.Vault
                  "Vault.NewVault",
                  new List<string>() { "vault", "v" }, // Subdomains
                  new List<string>() { config.Host }, // domains
-                 "",
+                 "Create",
                  new { controller = "Vault", action = "NewVault" },
+                 new[] { typeof(Controllers.VaultController).Namespace }
+             );
+
+            context.MapSubdomainRoute(
+                 "Vault.NewVaultFromService",
+                 new List<string>() { "vault", "v" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "Create/{type}",
+                 new { controller = "Vault", action = "NewVaultFromService" },
                  new[] { typeof(Controllers.VaultController).Namespace }
              );
 
@@ -32,7 +41,7 @@ namespace Teknik.Areas.Vault
                  "Vault.ViewVault",
                  new List<string>() { "vault", "v" }, // Subdomains
                  new List<string>() { config.Host }, // domains
-                 "{id}",
+                 "v/{id}",
                  new { controller = "Vault", action = "ViewVault" },
                  new[] { typeof(Controllers.VaultController).Namespace }
              );

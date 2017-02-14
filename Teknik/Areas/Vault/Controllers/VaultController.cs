@@ -86,17 +86,21 @@ namespace Teknik.Areas.Vault.Controllers
             return View(model);
         }
 
-        public ActionResult NewVaultFromUploads(List<string> urls)
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult NewVaultFromService(string type, string urls)
         {
             ViewBag.Title = "Create Vault";
             NewVaultViewModel model = new NewVaultViewModel();
 
-            foreach (string url in urls)
+            string[] allURLs = urls.Split(',');
+            foreach (string url in allURLs)
             {
-                if (IsValidItem("Upload", url))
+                if (IsValidItem(type, url))
                 {
                     NewVaultItemViewModel item = new NewVaultItemViewModel();
                     item.url = url;
+                    item.type = type;
                     model.items.Add(item);
                 }
             }

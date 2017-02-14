@@ -4,7 +4,8 @@
 
     $("[name='encrypt']").bootstrapSwitch();
 
-    linkCopyAll($('#copy-all-button'));
+    linkCopyAll($('#copy-all'));
+    linkCreateVault($('#create-vault'));
 });
 
 function linkUploadDelete(element, uploadID) {
@@ -59,7 +60,7 @@ function linkRemove(element, fileID) {
         $('#upload-panel-' + fileID).remove();
         if ($('#upload-links').children().length == 0) {
             $("#upload-links").css('display', 'none', 'important');
-            $('#copy-all-button').hide();            
+            $('#upload-action-buttons').hide();
         }
         return false;
     });
@@ -78,12 +79,31 @@ function linkCopyAll(element) {
         $("div[id^='upload-panel-']").each(function () {
             var url = $(this).find('#upload-link').text();
             if (url !== '') {
-                allUploads.push(url);
+                allUploads.unshift(url);
             }
         });
         if (allUploads.length > 0) {
             var urlList = allUploads.join();
             copyTextToClipboard(urlList);
+        }
+    });
+}
+
+function linkCreateVault(element) {
+    element.click(function () {
+        var allUploads = [];
+        $("div[id^='upload-panel-']").each(function () {
+            var url = $(this).find('#upload-url').val();
+            if (url !== '') {
+                allUploads.unshift(url);
+            }
+        });
+        if (allUploads.length > 0) {
+            var urlList = allUploads.join();
+            window.open(createVaultURL + '&urls=' + urlList, '_blank');
+        }
+        else {
+            window.open(createVaultURL, '_blank');
         }
     });
 }
@@ -103,7 +123,7 @@ var dropZone = new Dropzone(document.body, {
         fileCount++;
 
         $("#upload-links").css('display', 'inline', 'important');
-        $('#copy-all-button').show();
+        $('#upload-action-buttons').show();
 
         var itemDiv = $('#upload-template').clone();
         itemDiv.attr('id', 'upload-panel-' + fileID);
@@ -292,6 +312,7 @@ function uploadComplete(fileID, key, encrypt, evt) {
             itemDiv.find('.panel').addClass('panel-success');
 
             // Add the upload details
+            itemDiv.find('#upload-url').val(name);
             itemDiv.find('#upload-link').attr('href', fullName);
             itemDiv.find('#upload-link').text(fullName);
             itemDiv.find('#upload-contentType').html(contentType);

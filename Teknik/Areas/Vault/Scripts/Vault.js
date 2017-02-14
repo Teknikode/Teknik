@@ -61,9 +61,9 @@
 
                     itemDiv.find('#edit-item').attr('id', itemCount);
 
-                    itemDiv.find('#remove-item').click(function () {
-                        itemDiv.remove();
-                    });
+                    linkRemove(itemDiv);
+                    linkMoveUp(itemDiv);
+                    linkMoveDown(itemDiv);
 
                     $('#vault-items').append(itemDiv);
 
@@ -120,12 +120,20 @@
             items.push(item);
         });
 
-        // First Validation
+        // Validation
         if (title == null || title == '') {
             $("#top_msg").css('display', 'inline', 'important');
             $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>You must supply a Title</div>');
             return false;
         }
+
+        if (items.length == 0) {
+            $("#top_msg").css('display', 'inline', 'important');
+            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>You must have at least one item in the vault</div>');
+            return false;
+        }
+
+        // Create the vault
         $.ajax({
             type: "POST",
             url: createVaultURL,
@@ -142,4 +150,38 @@
         });
         return false;
     });
+
+    $("#show-more-button").on("click", function () {
+        var link = $(this);
+        var contentDiv = link.parent().prev("div.paste-content");
+        var linkText = link.text().toUpperCase();
+
+        if (linkText === "SHOW MORE") {
+            linkText = "Show Less";
+            contentDiv.removeClass('hideContent');
+            contentDiv.addClass('showContent');
+        } else {
+            linkText = "Show More";
+            contentDiv.removeClass('showContent');
+            contentDiv.addClass('hideContent');
+        };
+
+        link.text(linkText);
+    });
 });
+
+function linkRemove(element) {
+    element.find('#remove-item').click(function () {
+        element.remove();
+    });
+}
+function linkMoveUp(element) {
+    element.find('#move-up').click(function () {
+        moveUp(element);
+    });
+}
+function linkMoveDown(element) {
+    element.find('#move-down').click(function () {
+        moveDown(element);
+    });
+}

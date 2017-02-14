@@ -1,5 +1,23 @@
-﻿.paste-content {
+﻿/*.paste-content {
     height: 100%;
     max-height: 500px;
-    overflow-y: auto;
+    overflow-y: hidden;
+}*/
+
+
+.hideContent {
+    overflow-y: hidden;
+    height: 100%;
+    max-height: 400px;
+    margin-bottom: 10px;
+}
+
+.showContent{
+    height: 100%;
+    max-height: none;
+}
+
+.show-more {
+    padding: 10px 0;
+    text-align: center;
 }
