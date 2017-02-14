@@ -20,6 +20,15 @@ namespace Teknik.Areas.Vault
         {
             Config config = Config.Load();
             context.MapSubdomainRoute(
+                 "Vault.Index",
+                 new List<string>() { "vault", "v" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "",
+                 new { controller = "Vault", action = "NewVault" },
+                 new[] { typeof(Controllers.VaultController).Namespace }
+             );
+
+            context.MapSubdomainRoute(
                  "Vault.NewVault",
                  new List<string>() { "vault", "v" }, // Subdomains
                  new List<string>() { config.Host }, // domains

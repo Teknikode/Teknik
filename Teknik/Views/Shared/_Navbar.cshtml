@@ -52,6 +52,9 @@
                         <li class="@Url.GetActive("shorten", "s")">
                             <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")">Shorten Url</a>
                         </li>
+                        <li class="@Url.GetActive("vault", "v")">
+                            <a href="@Url.SubRouteUrl("vault", "Vault.Index")">Vaults</a>
+                        </li>
                         <li class="@Url.GetActive("git")">
                             <a href="@Model.Config.GitConfig.Host">Git</a>
                         </li>
