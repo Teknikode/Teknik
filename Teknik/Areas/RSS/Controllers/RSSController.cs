@@ -68,7 +68,9 @@ namespace Teknik.Areas.RSS.Controllers
                     }
                     else
                     {
+                        SyndicationFeed badUserFeed = new SyndicationFeed("No Blog Available", "The specified user does not exist", new Uri(blogUrl));
 
+                        return new RssResult(badUserFeed);
                     }
                 }
 
