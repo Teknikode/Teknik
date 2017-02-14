@@ -242,7 +242,8 @@
     <Compile Include="Areas\User\Models\TrustedDevice.cs" />
     <Compile Include="Areas\User\ViewModels\AuthTokenViewModel.cs" />
     <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
-    <Compile Include="Areas\Vault\ViewModels\CreateVaultViewModel.cs" />
+    <Compile Include="Areas\Vault\ViewModels\NewVaultViewModel.cs" />
+    <Compile Include="Areas\Vault\ViewModels\NewVaultItemViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
     <Compile Include="Filters\CORSActionFilter.cs" />
     <Compile Include="Models\TransferTypes.cs" />
@@ -341,6 +342,7 @@
     <Content Include="Areas\Shortener\Scripts\Shortener.js" />
     <Content Include="Areas\Upload\Scripts\Download.js" />
     <Content Include="Areas\Vault\Content\Vault.css" />
+    <Content Include="Areas\Vault\Scripts\Vault.js" />
     <Content Include="Content\audioplayer.css" />
     <Content Include="Content\Bootstra.386\bootstrap-theme.css" />
     <Content Include="Content\Bootstra.386\bootstrap.css" />
@@ -574,7 +576,7 @@
     <Content Include="Areas\User\Views\User\AuthToken.cshtml" />
     <Content Include="Areas\Error\Views\Error\Http401.cshtml" />
     <Content Include="Areas\Transparency\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Vault\Views\Vault\Create.cshtml" />
+    <Content Include="Areas\Vault\Views\Vault\NewVault.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -674,7 +676,6 @@
     <Folder Include="Areas\Upload\Views\Shared\" />
     <Folder Include="Areas\User\Repositories\" />
     <Folder Include="Areas\User\Views\Shared\" />
-    <Folder Include="Areas\Vault\Scripts\" />
     <Folder Include="Areas\Vault\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>

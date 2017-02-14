@@ -1,0 +1,226 @@
+﻿@model Teknik.Areas.Vault.ViewModels.NewVaultViewModel
+
+@using Teknik.Utilities
+@using Teknik.Areas.Vault.ViewModels
+
+@Styles.Render("~/Content/vault")
+
+<script type="text/javascript">
+
+    var validateItemURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = "ValidateItem" })';
+    var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = "CreateVault" })';
+
+
+    var itemCount = @Model.items.Count();
+
+</script>
+
+<div class="container">
+    @if (Model.Error)
+    {
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1 text-center">
+                <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+            </div>
+        </div>
+    }
+
+    <div class="modal fade" id="newItem" tabindex="-1" role="dialog" aria-labelledby="newItemLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="##" method="post" id="addItem" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+                        <h4 class="modal-title" id="newItemLabel">Add an Item</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row" id="item_error" style="display: none;">
+                            <div class="col-sm-10 col-sm-offset-1 text-center">
+                                <div class="alert alert-danger" role="alert" id="item_error_msg"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="item_title"><h4>Title</h4></label>
+                                <input class="form-control" name="item_title" id="item_title" placeholder="Descriptive Title" title="enter a title for the item." type="text" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="item_description"><h4>Description</h4></label>
+                                <textarea class="form-control wmd-input" name="item_description" id="item_description" placeholder="Optional" title="enter what the item is about." rows="5"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="item_type"><h4>Type</h4></label>
+                                <select class="form-control" name="item_type" id="item_type">
+                                    <option>Upload</option>
+                                    <option>Paste</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="item_url"><h4>URL Id</h4></label>
+                                <input class="form-control" name="item_url" id="item_url" placeholder="XXXXX" title="enter the url id for the item" type="text" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="new_item_submit">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editItem" tabindex="-1" role="dialog" aria-labelledby="editItemLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="##" method="post" id="editItemForm" enctype="multipart/form-data">
+                    <input type="hidden" value="" id="item_id"/>
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+                        <h4 class="modal-title" id="editItemLabel">Edit Item</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row" id="item_error" style="display: none;">
+                            <div class="col-sm-10 col-sm-offset-1 text-center">
+                                <div class="alert alert-danger" role="alert" id="item_error_msg"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="item_title"><h4>Title</h4></label>
+                                <input class="form-control" name="item_title" id="item_title" placeholder="Descriptive Title" title="enter a title for the item." type="text" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="item_description"><h4>Description</h4></label>
+                                <textarea class="form-control wmd-input" name="item_description" id="item_description" placeholder="Optional" title="enter what the item is about." rows="5"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="edit_item_submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1 text-center">
+            <h2>Create a New Vault</h2>
+        </div>
+    </div>
+    <form class="form" action="@Url.SubRouteUrl("vault", "Vault.Action", new { action = "CreateVault" })" method="post" id="newVaultForm">
+        <div class="row">
+            <div class="form-group col-sm-10 col-sm-offset-1">
+                <label for="title"><h4>Title</h4></label>
+                <input class="form-control" name="title" id="title" placeholder="Collection of items" title="enter a title for your vault." type="text" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-10 col-sm-offset-1">
+                <label for="article"><h4>Description</h4></label>
+                <textarea class="form-control" name="description" id="description" placeholder="This is a cool collection of uploads and pastes" title="enter the description for this vault" rows="5"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-8 col-sm-offset-2">
+                <button type="button" class="btn btn-primary pull-right" id="add-item" data-toggle="modal" data-target="#newItem">Add Item</button>
+            </div>
+            <div class="form-group col-sm-2">
+                <button type="submit" class="btn btn-primary pull-right" id="submit">Save Vault</button>
+            </div>
+        </div>
+        <br />
+        <div class="container" id="vault-items">
+            @if (Model.items.Any())
+            {
+                int index = 0;
+                foreach (NewVaultItemViewModel item in Model.items)
+                {
+                    <div class="row vault-item" id="vault-item-@index">
+                        <div class="col-sm-8 col-sm-offset-2">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-sm-8 text-left">
+                                            <h4><b id="item-title">@item.title</b></h4>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="btn-group pull-right" role="group">
+                                                <button type="button" class="btn btn-default" id="edit-item" data-toggle="modal" data-target="#editItem">Edit</button>
+                                                <button type="button" class="btn btn-danger" id="remove-item">Remove</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-sm-10 col-sm-offset-1 text-left">
+                                            <dl class="dl-horizontal">
+                                                <dt>Type</dt>
+                                                <dd id="item-type">@item.type</dd>
+                                                <dt>Url</dt>
+                                                <dd id="item-url">@item.url</dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer" @((string.IsNullOrEmpty(item.description)) ? "style=\"display: none\"" : string.Empty)>
+                                    <p id="item-description">@item.description</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </form>
+</div>
+
+<div id="templates" style="display: none">
+    <div class="row" id="item-template">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-8 text-left">
+                            <h4><b id="item-title"></b></h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="btn-group pull-right" role="group">
+                                <button type="button" class="btn btn-default" id="edit-item" data-toggle="modal" data-target="#editItem">Edit</button>
+                                <button type="button" class="btn btn-danger" id="remove-item">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-10 col-sm-offset-1 text-left">
+                            <dl class="dl-horizontal">
+                                <dt>Type</dt>
+                                <dd id="item-type"></dd>
+                                <dt>Url</dt>
+                                <dd id="item-url"></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <p id="item-description"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/vault")

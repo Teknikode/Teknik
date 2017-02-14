@@ -12,12 +12,21 @@
             <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Created on <time datetime="@Model.DateCreated.ToString("s")">@Model.DateCreated.ToString("dddd, MMMM d, yyyy") at @Model.DateCreated.ToString("h:mm:ss tt")</time></small></h2>
         </div>
     </div>
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <hr />
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                    <p>@Model.Description</p>
+            </div>
+        </div>
+    }
     <br />
 
     @foreach (VaultItem item in Model.Items)
     {
         Type itemType = item.GetType();
-        if (itemType == typeof(PasteItem))
+        if (itemType.BaseType == typeof(PasteItem))
         {
             PasteItem paste = (PasteItem)item;
 
@@ -46,7 +55,16 @@
                     </div>
                     <br />
                     <div class="row paste-item">
-                        <div class="col-sm-12 paste-content">@Html.Raw(paste.Paste.Content)</div>
+                        <div class="col-sm-12 paste-content">
+                            @if (!string.IsNullOrEmpty(paste.Paste.HashedPassword))
+                            {
+                                <p class="text-center">Password Required</p>
+                            }
+                            else
+                            {
+                                Html.Raw(paste.Paste.Content);
+                            }
+                        </div>
                     </div>
                 </div>
                 @if (!string.IsNullOrEmpty(paste.Description))
@@ -57,9 +75,11 @@
                 }
             </div>
         }
-        else if (itemType == typeof(UploadItem))
+        else if (itemType.BaseType == typeof(UploadItem))
         {
             UploadItem upload = (UploadItem)item;
+
+            bool needsKey = (string.IsNullOrEmpty(upload.Upload.Key) && !string.IsNullOrEmpty(upload.Upload.IV));
 
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -70,13 +90,13 @@
                     </div>                    
                 </div>
                 <div class="panel-body">
-                    @if (upload.Upload.ContentType.StartsWith("image"))
+                    @if (upload.Upload.ContentType.StartsWith("image") && !needsKey)
                     {
                         <a href="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" target="_blank">
                             <img src="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" class="img-thumbnail center-block" />
                         </a>
                     }
-                    else if (upload.Upload.ContentType.StartsWith("audio"))
+                    else if (upload.Upload.ContentType.StartsWith("audio") && !needsKey)
                     {
                         <div class="text-center">
                             <audio preload="none" controls>
@@ -84,7 +104,7 @@
                             </audio>
                         </div>
                     }
-                    else if (upload.Upload.ContentType.StartsWith("video"))
+                    else if (upload.Upload.ContentType.StartsWith("video") && !needsKey)
                     {
                         <div class="text-center">
                             <video preload="none" controls>

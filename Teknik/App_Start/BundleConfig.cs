@@ -16,7 +16,7 @@ namespace Teknik
             // Set if we are using Cdn
             bundles.UseCdn = config.UseCdn;
 
-            BundleTable.EnableOptimizations = true;
+            BundleTable.EnableOptimizations = false;
 #if !DEBUG
             BundleTable.EnableOptimizations = true;
 #endif

@@ -5,18 +5,16 @@ using System.Web;
 
 namespace Teknik.Configuration
 {
-    public class ShortenerConfig
+    public class VaultConfig
     {
         public bool Enabled { get; set; }
-        public string ShortenerHost { get; set; }
 
         public int UrlLength { get; set; }
 
-        public ShortenerConfig()
+        public VaultConfig()
         {
             Enabled = true;
-            ShortenerHost = string.Empty;
-            UrlLength = 4;
+            UrlLength = 5;
         }
     }
 }
