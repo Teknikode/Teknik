@@ -28,7 +28,7 @@ namespace Teknik.Areas.Users.Controllers
         // GET: Profile/Profile
         [TrackPageView]
         [AllowAnonymous]
-        public ActionResult Index(string username)
+        public ActionResult ViewProfile(string username)
         {
             if (string.IsNullOrEmpty(username))
             {

@@ -84,11 +84,11 @@ namespace Teknik.Areas.Users
                  new[] { typeof(Controllers.UserController).Namespace }
             );
             context.MapSubdomainRoute(
-                 "User.Index", // Route name
+                 "User.ViewProfile", // Route name
                  new List<string>() { "user" }, // Subdomains
                  new List<string>() { config.Host }, // domains
                  "u/{username}",    // URL with parameters 
-                 new { controller = "User", action = "Index", username = UrlParameter.Optional },  // Parameter defaults 
+                 new { controller = "User", action = "ViewProfile", username = UrlParameter.Optional },  // Parameter defaults 
                  new[] { typeof(Controllers.UserController).Namespace }
             );
             context.MapSubdomainRoute(

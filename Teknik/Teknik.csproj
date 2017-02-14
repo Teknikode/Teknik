@@ -477,7 +477,7 @@
     <Content Include="Areas\Contact\Views\Contact\Index.cshtml" />
     <Content Include="Areas\User\Views\web.config" />
     <Content Include="Areas\User\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\User\Views\User\Index.cshtml" />
+    <Content Include="Areas\User\Views\User\ViewProfile.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\Posts.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\Post.cshtml" />
     <Content Include="Areas\Blog\Views\Blog\ViewPost.cshtml" />

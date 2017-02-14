@@ -110,7 +110,7 @@
                             </div>
                         </div>
                     </a>
-                    <a href="@Url.SubRouteUrl("user", "User.Index")">
+                    <a href="@Url.SubRouteUrl("user", "User.ViewProfile")">
                         <div class="col-md-3 text-center">
                             <br />
                             <i class="fa fa-sitemap fa-5x"></i>
@@ -230,7 +230,7 @@
                                             <h2 class="blog-post-title-sm text-left"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId })" id="title_@post.BlogPostId">@Html.Markdown(post.Title)</a>
                                             </h2>
                                             <p class="blog-post-meta-sm text-left text-muted">
-                                                Posted on <time datetime="@post.DatePosted.ToString("s")">@post.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("user", "User.Index", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
+                                                Posted on <time datetime="@post.DatePosted.ToString("s")">@post.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("user", "User.ViewProfile", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
                                             </p>
                                         </div>
                                     </div>
