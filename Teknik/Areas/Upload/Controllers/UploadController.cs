@@ -95,7 +95,7 @@ namespace Teknik.Areas.Upload.Controllers
                                     db.SaveChanges();
                                 }
                             }
-                            return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), contentType = upload.ContentType, contentLength = StringHelper.GetBytesReadable(upload.ContentLength) } }, "text/plain");
+                            return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), contentType = upload.ContentType, contentLength = StringHelper.GetBytesReadable(upload.ContentLength), deleteUrl = Url.SubRouteUrl("u", "Upload.Delete", new { file = upload.Url, key = upload.DeleteKey }) } }, "text/plain");
                         }
                         return Json(new { error = new { message = "Unable to upload file" } });
                     }
@@ -339,53 +339,22 @@ namespace Teknik.Areas.Upload.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public ActionResult GenerateDeleteKey(string file)
         {
             Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
             if (upload != null)
             {
-                string delKey = StringHelper.RandomString(Config.UploadConfig.DeleteKeyLength);
-                upload.DeleteKey = delKey;
-                db.Entry(upload).State = EntityState.Modified;
-                db.SaveChanges();
-                return Json(new { result = Url.SubRouteUrl("upload", "Upload.Delete", new { file = file, key = delKey }) });
-            }
-            return Json(new { error = "Invalid URL" });
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public ActionResult SaveFileKey(string file, string key)
-        {
-            Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
-            if (upload != null)
-            {
-                upload.Key = key;
-                db.Entry(upload).State = EntityState.Modified;
-                db.SaveChanges();
-                return Json(new { result = Url.SubRouteUrl("upload", "Upload.Download", new { file = file }) });
-            }
-            return Json(new { error = "Invalid URL" });
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public ActionResult RemoveFileKey(string file, string key)
-        {
-            Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
-            if (upload != null)
-            {
-                if (upload.Key == key)
+                if (upload.User.Username == User.Identity.Name)
                 {
-                    upload.Key = null;
+                    string delKey = StringHelper.RandomString(Config.UploadConfig.DeleteKeyLength);
+                    upload.DeleteKey = delKey;
                     db.Entry(upload).State = EntityState.Modified;
                     db.SaveChanges();
-                    return Json(new { result = Url.SubRouteUrl("upload", "Upload.Download", new { file = file }) });
+                    return Json(new { result = new { url = Url.SubRouteUrl("u", "Upload.Delete", new { file = file, key = delKey }) } });
                 }
-                return Json(new { error = "Non-Matching Key" });
+                return Json(new { error = new { message = "You do not own this upload" } });
             }
-            return Json(new { error = "Invalid URL" });
+            return Json(new { error = new { message = "Invalid URL" } });
         }
     }
 }

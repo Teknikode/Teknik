@@ -119,6 +119,11 @@ namespace Teknik.Areas.Users
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/checkAuthCode", config.CdnHost).Include(
                       "~/Areas/User/Scripts/CheckAuthCode.js"));
 
+            // Register Script Bundle
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/profile", config.CdnHost).Include(
+                      "~/Scripts/bootbox/bootbox.min.js",
+                      "~/Areas/User/Scripts/Profile.js"));
+
             // Register Style Bundles
             BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/user", config.CdnHost).Include(
                       "~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css"));

@@ -37,6 +37,14 @@ namespace Teknik.Areas.Upload
                  new[] { typeof(DefaultController).Namespace }
              );
             context.MapSubdomainRoute(
+                 "Upload.GenerateDeleteKey",
+                 new List<string>() { "upload", "u", "user" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "GenerateDeleteKey",
+                 new { controller = "Upload", action = "GenerateDeleteKey" },
+                 new[] { typeof(Controllers.UploadController).Namespace }
+             );
+            context.MapSubdomainRoute(
                  "Upload.Download",
                  new List<string>() { "upload", "u" }, // Subdomains
                  new List<string>() { config.Host }, // domains

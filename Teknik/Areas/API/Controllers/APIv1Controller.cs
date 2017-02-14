@@ -96,11 +96,10 @@ namespace Teknik.Areas.API.Controllers
                                 }
                             }
 
-                            // Generate delete key if asked to
-                            if (model.genDeletionKey)
+                            // Generate delete key only if asked to
+                            if (!model.genDeletionKey)
                             {
-                                string delKey = StringHelper.RandomString(Config.UploadConfig.DeleteKeyLength);
-                                upload.DeleteKey = delKey;
+                                upload.DeleteKey = string.Empty;
                                 db.Entry(upload).State = EntityState.Modified;
                                 db.SaveChanges();
                             }

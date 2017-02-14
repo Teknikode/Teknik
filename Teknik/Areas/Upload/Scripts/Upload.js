@@ -8,25 +8,11 @@
     linkCreateVault($('#create-vault'));
 });
 
-function linkUploadDelete(element, uploadID) {
+function linkUploadDelete(element, deleteUrl) {
     element.click(function () {
-        $.ajax({
-            type: "POST",
-            url: generateDeleteKeyURL,
-            data: { file: uploadID },
-            success: function (html) {
-                if (html.result) {
-                    bootbox.dialog({
-                        title: "Direct Deletion URL",
-                        message: '<input type="text" class="form-control" id="deletionLink" onClick="this.select();" value="' + html.result + '">'
-                    });
-
-                }
-                else {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
-                }
-            }
+        bootbox.dialog({
+            title: "Direct Deletion URL",
+            message: '<input type="text" class="form-control" id="deletionLink" onClick="this.select();" value="' + deleteUrl + '">'
         });
         return false;
     });
@@ -304,6 +290,7 @@ function uploadComplete(fileID, key, encrypt, evt) {
             }
             var contentType = obj.result.contentType;
             var contentLength = obj.result.contentLength;
+            var deleteUrl = obj.result.deleteUrl;
 
             // Set progress bar
             setProgress(fileID, 100, 'progress-bar-success', '', 'Complete');
@@ -319,7 +306,7 @@ function uploadComplete(fileID, key, encrypt, evt) {
             itemDiv.find('#upload-contentLength').html(contentLength);
 
             // Setup the buttons
-            linkUploadDelete(itemDiv.find('#generate-delete-link'), name);
+            linkUploadDelete(itemDiv.find('#delete-link'), deleteUrl);
             linkShortenUrl(itemDiv.find('#shortenUrl'), fileID, fullName);
 
             // Hide the progress bar

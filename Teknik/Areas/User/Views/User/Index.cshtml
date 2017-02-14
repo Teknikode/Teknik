@@ -2,6 +2,10 @@
 
 @using Teknik.Utilities
 
+<script>
+    var generateDeleteKeyURL = '@Url.SubRouteUrl("u", "Upload.GenerateDeleteKey")';
+</script>
+
 <div class="container">
     @if (!Model.Error)
     {
@@ -126,33 +130,35 @@
                     <div class="tab-pane" id="uploads" style="overflow-y: auto; max-height: 500px;">
                         @foreach (Teknik.Areas.Upload.Models.Upload upload in Model.Uploads)
                         {
-                            <div class="panel panel-default">
-                                <div class="panel-heading text-center">
-                                    <a href="@Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url })">@Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url })</a>
+                        <div class="panel panel-default">
+                            <div class="panel-heading text-center">
+                                <a id="upload-url" href="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url })">@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url })</a>
+                            </div>
+                            <div class="panel-body">
+                                <div class="col-sm-2 text-center">
+                                    <label for="size">Size</label>
+                                    <p id="size">@StringHelper.GetBytesReadable(upload.ContentLength)</p>
                                 </div>
-                                <div class="panel-body">
-                                    <div class="col-sm-2 text-center">
-                                        <label for="size">Size</label>
-                                        <p id="size">@StringHelper.GetBytesReadable(upload.ContentLength)</p>
-                                    </div>
-                                    <div class="col-sm-3 text-center">
-                                        <label for="type">Type</label>
-                                        <p id="type">@upload.ContentType</p>
-                                    </div>
-                                    <div class="col-sm-3 text-center">
-                                        <label for="dateUploaded">Date Uploaded</label>
-                                        <p id="dateUploaded"><time datetime="@upload.DateUploaded.ToString("s")">@upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
-                                    </div>
-                                    <div class="col-sm-2 text-center">
-                                        <label for="downloads">Downloads</label>
-                                        <p id="downloads">@upload.Downloads</p>
-                                    </div>
-                                    <div class="col-sm-2 text-center">
-                                        <label for="deleteKey">Deletion Key</label>
-                                        <p id="deleteKey">@upload.DeleteKey</p>
-                                    </div>
+                                <div class="col-sm-3 text-center">
+                                    <label for="type">Type</label>
+                                    <p id="type">@upload.ContentType</p>
+                                </div>
+                                <div class="col-sm-3 text-center">
+                                    <label for="dateUploaded">Date Uploaded</label>
+                                    <p id="dateUploaded"><time datetime="@upload.DateUploaded.ToString("s")">@upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
+                                </div>
+                                <div class="col-sm-2 text-center">
+                                    <label for="downloads">Downloads</label>
+                                    <p id="downloads">@upload.Downloads</p>
+                                </div>
+                                <div class="col-sm-2 text-center" style="overflow-x: hidden">
+                                    @{ 
+                                        string deleteUrl = (string.IsNullOrEmpty(upload.DeleteKey)) ? string.Empty : Url.SubRouteUrl("u", "Upload.Delete", new { file = upload.Url, key = upload.DeleteKey });
+                                    }
+                                    <p id="delete-upload"><button role="button" class="btn btn-danger delete-upload-button" id="@deleteUrl" data-upload-id="@upload.Url">Delete</button></p>
                                 </div>
                             </div>
+                        </div>
                         }
                     </div><!--/tab-pane-->
                     <div class="tab-pane" id="pastes" style="overflow-y: auto; max-height: 500px;">
@@ -242,3 +248,5 @@
         </div>
     }
 </div>
+
+@Scripts.Render("~/bundles/profile")

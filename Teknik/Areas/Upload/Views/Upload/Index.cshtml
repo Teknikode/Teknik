@@ -5,9 +5,6 @@
 <script>
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
-    var generateDeleteKeyURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action= "GenerateDeleteKey" })';
-    var saveKeyToServerURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action= "SaveFileKey" })';
-    var removeKeyFromServerURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action= "RemoveFileKey" })';
     var uploadFileURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action = "Upload" })';
     var maxUploadSize = @Model.Config.UploadConfig.MaxUploadSize;
     var chunkSize = @Model.Config.UploadConfig.ChunkSize;
@@ -106,7 +103,7 @@
                         <div class="col-sm-4">
                             <div class="btn-group pull-right" role="group">
                                 <button type="button" class="btn btn-default btn-sm" id="shortenUrl"><i class="fa fa-link"></i>&nbsp;Shorten</button>
-                                <button type="button" class="btn btn-default btn-sm" id="generate-delete-link"><i class="fa fa-trash"></i>&nbsp;Deletion URL</button>
+                                <button type="button" class="btn btn-default btn-sm" id="delete-link"><i class="fa fa-trash"></i>&nbsp;Deletion Link</button>
                             </div>
                         </div>
                     </div>

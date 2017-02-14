@@ -74,6 +74,9 @@ namespace Teknik.Areas.Upload
                 url = StringHelper.RandomString(config.UploadConfig.UrlLength) + extension;
             }
 
+            // Generate a deletion key
+            string delKey = StringHelper.RandomString(config.UploadConfig.DeleteKeyLength);
+
             // Now we need to update the database with the new upload information
             Models.Upload upload = db.Uploads.Create();
             upload.DateUploaded = DateTime.Now;
@@ -85,6 +88,7 @@ namespace Teknik.Areas.Upload
             upload.IV = iv;
             upload.KeySize = keySize;
             upload.BlockSize = blockSize;
+            upload.DeleteKey = delKey;
 
             db.Uploads.Add(upload);
             db.SaveChanges();
