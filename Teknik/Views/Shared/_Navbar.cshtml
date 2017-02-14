@@ -37,17 +37,17 @@
                     <a href="#" id="services_menu" class="dropdown-toggle" data-toggle="dropdown">Services <strong class="caret"></strong></a>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="services_menu">
                         <li class="@Url.GetActive("blog")">
-                            <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = string.Empty })">Blog</a>
+                            <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = string.Empty })">Blogging</a>
                         </li>
                         <li class="@Url.GetActive("podcast")">
-                            <a href="@Url.SubRouteUrl("podcast", "Podcast.Index")">Podcast</a>
+                            <a href="@Url.SubRouteUrl("podcast", "Podcast.Index")">Teknikast</a>
                         </li>
-                        <li class="divider"></li>
+                        <li role="separator" class="divider"></li>
                         <li class="@Url.GetActive("upload", "u")">
-                            <a href="@Url.SubRouteUrl("upload", "Upload.Index")">Upload</a>
+                            <a href="@Url.SubRouteUrl("upload", "Upload.Index")">Uploads</a>
                         </li>
                         <li class="@Url.GetActive("paste", "p")">
-                            <a href="@Url.SubRouteUrl("paste", "Paste.Index")">Paste</a>
+                            <a href="@Url.SubRouteUrl("paste", "Paste.Index")">Pastebin</a>
                         </li>
                         <li class="@Url.GetActive("shorten", "s")">
                             <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")">Shorten Url</a>
@@ -55,6 +55,7 @@
                         <li class="@Url.GetActive("vault", "v")">
                             <a href="@Url.SubRouteUrl("vault", "Vault.Index")">Vaults</a>
                         </li>
+                        <li role="separator" class="divider"></li>
                         <li class="@Url.GetActive("git")">
                             <a href="@Model.Config.GitConfig.Host">Git</a>
                         </li>

@@ -6,9 +6,14 @@
     @if (!Model.Error)
     {
         bool OwnProfile = (Model.Username == User.Identity.Name || User.IsInRole("Admin"));
-        string gitHost = (string.IsNullOrEmpty(Model.Config.Host)) ? string.Empty : Model.Config.GitConfig.Host;
-        Uri gitUrl = new Uri(gitHost);
-        gitUrl = new Uri(gitUrl, Model.Username);
+        string gitHost = Model.Config.GitConfig.Host;
+        string gitFullUrl = string.Empty;
+        if (!string.IsNullOrEmpty(gitHost))
+        {
+            Uri gitUrl = new Uri(gitHost);
+            gitUrl = new Uri(gitUrl, Model.Username);
+            gitFullUrl = gitUrl.ToString();
+        }
         string pgpFingerprint = pgpFingerprint = string.Empty;
         string pgpFingerprint64 = string.Empty;
 
@@ -82,7 +87,10 @@
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> <a href="mailto:@Model.Email">@Model.Email</a></li>
                     }
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Blog</strong></span> <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = Model.Username })" id="blog_title">@(string.IsNullOrEmpty(Model.BlogSettings.Title) ? string.Format("{0}'s Blog", Model.Username) : Model.BlogSettings.Title)</a></li>
-                    <li class="list-group-item text-right"><span class="pull-left"><strong>Git</strong></span> <a href="@gitUrl.ToString()">Public Repos</a></li>
+                    @if (!string.IsNullOrEmpty(gitFullUrl))
+                    {
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Git</strong></span> <a href="@gitFullUrl">Public Repos</a></li>
+                    }
                 </ul>
                 @if (!string.IsNullOrEmpty(Model.UserSettings.Website))
                 {
@@ -172,7 +180,7 @@
                                                 expireDate = "<time datetime=\"" + paste.ExpireDate.Value.ToString("s") + "\">" + paste.ExpireDate.Value.ToString("MMMM dd, yyyy") + "</time>";
                                             }
                                         }
-                                        <p id="expireDate">@expireDate</p>
+                                        <p id="expireDate">@Html.Raw(expireDate)</p>
                                     </div>
                                     <div class="col-sm-2 text-center">
                                         <label for="maxViews">Max Views</label>
