@@ -12,6 +12,7 @@ using Teknik.Filters;
 using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Attributes;
+using Teknik.Areas.Users.Utility;
 
 namespace Teknik.Areas.RSS.Controllers
 {
@@ -33,22 +34,24 @@ namespace Teknik.Areas.RSS.Controllers
         public ActionResult Blog(string username)
         {
             // If empty, grab the main blog
-            Blog.Models.Blog blog = null;
+            List<BlogPost> posts = new List<BlogPost>();
+
             string blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
             string title = string.Empty;
             string description = string.Empty;
             bool isSystem = string.IsNullOrEmpty(username);
             if (isSystem)
             {
-                blog = db.Blogs.Where(b => b.BlogId == Config.BlogConfig.ServerBlogId).FirstOrDefault();
+                posts = db.BlogPosts.Where(p => (p.System && p.Published)).ToList();
                 blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
             }
             else
             {
-                blog = db.Blogs.Where(b => b.User.Username == username).FirstOrDefault();
+                Blog.Models.Blog blog = db.Blogs.Where(p => p.User.Username == username && p.BlogId != Config.BlogConfig.ServerBlogId).FirstOrDefault();
+                posts = db.BlogPosts.Where(p => (p.BlogId == blog.BlogId && !p.System) && p.Published).ToList();
                 blogUrl = Url.SubRouteUrl("blog", "Blog.Blog", new { username = username });
             }
-            if (blog != null)
+            if (posts.Any())
             {
                 if (isSystem)
                 {
@@ -57,13 +60,21 @@ namespace Teknik.Areas.RSS.Controllers
                 }
                 else
                 {
-                    title = blog.User.BlogSettings.Title;
-                    description = blog.User.BlogSettings.Description;
+                    Users.Models.User user = UserHelper.GetUser(db, username);
+                    if (user != null)
+                    {
+                        title = user.BlogSettings.Title;
+                        description = user.BlogSettings.Description;
+                    }
+                    else
+                    {
+
+                    }
                 }
 
                 List<SyndicationItem> items = new List<SyndicationItem>();
 
-                foreach (BlogPost post in blog.BlogPosts.OrderByDescending(p => p.BlogPostId))
+                foreach (BlogPost post in posts.OrderByDescending(p => p.BlogPostId))
                 {
                     if (post.Published && post.System == isSystem)
                     {
