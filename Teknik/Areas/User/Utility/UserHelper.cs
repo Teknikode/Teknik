@@ -979,7 +979,7 @@ If you recieved this email and you did not reset your password, you can ignore t
         public static HttpCookie CreateAuthCookie(string username, bool remember, string domain, bool local)
         {
             DateTime curTime = DateTime.Now;
-            DateTime expireTime = curTime.AddYears(1);
+            DateTime expireTime = curTime.AddMonths(1);
 
             Config config = Config.Load();
             FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
