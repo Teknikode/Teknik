@@ -1,0 +1,65 @@
+﻿@model Teknik.Areas.Vault.ViewModels.NewVaultItemViewModel
+@{ 
+    bool isTemplate = (Model.isTemplate);
+}
+
+<div class="row @(isTemplate ? string.Empty : "vault-item")" id="@(isTemplate ? "item-template" : "vault-item-" + Model.index)">
+    <div class="col-sm-9 col-sm-offset-1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-sm-8 text-left">
+                        <h4><b id="item-title">@(isTemplate ? string.Empty : Model.title)</b></h4>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="btn-group pull-right" role="group">
+                            <button type="button" class="btn btn-default" id="@(isTemplate ? "edit-item" : Model.index.ToString())" data-toggle="modal" data-target="#editItem">Edit</button>
+                            <button type="button" class="btn btn-danger" id="remove-item">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <dl class="dl-horizontal">
+                    <dt>Type</dt>
+                    <dd id="item-type">@(isTemplate ? string.Empty : Model.type)</dd>
+                    <dt>Url</dt>
+                    <dd id="item-url">@(isTemplate ? string.Empty : Model.url)</dd>
+                </dl>
+            </div>
+            <div class="panel-footer">
+                <p id="item-description">@(isTemplate ? string.Empty : Model.description)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-1">
+        <div class="row">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-default" id="move-up"><i class="fa fa-chevron-up"></i></button>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-default" id="move-down"><i class="fa fa-chevron-down"></i></button>
+            </div>
+        </div>
+    </div>
+    @if (!isTemplate)
+    {
+        <script type="text/javascript">
+        $(document).ready(function () {
+            var itemDiv = $('#vault-item-@Model.index');
+
+            linkRemove(itemDiv);
+            linkMoveUp(itemDiv);
+            linkMoveDown(itemDiv);
+
+            @if (string.IsNullOrEmpty(Model.description))
+            {
+                @:itemDiv.find('.panel-footer').hide();
+            }
+        });
+        </script>
+    }
+</div>

@@ -1,6 +1,6 @@
 ﻿@model Teknik.Areas.Vault.ViewModels.VaultViewModel
 
-@using Teknik.Areas.Vault.Models;
+@using Teknik.Areas.Vault.ViewModels
 @using Teknik.Utilities
 @using Teknik.Pygments
 
@@ -23,133 +23,20 @@
     }
     <br />
 
-    @foreach (VaultItem item in Model.Items)
+    @foreach (VaultItemViewModel item in Model.Items)
     {
         Type itemType = item.GetType();
-        if (itemType.BaseType == typeof(PasteItem))
+        if (itemType == typeof(PasteItemViewModel))
         {
-            PasteItem paste = (PasteItem)item;
+            PasteItemViewModel pasteModel = (PasteItemViewModel)item;
 
-            // Transform content into HTML
-            if (!Highlighter.Lexers.ToList().Exists(l => l.Aliases.Contains(paste.Paste.Syntax)))
-            {
-                paste.Paste.Syntax = "text";
-            }
-            Highlighter highlighter = new Highlighter();
-            // Add a space in front of the content due to bug with pygment (No idea why yet)
-            paste.Paste.Content = highlighter.HighlightToHtml(" " + paste.Paste.Content, paste.Paste.Syntax, Model.Config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-sm-10 text-left">
-                            <h4><b>@((string.IsNullOrEmpty(paste.Title)) ? "Paste" : paste.Title)</b> <small>Pasted on <time datetime="@paste.Paste.DatePosted.ToString("s")">@paste.Paste.DatePosted.ToString("dddd, MMMM d, yyyy") at @paste.Paste.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage">@paste.Paste.Syntax</b></small></h4>
-                        </div>
-                        <div class="col-sm-2 text-right">
-                            <h4><small><a href="@Url.SubRouteUrl("p", "Paste.View", new { url = paste.Paste.Url })" target="_blank">Direct Link</a></small></h4>
-</div>
-                    </div>             
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-sm-12 pull-left">
-                            <div class="btn-group" role="group">
-                                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Simple", new { url = paste.Paste.Url })" target="_blank">Simple</a>
-                                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Raw", new { url = paste.Paste.Url })" target="_blank">Raw</a>
-                                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Download", new { url = paste.Paste.Url })">Download</a>
-                            </div>
-                        </div>
-                    </div>
-                    <br />
-                    <div class="row paste-item">
-                        <div class="col-sm-12 paste-content hideContent">
-                            @if (!string.IsNullOrEmpty(paste.Paste.HashedPassword))
-                            {
-                                <p class="text-center">Password Required</p>
-                            }
-                            else
-                            {
-                                @Html.Raw(paste.Paste.Content)
-                            }
-                        </div>
-                        <div class="show-more">
-                            <button class="btn btn-default btn-sm" id="show-more-button">Show More</button>
-                        </div>
-                    </div>
-                </div>
-                @if (!string.IsNullOrEmpty(paste.Description))
-                {
-                    <div class="panel-footer">
-                        <p>@paste.Description</p>
-                    </div>
-                }
-            </div>
+            @Html.Partial("~/Areas/Vault/Views/Vault/PasteItem.cshtml", pasteModel)
         }
-        else if (itemType.BaseType == typeof(UploadItem))
+        else if (itemType == typeof(UploadItemViewModel))
         {
-            UploadItem upload = (UploadItem)item;
+            UploadItemViewModel uploadModel = (UploadItemViewModel)item;
 
-            bool needsKey = (string.IsNullOrEmpty(upload.Upload.Key) && !string.IsNullOrEmpty(upload.Upload.IV));
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-sm-10 text-left">
-                            <h4><b>@((string.IsNullOrEmpty(upload.Title)) ? "Upload" : upload.Title)</b> <small>Uploaded on <time datetime="@upload.Upload.DateUploaded.ToString("s")">@upload.Upload.DateUploaded.ToString("dddd, MMMM d, yyyy") at @upload.Upload.DateUploaded.ToString("h:mm:ss tt")</time></small></h4>
-                        </div>
-                        <div class="col-sm-2 text-right">
-                            <h4><small><a href="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" target="_blank">Direct Link</a></small></h4>
-                        </div>
-                    </div>                    
-                </div>
-                <div class="panel-body">
-                    @if (upload.Upload.ContentType.StartsWith("image") && !needsKey)
-                    {
-                        <a href="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" target="_blank">
-                            <img src="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" class="img-thumbnail center-block" />
-                        </a>
-                    }
-                    else if (upload.Upload.ContentType.StartsWith("audio") && !needsKey)
-                    {
-                        <div class="text-center">
-                            <audio preload="none" controls>
-                                <source src="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" type="@upload.Upload.ContentType" />
-                            </audio>
-                        </div>
-                    }
-                    else if (upload.Upload.ContentType.StartsWith("video") && !needsKey)
-                    {
-                        <div class="text-center">
-                            <video preload="none" controls>
-                                <source src="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Upload.Url })" type="@upload.Upload.ContentType" />
-                            </video>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="row">
-                            <div class="col-sm-4 text-center">
-                                <label for="size">Size</label>
-                                <p id="size">@StringHelper.GetBytesReadable(upload.Upload.ContentLength)</p>
-                            </div>
-                            <div class="col-sm-4 text-center">
-                                <label for="type">Type</label>
-                                <p id="type">@upload.Upload.ContentType</p>
-                            </div>
-                            <div class="col-sm-4 text-center">
-                                <label for="dateUploaded">Date Uploaded</label>
-                                <p id="dateUploaded"><time datetime="@upload.Upload.DateUploaded.ToString("s")">@upload.Upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
-                            </div>
-                        </div>
-                    }
-                </div>
-                @if (!string.IsNullOrEmpty(upload.Description))
-                {
-                    <div class="panel-footer">
-                        <p>@upload.Description</p>
-                    </div>
-                }
-            </div>
+            @Html.Partial("~/Areas/Vault/Views/Vault/UploadItem.cshtml", uploadModel)
         }
         else
         {

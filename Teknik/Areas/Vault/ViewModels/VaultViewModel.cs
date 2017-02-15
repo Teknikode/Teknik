@@ -16,7 +16,7 @@ namespace Teknik.Areas.Vault.ViewModels
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateEdited { get; set; }
-        public List<VaultItem> Items { get; set; }
+        public List<VaultItemViewModel> Items { get; set; }
 
         public VaultViewModel()
         {
@@ -24,7 +24,7 @@ namespace Teknik.Areas.Vault.ViewModels
             Description = string.Empty;
             DateCreated = DateTime.Now;
             DateEdited = DateTime.Now;
-            Items = new List<VaultItem>();
+            Items = new List<VaultItemViewModel>();
         }
     }
 }

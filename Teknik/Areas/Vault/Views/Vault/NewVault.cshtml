@@ -10,7 +10,7 @@
     var validateItemURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = "ValidateItem" })';
     var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = "CreateVault" })';
 
-    var itemCount = 0;
+    var itemCount = @Model.items.Count();
 
 </script>
 
@@ -156,121 +156,17 @@
             <div class="col-sm-10" id="vault-items">
                 @if (Model.items.Any())
                 {
-                    int index = 0;
                     foreach (NewVaultItemViewModel item in Model.items)
                     {
-                        <div class="row vault-item" id="vault-item-@index">
-                            <div class="col-sm-9 col-sm-offset-1">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <div class="row">
-                                            <div class="col-sm-8 text-left">
-                                                <h4><b id="item-title">@item.title</b></h4>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="btn-group pull-right" role="group">
-                                                    <button type="button" class="btn btn-default" id="@index" data-toggle="modal" data-target="#editItem">Edit</button>
-                                                    <button type="button" class="btn btn-danger" id="remove-item">Remove</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="panel-body">
-                                        <dl class="dl-horizontal pull-left">
-                                            <dt>Type</dt>
-                                            <dd id="item-type">@item.type</dd>
-                                            <dt>Url</dt>
-                                            <dd id="item-url">@item.url</dd>
-                                        </dl>
-                                    </div>
-                                    <div class="panel-footer">
-                                        <p id="item-description">@item.description</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-1">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <button type="button" class="btn btn-default" id="move-up"><i class="fa fa-chevron-up"></i></button>
-                                    </div>
-                                </div>
-                                <br />
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <button type="button" class="btn btn-default" id="move-down"><i class="fa fa-chevron-down"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <script type="text/javascript">
-                                itemCount++;
-                                $(document).ready(function () {
-                                    var itemDiv = $('#vault-item-@index');
-
-                                    linkRemove(itemDiv);
-                                    linkMoveUp(itemDiv);
-                                    linkMoveDown(itemDiv);
-
-                                    @if (string.IsNullOrEmpty(item.description))
-                                    {
-                                        @:itemDiv.find('.panel-footer').hide();
-                                    }
-                                });
-                            </script>
-                        </div>
-                        {
-                            index++;
-                        }
+                        @Html.Partial("~/Areas/Vault/Views/Vault/NewVaultItem.cshtml", item)
                     }
                 }
             </div>
         </div>
     </form>
 </div>
-
 <div id="templates" style="display: none">
-    <div class="row" id="item-template">
-        <div class="col-sm-9 col-sm-offset-1">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-sm-8 text-left">
-                            <h4><b id="item-title"></b></h4>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="btn-group pull-right" role="group">
-                                <button type="button" class="btn btn-default" id="edit-item" data-toggle="modal" data-target="#editItem">Edit</button>
-                                <button type="button" class="btn btn-danger" id="remove-item">Remove</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <dl class="dl-horizontal">
-                        <dt>Type</dt>
-                        <dd id="item-type"></dd>
-                        <dt>Url</dt>
-                        <dd id="item-url"></dd>
-                    </dl>
-                </div>
-                <div class="panel-footer">
-                    <p id="item-description"></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-1">
-            <div class="row">
-                <div class="col-sm-12">
-                    <button type="button" class="btn btn-default" id="move-up"><i class="fa fa-chevron-up"></i></button>
-                </div>
-            </div>
-            <br />
-            <div class="row">
-                <div class="col-sm-12">
-                    <button type="button" class="btn btn-default" id="move-down"><i class="fa fa-chevron-down"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
+    @Html.Partial("~/Areas/Vault/Views/Vault/NewVaultItem.cshtml", new NewVaultItemViewModel())
 </div>
 
 @Scripts.Render("~/bundles/vault")

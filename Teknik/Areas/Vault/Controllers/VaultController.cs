@@ -47,6 +47,11 @@ namespace Teknik.Areas.Vault.Controllers
                 {
                     foreach (VaultItem item in foundVault.Items)
                     {
+                        VaultItemViewModel itemModel = new VaultItemViewModel();
+                        itemModel.Title = item.Title;
+                        itemModel.Description = item.Description;
+                        itemModel.DateAdded = item.DateAdded;
+
                         if (item.GetType().BaseType == typeof(UploadItem))
                         {
                             UploadItem upload = (UploadItem)item;
@@ -54,6 +59,13 @@ namespace Teknik.Areas.Vault.Controllers
                             upload.Upload.Downloads += 1;
                             db.Entry(upload.Upload).State = EntityState.Modified;
                             db.SaveChanges();
+
+                            UploadItemViewModel uploadModel = new UploadItemViewModel();
+                            uploadModel.Title = item.Title;
+                            uploadModel.Description = item.Description;
+                            uploadModel.DateAdded = item.DateAdded;
+                            uploadModel.Upload = upload.Upload;
+                            model.Items.Add(uploadModel);
                         }
                         else if (item.GetType().BaseType == typeof(PasteItem))
                         {
@@ -70,12 +82,16 @@ namespace Teknik.Areas.Vault.Controllers
                                 db.SaveChanges();
                                 break;
                             }
-                        }
 
-                        model.Items.Add(item);
+                            PasteItemViewModel pasteModel = new PasteItemViewModel();
+                            pasteModel.Title = item.Title;
+                            pasteModel.Description = item.Description;
+                            pasteModel.DateAdded = item.DateAdded;
+                            pasteModel.Paste = paste.Paste;
+                            model.Items.Add(pasteModel);
+                        }
                     }
                 }
-                model.Items = foundVault.Items.ToList();
 
                 return View(model);
             }
@@ -99,6 +115,7 @@ namespace Teknik.Areas.Vault.Controllers
             NewVaultViewModel model = new NewVaultViewModel();
 
             string[] allURLs = urls.Split(',');
+            int index = 0;
             foreach (string url in allURLs)
             {
                 string[] urlInfo = url.Split(':');
@@ -112,10 +129,13 @@ namespace Teknik.Areas.Vault.Controllers
                 if (IsValidItem(type, uploadId))
                 {
                     NewVaultItemViewModel item = new NewVaultItemViewModel();
+                    item.isTemplate = false;
+                    item.index = index;
                     item.title = title;
                     item.url = uploadId;
                     item.type = type;
                     model.items.Add(item);
+                    index++;
                 }
             }
 

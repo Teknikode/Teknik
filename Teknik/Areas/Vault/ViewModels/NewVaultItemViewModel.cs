@@ -8,6 +8,8 @@ namespace Teknik.Areas.Vault.ViewModels
 {
     public class NewVaultItemViewModel : ViewModelBase
     {
+        public bool isTemplate { get; set; }
+        public int index { get; set; }
         public string title { get; set; }
         public string description { get; set; }
         public string type { get; set; }
@@ -15,6 +17,8 @@ namespace Teknik.Areas.Vault.ViewModels
 
         public NewVaultItemViewModel()
         {
+            isTemplate = true;
+            index = 0;
             title = string.Empty;
             description = string.Empty;
             type = "Upload";

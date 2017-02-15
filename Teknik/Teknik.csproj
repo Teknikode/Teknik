@@ -244,6 +244,9 @@
     <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
     <Compile Include="Areas\Vault\ViewModels\NewVaultViewModel.cs" />
     <Compile Include="Areas\Vault\ViewModels\NewVaultItemViewModel.cs" />
+    <Compile Include="Areas\Vault\ViewModels\UploadItemViewModel.cs" />
+    <Compile Include="Areas\Vault\ViewModels\PasteItemViewModel.cs" />
+    <Compile Include="Areas\Vault\ViewModels\VaultItemViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
     <Compile Include="Filters\CORSActionFilter.cs" />
     <Compile Include="Models\TransferTypes.cs" />
@@ -578,6 +581,9 @@
     <Content Include="Areas\Error\Views\Error\Http401.cshtml" />
     <Content Include="Areas\Transparency\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Vault\Views\Vault\NewVault.cshtml" />
+    <Content Include="Areas\Vault\Views\Vault\NewVaultItem.cshtml" />
+    <Content Include="Areas\Vault\Views\Vault\PasteItem.cshtml" />
+    <Content Include="Areas\Vault\Views\Vault\UploadItem.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

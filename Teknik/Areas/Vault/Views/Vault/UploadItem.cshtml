@@ -1,0 +1,68 @@
+﻿@model Teknik.Areas.Vault.ViewModels.UploadItemViewModel
+
+@using Teknik.Utilities
+            
+@{
+    bool needsKey = (string.IsNullOrEmpty(Model.Upload.Key) && !string.IsNullOrEmpty(Model.Upload.IV));
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-sm-10 text-left">
+                <h4><b>@((string.IsNullOrEmpty(Model.Title)) ? "Upload" : Model.Title)</b> <small>Uploaded on <time datetime="@Model.Upload.DateUploaded.ToString("s")">@Model.Upload.DateUploaded.ToString("dddd, MMMM d, yyyy") at @Model.Upload.DateUploaded.ToString("h:mm:ss tt")</time></small></h4>
+            </div>
+            <div class="col-sm-2 text-right">
+                <h4><small><a href="@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Upload.Url })" target="_blank">Direct Link</a></small></h4>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        @if (Model.Upload.ContentType.StartsWith("image") && !needsKey)
+        {
+            <a href="@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Upload.Url })" target="_blank">
+                <img src="@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Upload.Url })" class="img-thumbnail center-block" />
+            </a>
+        }
+        else if (Model.Upload.ContentType.StartsWith("audio") && !needsKey)
+        {
+            <div class="text-center">
+                <audio preload="none" controls>
+                    <source src="@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Upload.Url })" type="@Model.Upload.ContentType" />
+                </audio>
+            </div>
+        }
+        else if (Model.Upload.ContentType.StartsWith("video") && !needsKey)
+        {
+            <div class="text-center">
+                <video preload="none" controls>
+                    <source src="@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Upload.Url })" type="@Model.Upload.ContentType" />
+                </video>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-sm-4 text-center">
+                    <label for="size">Size</label>
+                    <p id="size">@StringHelper.GetBytesReadable(Model.Upload.ContentLength)</p>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <label for="type">Type</label>
+                    <p id="type">@Model.Upload.ContentType</p>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <label for="dateUploaded">Date Uploaded</label>
+                    <p id="dateUploaded"><time datetime="@Model.Upload.DateUploaded.ToString("s")">@Model.Upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
+                </div>
+            </div>
+        }
+    </div>
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <div class="panel-footer">
+            <p>@Model.Description</p>
+        </div>
+    }
+</div>
+
