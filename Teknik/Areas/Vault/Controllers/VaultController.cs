@@ -49,12 +49,6 @@ namespace Teknik.Areas.Vault.Controllers
                 {
                     foreach (VaultItem item in foundVault.VaultItems)
                     {
-                        VaultItemViewModel itemModel = new VaultItemViewModel();
-                        itemModel.VaultItemId = item.VaultItemId;
-                        itemModel.Title = item.Title;
-                        itemModel.Description = item.Description;
-                        itemModel.DateAdded = item.DateAdded;
-
                         if (item.GetType().BaseType == typeof(UploadVaultItem))
                         {
                             UploadVaultItem upload = (UploadVaultItem)item;
@@ -64,6 +58,7 @@ namespace Teknik.Areas.Vault.Controllers
                             db.SaveChanges();
 
                             UploadItemViewModel uploadModel = new UploadItemViewModel();
+                            upload.VaultItemId = item.VaultItemId;
                             uploadModel.Title = item.Title;
                             uploadModel.Description = item.Description;
                             uploadModel.DateAdded = item.DateAdded;
@@ -87,6 +82,7 @@ namespace Teknik.Areas.Vault.Controllers
                             }
 
                             PasteItemViewModel pasteModel = new PasteItemViewModel();
+                            pasteModel.VaultItemId = item.VaultItemId;
                             pasteModel.Title = item.Title;
                             pasteModel.Description = item.Description;
                             pasteModel.DateAdded = item.DateAdded;
