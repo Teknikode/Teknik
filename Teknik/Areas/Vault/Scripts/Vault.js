@@ -56,6 +56,10 @@
             type: "POST",
             url: validateItemURL,
             data: AddAntiForgeryToken({ type: type, url: url }),
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            xhrFields: {
+                withCredentials: true
+            },
             success: function (response) {
                 if (response.result) {
                     itemCount++;
@@ -153,13 +157,21 @@
             type: "POST",
             url: modifyVaultURL,
             data: AddAntiForgeryToken({ vaultId: vaultId, title: title, description: description, items: items }),
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            xhrFields: {
+                withCredentials: true
+            },
             success: function (response) {
                 if (response.result) {
                     window.location = response.result.url;
                 }
                 else {
+                    var err = response;
+                    if (response.error) {
+                        err = response.error.message;
+                    }
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + response.error.message + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + err + '</div>');
                 }
             }
         });
@@ -183,8 +195,12 @@
                             window.location = html.result.url;
                         }
                         else {
+                            var err = html;
+                            if (html.error) {
+                                err = html.error.message;
+                            }
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error.message + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + err + '</div>');
                         }
                     }
                 });

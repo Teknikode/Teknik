@@ -12,6 +12,7 @@ namespace Teknik.Areas.Vault.ViewModels
         public string Url { get; set; }
         public int? UserId { get; set; }
         public Users.Models.User User { get; set; }
+        public string CurrentSub { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }
@@ -20,6 +21,7 @@ namespace Teknik.Areas.Vault.ViewModels
 
         public VaultViewModel()
         {
+            CurrentSub = "vault";
             Title = string.Empty;
             Description = string.Empty;
             DateCreated = DateTime.Now;

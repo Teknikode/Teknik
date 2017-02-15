@@ -12,8 +12,8 @@
 
 <script type="text/javascript">
 
-    var validateItemURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = "ValidateItem" })';
-    var modifyVaultURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = action })';
+    var validateItemURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = "ValidateItem" })';
+    var modifyVaultURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = action })';
 
     var itemCount = @Model.items.Count();
 

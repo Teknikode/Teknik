@@ -60,7 +60,7 @@
                     <ul class="dropdown-menu" id="add-to-vault-menu">
                         @foreach (Vault item in Model.Vaults)
                         {
-                            <li><a href="#" class="add-to-vault" data-add-to-vault-url="@Url.SubRouteUrl("v", "Vault.EditVault", new { url = item.Url, type = "Upload" })">@item.Title</a></li>
+                            <li><a href="#" class="add-to-vault" data-add-to-vault-url="@Url.SubRouteUrl("vault", "Vault.EditVault", new { url = item.Url, type = "Upload" })">@item.Title</a></li>
                         }
                     </ul>
                 }

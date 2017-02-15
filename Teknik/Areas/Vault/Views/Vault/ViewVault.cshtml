@@ -7,7 +7,7 @@
 @Styles.Render("~/Content/vault")
 
 <script type="text/javascript">
-    var deleteVaultURL = '@Url.SubRouteUrl("v", "Vault.DeleteVault")';
+    var deleteVaultURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.DeleteVault")';
 </script>
 
 <div class="container">

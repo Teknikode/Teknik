@@ -36,6 +36,7 @@ namespace Teknik.Areas.Vault.Controllers
                 ViewBag.Title = foundVault.Title + " - Teknik Vault";
 
                 VaultViewModel model = new VaultViewModel();
+                model.CurrentSub = Subdomain;
 
                 model.Url = foundVault.Url;
                 model.UserId = foundVault.UserId;
@@ -103,6 +104,7 @@ namespace Teknik.Areas.Vault.Controllers
         {
             ViewBag.Title = "Create Vault";
             ModifyVaultViewModel model = new ModifyVaultViewModel();
+            model.CurrentSub = Subdomain;
             return View("~/Areas/Vault/Views/Vault/ModifyVault.cshtml", model);
         }
 
@@ -112,6 +114,7 @@ namespace Teknik.Areas.Vault.Controllers
         {
             ViewBag.Title = "Create Vault";
             ModifyVaultViewModel model = new ModifyVaultViewModel();
+            model.CurrentSub = Subdomain;
 
             string decodedItems = HttpUtility.UrlDecode(items);
             string[] allURLs = decodedItems.Split(',');
@@ -154,6 +157,7 @@ namespace Teknik.Areas.Vault.Controllers
                     ViewBag.Title = "Edit Vault - " + foundVault.Title;
 
                     ModifyVaultViewModel model = new ModifyVaultViewModel();
+                    model.CurrentSub = Subdomain;
                     model.isEdit = true;
                     model.vaultId = foundVault.VaultId;
                     model.title = foundVault.Title;
