@@ -19,5 +19,7 @@ namespace Teknik.Areas.Paste.ViewModels
         public string Password { get; set; }
         public bool Hide { get; set; }
         public DateTime DatePosted { get; set; }
+
+        public List<Vault.Models.Vault> Vaults { get; set; }
     }
 }

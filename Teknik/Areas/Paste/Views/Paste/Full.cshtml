@@ -1,6 +1,7 @@
 ﻿@model Teknik.Areas.Paste.ViewModels.PasteViewModel
 
 @using Teknik.Utilities
+@using Teknik.Areas.Vault.Models
 
 @Styles.Render("~/Content/paste")
 
@@ -22,6 +23,16 @@
                 <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("paste", "Paste.Raw", new { url = Model.Url })">Raw</a>
                 <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("paste", "Paste.Download", new { url = Model.Url })">Download</a>
                 <button type="button" class="btn btn-default" id="create-vault" data-paste-url="@Model.Url" data-paste-title="@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)">Create Vault</button>
+                @if (User.Identity.IsAuthenticated && Model.Vaults != null && Model.Vaults.Any())
+                {
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Add to Vault <span class="caret"></span></button>
+                    <ul class="dropdown-menu pull-right" id="add-to-vault-menu">
+                        @foreach (Vault item in Model.Vaults)
+                        {
+                            <li><a href="#" class="add-to-vault" data-add-to-vault-url="@Url.SubRouteUrl("v", "Vault.EditVault", new { url = item.Url, type = "Paste" })" data-paste-url="@Model.Url" data-paste-title="@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)">@item.Title</a></li>
+                        }
+                    </ul>
+                }
             </div>
         </div>
     </div>

@@ -11,5 +11,14 @@ namespace Teknik.Areas.Upload.ViewModels
         public string CurrentSub { get; set; }
 
         public bool Encrypt { get; set; }
+
+        public List<Vault.Models.Vault> Vaults { get; set; }
+
+        public UploadViewModel()
+        {
+            CurrentSub = string.Empty;
+            Encrypt = false;
+            Vaults = new List<Vault.Models.Vault>();
+        }
     }
 }

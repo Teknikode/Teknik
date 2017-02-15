@@ -111,12 +111,12 @@ namespace Teknik.Areas.Vault.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult NewVaultFromService(string type, string urls)
+        public ActionResult NewVaultFromService(string type, string items)
         {
             ViewBag.Title = "Create Vault";
             ModifyVaultViewModel model = new ModifyVaultViewModel();
 
-            string[] allURLs = urls.Split(',');
+            string[] allURLs = items.Split(',');
             int index = 0;
             foreach (string url in allURLs)
             {
@@ -145,7 +145,7 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpGet]
-        public ActionResult EditVault(string url)
+        public ActionResult EditVault(string url, string type, string items)
         {
             ViewBag.Title = "Edit Vault";
             Vault.Models.Vault foundVault = db.Vaults.Where(v => v.Url == url).FirstOrDefault();
@@ -162,6 +162,7 @@ namespace Teknik.Areas.Vault.Controllers
                     model.description = foundVault.Description;
 
                     int index = 0;
+                    // Add all their existing items for the vault
                     foreach (VaultItem item in foundVault.VaultItems)
                     {
                         ModifyVaultItemViewModel itemModel = new ModifyVaultItemViewModel();
@@ -187,6 +188,34 @@ namespace Teknik.Areas.Vault.Controllers
                             itemModel.url = paste.Paste.Url;
                             model.items.Add(itemModel);
                             index++;
+                        }
+                    }
+
+                    // If they passed any new items in via the parameters, let's add them
+                    if (!string.IsNullOrEmpty(type) && !string.IsNullOrEmpty(items))
+                    {
+                        string[] allItems = items.Split(',');
+                        foreach (string newItem in allItems)
+                        {
+                            string[] urlInfo = newItem.Split(':');
+                            string itemId = urlInfo[0];
+                            string title = string.Empty;
+                            if (urlInfo.GetUpperBound(0) >= 1)
+                            {
+                                // They also passed in the original filename, so let's use it as our title
+                                title = urlInfo[1];
+                            }
+                            if (IsValidItem(type, itemId))
+                            {
+                                ModifyVaultItemViewModel item = new ModifyVaultItemViewModel();
+                                item.isTemplate = false;
+                                item.index = index;
+                                item.title = title;
+                                item.url = itemId;
+                                item.type = type;
+                                model.items.Add(item);
+                                index++;
+                            }
                         }
                     }
 

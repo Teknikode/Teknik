@@ -1,6 +1,7 @@
 ﻿@model Teknik.Areas.Upload.ViewModels.UploadViewModel
 
 @using Teknik.Utilities
+@using Teknik.Areas.Vault.Models
 
 <script>
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
@@ -53,6 +54,16 @@
             <div class="btn-group pull-right" role="group">
                 <button type="button" class="btn btn-default btn-sm" id="copy-all"><i class="fa fa-clipboard"></i>&nbsp;Copy All Uploads</button>
                 <button type="button" class="btn btn-default btn-sm" id="create-vault"><i class="fa fa-folder"></i>&nbsp;Create Vault</button>
+                @if (User.Identity.IsAuthenticated && Model.Vaults != null && Model.Vaults.Any())
+                {
+                    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-plus"></i>&nbsp;Add to Vault <span class="caret"></span></button>
+                    <ul class="dropdown-menu" id="add-to-vault-menu">
+                        @foreach (Vault item in Model.Vaults)
+                        {
+                            <li><a href="#" class="add-to-vault" data-add-to-vault-url="@Url.SubRouteUrl("v", "Vault.EditVault", new { url = item.Url, type = "Upload" })">@item.Title</a></li>
+                        }
+                    </ul>
+                }
             </div>
         </div>
     </div>

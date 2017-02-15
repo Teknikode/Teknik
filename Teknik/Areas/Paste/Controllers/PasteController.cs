@@ -64,6 +64,15 @@ namespace Teknik.Areas.Paste.Controllers
 
                 byte[] data = Encoding.UTF8.GetBytes(paste.Content);
 
+                if (User.Identity.IsAuthenticated && type.ToLower() == "full")
+                {
+                    Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
+                    {
+                        model.Vaults = user.Vaults.ToList();
+                    }
+                }
+
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
                 {

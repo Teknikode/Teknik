@@ -6,6 +6,10 @@
 
     linkCopyAll($('#copy-all'));
     linkCreateVault($('#create-vault'));
+
+    $('#add-to-vault-menu').find('.add-to-vault').each(function () {
+        linkAddToVault($(this));
+    });
 });
 
 function linkUploadDelete(element, deleteUrl) {
@@ -90,10 +94,34 @@ function linkCreateVault(element) {
         });
         if (allUploads.length > 0) {
             var urlList = allUploads.join();
-            window.open(createVaultURL + '&urls=' + encodeURIComponent(urlList), '_blank');
+            window.open(createVaultURL + '&items=' + encodeURIComponent(urlList), '_blank');
         }
         else {
             window.open(createVaultURL, '_blank');
+        }
+    });
+}
+
+function linkAddToVault(element) {
+    element.click(function () {
+        var addToVaultURL = $(this).data('add-to-vault-url');
+        var allUploads = [];
+        $("div[id^='upload-panel-']").each(function () {
+            var url = $(this).find('#upload-url').val();
+            if (url !== '') {
+                var origFile = $(this).find('#upload-title').text();
+                if (origFile !== null && origFile !== '') {
+                    url += ':' + origFile;
+                }
+                allUploads.unshift(url);
+            }
+        });
+        if (allUploads.length > 0) {
+            var urlList = allUploads.join();
+            window.open(addToVaultURL + '&items=' + encodeURIComponent(urlList), '_blank');
+        }
+        else {
+            window.open(addToVaultURL, '_blank');
         }
     });
 }
@@ -113,7 +141,6 @@ var dropZone = new Dropzone(document.body, {
         fileCount++;
 
         $("#upload-links").css('display', 'inline', 'important');
-        $('#upload-action-buttons').show();
 
         var itemDiv = $('#upload-template').clone();
         itemDiv.attr('id', 'upload-panel-' + fileID);
@@ -318,6 +345,9 @@ function uploadComplete(fileID, key, encrypt, evt) {
 
             // Show the details
             itemDiv.find('#upload-link-panel').show();
+
+            // Allow actions for all uploads
+            $('#upload-action-buttons').show();
         }
     }
     else

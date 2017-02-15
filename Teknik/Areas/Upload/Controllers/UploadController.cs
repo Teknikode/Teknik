@@ -41,6 +41,7 @@ namespace Teknik.Areas.Upload.Controllers
             if (user != null)
             {
                 model.Encrypt = user.UploadSettings.Encrypt;
+                model.Vaults = user.Vaults.ToList();
             }
             else
             {
