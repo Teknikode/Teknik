@@ -50,6 +50,7 @@ namespace Teknik.Areas.Vault.Controllers
                     foreach (VaultItem item in foundVault.VaultItems)
                     {
                         VaultItemViewModel itemModel = new VaultItemViewModel();
+                        itemModel.VaultItemId = item.VaultItemId;
                         itemModel.Title = item.Title;
                         itemModel.Description = item.Description;
                         itemModel.DateAdded = item.DateAdded;
