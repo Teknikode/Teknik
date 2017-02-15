@@ -240,6 +240,14 @@ function moveDown(item) {
         item.insertAfter(next);
     });
 }
+
+function addParamsToUrl(origUrl, params) {
+    var paramStr = $.param(params);
+    var hasQuery = origUrl.indexOf("?") + 1;
+    var hasHash = origUrl.indexOf("#") + 1;
+    var appendix = (hasQuery ? "&" : "?") + paramStr;
+    return hasHash ? origUrl.replace("#", appendix + "#") : origUrl + appendix;
+}
 /***************************** TIMER Page Load *******************************/
 var loopTime;
 var startTime = new Date();

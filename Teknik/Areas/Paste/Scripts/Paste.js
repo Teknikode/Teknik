@@ -12,7 +12,7 @@ function linkCreateVault(element) {
     element.click(function () {
         var pasteUrl = $(this).data('paste-url');
         var pasteTitle = $(this).data('paste-title');
-        window.open(createVaultURL + '&items=' + encodeURIComponent(pasteUrl + ':' + pasteTitle), '_blank');
+        window.open(addParamsToUrl(createVaultURL, { items: encodeURIComponent(pasteUrl + ':' + pasteTitle) }), '_blank');
     });
 }
 
@@ -21,6 +21,6 @@ function linkAddToVault(element) {
         var addToVaultURL = $(this).data('add-to-vault-url');
         var pasteUrl = $(this).data('paste-url');
         var pasteTitle = $(this).data('paste-title');
-        window.open(addToVaultURL + '&items=' + encodeURIComponent(pasteUrl + ':' + pasteTitle), '_blank');
+        window.open(addParamsToUrl(addToVaultURL, { items: encodeURIComponent(pasteUrl + ':' + pasteTitle) }), '_blank');
     });
 }

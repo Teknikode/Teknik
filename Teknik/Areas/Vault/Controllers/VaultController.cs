@@ -113,7 +113,8 @@ namespace Teknik.Areas.Vault.Controllers
             ViewBag.Title = "Create Vault";
             ModifyVaultViewModel model = new ModifyVaultViewModel();
 
-            string[] allURLs = items.Split(',');
+            string decodedItems = HttpUtility.UrlDecode(items);
+            string[] allURLs = decodedItems.Split(',');
             int index = 0;
             foreach (string url in allURLs)
             {
@@ -191,7 +192,8 @@ namespace Teknik.Areas.Vault.Controllers
                     // If they passed any new items in via the parameters, let's add them
                     if (!string.IsNullOrEmpty(type) && !string.IsNullOrEmpty(items))
                     {
-                        string[] allItems = items.Split(',');
+                        string decodedItems = HttpUtility.UrlDecode(items);
+                        string[] allItems = decodedItems.Split(',');
                         foreach (string newItem in allItems)
                         {
                             string[] urlInfo = newItem.Split(':');

@@ -94,7 +94,8 @@ function linkCreateVault(element) {
         });
         if (allUploads.length > 0) {
             var urlList = allUploads.join();
-            window.open(createVaultURL + '&items=' + encodeURIComponent(urlList), '_blank');
+            var finalUrl = addParamsToUrl(createVaultURL, { items: encodeURIComponent(urlList) });
+            window.open(finalUrl, '_blank');
         }
         else {
             window.open(createVaultURL, '_blank');
@@ -118,7 +119,8 @@ function linkAddToVault(element) {
         });
         if (allUploads.length > 0) {
             var urlList = allUploads.join();
-            window.open(addToVaultURL + '&items=' + encodeURIComponent(urlList), '_blank');
+            var finalUrl = addParamsToUrl(addToVaultURL, { items: encodeURIComponent(urlList) });
+            window.open(finalUrl, '_blank');
         }
         else {
             window.open(addToVaultURL, '_blank');
