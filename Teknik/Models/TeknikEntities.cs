@@ -55,6 +55,7 @@ namespace Teknik.Models
         public DbSet<ShortenedUrl> ShortenedUrls { get; set; }
         // Vaults
         public DbSet<Vault> Vaults { get; set; }
+        public DbSet<VaultItem> VaultItems { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -158,6 +159,7 @@ namespace Teknik.Models
             modelBuilder.Entity<ShortenedUrl>().ToTable("ShortenedUrls");
             // Vaults
             modelBuilder.Entity<Vault>().ToTable("Vaults");
+            modelBuilder.Entity<VaultItem>().ToTable("VaultItems");
             // Podcasts
             modelBuilder.Entity<Podcast>().ToTable("Podcasts");
             modelBuilder.Entity<PodcastFile>().ToTable("PodcastFiles");

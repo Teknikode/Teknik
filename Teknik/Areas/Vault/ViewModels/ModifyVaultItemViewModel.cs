@@ -6,7 +6,7 @@ using Teknik.ViewModels;
 
 namespace Teknik.Areas.Vault.ViewModels
 {
-    public class NewVaultItemViewModel : ViewModelBase
+    public class ModifyVaultItemViewModel : ViewModelBase
     {
         public bool isTemplate { get; set; }
         public int index { get; set; }
@@ -15,7 +15,7 @@ namespace Teknik.Areas.Vault.ViewModels
         public string type { get; set; }
         public string url { get; set; }
 
-        public NewVaultItemViewModel()
+        public ModifyVaultItemViewModel()
         {
             isTemplate = true;
             index = 0;

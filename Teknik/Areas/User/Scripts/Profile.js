@@ -32,4 +32,30 @@
             }
         });
     });
+
+    $('.delete-vault-button').click(function () {
+        var vaultUrl = $(this).data('vault-url');
+        bootbox.confirm("Are you sure you want to delete this vault?", function (result) {
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: deleteVaultURL,
+                    data: { url: vaultUrl },
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    success: function (html) {
+                        if (html.result) {
+                            window.location = html.result.url;
+                        }
+                        else {
+                            $("#top_msg").css('display', 'inline', 'important');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error.message + '</div>');
+                        }
+                    }
+                });
+            }
+        });
+    });
 });

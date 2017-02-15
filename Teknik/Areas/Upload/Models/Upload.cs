@@ -15,9 +15,7 @@ namespace Teknik.Areas.Upload.Models
 
         public virtual User User { get; set; }
 
-        public int? VaultId { get; set; }
-
-        public virtual Vault.Models.Vault Vault { get; set; }
+        public virtual ICollection<Vault.Models.UploadVaultItem> UploadVaultItems { get; set; }
 
         public DateTime DateUploaded { get; set; }
 

@@ -242,8 +242,8 @@
     <Compile Include="Areas\User\Models\TrustedDevice.cs" />
     <Compile Include="Areas\User\ViewModels\AuthTokenViewModel.cs" />
     <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
-    <Compile Include="Areas\Vault\ViewModels\NewVaultViewModel.cs" />
-    <Compile Include="Areas\Vault\ViewModels\NewVaultItemViewModel.cs" />
+    <Compile Include="Areas\Vault\ViewModels\ModifyVaultViewModel.cs" />
+    <Compile Include="Areas\Vault\ViewModels\ModifyVaultItemViewModel.cs" />
     <Compile Include="Areas\Vault\ViewModels\UploadItemViewModel.cs" />
     <Compile Include="Areas\Vault\ViewModels\PasteItemViewModel.cs" />
     <Compile Include="Areas\Vault\ViewModels\VaultItemViewModel.cs" />
@@ -289,8 +289,8 @@
     <Compile Include="Areas\Upload\ViewModels\DownloadViewModel.cs" />
     <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
     <Compile Include="Areas\Vault\Controllers\VaultController.cs" />
-    <Compile Include="Areas\Vault\Models\PasteItem.cs" />
-    <Compile Include="Areas\Vault\Models\UploadItem.cs" />
+    <Compile Include="Areas\Vault\Models\PasteVaultItem.cs" />
+    <Compile Include="Areas\Vault\Models\UploadVaultItem.cs" />
     <Compile Include="Areas\Vault\Models\Vault.cs" />
     <Compile Include="Areas\Vault\Models\VaultItem.cs" />
     <Compile Include="Areas\Vault\VaultAreaRegistration.cs" />
@@ -580,8 +580,8 @@
     <Content Include="Areas\User\Views\User\AuthToken.cshtml" />
     <Content Include="Areas\Error\Views\Error\Http401.cshtml" />
     <Content Include="Areas\Transparency\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Vault\Views\Vault\NewVault.cshtml" />
-    <Content Include="Areas\Vault\Views\Vault\NewVaultItem.cshtml" />
+    <Content Include="Areas\Vault\Views\Vault\ModifyVault.cshtml" />
+    <Content Include="Areas\Vault\Views\Vault\ModifyVaultItem.cshtml" />
     <Content Include="Areas\Vault\Views\Vault\PasteItem.cshtml" />
     <Content Include="Areas\Vault\Views\Vault\UploadItem.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />

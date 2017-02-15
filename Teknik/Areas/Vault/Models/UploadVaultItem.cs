@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Teknik.Areas.Vault.Models
 {
-    public class UploadItem : VaultItem
+    public class UploadVaultItem : VaultItem
     {
         public int UploadId { get; set; }
         public virtual Upload.Models.Upload Upload { get; set; }

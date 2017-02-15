@@ -47,6 +47,24 @@ namespace Teknik.Areas.Vault
              );
 
             context.MapSubdomainRoute(
+                 "Vault.EditVault",
+                 new List<string>() { "vault", "v" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "Edit/{url}",
+                 new { controller = "Vault", action = "EditVault" },
+                 new[] { typeof(Controllers.VaultController).Namespace }
+             );
+
+            context.MapSubdomainRoute(
+                 "Vault.DeleteVault",
+                 new List<string>() { "vault", "v" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "Delete",
+                 new { controller = "Vault", action = "DeleteVault" },
+                 new[] { typeof(Controllers.VaultController).Namespace }
+             );
+
+            context.MapSubdomainRoute(
                  "Vault.ViewVault",
                  new List<string>() { "vault", "v" }, // Subdomains
                  new List<string>() { config.Host }, // domains
@@ -71,6 +89,7 @@ namespace Teknik.Areas.Vault
             // Register Script Bundle
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/vault", config.CdnHost).Include(
                       "~/Scripts/jquery.blockUI.js",
+                      "~/Scripts/bootbox/bootbox.min.js",
                       "~/Areas/Vault/Scripts/Vault.js"));
         }
     }

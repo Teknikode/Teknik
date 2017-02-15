@@ -37,7 +37,7 @@
         </div>
         <br />
         <div class="row paste-item">
-            <div class="col-sm-12 paste-content hideContent">
+            <div class="col-sm-12 paste-content hideContent" id="@Model.VaultItemId">
                 @if (!string.IsNullOrEmpty(Model.Paste.HashedPassword))
                 {
                     <p class="text-center">Password Required</p>
@@ -47,8 +47,8 @@
                     @Html.Raw(Model.Paste.Content)
                 }
             </div>
-            <div class="show-more">
-                <button class="btn btn-default btn-sm" id="show-more-button">Show More</button>
+            <div class="show-more" id="show-more-bottom-@Model.VaultItemId">
+                <button role="button" class="btn btn-default btn-sm show-more-button">Show More</button>
             </div>
         </div>
     </div>

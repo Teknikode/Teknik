@@ -1,4 +1,12 @@
 ﻿$(document).ready(function () {
+    $('.hideContent').each(function () {
+        if ($(this).find('pre').height() > 400) {
+            var id = $(this).attr('id');
+            $('#show-more-bottom-' + id).show();
+            linkShowMore($('#show-more-bottom-' + id).find(".show-more-button"));
+        }
+    })
+
     $('#newItem').on('show.bs.modal', function (e) {
         var newDiv = $('#newItem');
         newDiv.find("#item_title").val("");
@@ -113,6 +121,7 @@
     });
 
     $("#submit").click(function () {
+        var vaultId = $('#vaultId').val();
         var title = $("#title").val();
         var description = $("#description").val();
         var items = [];
@@ -142,8 +151,8 @@
         // Create the vault
         $.ajax({
             type: "POST",
-            url: createVaultURL,
-            data: AddAntiForgeryToken({ title: title, description: description, items: items }),
+            url: modifyVaultURL,
+            data: AddAntiForgeryToken({ vaultId: vaultId, title: title, description: description, items: items }),
             success: function (response) {
                 if (response.result) {
                     window.location = response.result.url;
@@ -157,22 +166,30 @@
         return false;
     });
 
-    $("#show-more-button").on("click", function () {
-        var link = $(this);
-        var contentDiv = link.parent().prev("div.paste-content");
-        var linkText = link.text().toUpperCase();
-
-        if (linkText === "SHOW MORE") {
-            linkText = "Show Less";
-            contentDiv.removeClass('hideContent');
-            contentDiv.addClass('showContent');
-        } else {
-            linkText = "Show More";
-            contentDiv.removeClass('showContent');
-            contentDiv.addClass('hideContent');
-        };
-
-        link.text(linkText);
+    $('.delete-vault-button').click(function () {
+        var vaultUrl = $(this).data('vault-url');
+        bootbox.confirm("Are you sure you want to delete this vault?", function (result) {
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: deleteVaultURL,
+                    data: { url: vaultUrl },
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    success: function (html) {
+                        if (html.result) {
+                            window.location = html.result.url;
+                        }
+                        else {
+                            $("#top_msg").css('display', 'inline', 'important');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error.message + '</div>');
+                        }
+                    }
+                });
+            }
+        });
     });
 });
 
@@ -189,5 +206,30 @@ function linkMoveUp(element) {
 function linkMoveDown(element) {
     element.find('#move-down').click(function () {
         moveDown(element);
+    });
+}
+
+function linkShowMore(element) {
+    $(element).on("click", function () {
+        var link = $(this);
+        var contentDiv = link.parent().prev("div.paste-content");
+        var id = contentDiv.attr('id');
+        var btnTop = $('#show-more-top-' + id);
+        var btnBottom = $('#show-more-bottom-' + id);
+        var linkText = link.text().toUpperCase();
+
+        if (linkText === "SHOW MORE") {
+            linkText = "Show Less";
+            contentDiv.removeClass('hideContent');
+            contentDiv.addClass('showContent');
+            btnBottom.show();
+            btnBottom.find('.show-more-button').text(linkText);
+        } else {
+            linkText = "Show More";
+            contentDiv.removeClass('showContent');
+            contentDiv.addClass('hideContent');
+            btnBottom.show();
+            btnBottom.find('.show-more-button').text(linkText);
+        };
     });
 }

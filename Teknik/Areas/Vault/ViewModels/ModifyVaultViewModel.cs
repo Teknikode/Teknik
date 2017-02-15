@@ -7,17 +7,21 @@ using Teknik.ViewModels;
 
 namespace Teknik.Areas.Vault.ViewModels
 {
-    public class NewVaultViewModel : ViewModelBase
+    public class ModifyVaultViewModel : ViewModelBase
     {
+        public bool isEdit { get; set; }
+        public int vaultId { get; set; }
         public string title { get; set; }
         public string description { get; set; }
-        public List<NewVaultItemViewModel> items { get; set; }
+        public List<ModifyVaultItemViewModel> items { get; set; }
 
-        public NewVaultViewModel()
+        public ModifyVaultViewModel()
         {
+            isEdit = false;
+            vaultId = -1;
             title = string.Empty;
             description = string.Empty;
-            items = new List<NewVaultItemViewModel>();
+            items = new List<ModifyVaultItemViewModel>();
         }
     }
 }

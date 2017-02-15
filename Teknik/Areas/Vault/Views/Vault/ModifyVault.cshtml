@@ -1,14 +1,19 @@
-﻿@model Teknik.Areas.Vault.ViewModels.NewVaultViewModel
+﻿@model Teknik.Areas.Vault.ViewModels.ModifyVaultViewModel
 
 @using Teknik.Utilities
 @using Teknik.Areas.Vault.ViewModels
 
 @Styles.Render("~/Content/vault")
 
+@{ 
+    string action = (Model.isEdit) ? "EditVault" : "CreateVault";
+    string title = (Model.isEdit) ? "Edit Vault" : "Create a New Vault";
+}
+
 <script type="text/javascript">
 
     var validateItemURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = "ValidateItem" })';
-    var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = "CreateVault" })';
+    var modifyVaultURL = '@Url.SubRouteUrl("vault", "Vault.Action", new { action = action })';
 
     var itemCount = @Model.items.Count();
 
@@ -114,22 +119,23 @@
 
     <div class="row">
         <div class="col-sm-10 col-sm-offset-1 text-center">
-            <h2>Create a New Vault</h2>
+            <h2>@title</h2>
         </div>
     </div>
-    <form class="form" action="@Url.SubRouteUrl("vault", "Vault.Action", new { action = "CreateVault" })" method="post" id="newVaultForm">
+    <form class="form" action="##" method="post" id="vaultForm">
+        <input type="hidden" id="vaultId" name="vaultId" value="@Model.vaultId" />
         <div class="row">
             <div class="col-sm-10">
                 <div class="row">
                     <div class="form-group col-sm-10 col-sm-offset-1">
                         <label for="title"><h4>Title</h4></label>
-                        <input class="form-control" name="title" id="title" placeholder="Collection of items" title="enter a title for your vault." type="text" />
+                        <input class="form-control" name="title" id="title" placeholder="Collection of items" title="enter a title for your vault." type="text" value="@Model.title" />
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-group col-sm-10 col-sm-offset-1">
                         <label for="article"><h4>Description</h4></label>
-                        <textarea class="form-control" name="description" id="description" placeholder="This is a cool collection of uploads and pastes" title="enter the description for this vault" rows="5"></textarea>
+                        <textarea class="form-control" name="description" id="description" placeholder="This is a cool collection of uploads and pastes" title="enter the description for this vault" rows="5">@Model.description</textarea>
                     </div>
                 </div>
             </div>
@@ -156,9 +162,9 @@
             <div class="col-sm-10" id="vault-items">
                 @if (Model.items.Any())
                 {
-                    foreach (NewVaultItemViewModel item in Model.items)
+                    foreach (ModifyVaultItemViewModel item in Model.items)
                     {
-                        @Html.Partial("~/Areas/Vault/Views/Vault/NewVaultItem.cshtml", item)
+                        @Html.Partial("~/Areas/Vault/Views/Vault/ModifyVaultItem.cshtml", item)
                     }
                 }
             </div>
@@ -166,7 +172,7 @@
     </form>
 </div>
 <div id="templates" style="display: none">
-    @Html.Partial("~/Areas/Vault/Views/Vault/NewVaultItem.cshtml", new NewVaultItemViewModel())
+    @Html.Partial("~/Areas/Vault/Views/Vault/ModifyVaultItem.cshtml", new ModifyVaultItemViewModel())
 </div>
 
 @Scripts.Render("~/bundles/vault")

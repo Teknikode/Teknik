@@ -12,12 +12,13 @@
     margin-bottom: 10px;
 }
 
-.showContent{
+.showContent {
     height: 100%;
     max-height: none;
 }
 
 .show-more {
+    display: none;
     padding: 10px 0;
     text-align: center;
 }

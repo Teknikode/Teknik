@@ -25,7 +25,7 @@ namespace Teknik.Areas.Vault.Models
 
         public int Views { get; set; }
 
-        public virtual ICollection<VaultItem> Items { get; set; }
+        public virtual ICollection<VaultItem> VaultItems { get; set; }
 
         public Vault()
         {
@@ -34,7 +34,7 @@ namespace Teknik.Areas.Vault.Models
             DateCreated = DateTime.Now;
             DateEdited = DateTime.Now;
             Views = 0;
-            Items = new List<VaultItem>();
+            VaultItems = new List<VaultItem>();
         }
     }
 }
