@@ -978,11 +978,27 @@ If you recieved this email and you did not reset your password, you can ignore t
 
         public static HttpCookie CreateAuthCookie(string username, bool remember, string domain, bool local)
         {
+            DateTime curTime = DateTime.Now;
+            DateTime expireTime = curTime.AddYears(1);
+
             Config config = Config.Load();
-            HttpCookie authcookie = FormsAuthentication.GetAuthCookie(username, remember);
-            authcookie.Name = Constants.AUTHCOOKIE;
+            FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
+                1, 
+                username, 
+                curTime,
+                expireTime,
+                remember,
+                username
+            );
+
+            string encTicket = FormsAuthentication.Encrypt(ticket);
+            HttpCookie authcookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
             authcookie.HttpOnly = true;
             authcookie.Secure = true;
+            if (remember)
+            {
+                authcookie.Expires = expireTime;
+            }
 
             // Set domain dependent on where it's being ran from
             if (local) // localhost
