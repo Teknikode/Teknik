@@ -10,9 +10,9 @@
             <ul>
                 <li>Email Address (username@(string.Format("@{0}", Model.Config.Host)))</li>
                 <li>Published Blog Posts</li>
-                <li>Comments</li>
-                <li>Uploads (Only if key is saved on server)</li>
-                <li>Git Repositories</li>
+                <li>Comments (Blogs and Podcasts)</li>
+                <li>Uploads (Encrypted files will still be served, but the content is secure unless the proper Key is provided client side)</li>
+                <li>Git Repositories (Except Private Repos)</li>
                 <li>Pastes without passwords</li>
                 <li>User Profile</li>
                 <ul>
@@ -24,7 +24,7 @@
             </ul>
             <h2>Data We Collect</h2>
             <p>
-                Teknik collects the following data when you use our services and is used only internally.
+                Teknik collects the following data when you use our services and is used only internally by us.
             </p>
             <ul>
                 <li><var>User ID</var> - Your internal user ID is associated with any of the following actions while logged in:</li>
@@ -32,29 +32,42 @@
                     <li>Uploading Files</li>
                     <li>Pastes</li>
                     <li>Shortened Urls</li>
+                    <li>Vaults</li>
                     <li>Blog Posts + Comments</li>
                     <li>Podcast Comments</li>
                 </ul>
                 <li><var>Dates</var> - When you perform an action (ie: register an account), the date of the action will be recorded.</li>
-                <li><var>Emails</var> - Any email you send or receive with your Teknik.io email address is stored locally onto the server.</li>
+                <li><var>Emails</var> - Any email you send or receive with your Teknik.io email address is stored locally onto the server.  These emails are not read.</li>
             </ul>
             <h2>Cookies We Store</h2>
             <p>
                 While browsing we store the following cookies onto your machine.
             </p>
             <ul>
-                <li><var>TeknikAuth</var> - Used for user authentication.</li>
+                <li><var>TeknikAuth</var> - Stores the authentication ticket for a login session.</li>
+                <li><var>TeknikTrustedDevice_&lt;username&gt;</var> - Used for determining if the browser has been trusted by the 2-Factor Auth system.</li>
+                <li><var>__RequestVerificationToken</var> - Validation Token sent with every request to the server for Anti-Forgery purposes.</li>
             </ul>
             <h2>Analytics</h2>
             <p>
-                We use <a href="http://piwik.org/">Piwik</a> to track user interaction with the site.  This will store the first 2 bytes of your IP Address (e.g. 192.168.xxx.xxx) as an identifier.  If you do not want to be tracked, enable Do Not Track in your browser (Recommended), or by unchecking below.
+                We use <a href="http://piwik.org/">Piwik</a> to track user interaction with the site.  We keep it hosted on the server locally, so no analytic data is leaving the server.  This will store the first 2 bytes of your IP Address (e.g. 192.168.xxx.xxx) as an identifier.  If you do not want to be tracked, enable Do Not Track in your browser (Recommended), or by unchecking below.
             </p>
             <iframe style="border: 0; height: 200px; width: 600px;" src="https://stats.teknik.io/index.php?module=CoreAdminHome&action=optOut&language=en"></iframe>
         </div>
     </div>
     <div class="row">
         <div class="col-xs-10">
-            <p><i>Last Modified February 26, 2016</i></p>
+            @{ 
+                string gitHost = Model.Config.GitConfig.Host;
+                string gitFullUrl = string.Empty;
+                if (!string.IsNullOrEmpty(gitHost))
+                {
+                    Uri gitUrl = new Uri(gitHost);
+                    gitUrl = new Uri(gitUrl, "Teknikode/Teknik/commits/master/Teknik/Areas/Privacy/Views/Privacy/Index.cshtml");
+                    gitFullUrl = gitUrl.ToString();
+                }
+            }
+            <p><i>Last Modified February 15, 2017 - <a href="@gitFullUrl">View History</a></i></p>
         </div>
     </div>
 </div>
