@@ -96,10 +96,19 @@ namespace Teknik.Areas.Vault.Controllers
             string[] allURLs = urls.Split(',');
             foreach (string url in allURLs)
             {
-                if (IsValidItem(type, url))
+                string[] urlInfo = url.Split(':');
+                string uploadId = urlInfo[0];
+                string title = string.Empty;
+                if (urlInfo.GetUpperBound(0) >= 1)
+                {
+                    // They also passed in the original filename, so let's use it as our title
+                    title = urlInfo[1];
+                }
+                if (IsValidItem(type, uploadId))
                 {
                     NewVaultItemViewModel item = new NewVaultItemViewModel();
-                    item.url = url;
+                    item.title = title;
+                    item.url = uploadId;
                     item.type = type;
                     model.items.Add(item);
                 }

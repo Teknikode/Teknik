@@ -81,12 +81,16 @@ function linkCreateVault(element) {
         $("div[id^='upload-panel-']").each(function () {
             var url = $(this).find('#upload-url').val();
             if (url !== '') {
+                var origFile = $(this).find('#upload-title').text();
+                if (origFile !== null && origFile !== '') {
+                    url += ':' + origFile;
+                }
                 allUploads.unshift(url);
             }
         });
         if (allUploads.length > 0) {
             var urlList = allUploads.join();
-            window.open(createVaultURL + '&urls=' + urlList, '_blank');
+            window.open(createVaultURL + '&urls=' + encodeURIComponent(urlList), '_blank');
         }
         else {
             window.open(createVaultURL, '_blank');
