@@ -32,6 +32,12 @@
         var type = newDiv.find('#item_type').val();
         var url = newDiv.find('#item_url').val();
 
+        // Try to strip out the ID from the url
+        var pattern = '(?:(?:.+)\\/)?([^\\?]+)(?:\\?(?:.*))?';
+        var reg = new RegExp(pattern);
+        var match = reg.exec(url);
+        url = match[1];
+
         // First Validation
         if (title == null || title == '') {
             newDiv.find("#item_error").show();

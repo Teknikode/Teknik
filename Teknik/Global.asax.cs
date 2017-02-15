@@ -69,7 +69,7 @@ namespace Teknik
             catch (Exception ex)
             {
                 // Just log it
-                Logging.Logger.WriteEntry(ex);
+                Logging.Logger.WriteEntry(Logging.LogLevel.Warning, "Error in Application_EndRequest", ex);
             }
         }
 
