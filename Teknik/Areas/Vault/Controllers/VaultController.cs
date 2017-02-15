@@ -28,6 +28,11 @@ namespace Teknik.Areas.Vault.Controllers
             Models.Vault foundVault = db.Vaults.Where(v => v.Url == id).FirstOrDefault();
             if (foundVault != null)
             {
+                // Update view count
+                foundVault.Views += 1;
+                db.Entry(foundVault).State = EntityState.Modified;
+                db.SaveChanges();
+
                 ViewBag.Title = foundVault.Title + " - Vault";
 
                 VaultViewModel model = new VaultViewModel();

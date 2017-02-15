@@ -68,6 +68,8 @@ namespace Teknik.Areas.Users.Controllers
 
                     model.ShortenedUrls = db.ShortenedUrls.Where(s => s.UserId == user.UserId).OrderByDescending(s => s.DateAdded).ToList();
 
+                    model.Vaults = db.Vaults.Where(v => v.UserId == user.UserId).OrderByDescending(v => v.DateCreated).ToList();
+
                     return View(model);
                 }
                 model.Error = true;

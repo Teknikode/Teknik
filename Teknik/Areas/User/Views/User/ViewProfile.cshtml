@@ -120,6 +120,7 @@
                     <li><a href="#uploads" data-toggle="tab"> Uploads </a></li>
                     <li><a href="#pastes" data-toggle="tab"> Pastes </a></li>
                     <li><a href="#shortenedUrls" data-toggle="tab"> Shortened Urls </a></li>
+                    <li><a href="#vaults" data-toggle="tab"> Vaults </a></li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="about">
@@ -229,7 +230,31 @@
                             </div>
                         }
                     </div>
-                    }
+                    <div class="tab-pane" id="vaults" style="overflow-y: auto; max-height: 500px;">
+                        @foreach (Teknik.Areas.Vault.Models.Vault vault in Model.Vaults)
+                        {
+                            <div class="panel panel-default">
+                                <div class="panel-heading text-center">
+                                    <a href="@Url.SubRouteUrl("v", "Vault.ViewVault", new { id = vault.Url })">@(string.IsNullOrEmpty(vault.Title) ? "Vault" : vault.Title)</a>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="col-sm-5 text-center">
+                                        <label for="dateAdded">Date Created</label>
+                                        <p id="dateAdded"><time datetime="@vault.DateCreated.ToString("s")">@vault.DateCreated.ToString("MMMM dd, yyyy")</time></p>
+                                    </div>
+                                    <div class="col-sm-5 text-center">
+                                        <label for="dateAdded">Date Edited</label>
+                                        <p id="dateAdded"><time datetime="@vault.DateEdited.ToString("s")">@vault.DateEdited.ToString("MMMM dd, yyyy")</time></p>
+                                    </div>
+                                    <div class="col-sm-2 text-center">
+                                        <label for="views">Views</label>
+                                        <p id="views">@vault.Views</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                                            }
                 </div><!--/tab-content-->
                 }
                 else

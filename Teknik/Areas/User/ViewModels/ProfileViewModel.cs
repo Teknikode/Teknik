@@ -25,6 +25,8 @@ namespace Teknik.Areas.Users.ViewModels
 
         public List<Shortener.Models.ShortenedUrl> ShortenedUrls { get; set; }
 
+        public List<Vault.Models.Vault> Vaults { get; set; }
+
         public UserSettings UserSettings { get; set; }
 
         public SecuritySettings SecuritySettings { get; set; }
