@@ -43,6 +43,11 @@
         else
         {
             <div class="row">
+                <div class="col-sm-212 text-center">
+                    <h4><small><a href="@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Upload.Url })" target="_blank">@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Upload.Url })</a></small></h4>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-sm-4 text-center">
                     <label for="size">Size</label>
                     <p id="size">@StringHelper.GetBytesReadable(Model.Upload.ContentLength)</p>
