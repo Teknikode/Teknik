@@ -597,6 +597,9 @@
     <Content Include="Scripts\Crypto-js\pad-nopadding.js" />
     <Content Include="Scripts\Dropzone\dropzone.js" />
     <Content Include="Scripts\FileSaver.js" />
+    <Content Include="Scripts\Highcharts\highcharts-3d.js" />
+    <Content Include="Scripts\Highcharts\highcharts-more.js" />
+    <Content Include="Scripts\Highcharts\highcharts.js" />
     <Content Include="Scripts\Highlight\highlight.pack.js" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />

@@ -12,6 +12,8 @@ namespace Teknik.Configuration
 
         public string Url { get; set; }
 
+        public string API { get; set; }
+
         public int SiteId { get; set; }
 
         public string TokenAuth { get; set; }
@@ -20,6 +22,7 @@ namespace Teknik.Configuration
         {
             Enabled = false;
             Url = string.Empty;
+            API = string.Empty;
             SiteId = 1;
             TokenAuth = string.Empty;
         }

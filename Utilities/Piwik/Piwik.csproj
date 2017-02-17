@@ -36,6 +36,10 @@
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Piwik.Analytics, Version=0.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Piwik.Analytics.0.3.0\lib\net40\Piwik.Analytics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Piwik.Tracker, Version=2.16.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Piwik.Tracker.2.16.0.0\lib\net40\Piwik.Tracker.dll</HintPath>
       <Private>True</Private>
@@ -76,7 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reporting.cs" />
     <Compile Include="Tracking.cs" />
+    <Compile Include="VisitorData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Configuration\Configuration.csproj">

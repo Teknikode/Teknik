@@ -5,6 +5,11 @@
 
 @Scripts.Render("~/bundles/transparency")
 
+<script type="text/javascript">
+    var statsEnabled = @(Model.Config.PiwikConfig.Enabled.ToString().ToLower());
+    var getVisitorDataURL = '@Url.SubRouteUrl("transparency", "Transparency.Action", new { action = "GetVisitorData" })';
+</script>
+
 <div class="container">
     @if (Model.Config.TransparencyConfig.Enabled)
     {
@@ -24,6 +29,15 @@
                 <br />
                 <h2 class="text-center"><b>Statistics</b></h2>
                 <hr>
+                @if (Model.Config.PiwikConfig.Enabled)
+                {
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="visitor-chart"></div>
+                    </div>
+                </div>
+                <br />
+                }
                 <div class="row">
                     <div class="col-sm-6">
                         <h3>Uploads</h3>

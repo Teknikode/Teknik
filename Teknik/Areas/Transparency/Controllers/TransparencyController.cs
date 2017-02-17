@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,6 +10,7 @@ using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Models;
+using Teknik.Piwik;
 
 namespace Teknik.Areas.Transparency.Controllers
 {
@@ -111,6 +113,31 @@ namespace Teknik.Areas.Transparency.Controllers
                 }
             }
             return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetVisitorData()
+        {
+            // Get the data from the Piwik 
+            if (!string.IsNullOrEmpty(Config.PiwikConfig.Url))
+            {
+                List<VisitorData> dataList = Reporting.GetVisitSummaryByDays(Config, 31);
+
+                List<object> uniqueData = new List<object>();
+                List<object> totalData = new List<object>();
+                
+                foreach (VisitorData data in dataList.OrderBy(d => d.Date))
+                {
+                    object uniqueDay = new {  x = Convert.ToInt64((data.Date.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds), y = data.UniqueVisitors };
+                    uniqueData.Add(uniqueDay);
+                    object totalDay = new { x = Convert.ToInt64((data.Date.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds), y = data.Visits };
+                    totalData.Add(totalDay);
+                }
+
+                return Json(new { result = new { uniqueVisitors = uniqueData.ToArray(), totalVisitors = totalData.ToArray() } }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { error = new { message = "Piwik not configured" } }, JsonRequestBehavior.AllowGet);
         }
     }
 }
