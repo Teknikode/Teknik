@@ -1,10 +1,12 @@
-﻿$(document).ready(function () {
+﻿var visitChart;
+
+$(document).ready(function () {
     $('#bills-section').collapse('hide');
     $('#oneTime-section').collapse('hide');
     $('#donations-section').collapse('hide');
     $('#takedowns-section').collapse('hide');
 
-    var visitChartOptions = {
+    visitChart = new Highcharts.chart({
         chart: {
             renderTo: 'visitor-chart'
         },
@@ -34,13 +36,15 @@
         },
         series: [
             {
-                name: 'All Visitors'
+                name: 'All Visitors',
+                data: []
             },
             {
-                name: 'Unique Visitors'
+                name: 'Unique Visitors',
+                data: []
             }
         ]
-    };
+    });
 
     if (statsEnabled) {
         $.ajax({
@@ -48,9 +52,8 @@
             url: getVisitorDataURL,
             success: function (response) {
                 if (response.result) {
-                    visitChartOptions.series[0].data = response.result.totalVisitors;
-                    visitChartOptions.series[1].data = response.result.uniqueVisitors;
-                    var visitChart = new Highcharts.chart(visitChartOptions);
+                    visitChart.series[0].setData(response.result.totalVisitors);
+                    visitChart.series[1].setData(response.result.uniqueVisitors);
                 }
                 else {
                     var err = response;
