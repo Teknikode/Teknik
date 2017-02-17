@@ -20,6 +20,8 @@ namespace Teknik.Areas.Transparency.ViewModels
 
         public int ShortenedUrlCount { get; set; }
 
+        public int VaultCount { get; set; }
+
         public string Canary { get; set; }
 
         public Dictionary<string, double> TotalBills { get; set; }

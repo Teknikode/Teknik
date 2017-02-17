@@ -42,6 +42,9 @@ namespace Teknik.Areas.Transparency.Controllers
                 Shortener.Models.ShortenedUrl url = db.ShortenedUrls.OrderByDescending(s => s.ShortenedUrlId).FirstOrDefault();
                 model.ShortenedUrlCount = (url != null) ? url.ShortenedUrlId : 0;
 
+                Vault.Models.Vault vault = db.Vaults.OrderByDescending(v => v.VaultId).FirstOrDefault();
+                model.VaultCount = (url != null) ? vault.VaultId : 0;
+
                 model.TotalNet = new Dictionary<string, double>();
 
                 var billSums = db.Transactions.OfType<Bill>().GroupBy(b => b.Currency).Select(b => new { currency = b.Key, total = b.Sum(c => c.Amount) }).ToList();

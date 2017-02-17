@@ -39,24 +39,28 @@
                 <br />
                 }
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-3 text-center">
                         <h3>Uploads</h3>
-                        <p>Number of Uploads: @Model.UploadCount</p>
+                        <p>Total Count: @Model.UploadCount</p>
                         <p>Total Size: @StringHelper.GetBytesReadable(Model.UploadSize)</p>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-3 text-center">
                         <h3>Pastes</h3>
-                        <p>Number of Pastes: @Model.PasteCount</p>
+                        <p>Total Count: @Model.PasteCount</p>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <h3>Shortened Urls</h3>
+                        <p>Total Count: @Model.ShortenedUrlCount</p>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <h3>Vaults</h3>
+                        <p>Total Count: @Model.ShortenedUrlCount</p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-12 text-center">
                         <h3>Users</h3>
                         <p>Number of Users: @Model.UserCount</p>
-                    </div>
-                    <div class="col-sm-6">
-                        <h3>Shortened Urls</h3>
-                        <p>Number of Shortened Urls: @Model.ShortenedUrlCount</p>
                     </div>
                 </div>
                 <br />
