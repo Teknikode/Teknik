@@ -57,12 +57,6 @@
                             <td class="text-center">100 per Day</td>
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
                         </tr>
-                        <tr>
-                            <td class="text-left">Max Upload Filesize</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize * 2)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
-                        </tr>
                         <!-- Basic Features -->
                         <tr>
                             <td class="text-left">Email Account</td>
@@ -115,6 +109,12 @@
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Max Upload Filesize</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize * 2)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
                         </tr>
                         <tr>
                             <td class="text-left">Url Shortening</td>
