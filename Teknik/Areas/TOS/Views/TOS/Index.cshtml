@@ -7,23 +7,65 @@
             <p>
                 Below are the terms of service for the Teknik Services.  By using our services, you agree to all of the below.
             </p>
+            <h3>User Accounts</h3>
             <ul>
-                <li>No illegal content as defined by United States law.  If you are viewing content, be mindful of the laws in your region.</li>
-                <li>Any Malware uploads or otherwise hosted/linked content will be removed without notice.</li>
-                <li>Email is limited to a maximum of 100 outbound email messages per day.  This is to prevent spam accounts.  If your account is flagged as spamming, it will be deleted without notice.</li>
-                <li>Copyrighted content will be removed only after a valid DMCA is recieved and verified.</li>
-                <li>Inactive Accounts with no data will be deleted after 365 days (1 Year).
+                <li>You will not display or host links to Malware in your user profile</li>
+                <li>Inactive Basic Accounts with no data will be deleted after 365 days (1 Year)
                     <ul>
-                        <li>Activity is defined as logging into the Teknik Website, into the Git website, into the mail service (Either through webmail or via another client), or Modifying/Adding a Git Repository.</li>
-                        <li>Data is defined as Blog Posts/Comments, Podcast Comments, Emails, and Git Repositories.</li>
+                        <li>Activity is defined as logging into the Teknik Website, into the Git website, into the mail service (Either through webmail or via another client), or Modifying/Adding a Git Repository</li>
+                        <li>Data is defined as Blog Posts/Comments, Podcast Comments, Emails, and Git Repositories</li>
                     </ul>
                 </li>
+            </ul>
+            <h3>Premium Accounts</h3>
+            <ul>
+                <li>Puchasing a Premium Account will apply the benifits to a single account for the lifetime of the account</li>
+                <li>If benifits are added for purchasing a Premium Account, all existing Premium Accounts will inherit the new benifits</li>
+                <li>Premium Account benifits may change at any time</li>
+                <li>Any benifits applied to an account will stay for the lifetime of the account</li>
+            </ul>
+            <h3>Refund Policy</h3>
+            <ul>
+                <li>You may recieve a full refund within 10 days of purchase</li>
+                <li>You may only request a refund once per account</li>
+                <li>The price for a Premium Account can change at any time.  You will not recieve a refund for the change in price</li>
+                <li>If the account is terminated for breaching the Terms of Service, no refund will be available</li>
+                <li>If a refund is given, all benifits for an account will be removed to match the current Basic Account level</li>
+            </ul>
+            <h3>Email</h3>
+            <ul>
+                <li>Email is limited to a maximum of 100 outbound email messages per day.  This is to prevent spam accounts.  If your account is flagged as spamming, it will be deleted without notice.</li>
+                <li>Premium Accounts are allowed unlimited outbound email messages, but need to follow the same policy of no spam.</li>
+            </ul>
+            <h3>Uploads</h3>
+            <ul>
+                <li>No illegal content as defined by United States law.  If you are viewing content, be mindful of the laws in your region</li>
+                <li>Any Malware uploads will be removed without notice</li>
+                <li>Copyrighted content will be removed only after a valid DMCA is recieved and verified</li>
+            </ul>
+            <h3>Pastebin</h3>
+            <ul>
+                <li>Copyrighted content will be removed only after a valid DMCA is recieved and verified</li>
+            </ul>
+            <h3>Shortened URLs</h3>
+            <ul>
+                <li>No linking to Phishing Sites or Malware</li>
             </ul>
         </div>
     </div>
     <div class="row">
         <div class="col-xs-10">
-            <p><i>Last Modified May 19, 2016</i></p>
+            @{
+                string gitHost = Model.Config.GitConfig.Host;
+                string gitFullUrl = string.Empty;
+                if (!string.IsNullOrEmpty(gitHost))
+                {
+                    Uri gitUrl = new Uri(gitHost);
+                    gitUrl = new Uri(gitUrl, "Teknikode/Teknik/commits/master/Teknik/Areas/TOS/Views/TOS/Index.cshtml");
+                    gitFullUrl = gitUrl.ToString();
+                }
+            }
+            <p><i>Last Modified February 16, 2017 - <a href="@gitFullUrl">View History</a></i></p>
         </div>
     </div>
 </div>

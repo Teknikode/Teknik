@@ -2,6 +2,11 @@
 
 @using Teknik.Utilities
 
+@{ 
+    string lifetimeAccount = "The account will not get deleted for inactivity as defined in the ToS";
+    string apiAccountAccess = "Passing user credentials allows linking for Uploads/Pastes/Shortened URLs and other account specific features";
+}
+
 <div class="container">
     <div class="row">
         <div class="col-ms-12">
@@ -13,27 +18,158 @@
             <p>
                 You can view our complete activity and statistics by visiting the <a href="@Url.SubRouteUrl("transparency", "Transparency.Index")">Transparency</a> page.
             </p>
-            <h2 class="text-center">What we Offer</h2>
             <hr>
+            <h2 class="text-center">Comparison of Features</h2>
+            <br />
             <div class="row">
-                <div class="col-sm-4 col-sm-offset-2 text-center">
-                    <h4><a href="@Url.SubRouteUrl("paste", "Paste.Index")">Fast and Secure Pastebin</a></h4>
-                    <h4><a href="@Url.SubRouteUrl("upload", "Upload.Index")">Encrypted File Uploads</a></h4>
-                    <h4><a href="@Url.SubRouteUrl("help", "Help.Mail")">Free Email Address</a></h4>
-                    <h4><a href="@Url.SubRouteUrl("help", "Help.API")">Easy to Use API</a></h4>
-                    <h4><a href="@Url.SubRouteUrl("git", "Git.Index")">Personal Git Repositories</a></h4>
+                <div class="col-sm-10 col-sm-offset-1">
+                    <table class="table table-bordered">
+                        <!-- Heading -->
+                        <tr>
+                            <th class="text-center"></th>
+                            <th class="text-center">Premium Account</th>
+                            <th class="text-center">Basic Account</th>
+                            <th class="text-center">No Account</th>
+                        </tr>
+                        <!-- Prices -->
+                        <tr>
+                            <td class="text-left"><b>Features</b></td>
+                            <td class="text-center">$5 One-Time Fee</td>
+                            <td class="text-center">Free</td>
+                            <td class="text-center">Free</td>
+                        </tr>
+                        <!-- Premium Features -->
+                        <tr>
+                            <td class="text-left"><span data-toggle="tooltip" data-placement="top" title="@lifetimeAccount">Lifetime Account <small>*</small></span></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Email Storage</td>
+                            <td class="text-center">5GB Storage</td>
+                            <td class="text-center">1GB Storage</td>
+                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Outbound Emails</td>
+                            <td class="text-center">Unlimited</td>
+                            <td class="text-center">100 per Day</td>
+                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Max Upload Filesize</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize * 2)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
+                        </tr>
+                        <!-- Basic Features -->
+                        <tr>
+                            <td class="text-left">Email Account</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Git Repositories</td>
+                            <td class="text-center">Unlimited Public &amp; Private Repos</td>
+                            <td class="text-center">Unlimited Public &amp; Private Repos</td>
+                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Personal Blog</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Vault Editing</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">
+                                View Content History:
+                                <br />
+                                <ul>
+                                    <li>Pastes</li>
+                                    <li>Uploads</li>
+                                    <li>Shortened URLs</li>
+                                    <li>Vaults</li>
+                                </ul>
+                            </td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                        </tr>
+                        <!-- No Account Features -->
+                        <tr>
+                            <td class="text-left">Pastebin</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">File Uploads</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Url Shortening</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Vault Creation</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Technical Podcasts</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Mumble Server</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">IRC Server</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><span data-toggle="tooltip" data-placement="top" title="@apiAccountAccess">Service API <small>**</small></span></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                        </tr>
+                    </table>
                 </div>
-                <div class="col-sm-4 text-center">
-                    <h4><a href="@Url.SubRouteUrl("blog", "Blog.Blog")">Personal Blog</a></h4>
-                    <h4><a href="@Url.SubRouteUrl("podcast", "Podcast.Index")">Entertaining Podcasts</a></h4>
-                    <h4><a href="@Url.SubRouteUrl("help", "Help.Mumble")">Mumble Server</a></h4>
-                    <h4><a href="@Url.SubRouteUrl("transparency", "Transparency.Index")">Full Transparency</a></h4>
-                    <h4><a href="@Url.SubRouteUrl("git", "Git.Index", new { username = "Teknikode", repository = "Teknik" })">Completely Open Source</a></h4>
+            </div>
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1">
+                    <p>
+                        <small>
+                            * @lifetimeAccount
+                            <br />
+                            ** @apiAccountAccess
+                        </small>
+                    </p>
                 </div>
             </div>
 
-            <h2 class="text-center">How can I help?</h2>
             <hr>
+            <h2 class="text-center">How can I help?</h2>
+            <br />
             <p>
                 Teknik's source code can be located on our <a href="https://git.teknik.io/Teknikode/">Git Repository</a> as well as all our internal tools and projects.
                 <br />

@@ -1,6 +1,9 @@
 ﻿$(document).ready(function () {
     $("#top_msg").css('display', 'none', 'important');
 
+    // Opt-in for tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+
     $('#loginButton').removeClass('hide');
 
     $('#loginModal').on('shown.bs.modal', function (e) {
