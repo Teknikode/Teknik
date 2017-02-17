@@ -120,7 +120,7 @@ namespace Teknik.Areas.Transparency.Controllers
         public ActionResult GetVisitorData()
         {
             // Get the data from the Piwik 
-            if (!string.IsNullOrEmpty(Config.PiwikConfig.Url))
+            if (!string.IsNullOrEmpty(Config.PiwikConfig.API))
             {
                 List<VisitorData> dataList = Reporting.GetVisitSummaryByDays(Config, 31);
 
