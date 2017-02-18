@@ -10,6 +10,7 @@ using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Models;
+using Teknik.Piwik;
 using Teknik.Utilities;
 
 namespace Teknik.Areas.Status.Controllers
@@ -29,99 +30,48 @@ namespace Teknik.Areas.Status.Controllers
             StatusViewModel model = new StatusViewModel();
 
             // Load initial status info
+            Upload.Models.Upload upload = db.Uploads.OrderByDescending(u => u.UploadId).FirstOrDefault();
+            model.UploadCount = (upload != null) ? upload.UploadId : 0;
+            model.UploadSize = (upload != null) ? db.Uploads.Sum(u => (long)u.ContentLength) : 0;
+
+            Paste.Models.Paste paste = db.Pastes.OrderByDescending(p => p.PasteId).FirstOrDefault();
+            model.PasteCount = (paste != null) ? paste.PasteId : 0;
+
+            Users.Models.User user = db.Users.OrderByDescending(u => u.UserId).FirstOrDefault();
+            model.UserCount = (user != null) ? user.UserId : 0;
+
+            Shortener.Models.ShortenedUrl url = db.ShortenedUrls.OrderByDescending(s => s.ShortenedUrlId).FirstOrDefault();
+            model.ShortenedUrlCount = (url != null) ? url.ShortenedUrlId : 0;
+
+            Vault.Models.Vault vault = db.Vaults.OrderByDescending(v => v.VaultId).FirstOrDefault();
+            model.VaultCount = (url != null) ? vault.VaultId : 0;
 
             return View(model);
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult GetUsage()
+        public ActionResult GetVisitorData()
         {
-            try
+            // Get the data from the Piwik 
+            if (!string.IsNullOrEmpty(Config.PiwikConfig.API))
             {
-                float totalCPUValue = 0;
-                float webCPUValue = 0;
-                float dbCPUValue = 0;
+                List<VisitorData> dataList = Reporting.GetVisitSummaryByDays(Config, 31);
 
-                float totalMem = 0;
-                float totalAvailMemValue = 0;
-                float totalUsedMemValue = 0;
-                float webMemValue = 0;
-                float dbMemValue = 0;
+                List<object> uniqueData = new List<object>();
+                List<object> totalData = new List<object>();
 
-                float bytesSent = 0;
-                float bytesReceived = 0;
-
-                // CPU
-                using (PerformanceCounter totalCPU = new PerformanceCounter("Processor", "% Processor Time", "_Total", true))
-                using (PerformanceCounter webCPU = new PerformanceCounter("Process", "% Processor Time", Process.GetCurrentProcess().ProcessName, true))
-                using (PerformanceCounter dbCPU = new PerformanceCounter("Process", "% Processor Time", Config.StatusConfig.DatabaseProcessName, true))
-                // Memory
-                using (PerformanceCounter totalAvailMem = new PerformanceCounter("Memory", "Available Bytes", true))
-                using (PerformanceCounter webMem = new PerformanceCounter("Process", "Private Bytes", Process.GetCurrentProcess().ProcessName, true))
-                using (PerformanceCounter dbMem = new PerformanceCounter("Process", "Private Bytes", Config.StatusConfig.DatabaseProcessName, true))
-                // Network
-                using (PerformanceCounter sentPerf = new PerformanceCounter("Network Interface", "Bytes Sent/sec", Config.StatusConfig.NetworkInterface, true))
-                using (PerformanceCounter receivedPerf = new PerformanceCounter("Network Interface", "Bytes Received/sec", Config.StatusConfig.NetworkInterface, true))
+                foreach (VisitorData data in dataList.OrderBy(d => d.Date))
                 {
-                    // CPU Sample
-                    totalCPU.NextValue();
-                    if (Config.StatusConfig.ShowWebStatus)
-                    {
-                        webCPU.NextValue();
-                    }
-                    if (Config.StatusConfig.ShowDatabaseStatus)
-                    {
-                        dbCPU.NextValue();
-                    }
-
-                    // Network Sample
-                    sentPerf.NextValue();
-                    receivedPerf.NextValue();
-
-                    // Wait the sample time
-                    Thread.Sleep(1000);
-
-                    // CPU Values
-                    totalCPUValue = totalCPU.NextValue();
-                    if (Config.StatusConfig.ShowWebStatus)
-                    {
-                        webCPUValue = webCPU.NextValue();
-                    }
-                    if (Config.StatusConfig.ShowDatabaseStatus)
-                    {
-                        dbCPUValue = dbCPU.NextValue();
-                    }
-
-                    // Memory Values
-                    totalMem = Config.StatusConfig.TotalMemory;
-                    totalAvailMemValue = totalAvailMem.NextValue();
-                    totalUsedMemValue = totalMem - totalAvailMemValue;
-                    if (Config.StatusConfig.ShowWebStatus)
-                    {
-                        webMemValue = webMem.NextValue();
-                    }
-                    if (Config.StatusConfig.ShowDatabaseStatus)
-                    {
-                        dbMemValue = dbMem.NextValue();
-                    }
-
-                    // Network Values
-                    bytesSent = sentPerf.NextValue();
-                    bytesReceived = receivedPerf.NextValue();
-
-                    // Return usage info
-                    return Json(new { result = new {
-                        cpu = new { total = totalCPUValue, web = webCPUValue, db = dbCPUValue },
-                        memory = new { total = totalMem, totalAvail = totalAvailMemValue, totalUsed = totalUsedMemValue, webUsed = webMemValue, dbUsed = dbMemValue },
-                        network = new { sent = bytesSent, received = bytesReceived }
-                    } }, JsonRequestBehavior.AllowGet);
+                    object uniqueDay = new { x = Convert.ToInt64((data.Date.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds), y = data.UniqueVisitors };
+                    uniqueData.Add(uniqueDay);
+                    object totalDay = new { x = Convert.ToInt64((data.Date.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds), y = data.Visits };
+                    totalData.Add(totalDay);
                 }
+
+                return Json(new { result = new { uniqueVisitors = uniqueData.ToArray(), totalVisitors = totalData.ToArray() } }, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception ex)
-            {
-                return Json(new { error = new { message = ex.GetFullMessage(true) } }, JsonRequestBehavior.AllowGet);
-            }
+            return Json(new { error = new { message = "Piwik not configured" } }, JsonRequestBehavior.AllowGet);
         }
     }
 }

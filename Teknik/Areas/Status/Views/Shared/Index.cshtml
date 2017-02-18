@@ -1,16 +1,20 @@
 ﻿@model Teknik.Areas.Status.ViewModels.StatusViewModel
 
 @using Teknik.Utilities
+@using Newtonsoft.Json
 
+@Scripts.Render("~/bundles/signalr")
+@Scripts.Render("~/signalr/hubs")
 @Scripts.Render("~/bundles/status")
 
 <script type="text/javascript">
+    var getVisitorDataURL = '@Url.SubRouteUrl("status", "Status.Action", new { action = "GetVisitorData" })';
     var showWebCPU = @Model.Config.StatusConfig.ShowWebStatus.ToString().ToLower();
     var showDatabaseCPU = @Model.Config.StatusConfig.ShowDatabaseStatus.ToString().ToLower();
     var showNetworkUsage = @Model.Config.StatusConfig.ShowNetworkStatus.ToString().ToLower();
+    var showVisitorStats = @Model.Config.PiwikConfig.Enabled.ToString().ToLower();
     var totalMemory = @Model.Config.StatusConfig.TotalMemory;
     var tickInterval = totalMemory / 5;
-    var getUsageURL = '@Url.SubRouteUrl("status", "Status.Action", new { action = "GetUsage" })';
 </script>
 
 <div class="container">
@@ -18,7 +22,7 @@
     {
         <div class="row">
             <div class="col-sm-10 col-sm-offset-1">
-                <h2 class="text-center"><b>Server Status</b></h2>
+                <h2 class="text-center"><b>Realtime Usage</b></h2>
                 <hr>
                 <div class="row">
                     <div class="col-sm-12">
@@ -33,6 +37,47 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div id="network-usage-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <br />
+                <h2 class="text-center"><b>Statistics</b></h2>
+                <hr>
+                @if (Model.Config.PiwikConfig.Enabled)
+                {
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div id="visitor-chart"></div>
+                        </div>
+                    </div>
+                    <br />
+                }
+                <div class="row">
+                    <div class="col-sm-3 text-center">
+                        <h3>Uploads</h3>
+                        <p>Total Count: @Model.UploadCount</p>
+                        <p>Total Size: @StringHelper.GetBytesReadable(Model.UploadSize)</p>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <h3>Pastes</h3>
+                        <p>Total Count: @Model.PasteCount</p>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <h3>Shortened Urls</h3>
+                        <p>Total Count: @Model.ShortenedUrlCount</p>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <h3>Vaults</h3>
+                        <p>Total Count: @Model.ShortenedUrlCount</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <h3>Users</h3>
+                        <p>Number of Users: @Model.UserCount</p>
                     </div>
                 </div>
             </div>

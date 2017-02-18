@@ -9,19 +9,7 @@ using Teknik.ViewModels;
 namespace Teknik.Areas.Transparency.ViewModels
 {
     public class TransparencyViewModel : ViewModelBase
-    {
-        public int UploadCount { get; set; }
-
-        public long UploadSize { get; set; }
-
-        public int PasteCount { get; set; }
-
-        public int UserCount { get; set; }
-
-        public int ShortenedUrlCount { get; set; }
-
-        public int VaultCount { get; set; }
-
+    { 
         public string Canary { get; set; }
 
         public Dictionary<string, double> TotalBills { get; set; }

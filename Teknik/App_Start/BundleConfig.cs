@@ -46,6 +46,9 @@ namespace Teknik
             bundles.Add(new CdnScriptBundle("~/bundles/markdown", config.CdnHost).Include(
                       "~/Scripts/PageDown/Markdown.Converter.js",
                       "~/Scripts/PageDown/Markdown.Sanitizer.js"));
+
+            bundles.Add(new CdnScriptBundle("~/bundles/signalr", config.CdnHost).Include(
+                    "~/Scripts/jquery.signalR-{version}.js"));
         }
     }
 }

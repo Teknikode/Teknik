@@ -18,51 +18,11 @@
                 <h2 class="text-center"><b>Behind the Scenes</b></h2>
                 <hr>
                 <p>
-                    Here you can view all of Teknik's financial information, takedown requests and the actions we took, as well as some general statistics for the site's services.
+                    Here you can view all of Teknik's financial information, takedown requests and the actions we took.
                 </p>
                 <p>
                     If you would like to request additional information about Teknik, please feel free to contact us through our <a href="@Url.SubRouteUrl("contact", "Contact.Index")" target="_blank">Contact Form</a> or by emailing us at <a href="mailto:@Model.Config.SupportEmail">@Model.Config.SupportEmail</a>.
                 </p>
-                <p>
-                    Want to make a donation?  Visit our <a href="@Url.SubRouteUrl("about", "About.Index")" target="_blank">About Page</a> and choose a donation method at the bottom.
-                </p>
-                <br />
-                <h2 class="text-center"><b>Statistics</b></h2>
-                <hr>
-                @if (Model.Config.PiwikConfig.Enabled)
-                {
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div id="visitor-chart"></div>
-                    </div>
-                </div>
-                <br />
-                }
-                <div class="row">
-                    <div class="col-sm-3 text-center">
-                        <h3>Uploads</h3>
-                        <p>Total Count: @Model.UploadCount</p>
-                        <p>Total Size: @StringHelper.GetBytesReadable(Model.UploadSize)</p>
-                    </div>
-                    <div class="col-sm-3 text-center">
-                        <h3>Pastes</h3>
-                        <p>Total Count: @Model.PasteCount</p>
-                    </div>
-                    <div class="col-sm-3 text-center">
-                        <h3>Shortened Urls</h3>
-                        <p>Total Count: @Model.ShortenedUrlCount</p>
-                    </div>
-                    <div class="col-sm-3 text-center">
-                        <h3>Vaults</h3>
-                        <p>Total Count: @Model.ShortenedUrlCount</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 text-center">
-                        <h3>Users</h3>
-                        <p>Number of Users: @Model.UserCount</p>
-                    </div>
-                </div>
                 <br />
                 <h2 class="text-center"><b>Transactions</b></h2>
                 <hr>
