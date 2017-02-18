@@ -1,0 +1,50 @@
+﻿@model Teknik.Areas.Status.ViewModels.StatusViewModel
+
+@using Teknik.Utilities
+
+@Scripts.Render("~/bundles/status")
+
+<script type="text/javascript">
+    var showWebCPU = @Model.Config.StatusConfig.ShowWebStatus.ToString().ToLower();
+    var showDatabaseCPU = @Model.Config.StatusConfig.ShowDatabaseStatus.ToString().ToLower();
+    var showNetworkUsage = @Model.Config.StatusConfig.ShowNetworkStatus.ToString().ToLower();
+    var totalMemory = @Model.Config.StatusConfig.TotalMemory;
+    var tickInterval = totalMemory / 5;
+    var getUsageURL = '@Url.SubRouteUrl("status", "Status.Action", new { action = "GetUsage" })';
+</script>
+
+<div class="container">
+    @if (Model.Config.StatusConfig.Enabled)
+    {
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <h2 class="text-center"><b>Server Status</b></h2>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="cpu-usage-chart"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="mem-usage-chart"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="network-usage-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2 text-center">
+                <h3>Status Information has been disabled</h3>
+            </div>
+        </div>
+    }
+</div>
+

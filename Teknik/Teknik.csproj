@@ -78,6 +78,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
@@ -233,6 +234,9 @@
     <Compile Include="Areas\Privacy\Controllers\PrivacyController.cs" />
     <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
     <Compile Include="Areas\Privacy\ViewModels\PrivacyViewModel.cs" />
+    <Compile Include="Areas\Status\Controllers\StatusController.cs" />
+    <Compile Include="Areas\Status\StatusAreaRegistration.cs" />
+    <Compile Include="Areas\Status\ViewModels\StatusViewModel.cs" />
     <Compile Include="Areas\User\Controllers\UserController.cs" />
     <Compile Include="Areas\User\Models\BlogSettings.cs" />
     <Compile Include="Areas\User\Models\ResetPasswordVerification.cs" />
@@ -338,6 +342,7 @@
     <Content Include="Areas\Paste\Scripts\Paste.js" />
     <Content Include="Areas\Podcast\Content\Podcast.css" />
     <Content Include="Areas\Podcast\Scripts\Podcast.js" />
+    <Content Include="Areas\Status\Scripts\Status.js" />
     <Content Include="Areas\Transparency\Scripts\Transparency.js" />
     <Content Include="Areas\Upload\Content\Upload.css" />
     <Content Include="Areas\User\Scripts\CheckAuthCode.js" />
@@ -584,6 +589,9 @@
     <Content Include="Areas\Vault\Views\Vault\ModifyVaultItem.cshtml" />
     <Content Include="Areas\Vault\Views\Vault\PasteItem.cshtml" />
     <Content Include="Areas\Vault\Views\Vault\UploadItem.cshtml" />
+    <Content Include="Areas\Status\Views\web.config" />
+    <Content Include="Areas\Status\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Status\Views\Shared\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -597,6 +605,7 @@
     <Content Include="Scripts\Crypto-js\pad-nopadding.js" />
     <Content Include="Scripts\Dropzone\dropzone.js" />
     <Content Include="Scripts\FileSaver.js" />
+    <Content Include="Scripts\FileSize\filesize.min.js" />
     <Content Include="Scripts\Highcharts\highcharts-3d.js" />
     <Content Include="Scripts\Highcharts\highcharts-more.js" />
     <Content Include="Scripts\Highcharts\highcharts.js" />
@@ -679,6 +688,8 @@
     <Folder Include="Areas\Privacy\Models\" />
     <Folder Include="Areas\Privacy\Views\Shared\" />
     <Folder Include="Areas\Shortener\Views\Shared\" />
+    <Folder Include="Areas\Status\Models\" />
+    <Folder Include="Areas\Status\Views\Status\" />
     <Folder Include="Areas\Stream\Views\Shared\" />
     <Folder Include="Areas\TOS\Models\" />
     <Folder Include="Areas\TOS\Views\Shared\" />

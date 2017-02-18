@@ -41,6 +41,7 @@ namespace Teknik.Configuration
         private ShortenerConfig     _ShortenerConfig;
         private VaultConfig         _VaultConfig;
         private TransparencyConfig  _TransparencyConfig;
+        private StatusConfig        _StatusConfig;
         private DatabaseConfig      _DatabaseConfig;
         private LoggingConfig       _LoggingConfig;
         private PiwikConfig         _PiwikConfig;
@@ -94,11 +95,14 @@ namespace Teknik.Configuration
         // Shortener Configuration
         public ShortenerConfig      ShortenerConfig     { get { return _ShortenerConfig; }      set { _ShortenerConfig = value; } }
 
-        // Shortener Configuration
+        // Vault Configuration
         public VaultConfig          VaultConfig         { get { return _VaultConfig; }          set { _VaultConfig = value; } }
 
-        // Shortener Configuration
+        // Transparency Configuration
         public TransparencyConfig   TransparencyConfig  { get { return _TransparencyConfig; }   set { _TransparencyConfig = value; } }
+
+        // Status Configuration
+        public StatusConfig         StatusConfig        { get { return _StatusConfig; }         set { _StatusConfig = value; } }
 
         // Database Configuration
         public DatabaseConfig       DatabaseConfig      { get { return _DatabaseConfig; }       set { _DatabaseConfig = value; } }
@@ -147,6 +151,7 @@ namespace Teknik.Configuration
             ShortenerConfig     = new ShortenerConfig();
             VaultConfig         = new VaultConfig();
             TransparencyConfig  = new TransparencyConfig();
+            StatusConfig        = new StatusConfig();
             DatabaseConfig      = new DatabaseConfig();
             LoggingConfig       = new LoggingConfig();
             PiwikConfig         = new PiwikConfig();
