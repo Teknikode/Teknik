@@ -40,7 +40,6 @@ namespace Teknik.Configuration
         private StreamConfig        _StreamConfig;
         private ShortenerConfig     _ShortenerConfig;
         private VaultConfig         _VaultConfig;
-        private TransparencyConfig  _TransparencyConfig;
         private StatusConfig        _StatusConfig;
         private DatabaseConfig      _DatabaseConfig;
         private LoggingConfig       _LoggingConfig;
@@ -98,9 +97,6 @@ namespace Teknik.Configuration
         // Vault Configuration
         public VaultConfig          VaultConfig         { get { return _VaultConfig; }          set { _VaultConfig = value; } }
 
-        // Transparency Configuration
-        public TransparencyConfig   TransparencyConfig  { get { return _TransparencyConfig; }   set { _TransparencyConfig = value; } }
-
         // Status Configuration
         public StatusConfig         StatusConfig        { get { return _StatusConfig; }         set { _StatusConfig = value; } }
 
@@ -150,7 +146,6 @@ namespace Teknik.Configuration
             StreamConfig        = new StreamConfig();
             ShortenerConfig     = new ShortenerConfig();
             VaultConfig         = new VaultConfig();
-            TransparencyConfig  = new TransparencyConfig();
             StatusConfig        = new StatusConfig();
             DatabaseConfig      = new DatabaseConfig();
             LoggingConfig       = new LoggingConfig();

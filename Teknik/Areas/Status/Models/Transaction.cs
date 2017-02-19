@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Teknik.Utilities;
 
-namespace Teknik.Areas.Transparency.Models
+namespace Teknik.Areas.Status.Models
 {
     public class Transaction
     {
         public int TransactionId { get; set; }
 
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
-        public string Currency { get; set; }
+        public CurrencyType Currency { get; set; }
 
         public string Reason { get; set; }
 

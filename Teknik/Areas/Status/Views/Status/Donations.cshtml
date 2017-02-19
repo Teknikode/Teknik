@@ -1,0 +1,37 @@
+﻿@model List<Teknik.Areas.Status.ViewModels.DonationViewModel>
+
+@using Teknik.Areas.Status.ViewModels
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Donations</h3>
+            <div class="row">
+                <div class="col-sm-12">
+                    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#donations-section">View Donations</button>
+                </div>
+            </div>
+            <br />
+            <div id="donations-section" class="collapse in">
+                <table class="table table-condensed table-bordered table-hover">
+                    <tr>
+                        <th><strong>Date</strong></th>
+                        <th><strong>Amount</strong></th>
+                        <th><strong>Donor</strong></th>
+                        <th><strong>Reason for Donation</strong></th>
+                    </tr>
+                    @foreach (DonationViewModel donation in Model)
+                    {
+                        <tr>
+                            <td>@donation.DateSent.ToString("MMMM dd, yyyy")</td>
+                            <td>@donation.Amount <var>@donation.Currency.ToString()</var></td>
+                            <td>@donation.Sender</td>
+                            <td>@donation.Reason</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+}

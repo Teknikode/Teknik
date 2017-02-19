@@ -63,7 +63,6 @@
     <Compile Include="VaultConfig.cs" />
     <Compile Include="ShortenerConfig.cs" />
     <Compile Include="StreamConfig.cs" />
-    <Compile Include="TransparencyConfig.cs" />
     <Compile Include="UploadConfig.cs" />
     <Compile Include="UserConfig.cs" />
   </ItemGroup>

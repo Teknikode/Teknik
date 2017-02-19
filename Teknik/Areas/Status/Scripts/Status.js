@@ -3,6 +3,11 @@ var memUsageChart;
 var networkUsageChart;
 
 $(document).ready(function () {
+    $('#bills-section').collapse('hide');
+    $('#oneTime-section').collapse('hide');
+    $('#donations-section').collapse('hide');
+    $('#takedowns-section').collapse('hide');
+
     /* ----------------------------------------
                 CPU Usage                      
     -----------------------------------------*/
@@ -22,11 +27,13 @@ $(document).ready(function () {
         },
         yAxis: {
             title: {
-                text: 'Percentage %'
+                text: 'Percentage'
             },
             max: 100,
             min: 0,
-            format: '{value}',
+            labels: {
+                format: '{value}%'
+            },
             plotLines: [{
                 value: 0,
                 width: 1,
@@ -37,6 +44,9 @@ $(document).ready(function () {
             shared: true,
             crosshairs: true,
             pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y:.2f}%</b><br/>'
+        },
+        credits: {
+            enabled: false
         },
         series: [
             {
@@ -98,6 +108,9 @@ $(document).ready(function () {
                 return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + yVal + '</b><br/>';
             }
         },
+        credits: {
+            enabled: false
+        },
         series: [
             {
                 name: 'Total',
@@ -156,6 +169,9 @@ $(document).ready(function () {
                 return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + yVal + '</b><br/>';
             }
         },
+        credits: {
+            enabled: false
+        },
         series: [
             {
                 name: 'Sent',
@@ -173,7 +189,9 @@ $(document).ready(function () {
     -----------------------------------------*/
     visitChart = new Highcharts.chart({
         chart: {
-            renderTo: 'visitor-chart'
+            renderTo: 'visitor-chart',
+            type: 'line',
+            marginRight: 10
         },
         title: {
             text: 'Daily Visitors'
@@ -198,6 +216,9 @@ $(document).ready(function () {
             crosshairs: true,
             headerFormat: '<span style="font-size: 10px">{point.key:%B %e, %Y}</span><br/>',
             pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y}</b><br/>'
+        },
+        credits: {
+            enabled: false
         },
         series: [
             {
@@ -260,8 +281,9 @@ $(document).ready(function () {
             url: getVisitorDataURL,
             success: function (response) {
                 if (response.result) {
-                    visitChart.series[0].setData(response.result.totalVisitors);
-                    visitChart.series[1].setData(response.result.uniqueVisitors);
+                    visitChart.series[0].setData(response.result.totalVisitors, false);
+                    visitChart.series[1].setData(response.result.uniqueVisitors, false);
+                    visitChart.redraw();
                 }
                 else {
                     var err = response;
@@ -274,4 +296,9 @@ $(document).ready(function () {
             }
         });
     }
+
+    // Resize the chart when viewing the tab (initial width is wrong due to chart being hidden)
+    $('a[href="#site-stats"]').on('shown.bs.tab', function (e) {
+        visitChart.setSize($('#visitor-chart').width(), $('#visitor-chart').height());
+    })
 });

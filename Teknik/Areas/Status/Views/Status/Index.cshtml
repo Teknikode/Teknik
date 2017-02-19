@@ -1,7 +1,7 @@
 ﻿@model Teknik.Areas.Status.ViewModels.StatusViewModel
 
 @using Teknik.Utilities
-@using Newtonsoft.Json
+@using Teknik.Areas.Status.Models
 
 @Scripts.Render("~/bundles/signalr")
 @Scripts.Render("~/signalr/hubs")
@@ -20,9 +20,16 @@
 <div class="container">
     @if (Model.Config.StatusConfig.Enabled)
     {
-        <div class="row">
-            <div class="col-sm-10 col-sm-offset-1">
-                <h2 class="text-center"><b>Realtime Usage</b></h2>
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#realtime-stats" role="tab" data-toggle="tab">Realtime Server Usage</a></li>
+            <li role="presentation"><a href="#site-stats" role="tab" data-toggle="tab">Site Statistics</a></li>
+            <li role="presentation"><a href="#transactions" role="tab" data-toggle="tab">Transactions</a></li>
+            <li role="presentation"><a href="#takedowns" role="tab" data-toggle="tab">Takedowns</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="realtime-stats">
+                <h2 class="text-center"><b>Realtime Server Usage</b></h2>
                 <hr>
                 <div class="row">
                     <div class="col-sm-12">
@@ -40,11 +47,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-10 col-sm-offset-1">
-                <br />
-                <h2 class="text-center"><b>Statistics</b></h2>
+            <div role="tabpanel" class="tab-pane" id="site-stats">
+                <h2 class="text-center"><b>Site Statistics</b></h2>
                 <hr>
                 @if (Model.Config.PiwikConfig.Enabled)
                 {
@@ -53,7 +57,6 @@
                             <div id="visitor-chart"></div>
                         </div>
                     </div>
-                    <br />
                 }
                 <div class="row">
                     <div class="col-sm-3 text-center">
@@ -80,6 +83,13 @@
                         <p>Number of Users: @Model.UserCount</p>
                     </div>
                 </div>
+
+            </div>
+            <div role="tabpanel" class="tab-pane" id="transactions">
+                @Html.Partial("~/Areas/Status/Views/Status/Transactions.cshtml", Model.Transactions)
+            </div>
+            <div role="tabpanel" class="tab-pane" id="takedowns">
+                @Html.Partial("~/Areas/Status/Views/Status/Takedowns.cshtml", Model.Takedowns)
             </div>
         </div>
     }

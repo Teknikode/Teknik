@@ -1,0 +1,37 @@
+﻿@model List<Teknik.Areas.Status.ViewModels.TakedownViewModel>
+
+@using Teknik.Areas.Status.ViewModels
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <h2 class="text-center"><b>Takedowns</b></h2>
+            <hr>
+            @if (Model != null && Model.Any())
+            {
+                <table class="table table-hover table-bordered table-condensed">
+                    <tr>
+                        <th><strong>Requester</strong></th>
+                        <th><strong>Contact</strong></th>
+                        <th><strong>Date Requested</strong></th>
+                        <th><strong>Date Of Action</strong></th>
+                        <th><strong>Reason</strong></th>
+                        <th><strong>Action Taken</strong></th>
+                    </tr>
+                    @foreach (TakedownViewModel takedown in Model)
+                    {
+                    <tr>
+                        <td>@takedown.Requester</td>
+                        <td>@takedown.RequesterContact</td>
+                        <td>@takedown.DateRequested.ToString("MMMM dd, yyyy")</td>
+                        <td>@takedown.DateActionTaken.ToString("MMMM dd, yyyy")</td>
+                        <td>@takedown.Reason</td>
+                        <td>@takedown.ActionTaken</td>
+                    </tr>
+                    }
+                </table>
+            }
+        </div>
+    </div>
+}

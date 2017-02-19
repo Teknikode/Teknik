@@ -1,0 +1,35 @@
+﻿@model List<Teknik.Areas.Status.ViewModels.BillViewModel>
+
+@using Teknik.Areas.Status.ViewModels
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Bills</h3>
+            <div class="row">
+                <div class="col-sm-12">
+                    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#bills-section">View Bills</button>
+                </div>
+            </div>
+            <br />
+            <div id="bills-section" class="collapse in">
+                <table class="table table-condensed table-bordered table-hover">
+                    <tr>
+                        <th><strong>Date</strong></th>
+                        <th><strong>Amount</strong></th>
+                        <th><strong>Description</strong></th>
+                    </tr>
+                    @foreach (BillViewModel bill in Model)
+                    {
+                        <tr>
+                            <td>@bill.DateSent.ToString("MMMM dd, yyyy")</td>
+                            <td>@bill.Amount <var>@bill.Currency.ToString()</var></td>
+                            <td>@bill.Reason</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+}

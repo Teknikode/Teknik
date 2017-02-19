@@ -103,6 +103,10 @@
       <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NBitcoin, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NBitcoin.3.0.2.4\lib\net45\NBitcoin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nClam, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\nClam.2.0.6.0\lib\net40-Client\nClam.dll</HintPath>
       <Private>True</Private>
@@ -259,8 +263,19 @@
     <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
     <Compile Include="Areas\Privacy\ViewModels\PrivacyViewModel.cs" />
     <Compile Include="Areas\Status\Controllers\StatusController.cs" />
+    <Compile Include="Areas\Status\Models\Bill.cs" />
+    <Compile Include="Areas\Status\Models\Donation.cs" />
+    <Compile Include="Areas\Status\Models\OneTime.cs" />
+    <Compile Include="Areas\Status\Models\Takedown.cs" />
+    <Compile Include="Areas\Status\Models\Transaction.cs" />
     <Compile Include="Areas\Status\StatusAreaRegistration.cs" />
+    <Compile Include="Areas\Status\ViewModels\OneTimeViewModel.cs" />
+    <Compile Include="Areas\Status\ViewModels\DonationViewModel.cs" />
     <Compile Include="Areas\Status\ViewModels\StatusViewModel.cs" />
+    <Compile Include="Areas\Status\ViewModels\TakedownViewModel.cs" />
+    <Compile Include="Areas\Status\ViewModels\TransactionsViewModel.cs" />
+    <Compile Include="Areas\Status\ViewModels\BillViewModel.cs" />
+    <Compile Include="Areas\Status\ViewModels\TransactionViewModel.cs" />
     <Compile Include="Areas\User\Controllers\UserController.cs" />
     <Compile Include="Areas\User\Models\BlogSettings.cs" />
     <Compile Include="Areas\User\Models\ResetPasswordVerification.cs" />
@@ -302,14 +317,6 @@
     <Compile Include="Areas\TOS\Controllers\TOSController.cs" />
     <Compile Include="Areas\TOS\TOSAreaRegistration.cs" />
     <Compile Include="Areas\TOS\ViewModels\TOSViewModel.cs" />
-    <Compile Include="Areas\Transparency\Controllers\TransparencyController.cs" />
-    <Compile Include="Areas\Transparency\Models\Bill.cs" />
-    <Compile Include="Areas\Transparency\Models\Donation.cs" />
-    <Compile Include="Areas\Transparency\Models\OneTime.cs" />
-    <Compile Include="Areas\Transparency\Models\Takedown.cs" />
-    <Compile Include="Areas\Transparency\Models\Transaction.cs" />
-    <Compile Include="Areas\Transparency\TransparencyAreaRegistration.cs" />
-    <Compile Include="Areas\Transparency\ViewModels\TransparencyViewModel.cs" />
     <Compile Include="Areas\Upload\Controllers\UploadController.cs" />
     <Compile Include="Areas\Upload\Models\FileModel.cs" />
     <Compile Include="Areas\Upload\Models\Upload.cs" />
@@ -371,7 +378,6 @@
     <Content Include="Areas\Podcast\Content\Podcast.css" />
     <Content Include="Areas\Podcast\Scripts\Podcast.js" />
     <Content Include="Areas\Status\Scripts\Status.js" />
-    <Content Include="Areas\Transparency\Scripts\Transparency.js" />
     <Content Include="Areas\Upload\Content\Upload.css" />
     <Content Include="Areas\User\Scripts\CheckAuthCode.js" />
     <Content Include="Areas\User\Scripts\Profile.js" />
@@ -564,9 +570,7 @@
     <Content Include="Areas\Podcast\Views\Podcast\ViewPodcast.cshtml" />
     <Content Include="App_Data\Config.json" />
     <Content Include="Areas\User\Views\User\Settings.cshtml" />
-    <Content Include="Areas\Transparency\Views\web.config" />
     <Content Include="Areas\Vault\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Transparency\Views\Transparency\Index.cshtml" />
     <Content Include="Areas\Help\Views\Help\RSS.cshtml" />
     <Content Include="Areas\Stream\Views\web.config" />
     <Content Include="Areas\Stream\Views\_ViewStart.cshtml" />
@@ -612,14 +616,18 @@
     <Content Include="Fonts\fontawesome-webfont.eot" />
     <Content Include="Areas\User\Views\User\AuthToken.cshtml" />
     <Content Include="Areas\Error\Views\Error\Http401.cshtml" />
-    <Content Include="Areas\Transparency\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Vault\Views\Vault\ModifyVault.cshtml" />
     <Content Include="Areas\Vault\Views\Vault\ModifyVaultItem.cshtml" />
     <Content Include="Areas\Vault\Views\Vault\PasteItem.cshtml" />
     <Content Include="Areas\Vault\Views\Vault\UploadItem.cshtml" />
     <Content Include="Areas\Status\Views\web.config" />
     <Content Include="Areas\Status\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Status\Views\Shared\Index.cshtml" />
+    <Content Include="Areas\Status\Views\Status\Index.cshtml" />
+    <Content Include="Areas\Status\Views\Status\Transactions.cshtml" />
+    <Content Include="Areas\Status\Views\Status\Bills.cshtml" />
+    <Content Include="Areas\Status\Views\Status\OneTimes.cshtml" />
+    <Content Include="Areas\Status\Views\Status\Donations.cshtml" />
+    <Content Include="Areas\Status\Views\Status\Takedowns.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -718,12 +726,10 @@
     <Folder Include="Areas\Privacy\Models\" />
     <Folder Include="Areas\Privacy\Views\Shared\" />
     <Folder Include="Areas\Shortener\Views\Shared\" />
-    <Folder Include="Areas\Status\Models\" />
-    <Folder Include="Areas\Status\Views\Status\" />
+    <Folder Include="Areas\Status\Views\Shared\" />
     <Folder Include="Areas\Stream\Views\Shared\" />
     <Folder Include="Areas\TOS\Models\" />
     <Folder Include="Areas\TOS\Views\Shared\" />
-    <Folder Include="Areas\Transparency\Views\Shared\" />
     <Folder Include="Areas\Upload\Views\Shared\" />
     <Folder Include="Areas\User\Repositories\" />
     <Folder Include="Areas\User\Views\Shared\" />

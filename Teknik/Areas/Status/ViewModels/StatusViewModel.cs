@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Teknik.Areas.Status.Models;
 using Teknik.Models;
 using Teknik.ViewModels;
 
@@ -21,6 +22,10 @@ namespace Teknik.Areas.Status.ViewModels
 
         public int VaultCount { get; set; }
 
+        public TransactionsViewModel Transactions { get; set; }
+
+        public List<TakedownViewModel> Takedowns { get; set; }
+
         public StatusViewModel()
         {
             UploadCount = 0;
@@ -29,6 +34,8 @@ namespace Teknik.Areas.Status.ViewModels
             UserCount = 0;
             ShortenedUrlCount = 0;
             VaultCount = 0;
+            Transactions = new TransactionsViewModel();
+            Takedowns = new List<TakedownViewModel>();
         }
     }
 }

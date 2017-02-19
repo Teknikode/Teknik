@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
+using Teknik.ViewModels;
 
-namespace Teknik.Areas.Transparency.Models
+namespace Teknik.Areas.Status.ViewModels
 {
-    public class Takedown
+    public class TakedownViewModel : ViewModelBase
     {
-        public int TakedownId { get; set; }
-
         public string Requester { get; set; }
 
         public string RequesterContact { get; set; }
