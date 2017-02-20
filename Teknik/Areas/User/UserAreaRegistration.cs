@@ -20,6 +20,14 @@ namespace Teknik.Areas.Users
         {
             Config config = Config.Load();
             context.MapSubdomainRoute(
+                 "User.GetPremium", // Route name
+                 new List<string>() { "user" }, // Subdomains
+                 new List<string>() { config.Host }, // domains
+                 "GetPremium",    // URL with parameters 
+                 new { controller = "User", action = "GetPremium" },  // Parameter defaults 
+                 new[] { typeof(Controllers.UserController).Namespace }
+            );
+            context.MapSubdomainRoute(
                  "User.Login", // Route name
                  new List<string>() { "user" }, // Subdomains
                  new List<string>() { config.Host }, // domains

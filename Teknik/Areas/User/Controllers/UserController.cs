@@ -25,6 +25,17 @@ namespace Teknik.Areas.Users.Controllers
         private static readonly UsedCodesManager usedCodesManager = new UsedCodesManager();
         private TeknikEntities db = new TeknikEntities();
 
+        [TrackPageView]
+        [AllowAnonymous]
+        public ActionResult GetPremium()
+        {
+            ViewBag.Title = "Get a Premium Account - " + Config.Title;
+
+            GetPremiumViewModel model = new GetPremiumViewModel();
+
+            return View(model);
+        }
+
         // GET: Profile/Profile
         [TrackPageView]
         [AllowAnonymous]

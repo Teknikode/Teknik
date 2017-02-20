@@ -1,0 +1,104 @@
+﻿@model Teknik.Areas.Users.ViewModels.GetPremiumViewModel
+
+@using Teknik.Utilities
+
+@{ 
+    string currentPriceMsg = "The actual price will be determined by the exchange rate at the time of the transaction.";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h2 class="text-center">Purchase a Premium Account</h2>
+            <br />
+            <p class="text-center">You can purchase a Premium Account one of two methods, PayPal or Bitcoin.</p>
+            <p class="text-center">If you want to purchase an upgrade for multiple accounts, you can send the total amount at once with a list of the accounts you want upgraded.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-4 text-center">
+                    <h2>1</h2>
+                    <h3>Send Payment</h3>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <h2>2</h2>
+                    <h3>Attach Account Information</h3>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <h2>3</h2>
+                    <h3>Become Premium</h3>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title text-center"><strong>Paypal</strong></h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    Send a PayPal donation of $@Model.Config.UserConfig.PremiumAccountPrice per account to: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MBG93VKQ343P4" role="button" class="btn btn-default btn-sm" title="Paypal Donation">admin@teknik.io</a>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    Add a special instruction with the username of the teknik account(s) you want to upgrade to Premium.
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    Once the payment has been processed, the account(s) will be upgraded and a confirmation email sent to the upgraded account(s)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title text-center"><strong>Bitcoin</strong></h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    Send $@Model.Config.UserConfig.PremiumAccountPrice worth of Bitcoin <span data-toggle="tooltip" data-placement="top" title="@currentPriceMsg">(Currently @(Math.Round((Model.Config.UserConfig.PremiumAccountPrice / CurrencyHelper.GetExchangeRate(CurrencyType.BTC)), 6)))<small>*</small></span> to the following address
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    <strong>@Model.Config.BitcoinAddress</strong>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    After making the transaction, you will need to create a signed message of the teknik account username(s) with your wallet's key, and then email it to <a href="mailto:@Model.Config.SupportEmail">@Model.Config.SupportEmail</a>.
+                                    <br />
+                                    <br />
+                                    You can generate this signed message in multiple bitcoin clients.  For an example, visit <a href="https://bitcoin.org/en/developer-reference#signmessage">here</a>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-12 text-center">
+                                    Once the transaction has been verified and the signed message matches the transaction's sending address, the account(s) will be upgraded and a confirmation email sent to the upgraded account(s)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small>* @currentPriceMsg</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

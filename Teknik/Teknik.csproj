@@ -287,6 +287,7 @@
     <Compile Include="Areas\User\Models\AuthToken.cs" />
     <Compile Include="Areas\User\Models\TrustedDevice.cs" />
     <Compile Include="Areas\User\ViewModels\AuthTokenViewModel.cs" />
+    <Compile Include="Areas\User\ViewModels\GetPremiumViewModel.cs" />
     <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
     <Compile Include="Areas\Vault\ViewModels\ModifyVaultViewModel.cs" />
     <Compile Include="Areas\Vault\ViewModels\ModifyVaultItemViewModel.cs" />
@@ -638,6 +639,7 @@
     <Content Include="Areas\FAQ\Views\web.config" />
     <Content Include="Areas\FAQ\Views\_ViewStart.cshtml" />
     <Content Include="Areas\FAQ\Views\FAQ\Index.cshtml" />
+    <Content Include="Areas\User\Views\User\GetPremium.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
