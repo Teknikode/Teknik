@@ -12,7 +12,7 @@
             <a href="#" id="user_menu" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <strong class="caret"></strong></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="user_menu">
                 <li>
-                    <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })">Blog</a>
+                    <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })">View Blog</a>
                 </li>
                 <li>
                     <a href="@Url.SubRouteUrl("user", "User.ViewProfile", new { username = User.Identity.Name })">Profile</a>

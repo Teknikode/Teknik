@@ -29,20 +29,23 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="@Url.GetActive("www", string.Empty)"><a href="@Url.SubRouteUrl("www", "Home.Index")">Home</a></li>
-                <li class="@Url.GetActive("about")"><a href="@Url.SubRouteUrl("about", "About.Index")">About</a></li>
+                <li class="@Url.GetActive("www", string.Empty)">
+                    <a href="@Url.SubRouteUrl("www", "Home.Index")">Home</a>
+                </li>
+                <li class="@Url.GetActive("about")">
+                    <a href="@Url.SubRouteUrl("about", "About.Index")">About</a>
+                </li>
+                <li class="@Url.GetActive("blog")">
+                    <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = string.Empty })">News</a>
+                </li>
                 <li class="divider-vertical"></li>
 
                 <li class="dropdown">
                     <a href="#" id="services_menu" class="dropdown-toggle" data-toggle="dropdown">Services <strong class="caret"></strong></a>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="services_menu">
-                        <li class="@Url.GetActive("blog")">
-                            <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = string.Empty })">Blogging</a>
-                        </li>
                         <li class="@Url.GetActive("podcast")">
                             <a href="@Url.SubRouteUrl("podcast", "Podcast.Index")">Teknikast</a>
                         </li>
-                        <li role="separator" class="divider"></li>
                         <li class="@Url.GetActive("upload", "u")">
                             <a href="@Url.SubRouteUrl("upload", "Upload.Index")">Uploads</a>
                         </li>
