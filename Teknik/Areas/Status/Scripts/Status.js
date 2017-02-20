@@ -45,6 +45,20 @@ $(document).ready(function () {
             crosshairs: true,
             pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y:.2f}%</b><br/>'
         },
+        plotOptions: {
+            line: {
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 2,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            }
+        },
         credits: {
             enabled: false
         },
@@ -108,6 +122,20 @@ $(document).ready(function () {
                 return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + yVal + '</b><br/>';
             }
         },
+        plotOptions: {
+            line: {
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 2,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            }
+        },
         credits: {
             enabled: false
         },
@@ -134,7 +162,6 @@ $(document).ready(function () {
         chart: {
             useUTC: false,
             renderTo: 'network-usage-chart',
-            type: 'line',
             marginRight: 10
         },
         title: {
@@ -169,16 +196,48 @@ $(document).ready(function () {
                 return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + yVal + '</b><br/>';
             }
         },
+        plotOptions: {
+            area: {
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 2,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            },
+            line: {
+                marker: {
+                    enabled: false,
+                    symbol: 'circle',
+                    radius: 2,
+                    states: {
+                        hover: {
+                            enabled: true
+                        }
+                    }
+                }
+            }
+        },
         credits: {
             enabled: false
         },
         series: [
             {
+                type: 'line',
                 name: 'Sent',
+                dashStyle: 'Dash',
+                color: '#7cb5ec',
                 data: []
             },
             {
+                type: 'area',
                 name: 'Received',
+                color: '#7cb5ec',
+                fillOpacity: 0.3,
                 data: []
             }
         ]
@@ -300,5 +359,12 @@ $(document).ready(function () {
     // Resize the chart when viewing the tab (initial width is wrong due to chart being hidden)
     $('a[href="#site-stats"]').on('shown.bs.tab', function (e) {
         visitChart.setSize($('#visitor-chart').width(), $('#visitor-chart').height());
+    })
+
+    // Resize the chart when viewing the tab (initial width is wrong due to chart being hidden)
+    $('a[href="#realtime-stats"]').on('shown.bs.tab', function (e) {
+        cpuUsageChart.setSize($('#cpu-usage-chart').width(), $('#cpu-usage-chart').height());
+        memUsageChart.setSize($('#mem-usage-chart').width(), $('#mem-usage-chart').height());
+        networkUsageChart.setSize($('#network-usage-chart').width(), $('#network-usage-chart').height());
     })
 });

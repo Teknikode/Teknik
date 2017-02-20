@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Teknik.Utilities;
 
 namespace Teknik.Configuration
 {
@@ -16,6 +17,8 @@ namespace Teknik.Configuration
         public int MinUsernameLength { get; set; }
         public int MaxUsernameLength { get; set; }
         public string ReservedUsernameDefinitionFile { get; set; }
+        public decimal PremiumAccountPrice { get; set; }
+        public string PaymentType { get; set; } 
 
         public UserConfig()
         {
@@ -27,6 +30,8 @@ namespace Teknik.Configuration
             MinUsernameLength = 1;
             MaxUsernameLength = 35;
             ReservedUsernameDefinitionFile = string.Empty;
+            PremiumAccountPrice = 0;
+            PaymentType = "Donation";
         }
     }
 }

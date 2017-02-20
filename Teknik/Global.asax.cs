@@ -15,6 +15,7 @@ using System.Diagnostics;
 using Teknik.Utilities;
 using System.Text;
 using Teknik.Areas.Users.Utility;
+using Teknik.Security;
 
 namespace Teknik
 {
@@ -79,7 +80,6 @@ namespace Teknik
 
             // Username and Roles for the current user
             string username = string.Empty;
-            List<string> roles = new List<string>();
             
             bool hasAuthToken = false;
             if (Request != null)
@@ -136,29 +136,7 @@ namespace Teknik
                 }
             }
 
-            // Create the new user if we found one from the supplied auth info
-            if (!string.IsNullOrEmpty(username))
-            {
-                using (TeknikEntities entities = new TeknikEntities())
-                {
-                    User user = UserHelper.GetUser(entities, username);
-
-                    // Grab all their roles
-                    foreach (Group grp in user.Groups)
-                    {
-                        foreach (Role role in grp.Roles)
-                        {
-                            if (!roles.Contains(role.Name))
-                            {
-                                roles.Add(role.Name);
-                            }
-                        }
-                    }
-                }
-
-                HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(
-                    new System.Security.Principal.GenericIdentity(username, "Forms"), roles.ToArray());
-            }
+            HttpContext.Current.User = new TeknikPrincipal(username);
         }
 
         protected void Application_Error(object sender, EventArgs e)

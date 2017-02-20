@@ -16,10 +16,11 @@
                 Teknik was created to provide our users free services that they can trust.  All of our services are treated with the utmost care to provide you with the best experience possible, and the best security with your data that we can give.
             </p>
             <p>
-                You can view our complete activity and statistics by visiting the <a href="@Url.SubRouteUrl("transparency", "Transparency.Index")">Transparency</a> page.
+                You can view our complete activity and statistics by visiting the <a href="@Url.SubRouteUrl("status", "Status.Index")">status</a> page.
             </p>
+            <br />
             <hr>
-            <h2 class="text-center">Comparison of Features</h2>
+            <h2 class="text-center">What can you do with Teknik?</h2>
             <br />
             <div class="row">
                 <div class="col-sm-10 col-sm-offset-1">
@@ -33,8 +34,8 @@
                         </tr>
                         <!-- Prices -->
                         <tr>
-                            <td class="text-left"><b>Features</b></td>
-                            <td class="text-center">$5 Donation</td>
+                            <td class="text-left"></td>
+                            <td class="text-center">$@Model.Config.UserConfig.PremiumAccountPrice @Model.Config.UserConfig.PaymentType</td>
                             <td class="text-center">Free</td>
                             <td class="text-center">Free</td>
                         </tr>
@@ -112,8 +113,8 @@
                         </tr>
                         <tr>
                             <td class="text-left">Max Upload Filesize</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize * 2)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizePremium)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizeBasic)</td>
                             <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
                         </tr>
                         <tr>
@@ -166,7 +167,7 @@
                     </p>
                 </div>
             </div>
-
+            <br />
             <hr>
             <h2 class="text-center">How can I help?</h2>
             <br />

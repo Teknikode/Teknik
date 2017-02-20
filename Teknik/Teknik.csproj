@@ -238,6 +238,9 @@
     <Compile Include="Areas\Error\Controllers\ErrorController.cs" />
     <Compile Include="Areas\Error\ErrorAreaRegistration.cs" />
     <Compile Include="Areas\Error\ViewModels\ErrorViewModel.cs" />
+    <Compile Include="Areas\FAQ\Controllers\FAQController.cs" />
+    <Compile Include="Areas\FAQ\FAQAreaRegistration.cs" />
+    <Compile Include="Areas\FAQ\ViewModels\FAQViewModel.cs" />
     <Compile Include="Areas\Help\Controllers\HelpController.cs" />
     <Compile Include="Areas\Help\HelpAreaRegistration.cs" />
     <Compile Include="Areas\Help\ViewModels\HelpViewModel.cs" />
@@ -291,6 +294,8 @@
     <Compile Include="Areas\Vault\ViewModels\PasteItemViewModel.cs" />
     <Compile Include="Areas\Vault\ViewModels\VaultItemViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
+    <Compile Include="Security\ITeknikPrincipal.cs" />
+    <Compile Include="Security\TeknikPrincipal.cs" />
     <Compile Include="Filters\CORSActionFilter.cs" />
     <Compile Include="Hubs\ServerUsageHub.cs" />
     <Compile Include="Models\DataPoint.cs" />
@@ -358,6 +363,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="App_Start\SubdomainRoute.cs" />
     <Compile Include="App_Start\SubdomainRouteExtension.cs" />
+    <Compile Include="BaseViewPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\reservedUsernames.txt">
@@ -370,6 +376,7 @@
     <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
     <Content Include="Areas\Contact\Scripts\Contact.js" />
+    <Content Include="Areas\FAQ\Content\FAQ.css" />
     <Content Include="Areas\Help\Content\Help.css" />
     <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
@@ -628,6 +635,9 @@
     <Content Include="Areas\Status\Views\Status\OneTimes.cshtml" />
     <Content Include="Areas\Status\Views\Status\Donations.cshtml" />
     <Content Include="Areas\Status\Views\Status\Takedowns.cshtml" />
+    <Content Include="Areas\FAQ\Views\web.config" />
+    <Content Include="Areas\FAQ\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\FAQ\Views\FAQ\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -717,6 +727,8 @@
     <Folder Include="Areas\Dev\Views\Shared\" />
     <Folder Include="Areas\Error\Models\" />
     <Folder Include="Areas\Error\Views\Shared\" />
+    <Folder Include="Areas\FAQ\Models\" />
+    <Folder Include="Areas\FAQ\Views\Shared\" />
     <Folder Include="Areas\Help\Models\" />
     <Folder Include="Areas\Help\Views\Shared\" />
     <Folder Include="Areas\Home\Models\" />

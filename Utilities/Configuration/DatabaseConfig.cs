@@ -2,7 +2,6 @@
 {
     public class DatabaseConfig
     {
-        public bool Migrate { get; set; }
         public string Server { get; set; }
         public int Port { get; set; }
         public string Database { get; set; }
@@ -16,7 +15,6 @@
 
         public void SetDefaults()
         {
-            Migrate = false;
             Server = "localhost";
             Port = 3306;
             Database = string.Empty;

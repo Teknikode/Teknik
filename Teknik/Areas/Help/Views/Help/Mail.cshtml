@@ -16,7 +16,7 @@
             You can either access your email via the <a href="@Url.SubRouteUrl("mail", "Mail.Index")" target="_blank">Web Client</a> or by using a client of your choosing with support for IMAP(143|993) or POP3(110).
         </p>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-sm-12">
                 <ul class="list-group">
                     <li class="list-group-item text-center"><h4>Outlook</h4></li>
                     <br />
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-sm-12">
                 <ul class="list-group">
                     <li class="list-group-item text-center"><h4>Thunderbird</h4></li>
                     <br />
@@ -67,6 +67,45 @@
                             <li class="list-group-item">Connection Security:<div class="pull-right"><b>None (SSL/TLS)</b></div></li>
                             <li class="list-group-item">Authentication method:<div class="pull-right"><b>Normal Password</b></div></li>
                         </ul>
+                    </div>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <ul class="list-group">
+                    <li class="list-group-item text-center"><h4>Mutt</h4></li>
+                    <br />
+                    <div class="col-sm-10 col-sm-offset-1">
+                        <pre>#You can set your editor of preference here
+set editor=vim
+
+#It's important to set your real name and from email address to avoid SMTP errors.
+set realname="My Name"
+set from=example@teknik.io
+set use_from=yes
+
+set imap_user=example@teknik.io
+
+#Don't set your password here, mutt will prompt you for it.
+#set imap_pass=lulpasshere
+
+#This is an example IMAP configuration.
+set folder="imaps://mail.teknik.io/"
+set spoolfile=+INBOX
+set record="Sent"
+set postponed="Drafts"
+
+#This is to send email, uses your imap user to send.
+#Again, mutt will prompt you for your teknik email password.
+set smtp_url="smtps://$imap_user@mail.teknik.io/"
+
+#Miscellaneous configuration, check mutt man pages or online documentation to see what they do.
+set ssl_starttls=yes
+unset imap_passive
+set imap_check_subscribed
+set net_inc=5
+set mail_check = 360</pre>
                     </div>
                 </ul>
             </div>

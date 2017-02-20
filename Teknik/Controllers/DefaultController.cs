@@ -5,6 +5,7 @@ using Teknik.Areas.Error.Controllers;
 using Teknik.Configuration;
 
 using Teknik.Filters;
+using Teknik.Security;
 using Teknik.Utilities;
 
 namespace Teknik.Controllers
@@ -29,6 +30,10 @@ namespace Teknik.Controllers
                 }
                 return _config;
             }
+        }
+        protected virtual new TeknikPrincipal User
+        {
+            get { return HttpContext.User as TeknikPrincipal; }
         }
 
         public DefaultController()

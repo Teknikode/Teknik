@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Teknik.Attributes;
 using Teknik.Models;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Users.Models
 {
@@ -22,6 +23,8 @@ namespace Teknik.Areas.Users.Models
         public DateTime JoinDate { get; set; }
 
         public DateTime LastSeen { get; set; }
+
+        public AccountType AccountType { get; set; }
 
         public virtual ICollection<Group> Groups { get; set; }
         
@@ -52,6 +55,7 @@ namespace Teknik.Areas.Users.Models
             Transfers = new List<TransferType>();
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;
+            AccountType = AccountType.Basic;
             Groups = new List<Group>();
             TrustedDevices = new List<TrustedDevice>();
             AuthTokens = new List<AuthToken>();

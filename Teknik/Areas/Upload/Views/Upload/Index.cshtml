@@ -3,11 +3,23 @@
 @using Teknik.Utilities
 @using Teknik.Areas.Vault.Models
 
+@{
+    long maxUploadSize = Model.Config.UploadConfig.MaxUploadSize;
+    if (User.Identity.IsAuthenticated)
+    {
+        maxUploadSize = Model.Config.UploadConfig.MaxUploadSizeBasic;
+        if (User.Info.AccountType == AccountType.Premium)
+        {
+            maxUploadSize = Model.Config.UploadConfig.MaxUploadSizePremium;
+        }
+    }
+}
+
 <script>
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
     var uploadFileURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action = "Upload" })';
-    var maxUploadSize = @Model.Config.UploadConfig.MaxUploadSize;
+    var maxUploadSize = @maxUploadSize;
     var chunkSize = @Model.Config.UploadConfig.ChunkSize;
     var keySize = @Model.Config.UploadConfig.KeySize;
     var blockSize = @Model.Config.UploadConfig.BlockSize;
@@ -78,7 +90,7 @@
             To view the file decrypted, you must use the direct Teknik link in a javascript enabled browser.
         </p>
         <p>
-            The maximum file size per upload is <b>@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</b>
+            The maximum file size per upload is <b>@StringHelper.GetBytesReadable(maxUploadSize)</b>
         </p>
     </div>
     <div class="text-center">

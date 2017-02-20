@@ -105,8 +105,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountType.cs" />
     <Compile Include="CurrencyHelper.cs" />
     <Compile Include="CurrencyType.cs" />
+    <Compile Include="EntityExtensions.cs" />
     <Compile Include="FileGenerateResult.cs" />
     <Compile Include="HttpWebResponseResult.cs" />
     <Compile Include="BundleExtensions.cs" />

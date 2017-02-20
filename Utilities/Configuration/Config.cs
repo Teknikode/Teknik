@@ -41,7 +41,6 @@ namespace Teknik.Configuration
         private ShortenerConfig     _ShortenerConfig;
         private VaultConfig         _VaultConfig;
         private StatusConfig        _StatusConfig;
-        private DatabaseConfig      _DatabaseConfig;
         private LoggingConfig       _LoggingConfig;
         private PiwikConfig         _PiwikConfig;
 
@@ -100,9 +99,6 @@ namespace Teknik.Configuration
         // Status Configuration
         public StatusConfig         StatusConfig        { get { return _StatusConfig; }         set { _StatusConfig = value; } }
 
-        // Database Configuration
-        public DatabaseConfig       DatabaseConfig      { get { return _DatabaseConfig; }       set { _DatabaseConfig = value; } }
-
         // Logging Configuration
         public LoggingConfig        LoggingConfig       { get { return _LoggingConfig; }        set { _LoggingConfig = value; } }
 
@@ -147,7 +143,6 @@ namespace Teknik.Configuration
             ShortenerConfig     = new ShortenerConfig();
             VaultConfig         = new VaultConfig();
             StatusConfig        = new StatusConfig();
-            DatabaseConfig      = new DatabaseConfig();
             LoggingConfig       = new LoggingConfig();
             PiwikConfig         = new PiwikConfig();
         }

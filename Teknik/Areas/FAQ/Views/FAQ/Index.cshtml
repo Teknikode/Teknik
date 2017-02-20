@@ -1,0 +1,181 @@
+﻿@model Teknik.Areas.FAQ.ViewModels.FAQViewModel
+
+@using Teknik.Utilities
+
+@Styles.Render("~/Content/faq")
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel-group" id="accordion" role="tablist">
+                <div class="faqHeader">General Questions</div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse0">What does Teknik mean?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse0" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            Teknik means <i>Technology</i> in swedish.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Why did you make Teknik?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse3" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            I made Teknik originally as a page to showcase an IRC channel I was co-moderating.  I began creating different services for the members of the channel, and it quickly grew and interest started to grow from outside the channel.
+                            This led to changing Teknik to be an independent venture away from the IRC channel.  As time went on I continued to add new features that I wanted to try out, and that users requested.  Today I work on it as a passion project and want to keep providing services that people like to use.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse2">How can I contact you?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse2" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            You can contact us via the <a href="@Url.SubRouteUrl("contact", "Contact.Index")">Contact page</a> or email us at <a href="mailto:@Model.Config.SupportEmail">@Model.Config.SupportEmail</a>.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse4">Can I view the source of Teknik?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse4" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            You can view the source of Teknik as well as contribute by viewing our <a href="http://git.teknik.io/Teknikode/Teknik">git repository</a>.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse1">Is Uncled1023 actually an uncle?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            Yes :)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-group" id="accordion" role="tablist">
+                <div class="faqHeader">Accounts</div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse100">Is account registration required?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse100" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            Account registration is not required at <strong>Teknik</strong> for most of the free services.  If you want to use any of the user specific features, you must register an account.
+                            You can view more about what is available with and without an account on our <a href="@Url.SubRouteUrl("about", "About.Index")">About Page</a>.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse101">How do I sign up for an account?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse101" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            To sign up for an account, you just need to click the <strong>Sign Up</strong> button on the top right of the navigation panel, or visit the <a href="@Url.SubRouteUrl("user", "User.Register")">Registration Page</a>.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse102">How do I purchase a Premium Account?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse102" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            To purchase a premium account, you can navigate to the <a href="@Url.SubRouteUrl("user", "User.PurchasePremium")">premium account</a> page and choose the method of payment and follow the instructions provided.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-group" id="accordion" role="tablist">
+                <div class="faqHeader">Uploads</div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse200">What is the largest file size I can upload?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse200" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            The max file size for everyone is <strong>@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</strong>, basic accounts are <strong>@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizeBasic)</strong>, and Premium accounts are <strong>@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizePremium)</strong>.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse201">What files am I allowed to upload?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse201" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            You are allowed to upload any file that you would like, except for a few exceptions.  No Malware, or Copyright information is allowed.  For a full look at what is allowed, view the upload section in the <a href="@Url.SubRouteUrl("tos", "TOS.Index")">Terms of Service</a>.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse202">Can I delete a file I uploaded?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse202" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            Every file has a deletion key generated when uploaded.  When you are uploading a file, this key can be obtained by clicking the <strong>Deletion Link</strong> button for that upload.  You can then navigate to the deletion link and the file will be deleted.
+                            If you are logged in, you can also go to your profile page to view all your uploads, and delete them from there.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse203">What does the option <strong>Encrypt in Browser</strong> mean?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse203" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            When uploading a file, you have the option to encrypt the file using an <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES-256 CTR</a> cipher via Javascript in your browser.  
+                            This generates a random key that is not transported to the server, and only available to you.  To view files encrypted in the browser, you must supply this key as the anchor tag in the URL, or when prompted for it when viewing the download link for the file.
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse204">My file is returning a 404 - Not Found, but I didn't delete it.  Where is it?</a>
+                        </h4>
+                    </div>
+                    <div id="collapse204" class="panel-collapse collapse" role="tabpanel">
+                        <div class="panel-body">
+                            If an upload is returning a 404 error, this could mean that the upload was deleted due to being scanned and flagged as malware by the automated system, or had a valid DMCA served against it.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

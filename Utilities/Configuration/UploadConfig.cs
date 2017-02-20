@@ -12,6 +12,10 @@ namespace Teknik.Configuration
         public bool DownloadEnabled { get; set; }
         // Max upload size in bytes
         public long MaxUploadSize { get; set; }
+        // Max Upload Size for basic users
+        public long MaxUploadSizeBasic { get; set; }
+        // Max Upload Size for premium users
+        public long MaxUploadSizePremium { get; set; }
         // Location of the upload directory
         public string UploadDirectory { get; set; }
         // File Extension for saved files
@@ -38,6 +42,8 @@ namespace Teknik.Configuration
             UploadEnabled = true;
             DownloadEnabled = true;
             MaxUploadSize = 100000000;
+            MaxUploadSizeBasic = 100000000;
+            MaxUploadSizePremium = 100000000;
             UploadDirectory = Directory.GetCurrentDirectory();
             FileExtension = "enc";
             UrlLength = 5;
