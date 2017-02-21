@@ -69,8 +69,11 @@ namespace Teknik
             }
             catch (Exception ex)
             {
-                // Just log it
-                Logging.Logger.WriteEntry(Logging.LogLevel.Warning, "Error in Application_EndRequest", ex);
+                if (!ex.Message.Contains("Server cannot append header after HTTP headers have been sent"))
+                {
+                    // Just log it
+                    Logging.Logger.WriteEntry(Logging.LogLevel.Warning, "Error in Application_EndRequest", ex);
+                }
             }
         }
 
