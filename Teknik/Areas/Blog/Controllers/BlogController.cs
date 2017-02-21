@@ -132,7 +132,7 @@ namespace Teknik.Areas.Blog.Controllers
                 model = new BlogViewModel(blog);
                 if (blog.User.Username == Constants.SERVERUSER)
                 {
-                    ViewBag.Title = model.Title + " - " + Config.BlogConfig.Title + " - " + Config.Title;
+                    ViewBag.Title = "Create Post - " + Config.BlogConfig.Title + " - " + Config.Title;
                     ViewBag.Description = Config.BlogConfig.Description;
                 }
                 else
@@ -142,7 +142,7 @@ namespace Teknik.Areas.Blog.Controllers
                     {
                         ViewBag.Title = blog.User.BlogSettings.Title + " - " + ViewBag.Title;
                     }
-                    ViewBag.Title = model.Title + " - " + ViewBag.Title;
+                    ViewBag.Title = "Create Post - " + ViewBag.Title;
                     ViewBag.Description = blog.User.BlogSettings.Description;
                 }
                 return View("~/Areas/Blog/Views/Blog/NewPost.cshtml", model);
@@ -168,7 +168,7 @@ namespace Teknik.Areas.Blog.Controllers
 
                 if (post.System)
                 {
-                    ViewBag.Title = model.Title + " - " + Config.BlogConfig.Title + " - " + Config.Title;
+                    ViewBag.Title = "Edit Post - " + model.Title + " - " + Config.BlogConfig.Title + " - " + Config.Title;
                     ViewBag.Description = Config.BlogConfig.Description;
                 }
                 else
@@ -178,7 +178,7 @@ namespace Teknik.Areas.Blog.Controllers
                     {
                         ViewBag.Title = post.Blog.User.BlogSettings.Title + " - " + ViewBag.Title;
                     }
-                    ViewBag.Title = model.Title + " - " + ViewBag.Title;
+                    ViewBag.Title = "Edit Post - " + model.Title + " - " + ViewBag.Title;
                     ViewBag.Description = post.Blog.User.BlogSettings.Description;
                 }
                 return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);
