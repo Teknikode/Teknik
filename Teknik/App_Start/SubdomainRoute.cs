@@ -47,6 +47,7 @@ namespace Teknik
             if (routeData == null) return null; // Only look at the subdomain if this route matches in the first place.
             string subdomain = httpContext.Request.QueryString["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname.
             string host = httpContext.Request.Headers["Host"];
+            if (host == null) return null; // no host, so don't process it
             string domain = host.GetDomain();
             string curSub = host.GetSubdomain();
 

@@ -40,24 +40,13 @@
             <noscript>
                 <a href="@Url.SubRouteUrl("user", "User.Register")" class="btn btn-default navbar-btn">Sign Up</a>
             </noscript>
-            @*<a class="dropdown-toggle" href="#" data-toggle="dropdown" id="reg_dropdown">Sign Up <strong class="caret"></strong></a>
-            <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px; min-width: 100px;">
-                @Html.Partial("../../Areas/User/Views/User/Register", new Teknik.Areas.Users.ViewModels.RegisterViewModel())
-            </div>*@
         }
         if (Model.Config.UserConfig.LoginEnabled)
         {
-            if (Model.Config.UserConfig.RegistrationEnabled)
-            {
-            }
             <button id="loginButton" data-toggle="modal" data-target="#loginModal" class="btn btn-default navbar-btn hide">Sign In</button>
             <noscript>
                 <a href="@Url.SubRouteUrl("user", "User.Login")" class="btn btn-default navbar-btn">Sign In</a>
             </noscript>
-            @*<a class="dropdown-toggle" href="#" data-toggle="dropdown" id="login_dropdown">Sign In <strong class="caret"></strong></a>
-            <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                @Html.Partial("../../Areas/User/Views/User/Login", new Teknik.Areas.Users.ViewModels.LoginViewModel())
-            </div>*@
         }
     }
     </div>
