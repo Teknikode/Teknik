@@ -16,7 +16,7 @@
             <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Created on <time datetime="@Model.DateCreated.ToString("s")">@Model.DateCreated.ToString("dddd, MMMM d, yyyy") at @Model.DateCreated.ToString("h:mm:ss tt")</time></small></h2>
         </div>
     </div>
-    @if (User.Identity.IsAuthenticated && Model.User.Username == User.Identity.Name)
+    @if (User.Identity.IsAuthenticated &&  Model.User != null && Model.User.Username == User.Info.Username)
     {
         <div class="row">
             <div class="col-sm-12">
