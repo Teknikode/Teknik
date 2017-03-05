@@ -84,12 +84,14 @@ namespace Teknik.Areas.Vault
 
             // Register style bundles
             BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/vault", config.CdnHost).Include(
+                      "~/Content/mdd_styles.css",
                       "~/Areas/Vault/Content/Vault.css"));
 
             // Register Script Bundle
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/vault", config.CdnHost).Include(
                       "~/Scripts/jquery.blockUI.js",
                       "~/Scripts/bootbox/bootbox.min.js",
+                      "~/Scripts/MarkdownDeepLib.min.js",
                       "~/Areas/Vault/Scripts/Vault.js"));
         }
     }

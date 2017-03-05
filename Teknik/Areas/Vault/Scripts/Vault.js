@@ -1,4 +1,10 @@
 ﻿$(document).ready(function () {
+    $("textarea.mdd_editor").MarkdownDeep({
+        help_location: helpURL,
+        disableTabHandling: false,
+        resizebar: false
+    });
+
     $('.hideContent').each(function () {
         if ($(this).find('pre').height() > 400) {
             var id = $(this).attr('id');
