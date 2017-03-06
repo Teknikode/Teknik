@@ -33,14 +33,6 @@ namespace Teknik.Areas.Home.Controllers
                 if (foundSite != null)
                     lastSite = foundSite.ToList();
             }
-            // Grab the latest user blog posts
-            List<BlogPost> lastPosts = new List<BlogPost>();
-            if (db.BlogPosts.Count() > 0)
-            {
-                var foundPosts = db.BlogPosts.OrderByDescending(post => post.DatePosted).Where(p => p.Published && !p.System).Take(5);
-                if (foundPosts != null)
-                    lastPosts = foundPosts.ToList();
-            }
             // Grab the latest podcasts
             List<Podcast.Models.Podcast> lastPods = new List<Podcast.Models.Podcast>();
             if (db.Podcasts.Count() > 0)
@@ -52,7 +44,6 @@ namespace Teknik.Areas.Home.Controllers
 
             model.SitePosts = lastSite;
             model.Podcasts = lastPods;
-            model.BlogPosts = lastPosts;
 
             ViewBag.Title = Config.Title;
             return View(model);

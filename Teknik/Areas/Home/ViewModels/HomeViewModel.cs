@@ -13,6 +13,5 @@ namespace Teknik.Areas.Home.ViewModels
     {
         public List<BlogPost> SitePosts { get; set; }
         public List<Podcast.Models.Podcast> Podcasts { get; set; }
-        public List<BlogPost> BlogPosts { get; set; }
     }
 }

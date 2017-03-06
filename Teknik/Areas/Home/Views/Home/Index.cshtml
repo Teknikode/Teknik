@@ -128,7 +128,7 @@
 <br />
 <div class="container">
     <!-- Display Site News -->
-    <div class="col-sm-4">
+    <div class="col-sm-6">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title"><span class="pull-left"><i class="fa fa-newspaper-o"></i></span><span class="center-block text-center">Recent News</span></h3>
@@ -170,7 +170,7 @@
         </div>
     </div>
     <!-- Display Recent Podcasts -->
-    <div class="col-sm-4">
+    <div class="col-sm-6">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title"><span class="pull-left"><i class="fa fa-microphone"></i></span><span class="center-block text-center">Recent Podcasts</span></h3>
@@ -203,47 +203,6 @@
                             <div class="row">
                                 <div class="col-sm-12 text-center">
                                     <h4>No Podcasts Available</h4>
-                                </div>
-                            </div>
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </div>
-<!-- Display Recent Blog Posts -->
-    <div class="col-sm-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><span class="pull-left"><i class="fa fa-book"></i></span><span class="center-block text-center">Recent Blog Posts</span></h3>
-            </div>
-            <div class="panel-body">
-                <ul class="list-group">
-                    @if (Model.BlogPosts.Any())
-                    {
-                        foreach (BlogPost post in Model.BlogPosts)
-                        {
-                            <li class="list-group-item">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="blog-post-sm">
-                                            <h2 class="blog-post-title-sm text-left"><a href="@Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId })" id="title_@post.BlogPostId">@Html.Markdown(post.Title)</a>
-                                            </h2>
-                                            <p class="blog-post-meta-sm text-left text-muted">
-                                                Posted on <time datetime="@post.DatePosted.ToString("s")">@post.DatePosted.ToString("MMMM dd, yyyy")</time> by <a href="@Url.SubRouteUrl("user", "User.ViewProfile", new { username = post.Blog.User.Username })">@post.Blog.User.Username</a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        }
-                    }
-                    else
-                    {
-                        <li class="list-group-item">
-                            <div class="row">
-                                <div class="col-sm-12 text-center">
-                                    <h4>No Posts Available</h4>
                                 </div>
                             </div>
                         </li>
