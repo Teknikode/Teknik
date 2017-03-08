@@ -188,6 +188,18 @@ namespace Teknik.Areas.Users.Utility
                 // Changing Password?
                 if (changePass)
                 {
+                    // Make sure they have a git and email account before resetting their password
+                    string email = GetUserEmailAddress(config, user.Username);
+                    if (config.EmailConfig.Enabled && !UserEmailExists(config, email))
+                    {
+                        AddUserEmail(config, email, password);
+                    }
+
+                    if (config.GitConfig.Enabled && !UserGitExists(config, user.Username))
+                    {
+                        AddUserGit(config, user.Username, password);
+                    }
+
                     // Change email password
                     EditUserEmailPassword(config, GetUserEmailAddress(config, user.Username), password);
 
