@@ -422,6 +422,17 @@ namespace Teknik.Areas.Users.Utility
                 {
                     // Update User password
                     user.HashedPassword = SHA384.Hash(user.Username.ToLower(), password).ToHex();
+
+                    // Remove any password transfer items for the account
+                    for (int i = 0; i < user.Transfers.Count; i++)
+                    {
+                        TransferType type = user.Transfers.ToList()[i];
+                        if (type.Type == TransferTypes.ASCIIPassword || type.Type == TransferTypes.CaseSensitivePassword || type.Type == TransferTypes.Sha256Password)
+                        {
+                            user.Transfers.Remove(type);
+                            i--;
+                        }
+                    }
                 }
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
