@@ -216,6 +216,8 @@
     <Compile Include="Areas\Admin\Controllers\AdminController.cs" />
     <Compile Include="Areas\Admin\ViewModels\DashboardViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\SearchResultViewModel.cs" />
+    <Compile Include="Areas\Admin\ViewModels\UploadResultViewModel.cs" />
+    <Compile Include="Areas\Admin\ViewModels\UploadSearchViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\SearchViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\UserInfoViewModel.cs" />
     <Compile Include="Areas\API\APIAreaRegistration.cs" />
@@ -373,6 +375,7 @@
     <Content Include="App_Data\robots.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Areas\Admin\Scripts\UploadSearch.js" />
     <Content Include="Areas\Admin\Scripts\Search.js" />
     <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
@@ -640,6 +643,8 @@
     <Content Include="Areas\FAQ\Views\_ViewStart.cshtml" />
     <Content Include="Areas\FAQ\Views\FAQ\Index.cshtml" />
     <Content Include="Areas\User\Views\User\GetPremium.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\UploadSearch.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\UploadResult.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />

@@ -25,7 +25,7 @@ namespace Teknik.Areas.Upload.Models
         [CaseSensitive]
         public string FileName { get; set; }
 
-        public int ContentLength { get; set; }
+        public long ContentLength { get; set; }
 
         public string ContentType { get; set; }
 

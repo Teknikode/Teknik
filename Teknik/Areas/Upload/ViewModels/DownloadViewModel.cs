@@ -10,7 +10,7 @@ namespace Teknik.Areas.Upload.ViewModels
     {
         public string FileName { get; set; }
         public string ContentType { get; set; }
-        public int ContentLength { get; set; }
+        public long ContentLength { get; set; }
         public string IV { get; set; }
         public int keySize { get; set; }
         public int blockSize { get; set; }

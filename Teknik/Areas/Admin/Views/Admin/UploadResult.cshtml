@@ -1,0 +1,33 @@
+﻿@model Teknik.Areas.Admin.ViewModels.UploadResultViewModel
+
+@using Teknik.Utilities
+
+<div class="panel panel-default">
+    <div class="panel-heading text-center">
+        <a id="upload-url" href="@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Url })">@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Url })</a>
+    </div>
+    <div class="panel-body">
+        <div class="col-sm-2 text-center">
+            <label for="size">Size</label>
+            <p id="size">@StringHelper.GetBytesReadable(Model.ContentLength)</p>
+        </div>
+        <div class="col-sm-3 text-center">
+            <label for="type">Type</label>
+            <p id="type">@Model.ContentType</p>
+        </div>
+        <div class="col-sm-3 text-center">
+            <label for="dateUploaded">Date Uploaded</label>
+            <p id="dateUploaded"><time datetime="@Model.DateUploaded.ToString("s")">@Model.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
+        </div>
+        <div class="col-sm-2 text-center">
+            <label for="downloads">Downloads</label>
+            <p id="downloads">@Model.Downloads</p>
+        </div>
+        <div class="col-sm-2 text-center" style="overflow-x: hidden">
+            @{
+                string deleteUrl = (string.IsNullOrEmpty(Model.DeleteKey)) ? string.Empty : Url.SubRouteUrl("u", "Upload.Delete", new { file = Model.Url, key = Model.DeleteKey });
+            }
+            <p id="delete-upload"><button role="button" class="btn btn-danger delete-upload-button" id="@deleteUrl" data-upload-id="@Model.Url">Delete</button></p>
+        </div>
+    </div>
+</div>

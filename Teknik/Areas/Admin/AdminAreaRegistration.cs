@@ -31,8 +31,16 @@ namespace Teknik.Areas.Admin
                  "Admin.Search", // Route name
                  new List<string>() { "admin" }, // Subdomains
                  new List<string>() { config.Host },
-                 "Search",    // URL with parameters 
+                 "Search/Users",    // URL with parameters 
                  new { controller = "Admin", action = "Search" },  // Parameter defaults 
+                 new[] { typeof(Controllers.AdminController).Namespace }
+             );
+            context.MapSubdomainRoute(
+                 "Admin.UploadSearch", // Route name
+                 new List<string>() { "admin" }, // Subdomains
+                 new List<string>() { config.Host },
+                 "Search/Uploads",    // URL with parameters 
+                 new { controller = "Admin", action = "UploadSearch" },  // Parameter defaults 
                  new[] { typeof(Controllers.AdminController).Namespace }
              );
             context.MapSubdomainRoute(
@@ -55,6 +63,11 @@ namespace Teknik.Areas.Admin
             // Register Script Bundles
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/Search", config.CdnHost).Include(
                       "~/Areas/Admin/Scripts/Search.js"));
+
+            // Register Script Bundles
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/UploadSearch", config.CdnHost).Include(
+                      "~/Scripts/bootbox/bootbox.min.js",
+                      "~/Areas/Admin/Scripts/UploadSearch.js"));
         }
     }
 }

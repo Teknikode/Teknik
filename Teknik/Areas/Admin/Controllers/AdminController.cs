@@ -39,6 +39,13 @@ namespace Teknik.Areas.Admin.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public ActionResult UploadSearch()
+        {
+            UploadSearchViewModel model = new UploadSearchViewModel();
+            return View(model);
+        }
+
         [HttpPost]
         public ActionResult GetSearchResults(string query)
         {
@@ -62,6 +69,26 @@ namespace Teknik.Areas.Admin.Controllers
             }
 
             return PartialView("~/Areas/Admin/Views/Admin/SearchResults.cshtml", models);
+        }
+
+        [HttpPost]
+        public ActionResult GetUploadSearchResults(string url)
+        {
+            Upload.Models.Upload foundUpload = db.Uploads.Where(u => u.Url == url).FirstOrDefault();
+            if (foundUpload != null)
+            {
+                UploadResultViewModel model = new UploadResultViewModel();
+
+                model.Url = foundUpload.Url;
+                model.ContentType = foundUpload.ContentType;
+                model.ContentLength = foundUpload.ContentLength;
+                model.DateUploaded = foundUpload.DateUploaded;
+                model.Downloads = foundUpload.Downloads;
+                model.DeleteKey = foundUpload.DeleteKey;
+
+                return PartialView("~/Areas/Admin/Views/Admin/UploadResult.cshtml", model);
+            }
+            return Json(new { error = new { message = "Upload does not exist" } });
         }
     }
 }
