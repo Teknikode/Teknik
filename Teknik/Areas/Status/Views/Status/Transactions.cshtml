@@ -5,7 +5,7 @@
 @{ 
     decimal totalBills = Model.CurrentMonthBills;
     decimal totalIncome = Model.CurrentMonthIncome;
-    int incomePercentage = 100;
+    int incomePercentage = 0;
     if (totalIncome != 0 && totalBills != 0)
     {
         incomePercentage = (int)Math.Min(Math.Floor((totalIncome / totalBills) * 100), 100);
