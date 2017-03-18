@@ -15,6 +15,7 @@ using Teknik.Areas.Users.Utility;
 using Teknik.Configuration;
 using Teknik.Utilities;
 using Teknik.Models;
+using System.Threading.Tasks;
 
 namespace ServerMaint
 {
@@ -26,6 +27,9 @@ namespace ServerMaint
         private static string configPath = currentPath;
 
         private const string TAKEDOWN_REPORTER = "Teknik Automated System";
+
+        private static readonly object dbLock = new object();
+        private static readonly object scanStatsLock = new object();
 
         public static event Action<string> OutputEvent;
 
@@ -124,84 +128,104 @@ namespace ServerMaint
             Output(string.Format("[{0}] Started Virus Scan.", DateTime.Now));
             List<Upload> uploads = db.Uploads.ToList();
 
+            int totalCount = uploads.Count();
+            int totalScans = 0;
+            int totalViruses = 0;
+            List<Task> runningTasks = new List<Task>();
+            foreach (Upload upload in uploads)
+            {
+                int currentScan = totalScans++;
+                Task scanTask = Task.Factory.StartNew(() => ScanUpload(config, db, upload, totalCount, currentScan, ref totalViruses));
+                if (scanTask != null)
+                {
+                    runningTasks.Add(scanTask);
+                }
+            }
+            bool running = true;
+
+            while (running)
+            {
+                running = runningTasks.Exists(s => s != null && !s.IsCompleted && !s.IsCanceled && !s.IsFaulted);
+            }
+
+            Output(string.Format("Scanning Complete.  {0} Scanned | {1} Viruses Found | {2} Total Files", totalScans, totalViruses, totalCount));
+        }
+
+        private static void ScanUpload(Config config, TeknikEntities db, Upload upload, int totalCount, int currentCount, ref int totalViruses)
+        {
             // Initialize ClamAV
             ClamClient clam = new ClamClient(config.UploadConfig.ClamServer, config.UploadConfig.ClamPort);
             clam.MaxStreamSize = config.UploadConfig.MaxUploadSize;
 
-            int totalCount = uploads.Count();
-            int totalScans = 0;
-            int totalClean = 0;
-            int totalViruses = 0;
-            foreach (Upload upload in uploads)
+            string subDir = upload.FileName[0].ToString();
+            string filePath = Path.Combine(config.UploadConfig.UploadDirectory, subDir, upload.FileName);
+            if (File.Exists(filePath))
             {
-                totalScans++;
-                string subDir = upload.FileName[0].ToString();
-                string filePath = Path.Combine(config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-                if (File.Exists(filePath))
+                // Read in the file
+                byte[] data = File.ReadAllBytes(filePath);
+                // If the IV is set, and Key is set, then decrypt it
+                if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                 {
-                    // Read in the file
-                    byte[] data = File.ReadAllBytes(filePath);
-                    // If the IV is set, and Key is set, then decrypt it
-                    if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
-                    {
-                        // Decrypt the data
-                        data = AES.Decrypt(data, upload.Key, upload.IV);
-                    }
+                    // Decrypt the data
+                    data = AES.Decrypt(data, upload.Key, upload.IV);
+                }
 
-                    // We have the data, let's scan it
-                    ClamScanResult scanResult = clam.SendAndScanFile(data);
+                // We have the data, let's scan it
+                ClamScanResult scanResult = clam.SendAndScanFile(data);
 
-                    switch (scanResult.Result)
-                    {
-                        case ClamScanResults.Clean:
-                            totalClean++;
-                            string cleanMsg = string.Format("[{0}] Clean Scan: {1}/{2} Scanned | {3} - {4}", DateTime.Now, totalScans, totalCount, upload.Url, upload.FileName);
-                            Output(cleanMsg);
-                            break;
-                        case ClamScanResults.VirusDetected:
+                switch (scanResult.Result)
+                {
+                    case ClamScanResults.Clean:
+                        string cleanMsg = string.Format("[{0}] Clean Scan: {1}/{2} Scanned | {3} - {4}", DateTime.Now, currentCount, totalCount, upload.Url, upload.FileName);
+                        Output(cleanMsg);
+                        break;
+                    case ClamScanResults.VirusDetected:
+                        lock (scanStatsLock)
+                        {
                             totalViruses++;
-                            string msg = string.Format("[{0}] Virus Detected: {1} - {2} - {3}", DateTime.Now, upload.Url, upload.FileName, scanResult.InfectedFiles.First().VirusName);
-                            File.AppendAllLines(virusFile, new List<string> { msg });
-                            Output(msg);
+                        }
+                        string msg = string.Format("[{0}] Virus Detected: {1} - {2} - {3}", DateTime.Now, upload.Url, upload.FileName, scanResult.InfectedFiles.First().VirusName);
+                        File.AppendAllLines(virusFile, new List<string> { msg });
+                        Output(msg);
+
+                        lock (dbLock)
+                        {
+                            string urlName = upload.Url;
                             // Delete from the DB
                             db.Uploads.Remove(upload);
-                            db.SaveChanges();
 
                             // Delete the File
                             if (File.Exists(filePath))
                             {
                                 File.Delete(filePath);
                             }
-                            break;
-                        case ClamScanResults.Error:
-                            string errorMsg = string.Format("[{0}] Scan Error: {1}", DateTime.Now, scanResult.RawResult);
-                            File.AppendAllLines(errorFile, new List<string> { errorMsg });
-                            Output(errorMsg);
-                            break;
-                        case ClamScanResults.Unknown:
-                            string unkMsg = string.Format("[{0}] Unknown Scan Result: {1}", DateTime.Now, scanResult.RawResult);
-                            File.AppendAllLines(errorFile, new List<string> { unkMsg });
-                            Output(unkMsg);
-                            break;
-                    }
+
+                            // Add to transparency report if any were found
+                            Takedown report = db.Takedowns.Create();
+                            report.Requester = TAKEDOWN_REPORTER;
+                            report.RequesterContact = config.SupportEmail;
+                            report.DateRequested = DateTime.Now;
+                            report.Reason = "Malware Found";
+                            report.ActionTaken = string.Format("Upload removed: {0}", urlName);
+                            report.DateActionTaken = DateTime.Now;
+                            db.Takedowns.Add(report);
+
+                            // Save Changes
+                            db.SaveChanges();
+                        }
+                        break;
+                    case ClamScanResults.Error:
+                        string errorMsg = string.Format("[{0}] Scan Error: {1}", DateTime.Now, scanResult.RawResult);
+                        File.AppendAllLines(errorFile, new List<string> { errorMsg });
+                        Output(errorMsg);
+                        break;
+                    case ClamScanResults.Unknown:
+                        string unkMsg = string.Format("[{0}] Unknown Scan Result: {1}", DateTime.Now, scanResult.RawResult);
+                        File.AppendAllLines(errorFile, new List<string> { unkMsg });
+                        Output(unkMsg);
+                        break;
                 }
             }
-
-            if (totalViruses > 0)
-            {
-                // Add to transparency report if any were found
-                Takedown report = db.Takedowns.Create();
-                report.Requester = TAKEDOWN_REPORTER;
-                report.RequesterContact = config.SupportEmail;
-                report.DateRequested = DateTime.Now;
-                report.Reason = "Malware Found";
-                report.ActionTaken = string.Format("{0} Uploads removed", totalViruses);
-                report.DateActionTaken = DateTime.Now;
-                db.Takedowns.Add(report);
-                db.SaveChanges();
-            }
-
-            Output(string.Format("Scanning Complete.  {0} Scanned | {1} Viruses Found | {2} Total Files", totalScans, totalViruses, totalCount));
         }
 
         public static void WarnInvalidAccounts(Config config, TeknikEntities db)
