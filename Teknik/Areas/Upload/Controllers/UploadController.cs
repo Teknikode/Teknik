@@ -143,7 +143,7 @@ namespace Teknik.Areas.Upload.Controllers
                     else // We have the key, so that means server side decryption
                     {
                         // Are they downloading it by range?
-                        bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]);
+                        bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]); // We do not support ranges
                         // Check to see if they have a cache
                         bool isCached = !string.IsNullOrEmpty(Request.Headers["If-Modified-Since"]);
 
@@ -159,79 +159,15 @@ namespace Teknik.Areas.Upload.Controllers
                         {
                             string subDir = upload.FileName[0].ToString();
                             string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-                            long startByte = 0;
-                            long endByte = upload.ContentLength - 1;
-                            long length = upload.ContentLength;
                             if (System.IO.File.Exists(filePath))
                             {
-                                // Read in the file
-                                FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                                // We accept ranges
-                                Response.AddHeader("Accept-Ranges", "0-" + length);
-
-                                // check to see if we need to pass a specified range
-                                if (byRange)
-                                {
-                                    long anotherStart = startByte;
-                                    long anotherEnd = endByte;
-                                    string[] arr_split = Request.ServerVariables["HTTP_RANGE"].Split(new char[] { '=' });
-                                    string range = arr_split[1];
-
-                                    // Make sure the client hasn't sent us a multibyte range 
-                                    if (range.IndexOf(",") > -1)
-                                    {
-                                        // (?) Shoud this be issued here, or should the first 
-                                        // range be used? Or should the header be ignored and 
-                                        // we output the whole content? 
-                                        Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
-                                        throw new HttpException(416, "Requested Range Not Satisfiable");
-                                    }
-
-                                    // If the range starts with an '-' we start from the beginning 
-                                    // If not, we forward the file pointer 
-                                    // And make sure to get the end byte if spesified 
-                                    if (range.StartsWith("-"))
-                                    {
-                                        // The n-number of the last bytes is requested 
-                                        anotherStart = startByte - Convert.ToInt64(range.Substring(1));
-                                    }
-                                    else
-                                    {
-                                        arr_split = range.Split(new char[] { '-' });
-                                        anotherStart = Convert.ToInt64(arr_split[0]);
-                                        long temp = 0;
-                                        anotherEnd = (arr_split.Length > 1 && Int64.TryParse(arr_split[1].ToString(), out temp)) ? Convert.ToInt64(arr_split[1]) : upload.ContentLength;
-                                    }
-
-                                    /* Check the range and make sure it's treated according to the specs. 
-                                     * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html 
-                                     */
-                                    // End bytes can not be larger than $end. 
-                                    anotherEnd = (anotherEnd > endByte) ? endByte : anotherEnd;
-                                    // Validate the requested range and return an error if it's not correct. 
-                                    if (anotherStart > anotherEnd || anotherStart > upload.ContentLength - 1 || anotherEnd >= upload.ContentLength)
-                                    {
-
-                                        Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
-                                        throw new HttpException(416, "Requested Range Not Satisfiable");
-                                    }
-                                    startByte = anotherStart;
-                                    endByte = anotherEnd;
-
-                                    length = endByte - startByte + 1; // Calculate new content length 
-
-                                    // Ranges are response of 206
-                                    Response.StatusCode = 206;
-                                }
-
                                 // Add cache parameters
                                 Response.Cache.SetCacheability(HttpCacheability.Public);
                                 Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
                                 Response.Cache.SetLastModified(upload.DateUploaded);
 
-                                // Notify the client the byte range we'll be outputting 
-                                Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + upload.ContentLength);
-                                Response.AddHeader("Content-Length", length.ToString());
+                                // Notify the client the content length we'll be outputting 
+                                Response.AddHeader("Content-Length", upload.ContentLength.ToString());
 
                                 // Create content disposition
                                 var cd = new System.Net.Mime.ContentDisposition
@@ -249,8 +185,8 @@ namespace Teknik.Areas.Upload.Controllers
                                     contentType = "text/plain";
                                 }
 
-                                // Reset file stream to starting position (or start of range)
-                                fs.Seek(startByte, SeekOrigin.Begin);
+                                // Read in the file
+                                FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
                                 // If the IV is set, and Key is set, then decrypt it while sending
                                 if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
@@ -260,7 +196,7 @@ namespace Teknik.Areas.Upload.Controllers
 
                                     return new FileGenerateResult(upload.Url, 
                                                                 contentType, 
-                                                                (response) => ResponseHelper.DecryptStreamToOutput(response, fs, (int)length, keyBytes, ivBytes, "CTR", "NoPadding", Config.UploadConfig.ChunkSize), 
+                                                                (response) => ResponseHelper.DecryptStreamToOutput(response, true, fs, (int)upload.ContentLength, keyBytes, ivBytes, "CTR", "NoPadding", Config.UploadConfig.ChunkSize), 
                                                                 false);
                                 }
                                 else // Otherwise just send it
@@ -270,7 +206,7 @@ namespace Teknik.Areas.Upload.Controllers
                                     // Send the file
                                     return new FileGenerateResult(upload.Url, 
                                                                 contentType, 
-                                                                (response) => ResponseHelper.StreamToOutput(response, fs, (int)length, Config.UploadConfig.ChunkSize), 
+                                                                (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)upload.ContentLength, Config.UploadConfig.ChunkSize), 
                                                                 false);
                                 }
                             }

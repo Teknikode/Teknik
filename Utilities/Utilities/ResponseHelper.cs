@@ -11,11 +11,14 @@ namespace Teknik.Utilities
 {
     public static class ResponseHelper
     {
-        public static void StreamToOutput(HttpResponseBase response, Stream stream, int length, int chunkSize)
+        public static void StreamToOutput(HttpResponseBase response, bool flush, Stream stream, int length, int chunkSize)
         {
             try
             {
-                response.Flush();
+                if (flush)
+                {
+                    response.Flush();
+                }
 
                 int curByte = 0;
                 int processedBytes = 0;
@@ -33,7 +36,10 @@ namespace Teknik.Utilities
                     if (processedBytes > 0)
                     {
                         response.OutputStream.Write(buffer, 0, processedBytes);
-                        response.Flush();
+                        if (flush)
+                        {
+                            response.Flush();
+                        }
 
                         // Clear the buffer
                         Array.Clear(buffer, 0, chunkSize);
@@ -52,7 +58,7 @@ namespace Teknik.Utilities
                 }
                 else
                 {
-                    throw httpEx;
+                    //throw httpEx;
                 }
             }
             catch (Exception ex)
@@ -66,11 +72,14 @@ namespace Teknik.Utilities
             }
         }
 
-        public static void DecryptStreamToOutput(HttpResponseBase response, Stream stream, int length, byte[] key, byte[] iv, string mode, string padding, int chunkSize)
+        public static void DecryptStreamToOutput(HttpResponseBase response, bool flush, Stream stream, int length, byte[] key, byte[] iv, string mode, string padding, int chunkSize)
         {
             try
             {
-                response.Flush();
+                if (flush)
+                {
+                    response.Flush();
+                }
                 IBufferedCipher cipher = AES.CreateCipher(false, key, iv, mode, padding);
 
                 int curByte = 0;
@@ -78,37 +87,41 @@ namespace Teknik.Utilities
                 byte[] buffer = new byte[chunkSize];
                 int bytesRemaining = length;
                 int bytesToRead = chunkSize;
+                int bytesRead = 0;
                 do
                 {
                     if (chunkSize > bytesRemaining)
                     {
                         bytesToRead = bytesRemaining;
                     }
-                    processedBytes = AES.ProcessCipherBlock(cipher, stream, bytesToRead, buffer, 0);
+                    processedBytes = AES.ProcessCipherBlock(cipher, stream, bytesToRead, buffer, 0, out bytesRead);
                     if (processedBytes > 0)
                     {
                         response.OutputStream.Write(buffer, 0, processedBytes);
-                        response.Flush();
+                        if (flush)
+                        {
+                            response.Flush();
+                        }
 
                         // Clear the buffer
                         Array.Clear(buffer, 0, chunkSize);
                     }
-                    curByte += processedBytes;
-                    bytesRemaining -= processedBytes;
+                    curByte += bytesRead;
+                    bytesRemaining -= bytesRead;
                 }
-                while (processedBytes > 0 && bytesRemaining > 0);
+                while (bytesRemaining > 0);
 
-                if (bytesRemaining > 0)
+                // Clear the buffer
+                Array.Clear(buffer, 0, chunkSize);
+
+                // Finalize processing of the cipher
+                processedBytes = AES.FinalizeCipherBlock(cipher, buffer, 0);
+                if (processedBytes > 0)
                 {
-                    // Clear the buffer
-                    Array.Clear(buffer, 0, chunkSize);
-
-                    // Finalize processing of the cipher
-                    processedBytes = AES.FinalizeCipherBlock(cipher, buffer, 0);
-                    if (processedBytes > 0)
+                    // We have bytes, lets write them to the output
+                    response.OutputStream.Write(buffer, 0, processedBytes);
+                    if (flush)
                     {
-                        // We have bytes, lets write them to the output
-                        response.OutputStream.Write(buffer, 0, processedBytes);
                         response.Flush();
                     }
                 }
@@ -122,7 +135,7 @@ namespace Teknik.Utilities
                 }
                 else
                 {
-                    throw httpEx;
+                    //throw httpEx;
                 }
             }
             catch (Exception ex)

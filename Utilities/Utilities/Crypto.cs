@@ -204,15 +204,15 @@ namespace Teknik.Utilities
             // Initialize variables
             byte[] output = new byte[input.Length];
             int cipherOffset = 0;
-            int processedBytes = 0;
+            int bytesRead = 0;
 
             // Process the stream and save the bytes to the output
             do
             {
-                processedBytes = ProcessCipherBlock(cipher, input, chunkSize, output, cipherOffset);
+                int processedBytes = ProcessCipherBlock(cipher, input, chunkSize, output, cipherOffset, out bytesRead);
                 cipherOffset += processedBytes;
             }
-            while (processedBytes > 0);
+            while (bytesRead > 0);
 
             // Finalize processing of the cipher
             FinalizeCipherBlock(cipher, output, cipherOffset);
@@ -231,9 +231,10 @@ namespace Teknik.Utilities
             {
                 int processedBytes = 0;
                 byte[] buffer = new byte[chunkSize];
+                int bytesRead = 0;
                 do
                 {
-                    processedBytes = ProcessCipherBlock(cipher, input, chunkSize, buffer, 0);
+                    processedBytes = ProcessCipherBlock(cipher, input, chunkSize, buffer, 0, out bytesRead);
                     if (processedBytes > 0)
                     {
                         // We have bytes, lets write them to the file
@@ -267,13 +268,13 @@ namespace Teknik.Utilities
             return cipher;
         }
 
-        public static int ProcessCipherBlock(IBufferedCipher cipher, Stream input, int chunkSize, byte[] output, int outputOffset)
+        public static int ProcessCipherBlock(IBufferedCipher cipher, Stream input, int chunkSize, byte[] output, int outputOffset, out int bytesRead)
         {
             // Initialize buffer
             byte[] buffer = new byte[chunkSize];
 
             // Read the next block of data
-            int bytesRead = input.Read(buffer, 0, chunkSize);
+            bytesRead = input.Read(buffer, 0, chunkSize);
             if (bytesRead > 0)
             {
                 // process the cipher for the read block and add it to the output

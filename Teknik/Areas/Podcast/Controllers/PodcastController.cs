@@ -100,7 +100,7 @@ namespace Teknik.Areas.Podcast.Controllers
 
                         Response.AppendHeader("Content-Disposition", cd.ToString());
 
-                        return new FileGenerateResult(file.FileName, file.ContentType, (response) => ResponseHelper.StreamToOutput(response, fileStream, file.ContentLength, 4 * 1024), false);
+                        return new FileGenerateResult(file.FileName, file.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, fileStream, file.ContentLength, 4 * 1024), false);
                         //return File(data, file.ContentType);
                     }
                 }
