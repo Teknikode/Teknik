@@ -27,8 +27,15 @@
                     window.location = html.result;
                 }
                 else {
+                    var errMsg = html;
+                    if (html.error) {
+                        errMsg = html.error;
+                        if (html.error.message) {
+                            errMsg = html.error.message;
+                        }
+                    }
                     $("#loginStatus").css('display', 'inline', 'important');
-                    $("#loginStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#loginStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errMsg + '</div>');
                 }
             }
         });
@@ -58,8 +65,15 @@
                     window.location.reload();
                 }
                 else {
+                    var errMsg = html;
+                    if (html.error) {
+                        errMsg = html.error;
+                        if (html.error.message) {
+                            errMsg = html.error.message;
+                        }
+                    }
                     $("#registerStatus").css('display', 'inline', 'important');
-                    $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errMsg + '</div>');
                 }
             }
         });

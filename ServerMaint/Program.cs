@@ -161,69 +161,72 @@ namespace ServerMaint
             string filePath = Path.Combine(config.UploadConfig.UploadDirectory, subDir, upload.FileName);
             if (File.Exists(filePath))
             {
-                // Read in the file
-                byte[] data = File.ReadAllBytes(filePath);
-                // If the IV is set, and Key is set, then decrypt it
+                // If the IV is set, and Key is set, then scan it
                 if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                 {
-                    // Decrypt the data
-                    data = AES.Decrypt(data, upload.Key, upload.IV);
-                }
+                    byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
+                    byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
+                    FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    AESCryptoStream aesStream = new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding");
 
-                // We have the data, let's scan it
-                ClamScanResult scanResult = clam.SendAndScanFile(data);
+                    // We have the data, let's scan it
+                    ClamScanResult scanResult = clam.SendAndScanFile(aesStream);
 
-                switch (scanResult.Result)
-                {
-                    case ClamScanResults.Clean:
-                        string cleanMsg = string.Format("[{0}] Clean Scan: {1}/{2} Scanned | {3} - {4}", DateTime.Now, currentCount, totalCount, upload.Url, upload.FileName);
-                        Output(cleanMsg);
-                        break;
-                    case ClamScanResults.VirusDetected:
-                        lock (scanStatsLock)
-                        {
-                            totalViruses++;
-                        }
-                        string msg = string.Format("[{0}] Virus Detected: {1} - {2} - {3}", DateTime.Now, upload.Url, upload.FileName, scanResult.InfectedFiles.First().VirusName);
-                        File.AppendAllLines(virusFile, new List<string> { msg });
-                        Output(msg);
+                    // Close file stream
+                    fs.Close();
 
-                        lock (dbLock)
-                        {
-                            string urlName = upload.Url;
-                            // Delete from the DB
-                            db.Uploads.Remove(upload);
-
-                            // Delete the File
-                            if (File.Exists(filePath))
+                    switch (scanResult.Result)
+                    {
+                        case ClamScanResults.Clean:
+                            string cleanMsg = string.Format("[{0}] Clean Scan: {1}/{2} Scanned | {3} - {4}", DateTime.Now, currentCount, totalCount, upload.Url, upload.FileName);
+                            Output(cleanMsg);
+                            break;
+                        case ClamScanResults.VirusDetected:
+                            string msg = string.Format("[{0}] Virus Detected: {1} - {2} - {3}", DateTime.Now, upload.Url, upload.FileName, scanResult.InfectedFiles.First().VirusName);
+                            Output(msg);
+                            lock (scanStatsLock)
                             {
-                                File.Delete(filePath);
+                                totalViruses++;
+                                File.AppendAllLines(virusFile, new List<string> { msg });
                             }
 
-                            // Add to transparency report if any were found
-                            Takedown report = db.Takedowns.Create();
-                            report.Requester = TAKEDOWN_REPORTER;
-                            report.RequesterContact = config.SupportEmail;
-                            report.DateRequested = DateTime.Now;
-                            report.Reason = "Malware Found";
-                            report.ActionTaken = string.Format("Upload removed: {0}", urlName);
-                            report.DateActionTaken = DateTime.Now;
-                            db.Takedowns.Add(report);
+                            lock (dbLock)
+                            {
+                                string urlName = upload.Url;
+                                // Delete from the DB
+                                db.Uploads.Remove(upload);
 
-                            // Save Changes
-                            db.SaveChanges();
-                        }
-                        break;
-                    case ClamScanResults.Error:
-                        string errorMsg = string.Format("[{0}] Scan Error: {1}", DateTime.Now, scanResult.RawResult);
-                        File.AppendAllLines(errorFile, new List<string> { errorMsg });
-                        Output(errorMsg);
-                        break;
-                    case ClamScanResults.Unknown:
-                        string unkMsg = string.Format("[{0}] Unknown Scan Result: {1}", DateTime.Now, scanResult.RawResult);
-                        File.AppendAllLines(errorFile, new List<string> { unkMsg });
-                        Output(unkMsg);
-                        break;
+                                // Delete the File
+                                if (File.Exists(filePath))
+                                {
+                                    File.Delete(filePath);
+                                }
+
+                                // Add to transparency report if any were found
+                                Takedown report = db.Takedowns.Create();
+                                report.Requester = TAKEDOWN_REPORTER;
+                                report.RequesterContact = config.SupportEmail;
+                                report.DateRequested = DateTime.Now;
+                                report.Reason = "Malware Found";
+                                report.ActionTaken = string.Format("Upload removed: {0}", urlName);
+                                report.DateActionTaken = DateTime.Now;
+                                db.Takedowns.Add(report);
+
+                                // Save Changes
+                                db.SaveChanges();
+                            }
+                            break;
+                        case ClamScanResults.Error:
+                            string errorMsg = string.Format("[{0}] Scan Error: {1}", DateTime.Now, scanResult.RawResult);
+                            File.AppendAllLines(errorFile, new List<string> { errorMsg });
+                            Output(errorMsg);
+                            break;
+                        case ClamScanResults.Unknown:
+                            string unkMsg = string.Format("[{0}] Unknown Scan Result: {1}", DateTime.Now, scanResult.RawResult);
+                            File.AppendAllLines(errorFile, new List<string> { unkMsg });
+                            Output(unkMsg);
+                            break;
+                    }
                 }
             }
         }

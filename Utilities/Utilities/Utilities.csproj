@@ -126,6 +126,7 @@
     <Compile Include="RequestHelper.cs" />
     <Compile Include="ResponseHelper.cs" />
     <Compile Include="RSSFeedResult.cs" />
+    <Compile Include="StreamHelper.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="StringHelper.cs" />
     <Compile Include="UrlExtensions.cs" />

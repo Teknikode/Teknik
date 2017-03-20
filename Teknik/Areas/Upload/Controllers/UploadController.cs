@@ -196,7 +196,7 @@ namespace Teknik.Areas.Upload.Controllers
 
                                     return new FileGenerateResult(upload.Url, 
                                                                 contentType, 
-                                                                (response) => ResponseHelper.DecryptStreamToOutput(response, true, fs, (int)upload.ContentLength, keyBytes, ivBytes, "CTR", "NoPadding", Config.UploadConfig.ChunkSize), 
+                                                                (response) => ResponseHelper.StreamToOutput(response, true, new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding"), (int)upload.ContentLength, Config.UploadConfig.ChunkSize), 
                                                                 false);
                                 }
                                 else // Otherwise just send it
