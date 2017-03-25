@@ -1,0 +1,35 @@
+﻿@model Teknik.Areas.IRC.ViewModels.ClientViewModel
+
+@using Teknik.Utilities
+
+@Scripts.Render("~/bundles/signalr")
+@Scripts.Render("~/signalr/hubs")
+@Scripts.Render("~/bundles/irc")
+
+<div class="container">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="row">
+            <div class="col-sm-10">
+                <textarea class="form-control" name="clientOutput" id="clientOutput" rows="20"></textarea>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="message" id="message">
+            </div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-primary" id="sendMessage">Submit</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <p>You need to be authenticated to view this page.</p>
+            </div>
+        </div>
+    }
+</div>

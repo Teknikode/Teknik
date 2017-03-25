@@ -43,6 +43,7 @@ namespace Teknik.Configuration
         private StatusConfig        _StatusConfig;
         private LoggingConfig       _LoggingConfig;
         private PiwikConfig         _PiwikConfig;
+        private IRCConfig           _IRCConfig;
 
         public bool         DevEnvironment  { get { return _DevEnvironment; }       set { _DevEnvironment = value; } }
         public bool         Migrate         { get { return _Migrate; }              set { _Migrate = value; } }
@@ -105,6 +106,9 @@ namespace Teknik.Configuration
         // Piwik Configuration
         public PiwikConfig          PiwikConfig         { get { return _PiwikConfig; }          set { _PiwikConfig = value; } }
 
+        // Piwik Configuration
+        public IRCConfig            IRCConfig           { get { return _IRCConfig; }            set { _IRCConfig = value; } }
+
         public Config()
         {
             _ConfigRWLock               = new ReaderWriterLockSlim();
@@ -145,6 +149,7 @@ namespace Teknik.Configuration
             StatusConfig        = new StatusConfig();
             LoggingConfig       = new LoggingConfig();
             PiwikConfig         = new PiwikConfig();
+            IRCConfig           = new IRCConfig();
         }
 
         public static Config Deserialize(string text)

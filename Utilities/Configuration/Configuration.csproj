@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IRCConfig.cs" />
     <Compile Include="ApiConfig.cs" />
     <Compile Include="BlogConfig.cs" />
     <Compile Include="Config.cs" />

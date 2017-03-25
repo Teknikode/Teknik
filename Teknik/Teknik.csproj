@@ -61,6 +61,10 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="IRCSharp, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IRCSharp.1.0.0.1\lib\net462\IRCSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
       <Private>True</Private>
@@ -103,16 +107,16 @@
       <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NBitcoin, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NBitcoin.3.0.2.4\lib\net45\NBitcoin.dll</HintPath>
+    <Reference Include="NBitcoin, Version=3.0.2.10, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NBitcoin.3.0.2.10\lib\net45\NBitcoin.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nClam, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\nClam.2.0.6.0\lib\net40-Client\nClam.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -249,6 +253,9 @@
     <Compile Include="Areas\Home\Controllers\HomeController.cs" />
     <Compile Include="Areas\Home\HomeAreaRegistration.cs" />
     <Compile Include="Areas\Home\ViewModels\HomeViewModel.cs" />
+    <Compile Include="Areas\IRC\Controllers\IRCController.cs" />
+    <Compile Include="Areas\IRC\IRCAreaRegistration.cs" />
+    <Compile Include="Areas\IRC\ViewModels\ClientViewModel.cs" />
     <Compile Include="Areas\Paste\Controllers\PasteController.cs" />
     <Compile Include="Areas\Paste\Models\Paste.cs" />
     <Compile Include="Areas\Paste\PasteHelper.cs" />
@@ -297,6 +304,7 @@
     <Compile Include="Areas\Vault\ViewModels\PasteItemViewModel.cs" />
     <Compile Include="Areas\Vault\ViewModels\VaultItemViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
+    <Compile Include="Hubs\IRCClientHub.cs" />
     <Compile Include="Security\ITeknikPrincipal.cs" />
     <Compile Include="Security\TeknikPrincipal.cs" />
     <Compile Include="Filters\CORSActionFilter.cs" />
@@ -360,6 +368,7 @@
     <Compile Include="Areas\User\ViewModels\LoginViewModel.cs" />
     <Compile Include="Areas\User\ViewModels\RegisterViewModel.cs" />
     <Compile Include="Modules\PerformanceMonitorModule.cs" />
+    <Compile Include="SignalR\IRCClient.cs" />
     <Compile Include="SignalR\ServerUsageTicker.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
@@ -384,6 +393,7 @@
     <Content Include="Areas\Help\Content\Help.css" />
     <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
+    <Content Include="Areas\IRC\Scripts\IRC.js" />
     <Content Include="Areas\Paste\Content\Paste.css" />
     <Content Include="Areas\Paste\Scripts\Paste.js" />
     <Content Include="Areas\Podcast\Content\Podcast.css" />
@@ -645,6 +655,9 @@
     <Content Include="Areas\User\Views\User\GetPremium.cshtml" />
     <Content Include="Areas\Admin\Views\Admin\UploadSearch.cshtml" />
     <Content Include="Areas\Admin\Views\Admin\UploadResult.cshtml" />
+    <Content Include="Areas\IRC\Views\web.config" />
+    <Content Include="Areas\IRC\Views\IRC\Index.cshtml" />
+    <Content Include="Areas\IRC\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -740,6 +753,8 @@
     <Folder Include="Areas\Help\Views\Shared\" />
     <Folder Include="Areas\Home\Models\" />
     <Folder Include="Areas\Home\Views\Shared\" />
+    <Folder Include="Areas\IRC\Models\" />
+    <Folder Include="Areas\IRC\Views\Shared\" />
     <Folder Include="Areas\Paste\Views\Shared\" />
     <Folder Include="Areas\Podcast\Views\Shared\" />
     <Folder Include="Areas\Privacy\Models\" />
