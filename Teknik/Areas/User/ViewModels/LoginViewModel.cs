@@ -13,8 +13,6 @@ namespace Teknik.Areas.Users.ViewModels
 {
     public class LoginViewModel : ViewModelBase
     {
-        private TeknikEntities db = new TeknikEntities();
-
         [Required]
         [Display(Name = "Username")]
         public string Username { get; set; }

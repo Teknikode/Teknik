@@ -1,0 +1,46 @@
+﻿.clientOutput {
+    height: 500px;
+	text-align:left;
+	margin:0 auto;
+	margin-bottom:25px;
+	padding:10px;
+	background:#fff;
+	border:1px solid #ACD8F0;
+	overflow:auto; 
+}
+
+.locationList {
+   list-style: none;
+   text-align: center;
+}
+
+.locationList .locationTab {    
+   border-top: 1px solid #666;
+   border-left: 1px solid #666;
+   border-bottom: 1px solid #666;
+   border-right: 8px solid #666;
+   background-color: #ddd;
+   margin: 8px 0;
+}
+
+.locationList .locationTab:hover {
+    border-right: 8px solid #333;
+}
+
+.locationList .locationTab.selected {
+   border-left: none;
+   background-color: #fff;
+   border-right: 8px solid #006699;
+}
+
+.locationList .locationTab a,
+.locationList .locationTab a:visited {
+   text-decoration: none;
+   color: #666;
+   display: block;
+   padding: 15px 5px;
+}
+
+.locationList .locationTab a:hover {
+   color: #000;
+}

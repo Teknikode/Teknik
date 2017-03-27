@@ -393,6 +393,7 @@
     <Content Include="Areas\Help\Content\Help.css" />
     <Content Include="Areas\Home\Content\Home.css" />
     <Content Include="Areas\Home\Scripts\Home.js" />
+    <Content Include="Areas\IRC\Content\IRC.css" />
     <Content Include="Areas\IRC\Scripts\IRC.js" />
     <Content Include="Areas\Paste\Content\Paste.css" />
     <Content Include="Areas\Paste\Scripts\Paste.js" />
@@ -656,7 +657,7 @@
     <Content Include="Areas\Admin\Views\Admin\UploadSearch.cshtml" />
     <Content Include="Areas\Admin\Views\Admin\UploadResult.cshtml" />
     <Content Include="Areas\IRC\Views\web.config" />
-    <Content Include="Areas\IRC\Views\IRC\Index.cshtml" />
+    <Content Include="Areas\IRC\Views\IRC\Client.cshtml" />
     <Content Include="Areas\IRC\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />

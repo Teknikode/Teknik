@@ -12,8 +12,10 @@ namespace Teknik.Areas.IRC.Controllers
     [TeknikAuthorize]
     public class IRCController : DefaultController
     {
-        public ActionResult Index()
+        [AllowAnonymous]
+        public ActionResult Client()
         {
+            ViewBag.Title = "Web Client - " + Config.Title + " IRC";
             ClientViewModel model = new ClientViewModel();
             return View(model);
         }

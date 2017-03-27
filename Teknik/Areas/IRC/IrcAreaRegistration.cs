@@ -20,16 +20,22 @@ namespace Teknik.Areas.IRC
         {
             Config config = Config.Load();
             context.MapSubdomainRoute(
-                 "IRC.Index", // Route name
+                 "IRC.Client", // Route name
                  new List<string>() { "irc" },
                  new List<string>() { config.Host },
                  "",    // URL with parameters 
-                 new { controller = "IRC", action = "Index" },  // Parameter defaults 
+                 new { controller = "IRC", action = "Client" },  // Parameter defaults 
                  new[] { typeof(Controllers.IRCController).Namespace }
              );
 
             // Register Script Bundle
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/irc", config.CdnHost).Include(
+                      "~/Areas/IRC/Content/IRC.css"));
+
+            // Register Script Bundle
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/irc", config.CdnHost).Include(
+                      "~/Scripts/bootbox/bootbox.min.js",
+                      "~/Scripts/jquery.blockUI.js",
                       "~/Areas/IRC/Scripts/IRC.js"));
         }
     }
