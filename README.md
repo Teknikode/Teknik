@@ -11,6 +11,7 @@ Teknik is a suite of services with attractive and functional interfaces.
   * Podcasts
   * Easy to use API
   * Flexible installation and configuration
+  * And much more...
 
 You can see a live demo [here](https://www.teknik.io).
 
