@@ -19,7 +19,7 @@ In order to run Teknik on your server, you'll need:
 
   * IIS 7+ with URL Rewrite module or Apache with `mod_rewrite` enabled (Requires conversion of `web.config` files)
   * ASP.NET MVC 5
-  * .NET Framework 4.5.2
+  * .NET Framework 4.6.2
   * MS SQL Server
   * hMailServer (If running email as well)
   * Web Mail Client (If you would like to have webmail)
