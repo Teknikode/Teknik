@@ -387,7 +387,7 @@ namespace Teknik.Areas.Users.Controllers
                             {
                                 return Json(new { error = "New Password Must Match." });
                             }
-                            // The New Password Match?
+                            // Are password resets enabled?
                             if (!Config.UserConfig.PasswordResetEnabled)
                             {
                                 return Json(new { error = "Password resets are disabled." });
