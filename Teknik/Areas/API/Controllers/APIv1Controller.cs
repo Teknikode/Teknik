@@ -39,96 +39,100 @@ namespace Teknik.Areas.API.Controllers
         {
             try
             {
-                if (model.file != null)
+                if (Config.UploadConfig.UploadEnabled)
                 {
-                    if (model.file.ContentLength <= Config.UploadConfig.MaxUploadSize)
+                    if (model.file != null)
                     {
-                        // convert file to bytes
-                        string fileExt = Path.GetExtension(model.file.FileName);
-                        int contentLength = model.file.ContentLength;
-
-                        // Scan the file to detect a virus
-                        if (Config.UploadConfig.VirusScanEnable)
+                        if (model.file.ContentLength <= Config.UploadConfig.MaxUploadSize)
                         {
-                            ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
-                            clam.MaxStreamSize = Config.UploadConfig.MaxUploadSize;
-                            ClamScanResult scanResult = clam.SendAndScanFile(model.file.InputStream);
+                            // convert file to bytes
+                            string fileExt = Path.GetExtension(model.file.FileName);
+                            int contentLength = model.file.ContentLength;
 
-                            switch (scanResult.Result)
+                            // Scan the file to detect a virus
+                            if (Config.UploadConfig.VirusScanEnable)
                             {
-                                case ClamScanResults.Clean:
-                                    break;
-                                case ClamScanResults.VirusDetected:
-                                    return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.InfectedFiles.First().VirusName, Url.SubRouteUrl("tos", "TOS.Index")) } });
-                                case ClamScanResults.Error:
-                                    break;
-                                case ClamScanResults.Unknown:
-                                    break;
-                            }
-                        }
+                                ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
+                                clam.MaxStreamSize = Config.UploadConfig.MaxUploadSize;
+                                ClamScanResult scanResult = clam.SendAndScanFile(model.file.InputStream);
 
-                        // Need to grab the contentType if it's empty
-                        if (string.IsNullOrEmpty(model.contentType))
-                        {
-                            model.contentType = (string.IsNullOrEmpty(model.file.ContentType)) ? "application/octet-stream" : model.file.ContentType;
-                        }
-
-                        // Initialize the key size and block size if empty
-                        if (model.keySize <= 0)
-                            model.keySize = Config.UploadConfig.KeySize;
-                        if (model.blockSize <= 0)
-                            model.blockSize = Config.UploadConfig.BlockSize;
-
-                        // Save the file data
-                        Upload.Models.Upload upload = Uploader.SaveFile(db, Config, model.file.InputStream, model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.keySize, model.blockSize);
-
-                        if (upload != null)
-                        {
-                            // Associate this with the user if they provided an auth key
-                            if (User.Identity.IsAuthenticated)
-                            {
-                                User foundUser = UserHelper.GetUser(db, User.Identity.Name);
-                                if (foundUser != null)
+                                switch (scanResult.Result)
                                 {
-                                    upload.UserId = foundUser.UserId;
-                                    db.Entry(upload).State = EntityState.Modified;
-                                    db.SaveChanges();
+                                    case ClamScanResults.Clean:
+                                        break;
+                                    case ClamScanResults.VirusDetected:
+                                        return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.InfectedFiles.First().VirusName, Url.SubRouteUrl("tos", "TOS.Index")) } });
+                                    case ClamScanResults.Error:
+                                        break;
+                                    case ClamScanResults.Unknown:
+                                        break;
                                 }
                             }
 
-                            // Generate delete key only if asked to
-                            if (!model.genDeletionKey)
+                            // Need to grab the contentType if it's empty
+                            if (string.IsNullOrEmpty(model.contentType))
                             {
-                                upload.DeleteKey = string.Empty;
-                                db.Entry(upload).State = EntityState.Modified;
-                                db.SaveChanges();
+                                model.contentType = (string.IsNullOrEmpty(model.file.ContentType)) ? "application/octet-stream" : model.file.ContentType;
                             }
 
-                            // Pull all the information together 
-                            string fullUrl = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url });
-                            var returnData = new
-                            {
-                                url = (model.saveKey || string.IsNullOrEmpty(model.key)) ? fullUrl : fullUrl + "#" + model.key,
-                                fileName = upload.Url,
-                                contentType = model.contentType,
-                                contentLength = contentLength,
-                                key = model.key,
-                                keySize = model.keySize,
-                                iv = model.iv,
-                                blockSize = model.blockSize,
-                                deletionKey = upload.DeleteKey
+                            // Initialize the key size and block size if empty
+                            if (model.keySize <= 0)
+                                model.keySize = Config.UploadConfig.KeySize;
+                            if (model.blockSize <= 0)
+                                model.blockSize = Config.UploadConfig.BlockSize;
 
-                            };
-                            return Json(new { result = returnData });
+                            // Save the file data
+                            Upload.Models.Upload upload = Uploader.SaveFile(db, Config, model.file.InputStream, model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.keySize, model.blockSize);
+
+                            if (upload != null)
+                            {
+                                // Associate this with the user if they provided an auth key
+                                if (User.Identity.IsAuthenticated)
+                                {
+                                    User foundUser = UserHelper.GetUser(db, User.Identity.Name);
+                                    if (foundUser != null)
+                                    {
+                                        upload.UserId = foundUser.UserId;
+                                        db.Entry(upload).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                }
+
+                                // Generate delete key only if asked to
+                                if (!model.genDeletionKey)
+                                {
+                                    upload.DeleteKey = string.Empty;
+                                    db.Entry(upload).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+
+                                // Pull all the information together 
+                                string fullUrl = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url });
+                                var returnData = new
+                                {
+                                    url = (model.saveKey || string.IsNullOrEmpty(model.key)) ? fullUrl : fullUrl + "#" + model.key,
+                                    fileName = upload.Url,
+                                    contentType = model.contentType,
+                                    contentLength = contentLength,
+                                    key = model.key,
+                                    keySize = model.keySize,
+                                    iv = model.iv,
+                                    blockSize = model.blockSize,
+                                    deletionKey = upload.DeleteKey
+
+                                };
+                                return Json(new { result = returnData });
+                            }
+                            return Json(new { error = new { message = "Unable to save file" } });
                         }
-                        return Json(new { error = new { message = "Unable to save file" } });
+                        else
+                        {
+                            return Json(new { error = new { message = "File Too Large" } });
+                        }
                     }
-                    else
-                    {
-                        return Json(new { error = new { message = "File Too Large" } });
-                    }
+                    return Json(new { error = new { message = "Invalid Upload Request" } });
                 }
-                return Json(new { error = new { message = "Invalid Upload Request" } });
+                return Json(new { error = new { message = "Uploads are Disabled" } });
             }
             catch(Exception ex)
             {
