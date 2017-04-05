@@ -164,8 +164,8 @@ namespace Teknik.SignalR
                 // Network Values
                 if (config.StatusConfig.ShowNetworkStatus)
                 {
-                    _serverUsage.Network.Sent = sentPerf.NextValue();
-                    _serverUsage.Network.Received = receivedPerf.NextValue();
+                    _serverUsage.Network.Sent = sentPerf.NextValue() * 8;
+                    _serverUsage.Network.Received = receivedPerf.NextValue() * 8;
                 }
                 return true;
             }
