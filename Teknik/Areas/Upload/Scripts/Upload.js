@@ -217,7 +217,7 @@ function encryptFile(file, callback) {
                                 lastTime = curTime;
                                 lastData = e.data.processed;
                                 var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
-                                setProgress(fileID, percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Encrypting [' + getReadableBandwidthString(speed) + ']');
+                                setProgress(fileID, percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Encrypting [' + getReadableBandwidthString(speed * 8) + ']');
                             }
                             break;
                         case 'finish':
@@ -306,7 +306,7 @@ function uploadProgress(fileID, lastTime, lastData, evt) {
             setProgress(fileID, 100, 'progress-bar-success progress-bar-striped active', '', 'Processing Upload');
         }
         else {
-            setProgress(fileID, percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Uploading to Server [' + getReadableBandwidthString(speed) + ']');
+            setProgress(fileID, percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Uploading to Server [' + getReadableBandwidthString(speed * 8) + ']');
         }
     }
 }
