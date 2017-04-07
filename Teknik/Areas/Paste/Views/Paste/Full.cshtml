@@ -19,9 +19,9 @@
     <div class="row">
         <div class="col-sm-12 pull-left">
             <div class="btn-group" role="group">
-                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("paste", "Paste.Simple", new { url = Model.Url })">Simple</a>
-                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("paste", "Paste.Raw", new { url = Model.Url })">Raw</a>
-                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("paste", "Paste.Download", new { url = Model.Url })">Download</a>
+                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Simple", new { url = Model.Url })">Simple</a>
+                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Raw", new { url = Model.Url })">Raw</a>
+                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Download", new { url = Model.Url })">Download</a>
                 <button type="button" class="btn btn-default" id="create-vault" data-paste-url="@Model.Url" data-paste-title="@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)">Create Vault</button>
                 @if (User.Identity.IsAuthenticated && Model.Vaults != null && Model.Vaults.Any())
                 {

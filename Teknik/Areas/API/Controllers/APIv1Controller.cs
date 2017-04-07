@@ -107,7 +107,7 @@ namespace Teknik.Areas.API.Controllers
                                 }
 
                                 // Pull all the information together 
-                                string fullUrl = Url.SubRouteUrl("upload", "Upload.Download", new { file = upload.Url });
+                                string fullUrl = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url });
                                 var returnData = new
                                 {
                                     url = (model.saveKey || string.IsNullOrEmpty(model.key)) ? fullUrl : fullUrl + "#" + model.key,
@@ -169,7 +169,7 @@ namespace Teknik.Areas.API.Controllers
                         result = new
                         {
                             id = paste.Url,
-                            url = Url.SubRouteUrl("paste", "Paste.View", new { type = "Full", url = paste.Url, password = model.password }),
+                            url = Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url, password = model.password }),
                             title = paste.Title,
                             syntax = paste.Syntax,
                             expiration = paste.ExpireDate,
