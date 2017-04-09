@@ -17,8 +17,6 @@ namespace Teknik.Areas.Contact.Controllers
     [TeknikAuthorize]
     public class ContactController : DefaultController
     {
-        private TeknikEntities db = new TeknikEntities();
-
         // GET: Contact/Contact
         [TrackPageView]
         [AllowAnonymous]
@@ -40,15 +38,18 @@ namespace Teknik.Areas.Contact.Controllers
                 {
                     try
                     {
-                        // Insert the message into the DB
-                        Models.Contact newContact = db.Contact.Create();
-                        newContact.Name = model.Name;
-                        newContact.Email = model.Email;
-                        newContact.Subject = model.Subject;
-                        newContact.Message = model.Message;
-                        newContact.DateAdded = DateTime.Now;
-                        db.Contact.Add(newContact);
-                        db.SaveChanges();
+                        using (TeknikEntities db = new TeknikEntities())
+                        {
+                            // Insert the message into the DB
+                            Models.Contact newContact = db.Contact.Create();
+                            newContact.Name = model.Name;
+                            newContact.Email = model.Email;
+                            newContact.Subject = model.Subject;
+                            newContact.Message = model.Message;
+                            newContact.DateAdded = DateTime.Now;
+                            db.Contact.Add(newContact);
+                            db.SaveChanges();
+                        }
 
                         // Let's also email the message to support
                         SmtpClient client = new SmtpClient();

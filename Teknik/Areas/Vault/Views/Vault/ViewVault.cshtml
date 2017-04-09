@@ -7,6 +7,9 @@
 @Styles.Render("~/Content/vault")
 
 <script type="text/javascript">
+    var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
+    var validateItemURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = "ValidateItem" })';
+    var modifyVaultURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = "EditVault" })';
     var deleteVaultURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.DeleteVault")';
 </script>
 

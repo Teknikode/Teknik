@@ -47,56 +47,57 @@ namespace ServerMaint
                     if (Directory.Exists(configPath))
                     {
                         Config config = Config.Load(configPath);
-                        TeknikEntities db = new TeknikEntities();
 
                         Output(string.Format("[{0}] Started Server Maintenance Process.", DateTime.Now));
-
-                        // Scan all the uploads for viruses, and remove the bad ones
-                        if (options.ScanUploads && config.UploadConfig.VirusScanEnable)
+                        using (TeknikEntities db = new TeknikEntities())
                         {
-                            ScanUploads(config, db);
-                        }
+                            // Scan all the uploads for viruses, and remove the bad ones
+                            if (options.ScanUploads && config.UploadConfig.VirusScanEnable)
+                            {
+                                ScanUploads(config, db);
+                            }
 
-                        // Warns all the invalid accounts via email
-                        if (options.WarnAccounts)
-                        {
-                            WarnInvalidAccounts(config, db);
-                        }
+                            // Warns all the invalid accounts via email
+                            if (options.WarnAccounts)
+                            {
+                                WarnInvalidAccounts(config, db);
+                            }
 
-                        // Cleans all inactive users
-                        if (options.CleanUsers)
-                        {
-                            CleanAccounts(config, db, options.DaysBeforeDeletion);
-                        }
+                            // Cleans all inactive users
+                            if (options.CleanUsers)
+                            {
+                                CleanAccounts(config, db, options.DaysBeforeDeletion);
+                            }
 
-                        // Cleans the email for unused accounts
-                        if (options.CleanEmails)
-                        {
-                            CleanEmail(config, db);
-                        }
+                            // Cleans the email for unused accounts
+                            if (options.CleanEmails)
+                            {
+                                CleanEmail(config, db);
+                            }
 
-                        // Cleans all the git accounts that are unused
-                        if (options.CleanGit)
-                        {
-                            CleanGit(config, db);
-                        }
+                            // Cleans all the git accounts that are unused
+                            if (options.CleanGit)
+                            {
+                                CleanGit(config, db);
+                            }
 
-                        // Generates a file for all of the user's last seen dates
-                        if (options.GenerateLastSeen)
-                        {
-                            GenerateLastSeen(config, db, options.LastSeenFile);
-                        }
+                            // Generates a file for all of the user's last seen dates
+                            if (options.GenerateLastSeen)
+                            {
+                                GenerateLastSeen(config, db, options.LastSeenFile);
+                            }
 
-                        // Generates a file for all of the invalid accounts
-                        if (options.GenerateInvalid)
-                        {
-                            GenerateInvalidAccounts(config, db, options.InvalidFile);
-                        }
+                            // Generates a file for all of the invalid accounts
+                            if (options.GenerateInvalid)
+                            {
+                                GenerateInvalidAccounts(config, db, options.InvalidFile);
+                            }
 
-                        // Generates a file for all of the accounts to be cleaned
-                        if (options.GenerateCleaning)
-                        {
-                            GenerateCleaningList(config, db, options.CleaningFile, options.DaysBeforeDeletion);
+                            // Generates a file for all of the accounts to be cleaned
+                            if (options.GenerateCleaning)
+                            {
+                                GenerateCleaningList(config, db, options.CleaningFile, options.DaysBeforeDeletion);
+                            }
                         }
 
                         Output(string.Format("[{0}] Finished Server Maintenance Process.", DateTime.Now));

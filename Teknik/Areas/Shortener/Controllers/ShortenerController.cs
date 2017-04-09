@@ -17,8 +17,6 @@ namespace Teknik.Areas.Shortener.Controllers
     [TeknikAuthorize]
     public class ShortenerController : DefaultController
     {
-        private TeknikEntities db = new TeknikEntities();
-
         [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
@@ -31,15 +29,18 @@ namespace Teknik.Areas.Shortener.Controllers
         [AllowAnonymous]
         public ActionResult RedirectToUrl(string url)
         {
-            ShortenedUrl shortUrl = db.ShortenedUrls.Where(s => s.ShortUrl == url).FirstOrDefault();
-            if (shortUrl != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                shortUrl.Views += 1;
-                db.Entry(shortUrl).State = System.Data.Entity.EntityState.Modified;
-                db.SaveChanges();
-                return Redirect(shortUrl.OriginalUrl);
+                ShortenedUrl shortUrl = db.ShortenedUrls.Where(s => s.ShortUrl == url).FirstOrDefault();
+                if (shortUrl != null)
+                {
+                    shortUrl.Views += 1;
+                    db.Entry(shortUrl).State = System.Data.Entity.EntityState.Modified;
+                    db.SaveChanges();
+                    return Redirect(shortUrl.OriginalUrl);
+                }
+                return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
 
         [HttpPost]
@@ -48,27 +49,30 @@ namespace Teknik.Areas.Shortener.Controllers
         {
             if (url.IsValidUrl())
             {
-                ShortenedUrl newUrl = Shortener.ShortenUrl(url, Config.ShortenerConfig.UrlLength);
-
-                if (User.Identity.IsAuthenticated)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    Users.Models.User foundUser = UserHelper.GetUser(db, User.Identity.Name);
-                    if (foundUser != null)
+                    ShortenedUrl newUrl = Shortener.ShortenUrl(db, url, Config.ShortenerConfig.UrlLength);
+
+                    if (User.Identity.IsAuthenticated)
                     {
-                        newUrl.UserId = foundUser.UserId;
+                        Users.Models.User foundUser = UserHelper.GetUser(db, User.Identity.Name);
+                        if (foundUser != null)
+                        {
+                            newUrl.UserId = foundUser.UserId;
+                        }
                     }
+
+                    db.ShortenedUrls.Add(newUrl);
+                    db.SaveChanges();
+
+                    string shortUrl = string.Format("{0}://{1}/{2}", HttpContext.Request.Url.Scheme, Config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl);
+                    if (Config.DevEnvironment)
+                    {
+                        shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
+                    }
+
+                    return Json(new { result = new { shortUrl = shortUrl, originalUrl = url } });
                 }
-
-                db.ShortenedUrls.Add(newUrl);
-                db.SaveChanges();
-
-                string shortUrl = string.Format("{0}://{1}/{2}", HttpContext.Request.Url.Scheme, Config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl);
-                if (Config.DevEnvironment)
-                {
-                    shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
-                }
-
-                return Json(new { result = new { shortUrl = shortUrl, originalUrl = url } });
             }
             return Json(new { error = "Must be a valid Url" });
         }

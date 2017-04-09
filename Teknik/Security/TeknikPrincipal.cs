@@ -11,8 +11,6 @@ namespace Teknik.Security
 {
     public class TeknikPrincipal : ITeknikPrincipal
     {
-        TeknikEntities entities = new TeknikEntities();
-
         private IIdentity _Identity;
         public IIdentity Identity
         {
@@ -29,7 +27,8 @@ namespace Teknik.Security
             {
                 if (m_Info == null && Identity != null && Identity.IsAuthenticated)
                 {
-                    m_Info = UserHelper.GetUser(entities, Identity.Name);
+                    TeknikEntities db = new TeknikEntities();
+                    m_Info = UserHelper.GetUser(db, Identity.Name);
                 }
                 return m_Info;
             }

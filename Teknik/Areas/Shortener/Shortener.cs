@@ -11,10 +11,8 @@ namespace Teknik.Areas.Shortener
 {
     public static class Shortener
     {
-        public static ShortenedUrl ShortenUrl(string url, int length)
+        public static ShortenedUrl ShortenUrl(TeknikEntities db, string url, int length)
         {
-            TeknikEntities db = new TeknikEntities();
-            
             // Generate the shortened url
             string shortUrl = StringHelper.RandomString(length);
             while (db.ShortenedUrls.Where(s => s.ShortUrl == shortUrl).FirstOrDefault() != null)

@@ -234,6 +234,18 @@ function getReadableBandwidthString(bandwidth) {
     return Math.max(bandwidth, 0.1).toFixed(1) + byteUnits[i];
 }
 
+function getReadableFileSizeString(fileSizeInBytes) {
+
+    var i = -1;
+    var byteUnits = [' KB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
+    do {
+        fileSizeInBytes = fileSizeInBytes / 1024;
+        i++;
+    } while (fileSizeInBytes > 1024);
+
+    return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
+};
+
 function moveUp(item) {
     var prev = item.prev();
     if (prev.length == 0)

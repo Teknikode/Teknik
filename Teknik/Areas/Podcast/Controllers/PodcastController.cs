@@ -19,8 +19,6 @@ namespace Teknik.Areas.Podcast.Controllers
     [TeknikAuthorize]
     public class PodcastController : DefaultController
     {
-        private TeknikEntities db = new TeknikEntities();
-
         [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
@@ -33,15 +31,18 @@ namespace Teknik.Areas.Podcast.Controllers
                 ViewBag.Title = Config.PodcastConfig.Title + " - " + Config.Title;
                 ViewBag.Description = Config.PodcastConfig.Description;
                 bool editor = User.IsInRole("Podcast");
-                var foundPodcasts = db.Podcasts.Where(p => (p.Published || editor)).FirstOrDefault();
-                if (foundPodcasts != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    model.HasPodcasts = (foundPodcasts != null);
-                }
-                else
-                {
-                    model.Error = true;
-                    model.ErrorMessage = "No Podcasts Available";
+                    var foundPodcasts = db.Podcasts.Where(p => (p.Published || editor)).FirstOrDefault();
+                    if (foundPodcasts != null)
+                    {
+                        model.HasPodcasts = (foundPodcasts != null);
+                    }
+                    else
+                    {
+                        model.Error = true;
+                        model.ErrorMessage = "No Podcasts Available";
+                    }
                 }
 
                 return View("~/Areas/Podcast/Views/Podcast/Main.cshtml", model);
@@ -63,13 +64,16 @@ namespace Teknik.Areas.Podcast.Controllers
             PodcastViewModel model = new PodcastViewModel();
             // find the podcast specified
             bool editor = User.IsInRole("Podcast");
-            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.Episode == episode)).FirstOrDefault();
-            if (foundPodcast != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                model = new PodcastViewModel(foundPodcast);
+                var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.Episode == episode)).FirstOrDefault();
+                if (foundPodcast != null)
+                {
+                    model = new PodcastViewModel(foundPodcast);
 
-                ViewBag.Title = model.Title + " - Teknikast - " + Config.Title;
-                return View("~/Areas/Podcast/Views/Podcast/ViewPodcast.cshtml", model);
+                    ViewBag.Title = model.Title + " - Teknikast - " + Config.Title;
+                    return View("~/Areas/Podcast/Views/Podcast/ViewPodcast.cshtml", model);
+                }
             }
             model.Error = true;
             model.ErrorMessage = "No Podcasts Available";
@@ -79,112 +83,130 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult Download(int episode, string fileName)
         {
-            // find the podcast specified
-            var foundPodcast = db.Podcasts.Where(p => (p.Published && p.Episode == episode)).FirstOrDefault();
-            if (foundPodcast != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                PodcastFile file = foundPodcast.Files.Where(f => f.FileName == fileName).FirstOrDefault();
-                if (file != null)
+                // find the podcast specified
+                var foundPodcast = db.Podcasts.Where(p => (p.Published && p.Episode == episode)).FirstOrDefault();
+                if (foundPodcast != null)
                 {
-                    if (System.IO.File.Exists(file.Path))
+                    PodcastFile file = foundPodcast.Files.Where(f => f.FileName == fileName).FirstOrDefault();
+                    if (file != null)
                     {
-                        FileStream fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read);
-
-                        Response.AddHeader("Content-Length", file.ContentLength.ToString());
-
-                        var cd = new System.Net.Mime.ContentDisposition
+                        if (System.IO.File.Exists(file.Path))
                         {
-                            FileName = file.FileName,
-                            Inline = true
-                        };
+                            FileStream fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read);
 
-                        Response.AppendHeader("Content-Disposition", cd.ToString());
+                            Response.AddHeader("Content-Length", file.ContentLength.ToString());
 
-                        return new FileGenerateResult(file.FileName, file.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, fileStream, file.ContentLength, 4 * 1024), false);
-                        //return File(data, file.ContentType);
+                            var cd = new System.Net.Mime.ContentDisposition
+                            {
+                                FileName = file.FileName,
+                                Inline = true
+                            };
+
+                            Response.AppendHeader("Content-Disposition", cd.ToString());
+
+                            return new FileGenerateResult(file.FileName, file.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, fileStream, file.ContentLength, 4 * 1024), false);
+                            //return File(data, file.ContentType);
+                        }
                     }
                 }
+                return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
 
         [HttpPost]
         [AllowAnonymous]
         public ActionResult GetPodcasts(int startPodcastID, int count)
         {
-            bool editor = User.IsInRole("Podcast");
-            var podcasts = db.Podcasts.Where(p => p.Published || editor).OrderByDescending(p => p.DatePosted).Skip(startPodcastID).Take(count).ToList();
-            List<PodcastViewModel> podcastViews = new List<PodcastViewModel>();
-            if (podcasts != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                foreach (Models.Podcast podcast in podcasts)
+                bool editor = User.IsInRole("Podcast");
+                var podcasts = db.Podcasts.Where(p => p.Published || editor).OrderByDescending(p => p.DatePosted).Skip(startPodcastID).Take(count).ToList();
+                List<PodcastViewModel> podcastViews = new List<PodcastViewModel>();
+                if (podcasts != null)
                 {
-                    podcastViews.Add(new PodcastViewModel(podcast));
+                    foreach (Models.Podcast podcast in podcasts)
+                    {
+                        podcastViews.Add(new PodcastViewModel(podcast));
+                    }
                 }
+                return PartialView("~/Areas/Podcast/Views/Podcast/Podcasts.cshtml", podcastViews);
             }
-            return PartialView("~/Areas/Podcast/Views/Podcast/Podcasts.cshtml", podcastViews);
         }
 
         [HttpPost]
         [AllowAnonymous]
         public ActionResult GetPodcastEpisode(int podcastId)
         {
-            bool editor = User.IsInRole("Podcast");
-            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
-            if (foundPodcast != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                return Json(new { result = foundPodcast.Episode });
+                bool editor = User.IsInRole("Podcast");
+                var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
+                if (foundPodcast != null)
+                {
+                    return Json(new { result = foundPodcast.Episode });
+                }
+                return Json(new { error = "No podcast found" });
             }
-            return Json(new { error = "No podcast found" });
         }
 
         [HttpPost]
         [AllowAnonymous]
         public ActionResult GetPodcastTitle(int podcastId)
         {
-            bool editor = User.IsInRole("Podcast");
-            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
-            if (foundPodcast != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                return Json(new { result = foundPodcast.Title });
+                bool editor = User.IsInRole("Podcast");
+                var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
+                if (foundPodcast != null)
+                {
+                    return Json(new { result = foundPodcast.Title });
+                }
+                return Json(new { error = "No podcast found" });
             }
-            return Json(new { error = "No podcast found" });
         }
 
         [HttpPost]
         [AllowAnonymous]
         public ActionResult GetPodcastDescription(int podcastId)
         {
-            bool editor = User.IsInRole("Podcast");
-            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
-            if (foundPodcast != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                return Json(new { result = foundPodcast.Description });
+                bool editor = User.IsInRole("Podcast");
+                var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
+                if (foundPodcast != null)
+                {
+                    return Json(new { result = foundPodcast.Description });
+                }
+                return Json(new { error = "No podcast found" });
             }
-            return Json(new { error = "No podcast found" });
         }
 
         [HttpPost]
         [AllowAnonymous]
         public ActionResult GetPodcastFiles(int podcastId)
         {
-            bool editor = User.IsInRole("Podcast");
-            var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
-            if (foundPodcast != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                List<object> files = new List<object>();
-                foreach (PodcastFile file in foundPodcast.Files)
+                bool editor = User.IsInRole("Podcast");
+                var foundPodcast = db.Podcasts.Where(p => ((p.Published || editor) && p.PodcastId == podcastId)).FirstOrDefault();
+                if (foundPodcast != null)
                 {
-                    object fileObj = new
+                    List<object> files = new List<object>();
+                    foreach (PodcastFile file in foundPodcast.Files)
                     {
-                        name = file.FileName,
-                        id = file.PodcastFileId
-                    };
-                    files.Add(fileObj);
+                        object fileObj = new
+                        {
+                            name = file.FileName,
+                            id = file.PodcastFileId
+                        };
+                        files.Add(fileObj);
+                    }
+                    return Json(new { result = new { files = files } });
                 }
-                return Json(new { result = new { files = files } });
+                return Json(new { error = "No podcast found" });
             }
-            return Json(new { error = "No podcast found" });
         }
 
         [HttpPost]
@@ -194,25 +216,28 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 if (User.IsInRole("Podcast"))
                 {
-                    // Grab the next episode number
-                    Models.Podcast lastPod = db.Podcasts.Where(p => p.Episode == episode).FirstOrDefault();
-                    if (lastPod == null)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        // Create the podcast object
-                        Models.Podcast podcast = db.Podcasts.Create();
-                        podcast.Episode = episode;
-                        podcast.Title = title;
-                        podcast.Description = description;
-                        podcast.DatePosted = DateTime.Now;
-                        podcast.DatePublished = DateTime.Now;
-                        podcast.DateEdited = DateTime.Now;
-                        podcast.Files = SaveFiles(Request.Files, episode);
+                        // Grab the next episode number
+                        Models.Podcast lastPod = db.Podcasts.Where(p => p.Episode == episode).FirstOrDefault();
+                        if (lastPod == null)
+                        {
+                            // Create the podcast object
+                            Models.Podcast podcast = db.Podcasts.Create();
+                            podcast.Episode = episode;
+                            podcast.Title = title;
+                            podcast.Description = description;
+                            podcast.DatePosted = DateTime.Now;
+                            podcast.DatePublished = DateTime.Now;
+                            podcast.DateEdited = DateTime.Now;
+                            podcast.Files = SaveFiles(Request.Files, episode);
 
-                        db.Podcasts.Add(podcast);
-                        db.SaveChanges();
-                        return Json(new { result = true });
+                            db.Podcasts.Add(podcast);
+                            db.SaveChanges();
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "That episode already exists" });
                     }
-                    return Json(new { error = "That episode already exists" });
                 }
                 return Json(new { error = "You don't have permission to create a podcast" });
             }
@@ -226,49 +251,52 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 if (User.IsInRole("Podcast"))
                 {
-                    Models.Podcast podcast = db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault();
-                    if (podcast != null)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        if (db.Podcasts.Where(p => p.Episode != episode).FirstOrDefault() == null || podcast.Episode == episode)
+                        Models.Podcast podcast = db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault();
+                        if (podcast != null)
                         {
-                            podcast.Episode = episode;
-                            podcast.Title = title;
-                            podcast.Description = description;
-                            podcast.DateEdited = DateTime.Now;
-                            // Remove any files not in fileIds
-                            List<string> fileIdList = new List<string>();
-                            if (!string.IsNullOrEmpty(fileIds))
+                            if (db.Podcasts.Where(p => p.Episode != episode).FirstOrDefault() == null || podcast.Episode == episode)
                             {
-                                fileIdList = fileIds.Split(',').ToList();
-                            }
-                            for (int i = 0; i < podcast.Files.Count; i++)
-                            {
-                                PodcastFile curFile = podcast.Files.ElementAt(i);
-                                if (!fileIdList.Exists(id => id == curFile.PodcastFileId.ToString()))
+                                podcast.Episode = episode;
+                                podcast.Title = title;
+                                podcast.Description = description;
+                                podcast.DateEdited = DateTime.Now;
+                                // Remove any files not in fileIds
+                                List<string> fileIdList = new List<string>();
+                                if (!string.IsNullOrEmpty(fileIds))
                                 {
-                                    if (System.IO.File.Exists(curFile.Path))
-                                    {
-                                        System.IO.File.Delete(curFile.Path);
-                                    }
-                                    db.PodcastFiles.Remove(curFile);
-                                    podcast.Files.Remove(curFile);
+                                    fileIdList = fileIds.Split(',').ToList();
                                 }
-                            }
-                            // Add any new files
-                            List<PodcastFile> newFiles = SaveFiles(Request.Files, episode);
-                            foreach (PodcastFile file in newFiles)
-                            {
-                                podcast.Files.Add(file);
-                            }
+                                for (int i = 0; i < podcast.Files.Count; i++)
+                                {
+                                    PodcastFile curFile = podcast.Files.ElementAt(i);
+                                    if (!fileIdList.Exists(id => id == curFile.PodcastFileId.ToString()))
+                                    {
+                                        if (System.IO.File.Exists(curFile.Path))
+                                        {
+                                            System.IO.File.Delete(curFile.Path);
+                                        }
+                                        db.PodcastFiles.Remove(curFile);
+                                        podcast.Files.Remove(curFile);
+                                    }
+                                }
+                                // Add any new files
+                                List<PodcastFile> newFiles = SaveFiles(Request.Files, episode);
+                                foreach (PodcastFile file in newFiles)
+                                {
+                                    podcast.Files.Add(file);
+                                }
 
-                            // Save podcast
-                            db.Entry(podcast).State = EntityState.Modified;
-                            db.SaveChanges();
-                            return Json(new { result = true });
+                                // Save podcast
+                                db.Entry(podcast).State = EntityState.Modified;
+                                db.SaveChanges();
+                                return Json(new { result = true });
+                            }
+                            return Json(new { error = "That episode already exists" });
                         }
-                        return Json(new { error = "That episode already exists" });
+                        return Json(new { error = "No podcast found" });
                     }
-                    return Json(new { error = "No podcast found" });
                 }
                 return Json(new { error = "You don't have permission to edit this podcast" });
             }
@@ -282,17 +310,20 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 if (User.IsInRole("Podcast"))
                 {
-                    Models.Podcast podcast = db.Podcasts.Find(podcastId);
-                    if (podcast != null)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        podcast.Published = publish;
-                        if (publish)
-                            podcast.DatePublished = DateTime.Now;
-                        db.Entry(podcast).State = EntityState.Modified;
-                        db.SaveChanges();
-                        return Json(new { result = true });
+                        Models.Podcast podcast = db.Podcasts.Find(podcastId);
+                        if (podcast != null)
+                        {
+                            podcast.Published = publish;
+                            if (publish)
+                                podcast.DatePublished = DateTime.Now;
+                            db.Entry(podcast).State = EntityState.Modified;
+                            db.SaveChanges();
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "No podcast found" });
                     }
-                    return Json(new { error = "No podcast found" });
                 }
                 return Json(new { error = "You don't have permission to publish this podcast" });
             }
@@ -306,18 +337,21 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 if (User.IsInRole("Podcast"))
                 {
-                    Models.Podcast podcast = db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault();
-                    if (podcast != null)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        foreach (PodcastFile file in podcast.Files)
+                        Models.Podcast podcast = db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault();
+                        if (podcast != null)
                         {
-                            System.IO.File.Delete(file.Path);
+                            foreach (PodcastFile file in podcast.Files)
+                            {
+                                System.IO.File.Delete(file.Path);
+                            }
+                            db.Podcasts.Remove(podcast);
+                            db.SaveChanges();
+                            return Json(new { result = true });
                         }
-                        db.Podcasts.Remove(podcast);
-                        db.SaveChanges();
-                        return Json(new { result = true });
+                        return Json(new { error = "No podcast found" });
                     }
-                    return Json(new { error = "No podcast found" });
                 }
                 return Json(new { error = "You don't have permission to delete this podcast" });
             }
@@ -330,28 +364,34 @@ namespace Teknik.Areas.Podcast.Controllers
         [AllowAnonymous]
         public ActionResult GetComments(int podcastId, int startCommentID, int count)
         {
-            var comments = db.PodcastComments.Where(p => (p.PodcastId == podcastId)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
-            List<CommentViewModel> commentViews = new List<CommentViewModel>();
-            if (comments != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                foreach (PodcastComment comment in comments)
+                var comments = db.PodcastComments.Where(p => (p.PodcastId == podcastId)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
+                List<CommentViewModel> commentViews = new List<CommentViewModel>();
+                if (comments != null)
                 {
-                    commentViews.Add(new CommentViewModel(comment));
+                    foreach (PodcastComment comment in comments)
+                    {
+                        commentViews.Add(new CommentViewModel(comment));
+                    }
                 }
+                return PartialView("~/Areas/Podcast/Views/Podcast/Comments.cshtml", commentViews);
             }
-            return PartialView("~/Areas/Podcast/Views/Podcast/Comments.cshtml", commentViews);
         }
 
         [HttpPost]
         [AllowAnonymous]
         public ActionResult GetCommentArticle(int commentID)
         {
-            PodcastComment comment = db.PodcastComments.Where(p => (p.PodcastCommentId == commentID)).FirstOrDefault();
-            if (comment != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                return Json(new { result = comment.Article });
+                PodcastComment comment = db.PodcastComments.Where(p => (p.PodcastCommentId == commentID)).FirstOrDefault();
+                if (comment != null)
+                {
+                    return Json(new { result = comment.Article });
+                }
+                return Json(new { error = "No article found" });
             }
-            return Json(new { error = "No article found" });
         }
 
         [HttpPost]
@@ -359,20 +399,23 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault() != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    PodcastComment comment = db.PodcastComments.Create();
-                    comment.PodcastId = podcastId;
-                    comment.UserId = UserHelper.GetUser(db, User.Identity.Name).UserId;
-                    comment.Article = article;
-                    comment.DatePosted = DateTime.Now;
-                    comment.DateEdited = DateTime.Now;
+                    if (db.Podcasts.Where(p => p.PodcastId == podcastId).FirstOrDefault() != null)
+                    {
+                        PodcastComment comment = db.PodcastComments.Create();
+                        comment.PodcastId = podcastId;
+                        comment.UserId = UserHelper.GetUser(db, User.Identity.Name).UserId;
+                        comment.Article = article;
+                        comment.DatePosted = DateTime.Now;
+                        comment.DateEdited = DateTime.Now;
 
-                    db.PodcastComments.Add(comment);
-                    db.SaveChanges();
-                    return Json(new { result = true });
+                        db.PodcastComments.Add(comment);
+                        db.SaveChanges();
+                        return Json(new { result = true });
+                    }
+                    return Json(new { error = "That podcast does not exist" });
                 }
-                return Json(new { error = "That podcast does not exist" });
             }
             return Json(new { error = "Invalid Parameters" });
         }
@@ -382,20 +425,23 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             if (ModelState.IsValid)
             {
-                PodcastComment comment = db.PodcastComments.Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
-                if (comment != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
+                    PodcastComment comment = db.PodcastComments.Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
+                    if (comment != null)
                     {
-                        comment.Article = article;
-                        comment.DateEdited = DateTime.Now;
-                        db.Entry(comment).State = EntityState.Modified;
-                        db.SaveChanges();
-                        return Json(new { result = true });
+                        if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
+                        {
+                            comment.Article = article;
+                            comment.DateEdited = DateTime.Now;
+                            db.Entry(comment).State = EntityState.Modified;
+                            db.SaveChanges();
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "You don't have permission to edit this comment" });
                     }
-                    return Json(new { error = "You don't have permission to edit this comment" });
+                    return Json(new { error = "No comment found" });
                 }
-                return Json(new { error = "No comment found" });
             }
             return Json(new { error = "Invalid Parameters" });
         }
@@ -405,18 +451,21 @@ namespace Teknik.Areas.Podcast.Controllers
         {
             if (ModelState.IsValid)
             {
-                PodcastComment comment = db.PodcastComments.Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
-                if (comment != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
+                    PodcastComment comment = db.PodcastComments.Where(c => c.PodcastCommentId == commentID).FirstOrDefault();
+                    if (comment != null)
                     {
-                        db.PodcastComments.Remove(comment);
-                        db.SaveChanges();
-                        return Json(new { result = true });
+                        if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
+                        {
+                            db.PodcastComments.Remove(comment);
+                            db.SaveChanges();
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "You don't have permission to delete this comment" });
                     }
-                    return Json(new { error = "You don't have permission to delete this comment" });
+                    return Json(new { error = "No comment found" });
                 }
-                return Json(new { error = "No comment found" });
             }
             return Json(new { error = "Invalid Parameters" });
         }

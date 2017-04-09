@@ -46,7 +46,7 @@ function processDownload(key) {
                                 lastTime = curTime;
                                 lastData = e.data.processed;
                                 var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
-                                setProgress(percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Decrypting [' + getReadableBandwidthString(speed * 8) + ']');
+                                setProgress(percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Decrypting [' + getReadableFileSizeString(e.data.processed) + ' / ' + getReadableFileSizeString(e.data.total) + ' @ ' + getReadableBandwidthString(speed * 8) + ']');
                             }
                             break;
                         case 'finish':
@@ -92,7 +92,7 @@ function processDownload(key) {
                 lastTime = curTime;
                 lastData = e.loaded;
                 var percentComplete = Math.round(e.loaded * 100 / e.total);
-                setProgress(percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Downloading File [' + getReadableBandwidthString(speed * 8) + ']');
+                setProgress(percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Downloading File [' + getReadableFileSizeString(e.loaded) + ' / ' + getReadableFileSizeString(e.total) + ' @ ' + getReadableBandwidthString(speed * 8) + ']');
             }
         };
 

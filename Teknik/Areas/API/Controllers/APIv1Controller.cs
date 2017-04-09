@@ -24,8 +24,6 @@ namespace Teknik.Areas.API.Controllers
     [TeknikAuthorize(AuthType.Basic)]
     public class APIv1Controller : DefaultController
     {
-        private TeknikEntities db = new TeknikEntities();
-
         [AllowAnonymous]
         public ActionResult Index()
         {
@@ -81,49 +79,52 @@ namespace Teknik.Areas.API.Controllers
                             if (model.blockSize <= 0)
                                 model.blockSize = Config.UploadConfig.BlockSize;
 
-                            // Save the file data
-                            Upload.Models.Upload upload = Uploader.SaveFile(db, Config, model.file.InputStream, model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.keySize, model.blockSize);
-
-                            if (upload != null)
+                            using (TeknikEntities db = new TeknikEntities())
                             {
-                                // Associate this with the user if they provided an auth key
-                                if (User.Identity.IsAuthenticated)
+                                // Save the file data
+                                Upload.Models.Upload upload = Uploader.SaveFile(db, Config, model.file.InputStream, model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.keySize, model.blockSize);
+
+                                if (upload != null)
                                 {
-                                    User foundUser = UserHelper.GetUser(db, User.Identity.Name);
-                                    if (foundUser != null)
+                                    // Associate this with the user if they provided an auth key
+                                    if (User.Identity.IsAuthenticated)
                                     {
-                                        upload.UserId = foundUser.UserId;
+                                        User foundUser = UserHelper.GetUser(db, User.Identity.Name);
+                                        if (foundUser != null)
+                                        {
+                                            upload.UserId = foundUser.UserId;
+                                            db.Entry(upload).State = EntityState.Modified;
+                                            db.SaveChanges();
+                                        }
+                                    }
+
+                                    // Generate delete key only if asked to
+                                    if (!model.genDeletionKey)
+                                    {
+                                        upload.DeleteKey = string.Empty;
                                         db.Entry(upload).State = EntityState.Modified;
                                         db.SaveChanges();
                                     }
+
+                                    // Pull all the information together 
+                                    string fullUrl = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url });
+                                    var returnData = new
+                                    {
+                                        url = (model.saveKey || string.IsNullOrEmpty(model.key)) ? fullUrl : fullUrl + "#" + model.key,
+                                        fileName = upload.Url,
+                                        contentType = model.contentType,
+                                        contentLength = contentLength,
+                                        key = model.key,
+                                        keySize = model.keySize,
+                                        iv = model.iv,
+                                        blockSize = model.blockSize,
+                                        deletionKey = upload.DeleteKey
+
+                                    };
+                                    return Json(new { result = returnData });
                                 }
-
-                                // Generate delete key only if asked to
-                                if (!model.genDeletionKey)
-                                {
-                                    upload.DeleteKey = string.Empty;
-                                    db.Entry(upload).State = EntityState.Modified;
-                                    db.SaveChanges();
-                                }
-
-                                // Pull all the information together 
-                                string fullUrl = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url });
-                                var returnData = new
-                                {
-                                    url = (model.saveKey || string.IsNullOrEmpty(model.key)) ? fullUrl : fullUrl + "#" + model.key,
-                                    fileName = upload.Url,
-                                    contentType = model.contentType,
-                                    contentLength = contentLength,
-                                    key = model.key,
-                                    keySize = model.keySize,
-                                    iv = model.iv,
-                                    blockSize = model.blockSize,
-                                    deletionKey = upload.DeleteKey
-
-                                };
-                                return Json(new { result = returnData });
+                                return Json(new { error = new { message = "Unable to save file" } });
                             }
-                            return Json(new { error = new { message = "Unable to save file" } });
                         }
                         else
                         {
@@ -149,33 +150,36 @@ namespace Teknik.Areas.API.Controllers
             {
                 if (model != null && model.code != null)
                 {
-                    Paste.Models.Paste paste = PasteHelper.CreatePaste(model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password, model.hide);
-
-                    // Associate this with the user if they are logged in
-                    if (User.Identity.IsAuthenticated)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        User foundUser = UserHelper.GetUser(db, User.Identity.Name);
-                        if (foundUser != null)
+                        Paste.Models.Paste paste = PasteHelper.CreatePaste(db, model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password, model.hide);
+
+                        // Associate this with the user if they are logged in
+                        if (User.Identity.IsAuthenticated)
                         {
-                            paste.UserId = foundUser.UserId;
+                            User foundUser = UserHelper.GetUser(db, User.Identity.Name);
+                            if (foundUser != null)
+                            {
+                                paste.UserId = foundUser.UserId;
+                            }
                         }
+
+                        db.Pastes.Add(paste);
+                        db.SaveChanges();
+
+                        return Json(new
+                        {
+                            result = new
+                            {
+                                id = paste.Url,
+                                url = Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url, password = model.password }),
+                                title = paste.Title,
+                                syntax = paste.Syntax,
+                                expiration = paste.ExpireDate,
+                                password = model.password
+                            }
+                        });
                     }
-
-                    db.Pastes.Add(paste);
-                    db.SaveChanges();
-
-                    return Json(new
-                    {
-                        result = new
-                        {
-                            id = paste.Url,
-                            url = Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url, password = model.password }),
-                            title = paste.Title,
-                            syntax = paste.Syntax,
-                            expiration = paste.ExpireDate,
-                            password = model.password
-                        }
-                    });
                 }
                 return Json(new { error = new { message = "Invalid Paste Request" } });
             }
@@ -194,35 +198,38 @@ namespace Teknik.Areas.API.Controllers
             {
                 if (model.url.IsValidUrl())
                 {
-                    ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(model.url, Config.ShortenerConfig.UrlLength);
-
-                    // Associate this with the user if they are logged in
-                    if (User.Identity.IsAuthenticated)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        User foundUser = UserHelper.GetUser(db, User.Identity.Name);
-                        if (foundUser != null)
+                        ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(db, model.url, Config.ShortenerConfig.UrlLength);
+
+                        // Associate this with the user if they are logged in
+                        if (User.Identity.IsAuthenticated)
                         {
-                            newUrl.UserId = foundUser.UserId;
+                            User foundUser = UserHelper.GetUser(db, User.Identity.Name);
+                            if (foundUser != null)
+                            {
+                                newUrl.UserId = foundUser.UserId;
+                            }
                         }
-                    }
 
-                    db.ShortenedUrls.Add(newUrl);
-                    db.SaveChanges();
+                        db.ShortenedUrls.Add(newUrl);
+                        db.SaveChanges();
 
-                    string shortUrl = string.Format("{0}://{1}/{2}", HttpContext.Request.Url.Scheme, Config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl);
-                    if (Config.DevEnvironment)
-                    {
-                        shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
-                    }
-
-                    return Json(new
-                    {
-                        result = new
+                        string shortUrl = string.Format("{0}://{1}/{2}", HttpContext.Request.Url.Scheme, Config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl);
+                        if (Config.DevEnvironment)
                         {
-                            shortUrl = shortUrl,
-                            originalUrl = model.url
+                            shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
                         }
-                    });
+
+                        return Json(new
+                        {
+                            result = new
+                            {
+                                shortUrl = shortUrl,
+                                originalUrl = model.url
+                            }
+                        });
+                    }
                 }
                 return Json(new { error = new { message = "Must be a valid Url" } });
             }

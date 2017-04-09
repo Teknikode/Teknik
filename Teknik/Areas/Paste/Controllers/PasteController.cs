@@ -21,8 +21,6 @@ namespace Teknik.Areas.Paste.Controllers
     [TeknikAuthorize]
     public class PasteController : DefaultController
     {
-        private TeknikEntities db = new TeknikEntities();
-
         [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
@@ -37,6 +35,7 @@ namespace Teknik.Areas.Paste.Controllers
         [AllowAnonymous]
         public ActionResult ViewPaste(string type, string url, string password)
         {
+            TeknikEntities db = new TeknikEntities();
             Models.Paste paste = db.Pastes.Where(p => p.Url == url).FirstOrDefault();
             if (paste != null)
             {
@@ -156,26 +155,29 @@ namespace Teknik.Areas.Paste.Controllers
                 {
                     try
                     {
-                        Models.Paste paste = PasteHelper.CreatePaste(model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password, model.Hide);
-
-                        if (model.ExpireUnit == "view")
+                        using (TeknikEntities db = new TeknikEntities())
                         {
-                            paste.Views = -1;
-                        }
+                            Models.Paste paste = PasteHelper.CreatePaste(db, model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password, model.Hide);
 
-                        if (User.Identity.IsAuthenticated)
-                        {
-                            Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
-                            if (user != null)
+                            if (model.ExpireUnit == "view")
                             {
-                                paste.UserId = user.UserId;
+                                paste.Views = -1;
                             }
+
+                            if (User.Identity.IsAuthenticated)
+                            {
+                                Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
+                                if (user != null)
+                                {
+                                    paste.UserId = user.UserId;
+                                }
+                            }
+
+                            db.Pastes.Add(paste);
+                            db.SaveChanges();
+
+                            return Redirect(Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url }));
                         }
-
-                        db.Pastes.Add(paste);
-                        db.SaveChanges();
-
-                        return Redirect(Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url }));
                     }
                     catch (Exception ex)
                     {

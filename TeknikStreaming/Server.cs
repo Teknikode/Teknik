@@ -39,15 +39,16 @@ namespace TeknikStreaming
 
         private void LoadStreams()
         {
-            TeknikEntities db = new TeknikEntities();
-
-            List<User> users = db.Users.ToList();
-            if (users != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                foreach (User user in users)
+                List<User> users = db.Users.ToList();
+                if (users != null)
                 {
-                    RtspSource source = new RtspSource(string.Format("TeknikLiveStream_{0}", user.Username), string.Format("rtsp://localhost/live/{0}/stream.amp", user.Username));
+                    foreach (User user in users)
+                    {
+                        RtspSource source = new RtspSource(string.Format("TeknikLiveStream_{0}", user.Username), string.Format("rtsp://localhost/live/{0}/stream.amp", user.Username));
 
+                    }
                 }
             }
         }

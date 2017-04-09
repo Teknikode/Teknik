@@ -68,16 +68,18 @@ namespace Teknik.Hubs
             // If the password is supplied, verify the password
             if (!string.IsNullOrEmpty(password))
             {
-                TeknikEntities db = new TeknikEntities();
-                User user = UserHelper.GetUser(db, username);
-                if (user != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    Config config = Config.Load();
-                    success = UserHelper.UserPasswordCorrect(db, config, user, password);
-                }
-                else
-                {
-                    success = false;
+                    User user = UserHelper.GetUser(db, username);
+                    if (user != null)
+                    {
+                        Config config = Config.Load();
+                        success = UserHelper.UserPasswordCorrect(db, config, user, password);
+                    }
+                    else
+                    {
+                        success = false;
+                    }
                 }
             }
 

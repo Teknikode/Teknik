@@ -43,6 +43,7 @@ namespace Teknik.Utilities
         protected override void WriteFile(System.Web.HttpResponseBase response)
         {
             response.Buffer = bufferOutput;
+            response.BufferOutput = bufferOutput;
             responseDelegate(response);
         }
     }

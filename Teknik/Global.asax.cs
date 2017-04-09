@@ -144,81 +144,98 @@ namespace Teknik
 
         protected void Application_Error(object sender, EventArgs e)
         {
-            // Get the last exception
-            Exception exception = Server.GetLastError();
-            
-            // Clear the response
-            Response.Clear();
-
-            HttpException httpException = exception as HttpException;
-
-            RouteData routeData = new RouteData();
-            routeData.DataTokens.Add("namespaces", new[] { typeof(ErrorController).Namespace });
-            routeData.DataTokens.Add("area", "Error");
-            routeData.Values.Add("controller", "Error");
-            
-            if (httpException == null)
+            Exception exception = null;
+            try
             {
-                routeData.Values.Add("action", "Exception");
-            }
-            else //It's an Http Exception, Let's handle it.
-            {
-                switch (httpException.GetHttpCode())
-                {
-                    case 401:
-                        // Unauthorized.
-                        routeData.Values.Add("action", "Http401");
-                        break;
-                    case 403:
-                        // Forbidden.
-                        routeData.Values.Add("action", "Http403");
-                        break;
-                    case 404:
-                        // Page not found.
-                        routeData.Values.Add("action", "Http404");
-                        break;
-                    case 500:
-                        // Server error.
-                        routeData.Values.Add("action", "Http500");
-                        break;
+                // Get the last exception
+                exception = Server.GetLastError();
 
-                    // Here you can handle Views to other error codes.
-                    // I choose a General error template  
-                    default:
-                        routeData.Values.Add("action", "General");
-                        break;
-                }
-            }
+                // Clear the response
+                Response.Clear();
 
-            // Pass exception details to the target error View.
-            routeData.Values.Add("exception", exception);
+                HttpException httpException = exception as HttpException;
 
-            // Clear the error on server.
-            Server.ClearError();
+                RouteData routeData = new RouteData();
+                routeData.DataTokens.Add("namespaces", new[] { typeof(ErrorController).Namespace });
+                routeData.DataTokens.Add("area", "Error");
+                routeData.Values.Add("controller", "Error");
 
-            // Avoid IIS7 getting in the middle
-            Response.TrySkipIisCustomErrors = true;
-
-            // If it is an Ajax request, we should respond with Json data, otherwise redirect
-            if (new HttpRequestWrapper(Request).IsAjaxRequest())
-            {
-                string jsonResult = string.Empty;
                 if (httpException == null)
                 {
-                    jsonResult = Json.Encode(new { error = new { type = "Exception", message = exception.GetFullMessage(true) } });
+                    routeData.Values.Add("action", "Exception");
+                }
+                else //It's an Http Exception, Let's handle it.
+                {
+                    switch (httpException.GetHttpCode())
+                    {
+                        case 401:
+                            // Unauthorized.
+                            routeData.Values.Add("action", "Http401");
+                            break;
+                        case 403:
+                            // Forbidden.
+                            routeData.Values.Add("action", "Http403");
+                            break;
+                        case 404:
+                            // Page not found.
+                            routeData.Values.Add("action", "Http404");
+                            break;
+                        case 500:
+                            // Server error.
+                            routeData.Values.Add("action", "Http500");
+                            break;
+
+                        // Here you can handle Views to other error codes.
+                        // I choose a General error template  
+                        default:
+                            routeData.Values.Add("action", "General");
+                            break;
+                    }
+                }
+
+                // Pass exception details to the target error View.
+                routeData.Values.Add("exception", exception);
+
+                // Clear the error on server.
+                Server.ClearError();
+
+                // Avoid IIS7 getting in the middle
+                Response.TrySkipIisCustomErrors = true;
+
+                // If it is an Ajax request, we should respond with Json data, otherwise redirect
+                if (new HttpRequestWrapper(Request).IsAjaxRequest())
+                {
+                    string jsonResult = string.Empty;
+                    if (httpException == null)
+                    {
+                        jsonResult = Json.Encode(new { error = new { type = "Exception", message = exception.GetFullMessage(true) } });
+                    }
+                    else
+                    {
+                        jsonResult = Json.Encode(new { error = new { type = "Http", statuscode = httpException.GetHttpCode(), message = exception.GetFullMessage(true) } });
+                    }
+                    Response.Write(jsonResult);
                 }
                 else
                 {
-                    jsonResult = Json.Encode(new { error = new { type = "Http", statuscode = httpException.GetHttpCode(), message = exception.GetFullMessage(true) } });
+                    // Call target Controller and pass the routeData.
+                    IController errorController = new ErrorController();
+                    errorController.Execute(new RequestContext(
+                         new HttpContextWrapper(Context), routeData));
                 }
-                Response.Write(jsonResult);
             }
-            else
+            catch (Exception ex)
             {
-                // Call target Controller and pass the routeData.
-                IController errorController = new ErrorController();
-                errorController.Execute(new RequestContext(
-                     new HttpContextWrapper(Context), routeData));
+                // Unable to display error, so try to log it
+                try
+                {
+                    Logging.Logger.WriteEntry(Logging.LogLevel.Warning, "Error in Application_Error", ex);
+                    if (exception != null)
+                    {
+                        Logging.Logger.WriteEntry(Logging.LogLevel.Error, "Exception Thrown", exception);
+                    }
+                }
+                catch(Exception) { }
             }
         }
     }

@@ -86,7 +86,7 @@ namespace Teknik.Areas.Paste
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/highlight", config.CdnHost).Include(
                       "~/Scripts/Highlight/highlight.pack.js"));
             // Register Style Bundles
-            BundleTable.Bundles.Add(new CdnScriptBundle("~/Content/paste", config.CdnHost).Include(
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/paste", config.CdnHost).Include(
                       "~/Content/Highlight/github-gist.css",
                       "~/Areas/Paste/Content/Paste.css"));
         }

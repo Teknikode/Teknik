@@ -23,7 +23,6 @@ namespace Teknik.Areas.Users.Controllers
     public class UserController : DefaultController
     {
         private static readonly UsedCodesManager usedCodesManager = new UsedCodesManager();
-        private TeknikEntities db = new TeknikEntities();
 
         [TrackPageView]
         [AllowAnonymous]
@@ -52,39 +51,42 @@ namespace Teknik.Areas.Users.Controllers
 
             try
             {
-                User user = UserHelper.GetUser(db, username);
-
-                if (user != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    ViewBag.Title = username + "'s Profile - " + Config.Title;
-                    ViewBag.Description = "Viewing " + username + "'s Profile";
+                    User user = UserHelper.GetUser(db, username);
 
-                    model.UserID = user.UserId;
-                    model.Username = user.Username;
-                    if (Config.EmailConfig.Enabled)
+                    if (user != null)
                     {
-                        model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                        ViewBag.Title = username + "'s Profile - " + Config.Title;
+                        ViewBag.Description = "Viewing " + username + "'s Profile";
+
+                        model.UserID = user.UserId;
+                        model.Username = user.Username;
+                        if (Config.EmailConfig.Enabled)
+                        {
+                            model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                        }
+                        model.JoinDate = user.JoinDate;
+                        model.LastSeen = UserHelper.GetLastAccountActivity(db, Config, user);
+
+                        model.UserSettings = user.UserSettings;
+                        model.SecuritySettings = user.SecuritySettings;
+                        model.BlogSettings = user.BlogSettings;
+                        model.UploadSettings = user.UploadSettings;
+
+                        model.Uploads = db.Uploads.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DateUploaded).ToList();
+
+                        model.Pastes = db.Pastes.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DatePosted).ToList();
+
+                        model.ShortenedUrls = db.ShortenedUrls.Where(s => s.UserId == user.UserId).OrderByDescending(s => s.DateAdded).ToList();
+
+                        model.Vaults = db.Vaults.Where(v => v.UserId == user.UserId).OrderByDescending(v => v.DateCreated).ToList();
+
+                        return View(model);
                     }
-                    model.JoinDate = user.JoinDate;
-                    model.LastSeen = UserHelper.GetLastAccountActivity(db, Config, user);
-
-                    model.UserSettings = user.UserSettings;
-                    model.SecuritySettings = user.SecuritySettings;
-                    model.BlogSettings = user.BlogSettings;
-                    model.UploadSettings = user.UploadSettings;
-
-                    model.Uploads = db.Uploads.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DateUploaded).ToList();
-
-                    model.Pastes = db.Pastes.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DatePosted).ToList();
-
-                    model.ShortenedUrls = db.ShortenedUrls.Where(s => s.UserId == user.UserId).OrderByDescending(s => s.DateAdded).ToList();
-
-                    model.Vaults = db.Vaults.Where(v => v.UserId == user.UserId).OrderByDescending(v => v.DateCreated).ToList();
-
-                    return View(model);
+                    model.Error = true;
+                    model.ErrorMessage = "The user does not exist";
                 }
-                model.Error = true;
-                model.ErrorMessage = "The user does not exist";
             }
             catch (Exception ex)
             {
@@ -103,35 +105,38 @@ namespace Teknik.Areas.Users.Controllers
             ViewBag.Title = "User Does Not Exist - " + Config.Title;
             ViewBag.Description = "The User does not exist";
 
-            User user = UserHelper.GetUser(db, username);
-
-            if (user != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                Session["AuthenticatedUser"] = user;
+                User user = UserHelper.GetUser(db, username);
 
-                ViewBag.Title = "Settings - " + Config.Title;
-                ViewBag.Description = "Your " + Config.Title + " Settings";
-
-                model.UserID = user.UserId;
-                model.Username = user.Username;
-                model.TrustedDeviceCount = user.TrustedDevices.Count;
-                model.AuthTokens = new List<AuthTokenViewModel>();
-                foreach (AuthToken token in user.AuthTokens)
+                if (user != null)
                 {
-                    AuthTokenViewModel tokenModel = new AuthTokenViewModel();
-                    tokenModel.AuthTokenId = token.AuthTokenId;
-                    tokenModel.Name = token.Name;
-                    tokenModel.LastDateUsed = token.LastDateUsed;
+                    Session["AuthenticatedUser"] = user;
 
-                    model.AuthTokens.Add(tokenModel);
+                    ViewBag.Title = "Settings - " + Config.Title;
+                    ViewBag.Description = "Your " + Config.Title + " Settings";
+
+                    model.UserID = user.UserId;
+                    model.Username = user.Username;
+                    model.TrustedDeviceCount = user.TrustedDevices.Count;
+                    model.AuthTokens = new List<AuthTokenViewModel>();
+                    foreach (AuthToken token in user.AuthTokens)
+                    {
+                        AuthTokenViewModel tokenModel = new AuthTokenViewModel();
+                        tokenModel.AuthTokenId = token.AuthTokenId;
+                        tokenModel.Name = token.Name;
+                        tokenModel.LastDateUsed = token.LastDateUsed;
+
+                        model.AuthTokens.Add(tokenModel);
+                    }
+
+                    model.UserSettings = user.UserSettings;
+                    model.SecuritySettings = user.SecuritySettings;
+                    model.BlogSettings = user.BlogSettings;
+                    model.UploadSettings = user.UploadSettings;
+
+                    return View(model);
                 }
-
-                model.UserSettings = user.UserSettings;
-                model.SecuritySettings = user.SecuritySettings;
-                model.BlogSettings = user.BlogSettings;
-                model.UploadSettings = user.UploadSettings;
-
-                return View(model);
             }
             model.Error = true;
             return View(model);
@@ -145,12 +150,15 @@ namespace Teknik.Areas.Users.Controllers
             ViewBag.Title = username + "'s Public Key - " + Config.Title;
             ViewBag.Description = "The PGP public key for " + username;
 
-            User user = UserHelper.GetUser(db, username);
-            if (user != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                if (!string.IsNullOrEmpty(user.SecuritySettings.PGPSignature))
+                User user = UserHelper.GetUser(db, username);
+                if (user != null)
                 {
-                    return Content(user.SecuritySettings.PGPSignature, "text/plain");
+                    if (!string.IsNullOrEmpty(user.SecuritySettings.PGPSignature))
+                    {
+                        return Content(user.SecuritySettings.PGPSignature, "text/plain");
+                    }
                 }
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
@@ -174,75 +182,78 @@ namespace Teknik.Areas.Users.Controllers
             if (ModelState.IsValid)
             {
                 string username = model.Username;
-                User user = UserHelper.GetUser(db, username);
-                if (user != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    bool userValid = UserHelper.UserPasswordCorrect(db, Config, user, model.Password);
-                    if (userValid)
+                    User user = UserHelper.GetUser(db, username);
+                    if (user != null)
                     {
-                        // Perform transfer actions on the account
-                        UserHelper.TransferUser(db, Config, user, model.Password);
-                        user.LastSeen = DateTime.Now;
-                        db.Entry(user).State = EntityState.Modified;
-                        db.SaveChanges();
-
-                        // Let's double check their email and git accounts to make sure they exist
-                        string email = UserHelper.GetUserEmailAddress(Config, username);
-                        if (Config.EmailConfig.Enabled && !UserHelper.UserEmailExists(Config, email))
+                        bool userValid = UserHelper.UserPasswordCorrect(db, Config, user, model.Password);
+                        if (userValid)
                         {
-                            UserHelper.AddUserEmail(Config, email, model.Password);
-                        }
+                            // Perform transfer actions on the account
+                            UserHelper.TransferUser(db, Config, user, model.Password);
+                            user.LastSeen = DateTime.Now;
+                            db.Entry(user).State = EntityState.Modified;
+                            db.SaveChanges();
 
-                        if (Config.GitConfig.Enabled && !UserHelper.UserGitExists(Config, username))
-                        {
-                            UserHelper.AddUserGit(Config, username, model.Password);
-                        }
-
-                        bool twoFactor = false;
-                        string returnUrl = model.ReturnUrl;
-                        if (user.SecuritySettings.TwoFactorEnabled)
-                        {
-                            twoFactor = true;
-                            // We need to check their device, and two factor them
-                            if (user.SecuritySettings.AllowTrustedDevices)
+                            // Let's double check their email and git accounts to make sure they exist
+                            string email = UserHelper.GetUserEmailAddress(Config, username);
+                            if (Config.EmailConfig.Enabled && !UserHelper.UserEmailExists(Config, email))
                             {
-                                // Check for the trusted device cookie
-                                HttpCookie cookie = Request.Cookies[Constants.TRUSTEDDEVICECOOKIE + "_" + username];
-                                if (cookie != null)
+                                UserHelper.AddUserEmail(Config, email, model.Password);
+                            }
+
+                            if (Config.GitConfig.Enabled && !UserHelper.UserGitExists(Config, username))
+                            {
+                                UserHelper.AddUserGit(Config, username, model.Password);
+                            }
+
+                            bool twoFactor = false;
+                            string returnUrl = model.ReturnUrl;
+                            if (user.SecuritySettings.TwoFactorEnabled)
+                            {
+                                twoFactor = true;
+                                // We need to check their device, and two factor them
+                                if (user.SecuritySettings.AllowTrustedDevices)
                                 {
-                                    string token = cookie.Value;
-                                    if (user.TrustedDevices.Where(d => d.Token == token).FirstOrDefault() != null)
+                                    // Check for the trusted device cookie
+                                    HttpCookie cookie = Request.Cookies[Constants.TRUSTEDDEVICECOOKIE + "_" + username];
+                                    if (cookie != null)
                                     {
-                                        // The device token is attached to the user, let's let it slide
-                                        twoFactor = false;
+                                        string token = cookie.Value;
+                                        if (user.TrustedDevices.Where(d => d.Token == token).FirstOrDefault() != null)
+                                        {
+                                            // The device token is attached to the user, let's let it slide
+                                            twoFactor = false;
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        if (twoFactor)
-                        {
-                            Session["AuthenticatedUser"] = user;
-                            if (string.IsNullOrEmpty(model.ReturnUrl))
+                            if (twoFactor)
+                            {
+                                Session["AuthenticatedUser"] = user;
+                                if (string.IsNullOrEmpty(model.ReturnUrl))
+                                    returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
+                                returnUrl = Url.SubRouteUrl("user", "User.CheckAuthenticatorCode", new { returnUrl = returnUrl, rememberMe = model.RememberMe });
+                                model.ReturnUrl = string.Empty;
+                            }
+                            else
+                            {
                                 returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
-                            returnUrl = Url.SubRouteUrl("user", "User.CheckAuthenticatorCode", new { returnUrl = returnUrl, rememberMe = model.RememberMe });
-                            model.ReturnUrl = string.Empty;
-                        }
-                        else
-                        {
-                            returnUrl = Request.UrlReferrer.AbsoluteUri.ToString();
-                            // They don't need two factor auth.
-                            HttpCookie authcookie = UserHelper.CreateAuthCookie(user.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
-                            Response.Cookies.Add(authcookie);
-                        }
+                                // They don't need two factor auth.
+                                HttpCookie authcookie = UserHelper.CreateAuthCookie(user.Username, model.RememberMe, Request.Url.Host.GetDomain(), Request.IsLocal);
+                                Response.Cookies.Add(authcookie);
+                            }
 
-                        if (string.IsNullOrEmpty(model.ReturnUrl))
-                        {
-                            return GenerateActionResult(new { result = returnUrl }, Redirect(returnUrl));
-                        }
-                        else
-                        {
-                            return Redirect(model.ReturnUrl);
+                            if (string.IsNullOrEmpty(model.ReturnUrl))
+                            {
+                                return GenerateActionResult(new { result = returnUrl }, Redirect(returnUrl));
+                            }
+                            else
+                            {
+                                return Redirect(model.ReturnUrl);
+                            }
                         }
                     }
                 }
@@ -290,65 +301,68 @@ namespace Teknik.Areas.Users.Controllers
             {
                 if (Config.UserConfig.RegistrationEnabled)
                 {
-                    if (!model.Error && !UserHelper.ValidUsername(Config, model.Username))
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        model.Error = true;
-                        model.ErrorMessage = "That username is not valid";
-                    }
-                    if (!model.Error && !UserHelper.UsernameAvailable(db, Config, model.Username))
-                    {
-                        model.Error = true;
-                        model.ErrorMessage = "That username is not available";
-                    }
-                    if (!model.Error && model.Password != model.ConfirmPassword)
-                    {
-                        model.Error = true;
-                        model.ErrorMessage = "Passwords must match";
-                    }
-
-                    // PGP Key valid?
-                    if (!model.Error && !string.IsNullOrEmpty(model.PublicKey) && !PGP.IsPublicKey(model.PublicKey))
-                    {
-                        model.Error = true;
-                        model.ErrorMessage = "Invalid PGP Public Key";
-                    }
-
-                    if (!model.Error)
-                    {
-                        try
-                        {
-                            User newUser = db.Users.Create();
-                            newUser.JoinDate = DateTime.Now;
-                            newUser.Username = model.Username;
-                            newUser.UserSettings = new UserSettings();
-                            newUser.SecuritySettings = new SecuritySettings();
-                            newUser.BlogSettings = new BlogSettings();
-                            newUser.UploadSettings = new UploadSettings();
-
-                            if (!string.IsNullOrEmpty(model.PublicKey))
-                                newUser.SecuritySettings.PGPSignature = model.PublicKey;
-                            if (!string.IsNullOrEmpty(model.RecoveryEmail))
-                                newUser.SecuritySettings.RecoveryEmail = model.RecoveryEmail;
-
-                            UserHelper.AddAccount(db, Config, newUser, model.Password);
-
-                            // If they have a recovery email, let's send a verification
-                            if (!string.IsNullOrEmpty(model.RecoveryEmail))
-                            {
-                                string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, newUser);
-                                string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = model.Username });
-                                string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
-                                UserHelper.SendRecoveryEmailVerification(Config, model.Username, model.RecoveryEmail, resetUrl, verifyUrl);
-                            }
-                        }
-                        catch (Exception ex)
+                        if (!model.Error && !UserHelper.ValidUsername(Config, model.Username))
                         {
                             model.Error = true;
-                            model.ErrorMessage = ex.GetFullMessage(true);
+                            model.ErrorMessage = "That username is not valid";
                         }
+                        if (!model.Error && !UserHelper.UsernameAvailable(db, Config, model.Username))
+                        {
+                            model.Error = true;
+                            model.ErrorMessage = "That username is not available";
+                        }
+                        if (!model.Error && model.Password != model.ConfirmPassword)
+                        {
+                            model.Error = true;
+                            model.ErrorMessage = "Passwords must match";
+                        }
+
+                        // PGP Key valid?
+                        if (!model.Error && !string.IsNullOrEmpty(model.PublicKey) && !PGP.IsPublicKey(model.PublicKey))
+                        {
+                            model.Error = true;
+                            model.ErrorMessage = "Invalid PGP Public Key";
+                        }
+
                         if (!model.Error)
                         {
-                            return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false, ReturnUrl = model.ReturnUrl });
+                            try
+                            {
+                                User newUser = db.Users.Create();
+                                newUser.JoinDate = DateTime.Now;
+                                newUser.Username = model.Username;
+                                newUser.UserSettings = new UserSettings();
+                                newUser.SecuritySettings = new SecuritySettings();
+                                newUser.BlogSettings = new BlogSettings();
+                                newUser.UploadSettings = new UploadSettings();
+
+                                if (!string.IsNullOrEmpty(model.PublicKey))
+                                    newUser.SecuritySettings.PGPSignature = model.PublicKey;
+                                if (!string.IsNullOrEmpty(model.RecoveryEmail))
+                                    newUser.SecuritySettings.RecoveryEmail = model.RecoveryEmail;
+
+                                UserHelper.AddAccount(db, Config, newUser, model.Password);
+
+                                // If they have a recovery email, let's send a verification
+                                if (!string.IsNullOrEmpty(model.RecoveryEmail))
+                                {
+                                    string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, newUser);
+                                    string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = model.Username });
+                                    string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
+                                    UserHelper.SendRecoveryEmailVerification(Config, model.Username, model.RecoveryEmail, resetUrl, verifyUrl);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                model.Error = true;
+                                model.ErrorMessage = ex.GetFullMessage(true);
+                            }
+                            if (!model.Error)
+                            {
+                                return Login(new LoginViewModel { Username = model.Username, Password = model.Password, RememberMe = false, ReturnUrl = model.ReturnUrl });
+                            }
                         }
                     }
                 }
@@ -369,115 +383,118 @@ namespace Teknik.Areas.Users.Controllers
             {
                 try
                 {
-                    User user = UserHelper.GetUser(db, User.Identity.Name);
-                    if (user != null)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        bool changePass = false;
-                        string email = string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain);
-                        // Changing Password?
-                        if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
+                        User user = UserHelper.GetUser(db, User.Identity.Name);
+                        if (user != null)
                         {
-                            // Old Password Valid?
-                            if (!UserHelper.UserPasswordCorrect(db, Config, user, curPass))
+                            bool changePass = false;
+                            string email = string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain);
+                            // Changing Password?
+                            if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
                             {
-                                return Json(new { error = "Invalid Original Password." });
-                            }
-                            // The New Password Match?
-                            if (newPass != newPassConfirm)
-                            {
-                                return Json(new { error = "New Password Must Match." });
-                            }
-                            // Are password resets enabled?
-                            if (!Config.UserConfig.PasswordResetEnabled)
-                            {
-                                return Json(new { error = "Password resets are disabled." });
-                            }
-                            changePass = true;
-                        }
-
-                        // PGP Key valid?
-                        if (!string.IsNullOrEmpty(pgpPublicKey) && !PGP.IsPublicKey(pgpPublicKey))
-                        {
-                            return Json(new { error = "Invalid PGP Public Key" });
-                        }
-                        user.SecuritySettings.PGPSignature = pgpPublicKey;
-
-                        // Recovery Email
-                        bool newRecovery = false;
-                        if (recoveryEmail != user.SecuritySettings.RecoveryEmail)
-                        {
-                            newRecovery = true;
-                            user.SecuritySettings.RecoveryEmail = recoveryEmail;
-                            user.SecuritySettings.RecoveryVerified = false;
-                        }
-
-                        // Trusted Devices
-                        user.SecuritySettings.AllowTrustedDevices = allowTrustedDevices;
-                        if (!allowTrustedDevices)
-                        {
-                            // They turned it off, let's clear the trusted devices
-                            user.TrustedDevices.Clear();
-                            List<TrustedDevice> foundDevices = db.TrustedDevices.Where(d => d.UserId == user.UserId).ToList();
-                            if (foundDevices != null)
-                            {
-                                foreach (TrustedDevice device in foundDevices)
+                                // Old Password Valid?
+                                if (!UserHelper.UserPasswordCorrect(db, Config, user, curPass))
                                 {
-                                    db.TrustedDevices.Remove(device);
+                                    return Json(new { error = "Invalid Original Password." });
+                                }
+                                // The New Password Match?
+                                if (newPass != newPassConfirm)
+                                {
+                                    return Json(new { error = "New Password Must Match." });
+                                }
+                                // Are password resets enabled?
+                                if (!Config.UserConfig.PasswordResetEnabled)
+                                {
+                                    return Json(new { error = "Password resets are disabled." });
+                                }
+                                changePass = true;
+                            }
+
+                            // PGP Key valid?
+                            if (!string.IsNullOrEmpty(pgpPublicKey) && !PGP.IsPublicKey(pgpPublicKey))
+                            {
+                                return Json(new { error = "Invalid PGP Public Key" });
+                            }
+                            user.SecuritySettings.PGPSignature = pgpPublicKey;
+
+                            // Recovery Email
+                            bool newRecovery = false;
+                            if (recoveryEmail != user.SecuritySettings.RecoveryEmail)
+                            {
+                                newRecovery = true;
+                                user.SecuritySettings.RecoveryEmail = recoveryEmail;
+                                user.SecuritySettings.RecoveryVerified = false;
+                            }
+
+                            // Trusted Devices
+                            user.SecuritySettings.AllowTrustedDevices = allowTrustedDevices;
+                            if (!allowTrustedDevices)
+                            {
+                                // They turned it off, let's clear the trusted devices
+                                user.TrustedDevices.Clear();
+                                List<TrustedDevice> foundDevices = db.TrustedDevices.Where(d => d.UserId == user.UserId).ToList();
+                                if (foundDevices != null)
+                                {
+                                    foreach (TrustedDevice device in foundDevices)
+                                    {
+                                        db.TrustedDevices.Remove(device);
+                                    }
                                 }
                             }
+
+                            // Two Factor Authentication
+                            bool oldTwoFactor = user.SecuritySettings.TwoFactorEnabled;
+                            user.SecuritySettings.TwoFactorEnabled = twoFactorEnabled;
+                            string newKey = string.Empty;
+                            if (!oldTwoFactor && twoFactorEnabled)
+                            {
+                                // They just enabled it, let's regen the key
+                                newKey = Authenticator.GenerateKey();
+                            }
+                            else if (!twoFactorEnabled)
+                            {
+                                // remove the key when it's disabled
+                                newKey = string.Empty;
+                            }
+                            else
+                            {
+                                // No change, let's use the old value
+                                newKey = user.SecuritySettings.TwoFactorKey;
+                            }
+                            user.SecuritySettings.TwoFactorKey = newKey;
+
+                            // Profile Info
+                            user.UserSettings.Website = website;
+                            user.UserSettings.Quote = quote;
+                            user.UserSettings.About = about;
+
+                            // Blogs
+                            user.BlogSettings.Title = blogTitle;
+                            user.BlogSettings.Description = blogDesc;
+
+                            // Uploads
+                            user.UploadSettings.Encrypt = encrypt;
+
+                            UserHelper.EditAccount(db, Config, user, changePass, newPass);
+
+                            // If they have a recovery email, let's send a verification
+                            if (!string.IsNullOrEmpty(recoveryEmail) && newRecovery)
+                            {
+                                string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, user);
+                                string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
+                                string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
+                                UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl, verifyUrl);
+                            }
+
+                            if (!oldTwoFactor && twoFactorEnabled)
+                            {
+                                return Json(new { result = new { checkAuth = true, key = newKey, qrUrl = Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = newKey }) } });
+                            }
+                            return Json(new { result = true });
                         }
-
-                        // Two Factor Authentication
-                        bool oldTwoFactor = user.SecuritySettings.TwoFactorEnabled;
-                        user.SecuritySettings.TwoFactorEnabled = twoFactorEnabled;
-                        string newKey = string.Empty;
-                        if (!oldTwoFactor && twoFactorEnabled)
-                        {
-                            // They just enabled it, let's regen the key
-                            newKey = Authenticator.GenerateKey();
-                        }
-                        else if (!twoFactorEnabled)
-                        {
-                            // remove the key when it's disabled
-                            newKey = string.Empty;
-                        }
-                        else
-                        {
-                            // No change, let's use the old value
-                            newKey = user.SecuritySettings.TwoFactorKey;
-                        }
-                        user.SecuritySettings.TwoFactorKey = newKey;
-
-                        // Profile Info
-                        user.UserSettings.Website = website;
-                        user.UserSettings.Quote = quote;
-                        user.UserSettings.About = about;
-
-                        // Blogs
-                        user.BlogSettings.Title = blogTitle;
-                        user.BlogSettings.Description = blogDesc;
-
-                        // Uploads
-                        user.UploadSettings.Encrypt = encrypt;
-
-                        UserHelper.EditAccount(db, Config, user, changePass, newPass);
-
-                        // If they have a recovery email, let's send a verification
-                        if (!string.IsNullOrEmpty(recoveryEmail) && newRecovery)
-                        {
-                            string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, user);
-                            string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
-                            string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
-                            UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl, verifyUrl);
-                        }
-
-                        if (!oldTwoFactor && twoFactorEnabled)
-                        {
-                            return Json(new { result = new { checkAuth = true, key = newKey, qrUrl = Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = newKey }) } });
-                        }
-                        return Json(new { result = true });
+                        return Json(new { error = "User does not exist" });
                     }
-                    return Json(new { error = "User does not exist" });
                 }
                 catch (Exception ex)
                 {
@@ -495,13 +512,16 @@ namespace Teknik.Areas.Users.Controllers
             {
                 try
                 {
-                    User user = UserHelper.GetUser(db, User.Identity.Name);
-                    if (user != null)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        UserHelper.DeleteAccount(db, Config, user);
-                        // Sign Out
-                        Logout();
-                        return Json(new { result = true });
+                        User user = UserHelper.GetUser(db, User.Identity.Name);
+                        if (user != null)
+                        {
+                            UserHelper.DeleteAccount(db, Config, user);
+                            // Sign Out
+                            Logout();
+                            return Json(new { result = true });
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -518,7 +538,15 @@ namespace Teknik.Areas.Users.Controllers
             bool verified = true;
             if (string.IsNullOrEmpty(code))
                 verified &= false;
-            verified &= UserHelper.VerifyRecoveryEmail(db, Config, User.Identity.Name, code);
+
+            // Is there a code?
+            if (verified)
+            {
+                using (TeknikEntities db = new TeknikEntities())
+                {
+                    verified &= UserHelper.VerifyRecoveryEmail(db, Config, User.Identity.Name, code);
+                }
+            }
 
             RecoveryEmailVerificationViewModel model = new RecoveryEmailVerificationViewModel();
             model.Success = verified;
@@ -534,21 +562,24 @@ namespace Teknik.Areas.Users.Controllers
             {
                 try
                 {
-                    User user = UserHelper.GetUser(db, User.Identity.Name);
-                    if (user != null)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        // If they have a recovery email, let's send a verification
-                        if (!string.IsNullOrEmpty(user.SecuritySettings.RecoveryEmail))
+                        User user = UserHelper.GetUser(db, User.Identity.Name);
+                        if (user != null)
                         {
-                            if (!user.SecuritySettings.RecoveryVerified)
+                            // If they have a recovery email, let's send a verification
+                            if (!string.IsNullOrEmpty(user.SecuritySettings.RecoveryEmail))
                             {
-                                string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, user);
-                                string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
-                                string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
-                                UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl, verifyUrl);
-                                return Json(new { result = true });
+                                if (!user.SecuritySettings.RecoveryVerified)
+                                {
+                                    string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, user);
+                                    string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
+                                    string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = verifyCode });
+                                    UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl, verifyUrl);
+                                    return Json(new { result = true });
+                                }
+                                return Json(new { error = "The recovery email is already verified" });
                             }
-                            return Json(new { error = "The recovery email is already verified" });
                         }
                     }
                 }
@@ -579,20 +610,23 @@ namespace Teknik.Areas.Users.Controllers
             {
                 try
                 {
-                    User user = UserHelper.GetUser(db, username);
-                    if (user != null)
+                    using (TeknikEntities db = new TeknikEntities())
                     {
-                        // If they have a recovery email, let's send a verification
-                        if (!string.IsNullOrEmpty(user.SecuritySettings.RecoveryEmail) && user.SecuritySettings.RecoveryVerified)
+                        User user = UserHelper.GetUser(db, username);
+                        if (user != null)
                         {
-                            string verifyCode = UserHelper.CreateResetPasswordVerification(db, Config, user);
-                            string resetUrl = Url.SubRouteUrl("user", "User.VerifyResetPassword", new { Username = user.Username, Code = verifyCode });
-                            UserHelper.SendResetPasswordVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl);
-                            return Json(new { result = true });
+                            // If they have a recovery email, let's send a verification
+                            if (!string.IsNullOrEmpty(user.SecuritySettings.RecoveryEmail) && user.SecuritySettings.RecoveryVerified)
+                            {
+                                string verifyCode = UserHelper.CreateResetPasswordVerification(db, Config, user);
+                                string resetUrl = Url.SubRouteUrl("user", "User.VerifyResetPassword", new { Username = user.Username, Code = verifyCode });
+                                UserHelper.SendResetPasswordVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl);
+                                return Json(new { result = true });
+                            }
+                            return Json(new { error = "The username doesn't have a recovery email specified" });
                         }
-                        return Json(new { error = "The username doesn't have a recovery email specified" });
+                        return Json(new { error = "The username is not valid" });
                     }
-                    return Json(new { error = "The username is not valid" });
                 }
                 catch (Exception ex)
                 {
@@ -609,14 +643,22 @@ namespace Teknik.Areas.Users.Controllers
             bool verified = true;
             if (string.IsNullOrEmpty(code))
                 verified &= false;
-            verified &= UserHelper.VerifyResetPassword(db, Config, username, code);
 
+            // Is there a code?
             if (verified)
             {
-                // The password reset code is valid, let's get their user account for this session
-                User user = UserHelper.GetUser(db, username);
-                Session["AuthenticatedUser"] = user;
-                Session["AuthCode"] = code;
+                using (TeknikEntities db = new TeknikEntities())
+                {
+                    verified &= UserHelper.VerifyResetPassword(db, Config, username, code);
+
+                    if (verified)
+                    {
+                        // The password reset code is valid, let's get their user account for this session
+                        User user = UserHelper.GetUser(db, username);
+                        Session["AuthenticatedUser"] = user;
+                        Session["AuthCode"] = code;
+                    }
+                }
             }
 
             ResetPasswordVerificationViewModel model = new ResetPasswordVerificationViewModel();
@@ -649,8 +691,11 @@ namespace Teknik.Areas.Users.Controllers
                                 return Json(new { error = "Passwords must match" });
                             }
 
-                            User newUser = UserHelper.GetUser(db, user.Username);
-                            UserHelper.EditAccount(db, Config, newUser, true, password);
+                            using (TeknikEntities db = new TeknikEntities())
+                            {
+                                User newUser = UserHelper.GetUser(db, user.Username);
+                                UserHelper.EditAccount(db, Config, newUser, true, password);
+                            }
 
                             return Json(new { result = true });
                         }
@@ -712,15 +757,18 @@ namespace Teknik.Areas.Users.Controllers
                             HttpCookie trustedDeviceCookie = UserHelper.CreateTrustedDeviceCookie(user.Username, Request.Url.Host.GetDomain(), Request.IsLocal);
                             Response.Cookies.Add(trustedDeviceCookie);
 
-                            TrustedDevice device = new TrustedDevice();
-                            device.UserId = user.UserId;
-                            device.Name = (string.IsNullOrEmpty(deviceName)) ? "Unknown" : deviceName;
-                            device.DateSeen = DateTime.Now;
-                            device.Token = trustedDeviceCookie.Value;
+                            using (TeknikEntities db = new TeknikEntities())
+                            {
+                                TrustedDevice device = new TrustedDevice();
+                                device.UserId = user.UserId;
+                                device.Name = (string.IsNullOrEmpty(deviceName)) ? "Unknown" : deviceName;
+                                device.DateSeen = DateTime.Now;
+                                device.Token = trustedDeviceCookie.Value;
 
-                            // Add the token
-                            db.TrustedDevices.Add(device);
-                            db.SaveChanges();
+                                // Add the token
+                                db.TrustedDevices.Add(device);
+                                db.SaveChanges();
+                            }
                         }
 
                         if (string.IsNullOrEmpty(returnUrl))
@@ -738,25 +786,28 @@ namespace Teknik.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult VerifyAuthenticatorCode(string code)
         {
-            User user = UserHelper.GetUser(db, User.Identity.Name);
-            if (user != null)
+            using (TeknikEntities db = new TeknikEntities())
             {
-                if (user.SecuritySettings.TwoFactorEnabled)
+                User user = UserHelper.GetUser(db, User.Identity.Name);
+                if (user != null)
                 {
-                    string key = user.SecuritySettings.TwoFactorKey;
-
-                    TimeAuthenticator ta = new TimeAuthenticator(usedCodeManager: usedCodesManager);
-                    bool isValid = ta.CheckCode(key, code, user);
-
-                    if (isValid)
+                    if (user.SecuritySettings.TwoFactorEnabled)
                     {
-                        return Json(new { result = true });
+                        string key = user.SecuritySettings.TwoFactorKey;
+
+                        TimeAuthenticator ta = new TimeAuthenticator(usedCodeManager: usedCodesManager);
+                        bool isValid = ta.CheckCode(key, code, user);
+
+                        if (isValid)
+                        {
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "Invalid Authentication Code" });
                     }
-                    return Json(new { error = "Invalid Authentication Code" });
+                    return Json(new { error = "User does not have Two Factor Authentication enabled" });
                 }
-                return Json(new { error = "User does not have Two Factor Authentication enabled" });
+                return Json(new { error = "User does not exist" });
             }
-            return Json(new { error = "User does not exist" });
         }
 
         [HttpGet]
@@ -777,29 +828,32 @@ namespace Teknik.Areas.Users.Controllers
         {
             try
             {
-                User user = UserHelper.GetUser(db, User.Identity.Name);
-                if (user != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    if (user.SecuritySettings.AllowTrustedDevices)
+                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
                     {
-                        // let's clear the trusted devices
-                        user.TrustedDevices.Clear();
-                        List<TrustedDevice> foundDevices = db.TrustedDevices.Where(d => d.UserId == user.UserId).ToList();
-                        if (foundDevices != null)
+                        if (user.SecuritySettings.AllowTrustedDevices)
                         {
-                            foreach (TrustedDevice device in foundDevices)
+                            // let's clear the trusted devices
+                            user.TrustedDevices.Clear();
+                            List<TrustedDevice> foundDevices = db.TrustedDevices.Where(d => d.UserId == user.UserId).ToList();
+                            if (foundDevices != null)
                             {
-                                db.TrustedDevices.Remove(device);
+                                foreach (TrustedDevice device in foundDevices)
+                                {
+                                    db.TrustedDevices.Remove(device);
+                                }
                             }
-                        }
-                        db.Entry(user).State = EntityState.Modified;
-                        db.SaveChanges();
+                            db.Entry(user).State = EntityState.Modified;
+                            db.SaveChanges();
 
-                        return Json(new { result = true });
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "User does not allow trusted devices" });
                     }
-                    return Json(new { error = "User does not allow trusted devices" });
+                    return Json(new { error = "User does not exist" });
                 }
-                return Json(new { error = "User does not exist" });
             }
             catch (Exception ex)
             {
@@ -813,31 +867,34 @@ namespace Teknik.Areas.Users.Controllers
         {
             try
             {
-                User user = UserHelper.GetUser(db, User.Identity.Name);
-                if (user != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    string newTokenStr = UserHelper.GenerateAuthToken(db, user.Username);
-
-                    if (!string.IsNullOrEmpty(newTokenStr))
+                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
                     {
-                        AuthToken token = db.AuthTokens.Create();
-                        token.UserId = user.UserId;
-                        token.HashedToken = SHA256.Hash(newTokenStr);
-                        token.Name = name;
+                        string newTokenStr = UserHelper.GenerateAuthToken(db, user.Username);
 
-                        db.AuthTokens.Add(token);
-                        db.SaveChanges();
+                        if (!string.IsNullOrEmpty(newTokenStr))
+                        {
+                            AuthToken token = db.AuthTokens.Create();
+                            token.UserId = user.UserId;
+                            token.HashedToken = SHA256.Hash(newTokenStr);
+                            token.Name = name;
 
-                        AuthTokenViewModel model = new AuthTokenViewModel();
-                        model.AuthTokenId = token.AuthTokenId;
-                        model.Name = token.Name;
-                        model.LastDateUsed = token.LastDateUsed;
+                            db.AuthTokens.Add(token);
+                            db.SaveChanges();
 
-                        return Json(new { result = new { token = newTokenStr, html = PartialView("~/Areas/User/Views/User/AuthToken.cshtml", model).RenderToString() } });
+                            AuthTokenViewModel model = new AuthTokenViewModel();
+                            model.AuthTokenId = token.AuthTokenId;
+                            model.Name = token.Name;
+                            model.LastDateUsed = token.LastDateUsed;
+
+                            return Json(new { result = new { token = newTokenStr, html = PartialView("~/Areas/User/Views/User/AuthToken.cshtml", model).RenderToString() } });
+                        }
+                        return Json(new { error = "Unable to generate Auth Token" });
                     }
-                    return Json(new { error = "Unable to generate Auth Token" });
+                    return Json(new { error = "User does not exist" });
                 }
-                return Json(new { error = "User does not exist" });
             }
             catch (Exception ex)
             {
@@ -851,24 +908,27 @@ namespace Teknik.Areas.Users.Controllers
         {
             try
             {
-                User user = UserHelper.GetUser(db, User.Identity.Name);
-                if (user != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    user.AuthTokens.Clear();
-                    List<AuthToken> foundTokens = db.AuthTokens.Where(d => d.UserId == user.UserId).ToList();
-                    if (foundTokens != null)
+                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
                     {
-                        foreach (AuthToken token in foundTokens)
+                        user.AuthTokens.Clear();
+                        List<AuthToken> foundTokens = db.AuthTokens.Where(d => d.UserId == user.UserId).ToList();
+                        if (foundTokens != null)
                         {
-                            db.AuthTokens.Remove(token);
+                            foreach (AuthToken token in foundTokens)
+                            {
+                                db.AuthTokens.Remove(token);
+                            }
                         }
-                    }
-                    db.Entry(user).State = EntityState.Modified;
-                    db.SaveChanges();
+                        db.Entry(user).State = EntityState.Modified;
+                        db.SaveChanges();
 
-                    return Json(new { result = true });
+                        return Json(new { result = true });
+                    }
+                    return Json(new { error = "User does not exist" });
                 }
-                return Json(new { error = "User does not exist" });
             }
             catch (Exception ex)
             {
@@ -882,21 +942,24 @@ namespace Teknik.Areas.Users.Controllers
         {
             try
             {
-                User user = UserHelper.GetUser(db, User.Identity.Name);
-                if (user != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    AuthToken foundToken = db.AuthTokens.Where(d => d.UserId == user.UserId && d.AuthTokenId == tokenId).FirstOrDefault();
-                    if (foundToken != null)
+                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
                     {
-                        foundToken.Name = name;
-                        db.Entry(foundToken).State = EntityState.Modified;
-                        db.SaveChanges();
+                        AuthToken foundToken = db.AuthTokens.Where(d => d.UserId == user.UserId && d.AuthTokenId == tokenId).FirstOrDefault();
+                        if (foundToken != null)
+                        {
+                            foundToken.Name = name;
+                            db.Entry(foundToken).State = EntityState.Modified;
+                            db.SaveChanges();
 
-                        return Json(new { result = new { name = name } });
+                            return Json(new { result = new { name = name } });
+                        }
+                        return Json(new { error = "Authentication Token does not exist" });
                     }
-                    return Json(new { error = "Authentication Token does not exist" });
+                    return Json(new { error = "User does not exist" });
                 }
-                return Json(new { error = "User does not exist" });
             }
             catch (Exception ex)
             {
@@ -910,22 +973,25 @@ namespace Teknik.Areas.Users.Controllers
         {
             try
             {
-                User user = UserHelper.GetUser(db, User.Identity.Name);
-                if (user != null)
+                using (TeknikEntities db = new TeknikEntities())
                 {
-                    AuthToken foundToken = db.AuthTokens.Where(d => d.UserId == user.UserId && d.AuthTokenId == tokenId).FirstOrDefault();
-                    if (foundToken != null)
+                    User user = UserHelper.GetUser(db, User.Identity.Name);
+                    if (user != null)
                     {
-                        db.AuthTokens.Remove(foundToken);
-                        user.AuthTokens.Remove(foundToken);
-                        db.Entry(user).State = EntityState.Modified;
-                        db.SaveChanges();
+                        AuthToken foundToken = db.AuthTokens.Where(d => d.UserId == user.UserId && d.AuthTokenId == tokenId).FirstOrDefault();
+                        if (foundToken != null)
+                        {
+                            db.AuthTokens.Remove(foundToken);
+                            user.AuthTokens.Remove(foundToken);
+                            db.Entry(user).State = EntityState.Modified;
+                            db.SaveChanges();
 
-                        return Json(new { result = true });
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "Authentication Token does not exist" });
                     }
-                    return Json(new { error = "Authentication Token does not exist" });
+                    return Json(new { error = "User does not exist" });
                 }
-                return Json(new { error = "User does not exist" });
             }
             catch (Exception ex)
             {

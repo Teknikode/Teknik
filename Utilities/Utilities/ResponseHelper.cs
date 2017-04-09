@@ -49,26 +49,18 @@ namespace Teknik.Utilities
                 }
                 while (processedBytes > 0 && bytesRemaining > 0);
             }
-            catch (HttpException httpEx)
-            {
-                // If we lost connection, that's fine
-                if (httpEx.ErrorCode == -2147023667)
-                {
-                    // do nothing
-                }
-                else
-                {
-                    //throw httpEx;
-                }
-            }
             catch (Exception ex)
             {
+                // Don't bother
                 throw ex;
             }
             finally
             {
                 // dispose of file stream
-                stream.Dispose();
+                if (stream != null)
+                {
+                    stream.Dispose();
+                }
             }
         }
 

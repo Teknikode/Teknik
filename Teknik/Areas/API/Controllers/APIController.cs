@@ -16,8 +16,6 @@ namespace Teknik.Areas.API.Controllers
     [TeknikAuthorize]
     public class APIController : DefaultController
     {
-        private TeknikEntities db = new TeknikEntities();
-
         [AllowAnonymous]
         public ActionResult Index()
         {
