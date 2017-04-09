@@ -126,103 +126,116 @@ namespace Teknik.Areas.Upload.Controllers
             if (Config.UploadConfig.DownloadEnabled)
             {
                 ViewBag.Title = "Teknik Download - " + file;
+                string fileName = string.Empty;
+                string url = string.Empty;
+                string key = string.Empty;
+                string iv = string.Empty;
+                string contentType = string.Empty;
+                long contentLength = 0;
+                DateTime dateUploaded = new DateTime();
+
                 using (TeknikEntities db = new TeknikEntities())
                 {
-                    Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
-                    if (upload != null)
+                    Models.Upload uploads = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
+                    if (uploads != null)
                     {
-                        upload.Downloads += 1;
-                        db.Entry(upload).State = EntityState.Modified;
+                        uploads.Downloads += 1;
+                        db.Entry(uploads).State = EntityState.Modified;
                         db.SaveChanges();
 
-                        // We don't have the key, so we need to decrypt it client side
-                        if (string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
-                        {
-                            DownloadViewModel model = new DownloadViewModel();
-                            model.FileName = file;
-                            model.ContentType = upload.ContentType;
-                            model.ContentLength = upload.ContentLength;
-                            model.IV = upload.IV;
+                        fileName = uploads.FileName;
+                        url = uploads.Url;
+                        key = uploads.Key;
+                        iv = uploads.IV;
+                        contentType = uploads.ContentType;
+                        contentLength = uploads.ContentLength;
+                        dateUploaded = uploads.DateUploaded;
+                    }
+                }
 
-                            return View(model);
-                        }
-                        else // We have the key, so that means server side decryption
-                        {
-                            // Are they downloading it by range?
-                            bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]); // We do not support ranges
-                                                                                                         // Check to see if they have a cache
-                            bool isCached = !string.IsNullOrEmpty(Request.Headers["If-Modified-Since"]);
+                // We don't have the key, so we need to decrypt it client side
+                if (string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
+                {
+                    DownloadViewModel model = new DownloadViewModel();
+                    model.FileName = file;
+                    model.ContentType = contentType;
+                    model.ContentLength = contentLength;
+                    model.IV = iv;
 
-                            if (isCached)
+                    return View(model);
+                }
+                else // We have the key, so that means server side decryption
+                {
+                    // Are they downloading it by range?
+                    bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]); // We do not support ranges
+                                                                                                 // Check to see if they have a cache
+                    bool isCached = !string.IsNullOrEmpty(Request.Headers["If-Modified-Since"]);
+
+                    if (isCached)
+                    {
+                        // The file is cached, let's just 304 this
+                        Response.StatusCode = 304;
+                        Response.StatusDescription = "Not Modified";
+                        Response.AddHeader("Content-Length", "0");
+                        return Content(string.Empty);
+                    }
+                    else
+                    {
+                        string subDir = fileName[0].ToString();
+                        string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, fileName);
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            // Add cache parameters
+                            Response.Cache.SetCacheability(HttpCacheability.Public);
+                            Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
+                            Response.Cache.SetLastModified(dateUploaded);
+
+                            // Notify the client the content length we'll be outputting 
+                            Response.AddHeader("Content-Length", contentLength.ToString());
+
+                            // Create content disposition
+                            var cd = new System.Net.Mime.ContentDisposition
                             {
-                                // The file is cached, let's just 304 this
-                                Response.StatusCode = 304;
-                                Response.StatusDescription = "Not Modified";
-                                Response.AddHeader("Content-Length", "0");
-                                return Content(string.Empty);
+                                FileName = url,
+                                Inline = true
+                            };
+
+                            Response.AddHeader("Content-Disposition", cd.ToString());
+
+                            // We need to prevent html (make cleaner later)
+                            if (contentType == "text/html")
+                            {
+                                contentType = "text/plain";
                             }
-                            else
+
+                            // Read in the file
+                            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+
+                            try
                             {
-                                string subDir = upload.FileName[0].ToString();
-                                string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-                                if (System.IO.File.Exists(filePath))
+                                // If the IV is set, and Key is set, then decrypt it while sending
+                                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
                                 {
-                                    // Add cache parameters
-                                    Response.Cache.SetCacheability(HttpCacheability.Public);
-                                    Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
-                                    Response.Cache.SetLastModified(upload.DateUploaded);
+                                    byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+                                    byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
-                                    // Notify the client the content length we'll be outputting 
-                                    Response.AddHeader("Content-Length", upload.ContentLength.ToString());
-
-                                    // Create content disposition
-                                    var cd = new System.Net.Mime.ContentDisposition
-                                    {
-                                        FileName = upload.Url,
-                                        Inline = true
-                                    };
-
-                                    Response.AddHeader("Content-Disposition", cd.ToString());
-
-                                    string contentType = upload.ContentType;
-                                    // We need to prevent html (make cleaner later)
-                                    if (contentType == "text/html")
-                                    {
-                                        contentType = "text/plain";
-                                    }
-
-                                    // Read in the file
-                                    FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-
-                                    try
-                                    {
-                                        // If the IV is set, and Key is set, then decrypt it while sending
-                                        if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
-                                        {
-                                            byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
-                                            byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
-
-                                            return new FileGenerateResult(upload.Url,
-                                                                        contentType,
-                                                                        (response) => ResponseHelper.StreamToOutput(response, true, new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding"), (int)upload.ContentLength, Config.UploadConfig.ChunkSize),
-                                                                        false);
-                                        }
-                                        else // Otherwise just send it
-                                        {
-                                            // Don't buffer the response
-                                            Response.Buffer = false;
-                                            // Send the file
-                                            return new FileGenerateResult(upload.Url,
-                                                                        contentType,
-                                                                        (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)upload.ContentLength, Config.UploadConfig.ChunkSize),
-                                                                        false);
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Logging.Logger.WriteEntry(Logging.LogLevel.Warning, "Error in Download", ex);
-                                    }
+                                    return new FileGenerateResult(url,
+                                                                contentType,
+                                                                (response) => ResponseHelper.StreamToOutput(response, true, new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding"), (int)contentLength, Config.UploadConfig.ChunkSize),
+                                                                false);
                                 }
+                                else // Otherwise just send it
+                                {
+                                    // Send the file
+                                    return new FileGenerateResult(url,
+                                                                contentType,
+                                                                (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)contentLength, Config.UploadConfig.ChunkSize),
+                                                                false);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Logging.Logger.WriteEntry(Logging.LogLevel.Warning, "Error in Download", ex);
                             }
                         }
                     }
