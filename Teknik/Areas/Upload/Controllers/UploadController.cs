@@ -151,6 +151,10 @@ namespace Teknik.Areas.Upload.Controllers
                         contentLength = uploads.ContentLength;
                         dateUploaded = uploads.DateUploaded;
                     }
+                    else
+                    {
+                        return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                    }
                 }
 
                 // We don't have the key, so we need to decrypt it client side
