@@ -94,7 +94,7 @@ namespace Teknik.Areas.Podcast.Controllers
                     {
                         if (System.IO.File.Exists(file.Path))
                         {
-                            FileStream fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read);
+                            FileStream fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
                             Response.AddHeader("Content-Length", file.ContentLength.ToString());
 

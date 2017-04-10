@@ -187,15 +187,81 @@ namespace Teknik.Areas.Upload.Controllers
                     {
                         string subDir = fileName[0].ToString();
                         string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, fileName);
+                        long startByte = 0;
+                        long endByte = contentLength - 1;
+                        long length = contentLength;
                         if (System.IO.File.Exists(filePath))
                         {
+                            #region Range Calculation
+                            // check to see if we need to pass a specified range
+                            if (byRange)
+                            {
+                                long anotherStart = startByte;
+                                long anotherEnd = endByte;
+                                string[] arr_split = Request.ServerVariables["HTTP_RANGE"].Split(new char[] { '=' });
+                                string range = arr_split[1];
+
+                                // Make sure the client hasn't sent us a multibyte range 
+                                if (range.IndexOf(",") > -1)
+                                {
+                                    // (?) Shoud this be issued here, or should the first 
+                                    // range be used? Or should the header be ignored and 
+                                    // we output the whole content? 
+                                    Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+                                    throw new HttpException(416, "Requested Range Not Satisfiable");
+                                }
+
+                                // If the range starts with an '-' we start from the beginning 
+                                // If not, we forward the file pointer 
+                                // And make sure to get the end byte if spesified 
+                                if (range.StartsWith("-"))
+                                {
+                                    // The n-number of the last bytes is requested 
+                                    anotherStart = startByte - Convert.ToInt64(range.Substring(1));
+                                }
+                                else
+                                {
+                                    arr_split = range.Split(new char[] { '-' });
+                                    anotherStart = Convert.ToInt64(arr_split[0]);
+                                    long temp = 0;
+                                    anotherEnd = (arr_split.Length > 1 && Int64.TryParse(arr_split[1].ToString(), out temp)) ? Convert.ToInt64(arr_split[1]) : contentLength;
+                                }
+
+                                /* Check the range and make sure it's treated according to the specs. 
+                                 * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html 
+                                 */
+                                // End bytes can not be larger than $end. 
+                                anotherEnd = (anotherEnd > endByte) ? endByte : anotherEnd;
+                                // Validate the requested range and return an error if it's not correct. 
+                                if (anotherStart > anotherEnd || anotherStart > contentLength - 1 || anotherEnd >= contentLength)
+                                {
+
+                                    Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+                                    throw new HttpException(416, "Requested Range Not Satisfiable");
+                                }
+                                startByte = anotherStart;
+                                endByte = anotherEnd;
+
+                                length = endByte - startByte + 1; // Calculate new content length 
+
+                                // Ranges are response of 206
+                                Response.StatusCode = 206;
+                            }
+                            #endregion
+
                             // Add cache parameters
                             Response.Cache.SetCacheability(HttpCacheability.Public);
                             Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
                             Response.Cache.SetLastModified(dateUploaded);
 
+                            // We accept ranges
+                            Response.AddHeader("Accept-Ranges", "0-" + contentLength);
+
+                            // Notify the client the byte range we'll be outputting 
+                            Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+
                             // Notify the client the content length we'll be outputting 
-                            Response.AddHeader("Content-Length", contentLength.ToString());
+                            Response.AddHeader("Content-Length", length.ToString());
 
                             // Create content disposition
                             var cd = new System.Net.Mime.ContentDisposition
@@ -213,7 +279,10 @@ namespace Teknik.Areas.Upload.Controllers
                             }
 
                             // Read in the file
-                            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                            // Reset file stream to starting position (or start of range)
+                            fs.Seek(startByte, SeekOrigin.Begin);
 
                             try
                             {
@@ -225,7 +294,7 @@ namespace Teknik.Areas.Upload.Controllers
 
                                     return new FileGenerateResult(url,
                                                                 contentType,
-                                                                (response) => ResponseHelper.StreamToOutput(response, true, new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding"), (int)contentLength, Config.UploadConfig.ChunkSize),
+                                                                (response) => ResponseHelper.StreamToOutput(response, true, new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding"), (int)length, Config.UploadConfig.ChunkSize),
                                                                 false);
                                 }
                                 else // Otherwise just send it
@@ -233,7 +302,7 @@ namespace Teknik.Areas.Upload.Controllers
                                     // Send the file
                                     return new FileGenerateResult(url,
                                                                 contentType,
-                                                                (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)contentLength, Config.UploadConfig.ChunkSize),
+                                                                (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)length, Config.UploadConfig.ChunkSize),
                                                                 false);
                                 }
                             }
