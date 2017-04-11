@@ -13,10 +13,19 @@ namespace Teknik.Utilities
         private Stream _Inner;
         private IBufferedCipher _Cipher;
 
-        public AESCryptoStream(Stream stream, bool encrypt, byte[] key, byte[] iv, string mode, string padding)
+        public AESCryptoStream(Stream stream, bool encrypt, byte[] key, byte[] iv, string mode, string padding, int initCounter)
         {
             _Inner = stream;
             _Cipher = AES.CreateCipher(encrypt, key, iv, mode, padding);
+
+            // Pre-process the cipher to increase the counts
+            // There has to be a better way of doing this...
+            byte[] buf = new byte[16];
+            for (int i = 0; i < initCounter; i++)
+            {
+                _Cipher.ProcessBytes(buf);
+            }
+            _Cipher.DoFinal();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -32,14 +41,14 @@ namespace Teknik.Utilities
                 if (blockOffset != 0)
                 {
                     // We are not a multiple of the block size, so let's backup to get the current block
-                    _Inner.Seek(startPosition - blockOffset, SeekOrigin.Begin);
+                    //_Inner.Seek(startPosition - blockOffset, SeekOrigin.Begin);
                 }
 
                 // Process the cipher
-                int processed = AES.ProcessCipherBlock(_Cipher, _Inner, 0, count + (int)blockOffset, buffer, offset, out bytesRead);
+                int processed = AES.ProcessCipherBlock(_Cipher, _Inner, 0, count, buffer, offset, out bytesRead);
 
                 // Adjust bytes read by the block offset
-                bytesRead -= (int)blockOffset;
+                //bytesRead -= (int)blockOffset;
 
                 if (processed < bytesRead)
                 {

@@ -271,14 +271,14 @@ namespace Teknik.Utilities
         public static int ProcessCipherBlock(IBufferedCipher cipher, Stream input, int inputOffset, int chunkSize, byte[] output, int outputOffset, out int bytesRead)
         {
             // Initialize buffer
-            byte[] buffer = new byte[chunkSize + inputOffset];
+            byte[] buffer = new byte[chunkSize];
 
             // Read the next block of data
-            bytesRead = input.Read(buffer, 0, chunkSize + inputOffset);
+            bytesRead = input.Read(buffer, 0, chunkSize);
             if (bytesRead > 0)
             {
                 // process the cipher for the read block and add it to the output
-                return cipher.ProcessBytes(buffer, inputOffset, bytesRead - inputOffset, output, outputOffset);
+                return cipher.ProcessBytes(buffer, inputOffset, bytesRead, output, outputOffset);
             }
 
             return 0;

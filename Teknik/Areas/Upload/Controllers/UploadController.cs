@@ -292,9 +292,12 @@ namespace Teknik.Areas.Upload.Controllers
                                     byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                                     byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
+                                    // Calculate the block offset needed for the counter
+                                    int counterOffset = (int)Math.Floor(startByte / 16.0);
+
                                     return new FileGenerateResult(url,
                                                                 contentType,
-                                                                (response) => ResponseHelper.StreamToOutput(response, true, new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding"), (int)length, Config.UploadConfig.ChunkSize),
+                                                                (response) => ResponseHelper.StreamToOutput(response, true, new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding", counterOffset), (int)length, Config.UploadConfig.ChunkSize),
                                                                 false);
                                 }
                                 else // Otherwise just send it
