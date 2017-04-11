@@ -100,7 +100,7 @@ namespace Teknik.Utilities
                     {
                         bytesToRead = bytesRemaining;
                     }
-                    processedBytes = AES.ProcessCipherBlock(cipher, stream, bytesToRead, buffer, 0, out bytesRead);
+                    processedBytes = AES.ProcessCipherBlock(cipher, stream, 0, bytesToRead, buffer, 0, out bytesRead);
                     if (processedBytes > 0)
                     {
                         response.OutputStream.Write(buffer, 0, processedBytes);

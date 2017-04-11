@@ -24,9 +24,22 @@ namespace Teknik.Utilities
             if (_Inner != null && CanRead)
             {
                 int bytesRead = 0;
+                long startPosition = _Inner.Position;
+                int blockSize = _Cipher.GetBlockSize();
+                long blockOffset = (startPosition % blockSize);
+
+                // Determine if we are at the start of a block, or not
+                if (blockOffset != 0)
+                {
+                    // We are not a multiple of the block size, so let's backup to get the current block
+                    _Inner.Seek(startPosition - blockOffset, SeekOrigin.Begin);
+                }
 
                 // Process the cipher
-                int processed = AES.ProcessCipherBlock(_Cipher, _Inner, count, buffer, offset, out bytesRead);
+                int processed = AES.ProcessCipherBlock(_Cipher, _Inner, 0, count + (int)blockOffset, buffer, offset, out bytesRead);
+
+                // Adjust bytes read by the block offset
+                bytesRead -= (int)blockOffset;
 
                 if (processed < bytesRead)
                 {

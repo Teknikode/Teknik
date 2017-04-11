@@ -209,7 +209,7 @@ namespace Teknik.Utilities
             // Process the stream and save the bytes to the output
             do
             {
-                int processedBytes = ProcessCipherBlock(cipher, input, chunkSize, output, cipherOffset, out bytesRead);
+                int processedBytes = ProcessCipherBlock(cipher, input, 0, chunkSize, output, cipherOffset, out bytesRead);
                 cipherOffset += processedBytes;
             }
             while (bytesRead > 0);
@@ -234,7 +234,7 @@ namespace Teknik.Utilities
                 int bytesRead = 0;
                 do
                 {
-                    processedBytes = ProcessCipherBlock(cipher, input, chunkSize, buffer, 0, out bytesRead);
+                    processedBytes = ProcessCipherBlock(cipher, input, 0, chunkSize, buffer, 0, out bytesRead);
                     if (processedBytes > 0)
                     {
                         // We have bytes, lets write them to the file
@@ -268,17 +268,17 @@ namespace Teknik.Utilities
             return cipher;
         }
 
-        public static int ProcessCipherBlock(IBufferedCipher cipher, Stream input, int chunkSize, byte[] output, int outputOffset, out int bytesRead)
+        public static int ProcessCipherBlock(IBufferedCipher cipher, Stream input, int inputOffset, int chunkSize, byte[] output, int outputOffset, out int bytesRead)
         {
             // Initialize buffer
-            byte[] buffer = new byte[chunkSize];
+            byte[] buffer = new byte[chunkSize + inputOffset];
 
             // Read the next block of data
-            bytesRead = input.Read(buffer, 0, chunkSize);
+            bytesRead = input.Read(buffer, 0, chunkSize + inputOffset);
             if (bytesRead > 0)
             {
                 // process the cipher for the read block and add it to the output
-                return cipher.ProcessBytes(buffer, 0, bytesRead, output, outputOffset);
+                return cipher.ProcessBytes(buffer, inputOffset, bytesRead - inputOffset, output, outputOffset);
             }
 
             return 0;
