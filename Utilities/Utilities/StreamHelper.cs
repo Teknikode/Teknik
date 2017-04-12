@@ -5,105 +5,59 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Teknik.Security.Cryptography;
+using Teknik.Utilities.Cryptography;
 
 namespace Teknik.Utilities
 {
     public class AESCryptoStream : Stream
     {
         private Stream _Inner;
-        //private IBufferedCipher _Cipher;
-        private ICryptoTransform _Cipher;
+        private CounterModeCryptoTransform _Cipher;
 
-        public AESCryptoStream(Stream stream, bool encrypt, byte[] key, byte[] iv, string mode, string padding, int initCounter)
+        public AESCryptoStream(Stream stream, bool encrypt, byte[] key, byte[] iv, string mode, string padding)
         {
             _Inner = stream;
 
-            // Create initial counter value from IV
-            byte[] counter = new byte[iv.Length];
-            iv.CopyTo(counter, 0);
-
-            // Increment the counter depending on the init counter
-            for (int i = 0; i < initCounter; i++)
-            {
-                int j = counter.Length;
-                while (--j >= 0 && ++counter[j] == 0) { }
-            }
-
             // Create the Aes Cipher
-            AesCounterMode aes = new AesCounterMode(counter);
+            AesCounterMode aes = new AesCounterMode(iv);
             if (encrypt)
             {
-                _Cipher = aes.CreateEncryptor(key, iv); // Encrypt
+                _Cipher = (CounterModeCryptoTransform)aes.CreateEncryptor(key, iv); // Encrypt
             }
             else
             {
-                _Cipher = aes.CreateDecryptor(key, iv); // Decrypt
+                _Cipher = (CounterModeCryptoTransform)aes.CreateDecryptor(key, iv); // Decrypt
             }
+
+            // Sync the counter
+            SyncCounter();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (_Inner != null && CanRead)
             {
-                int bytesRead = 0;
-                int totalBytesRead = 0;
-                int bytesProcessed = 0;
-                long startPosition = _Inner.Position;
-                int blockSize = _Cipher.InputBlockSize;
-                long byteOffset = (startPosition % blockSize);
-                int initialOffset = (int)byteOffset;
-                int blockOffset = (byteOffset == 0) ? 0 : 1;
-                int blocksToProcess = (int)Math.Ceiling(count / (double)blockSize) + blockOffset;
+                byte[] readBuf = new byte[count];
+                int processed = 0;
 
-                // Determine if we are at the start of a block, or not
-                if (byteOffset != 0)
+                // Read the data from the stream
+                int bytesRead = _Inner.Read(readBuf, 0, count);
+                if (bytesRead > 0)
                 {
-                    // We are not a multiple of the block size, so let's backup to get the current block
-                    _Inner.Seek(startPosition - byteOffset, SeekOrigin.Begin);
+                    // Process the 
+                    processed = _Cipher.TransformBlock(readBuf, 0, bytesRead, buffer, 0);
                 }
 
-                // Initialize buffers
-                byte[] readBuf = new byte[blockSize];
-                byte[] outBuf = new byte[blockSize];
-
-                // Iterate through each block of the ammount we want to read
-                for (int i = 0; i < blocksToProcess; i++)
-                {
-                    // Read the next block of data
-                    totalBytesRead += bytesRead = _Inner.Read(readBuf, 0, blockSize);
-                    if (bytesRead > 0)
-                    {
-                        // process the cipher for the read block and add it to the output
-                        int processed = _Cipher.TransformBlock(readBuf, 0, bytesRead, outBuf, 0);
-
-                        // copy the values to the output
-                        outBuf.Skip(initialOffset).ToArray().CopyTo(buffer, bytesProcessed + offset);
-
-                        // Reset initial offset and calibrate
-                        bytesProcessed += processed - initialOffset;
-
-                        // Reset initial offset
-                        initialOffset = 0;
-                    }
-
-                    // Clear the read buffer
-                    Array.Clear(readBuf, 0, blockSize);
-                }
-
-                // Adjust bytes read by the block offset
-                totalBytesRead -= (int)byteOffset;
-                bytesProcessed -= (int)byteOffset;
-
-                if (bytesProcessed < count)
+                // Do we have more?
+                if (processed < bytesRead)
                 {
                     // Finalize the cipher
-                    byte[] finalBuf = _Cipher.TransformFinalBlock(readBuf, bytesProcessed, bytesRead);
-                    finalBuf.Take(count - bytesProcessed).ToArray().CopyTo(buffer, bytesProcessed);
-                    bytesProcessed += count - bytesProcessed;
+                    byte[] finalBuf = _Cipher.TransformFinalBlock(readBuf, processed, bytesRead);
+                    finalBuf.CopyTo(buffer, processed);
+                    processed += finalBuf.Length;
                 }
 
-                return bytesProcessed;
+                return processed;
             }
             return -1;
         }
@@ -187,6 +141,9 @@ namespace Teknik.Utilities
                 if (_Inner != null)
                 {
                     _Inner.Position = value;
+
+                    // Sync the counter
+                    SyncCounter();
                 }
             }
         }
@@ -203,7 +160,12 @@ namespace Teknik.Utilities
         {
             if (_Inner != null)
             {
-                return _Inner.Seek(offset, origin);
+                long newPos = _Inner.Seek(offset, origin);
+
+                // Sync the counter
+                SyncCounter();
+
+                return newPos;
             }
             return -1;
         }
@@ -213,6 +175,38 @@ namespace Teknik.Utilities
             if (_Inner != null)
             {
                 _Inner.SetLength(value);
+            }
+        }
+
+        private void SyncCounter()
+        {
+            if (_Cipher != null)
+            {
+                // Calculate the counter iterations and position needed
+                int iterations = (int)Math.Floor(_Inner.Position / (decimal)_Cipher.InputBlockSize);
+                int counterPos = (int)(_Inner.Position % _Cipher.InputBlockSize);
+
+                // Are we out of sync with the cipher?
+                if (_Cipher.Iterations != iterations || _Cipher.CounterPosition != counterPos)
+                {
+                    // Reset the current counter
+                    _Cipher.ResetCounter();
+
+                    // Iterate the counter to the current position
+                    for (int i = 0; i < iterations; i++)
+                    {
+                        _Cipher.IncrementCounter();
+                    }
+
+                    // Encrypt the counter
+                    _Cipher.EncryptCounter();
+
+                    // Set the current position of the counter
+                    _Cipher.CounterPosition = counterPos;
+
+                    // Increment the counter for the next time
+                    _Cipher.IncrementCounter();
+                }
             }
         }
     }

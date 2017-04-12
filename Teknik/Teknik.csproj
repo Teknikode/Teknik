@@ -802,10 +802,6 @@
       <Project>{c492c2c6-d45a-498b-84a2-6d4c8bf9de77}</Project>
       <Name>Piwik</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Utilities\Security\Security.csproj">
-      <Project>{2bb2f552-b80f-41f2-937d-5d73f15c6dc4}</Project>
-      <Name>Security</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities\Utilities.csproj">
       <Project>{f45de6fc-3754-4954-a20a-4277362cc6c1}</Project>
       <Name>Utilities</Name>
