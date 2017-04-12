@@ -168,7 +168,7 @@ namespace ServerMaint
                     byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
                     byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
                     FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                    AESCryptoStream aesStream = new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding");
+                    AESCryptoStream aesStream = new AESCryptoStream(fs, false, keyBytes, ivBytes, "CTR", "NoPadding", 0);
 
                     // We have the data, let's scan it
                     ClamScanResult scanResult = clam.SendAndScanFile(aesStream);
