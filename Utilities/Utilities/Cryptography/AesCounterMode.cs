@@ -31,7 +31,8 @@ namespace Teknik.Utilities.Cryptography
             };
 
             // Set the internal variables
-            _Counter = counter;
+            _Counter = new byte[counter.Length];
+            counter.CopyTo(_Counter, 0);
         }
 
         public override ICryptoTransform CreateEncryptor(byte[] key, byte[] iv)
@@ -103,8 +104,12 @@ namespace Teknik.Utilities.Cryptography
                     counter.Length, symmetricAlgorithm.BlockSize / 8));
 
             _SymmetricAlgorithm = symmetricAlgorithm;
-            _IV = iv;
-            _Counter = counter;
+
+            _IV = new byte[iv.Length];
+            iv.CopyTo(_IV, 0);
+
+            _Counter = new byte[counter.Length];
+            counter.CopyTo(_Counter, 0);
             
             _CounterEncryptor = symmetricAlgorithm.CreateEncryptor(key, iv);
 
@@ -114,6 +119,9 @@ namespace Teknik.Utilities.Cryptography
 
             // Encrypt the counter
             EncryptCounter();
+
+            // Initial Increment
+            IncrementCounter();
         }
 
         public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
@@ -130,13 +138,13 @@ namespace Teknik.Utilities.Cryptography
                 // Encrypt the counter if we have reached the end, or 
                 if (_CounterPosition >= _EncryptedCounter.Length)
                 {
-                    // Encrypt the counter
-                    EncryptCounter();
-
                     //Reset current counter position
                     _CounterPosition = 0;
 
-                    // Increment the counter for the next run
+                    // Encrypt the counter
+                    EncryptCounter();
+
+                    // Increment the counter for the next batch
                     IncrementCounter();
                 }
                 
@@ -162,7 +170,7 @@ namespace Teknik.Utilities.Cryptography
         public void ResetCounter()
         {
             Array.Clear(_Counter, 0, _Counter.Length);
-            Array.Copy(_IV, 0, _Counter, 0, _IV.Length);
+            _IV.CopyTo(_Counter, 0);
             _Iterations = 0;
         }
 

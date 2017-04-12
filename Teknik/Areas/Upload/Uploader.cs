@@ -8,6 +8,7 @@ using Teknik.Models;
 using Teknik.Utilities;
 using System.Text;
 using Org.BouncyCastle.Utilities.Encoders;
+using Teknik.Utilities.Cryptography;
 
 namespace Teknik.Areas.Upload
 {
@@ -54,7 +55,7 @@ namespace Teknik.Areas.Upload
                 byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
                 // Encrypt the file to disk
-                AES.EncryptToFile(filePath, file, config.UploadConfig.ChunkSize, keyBytes, ivBytes, "CTR", "NoPadding");
+                AES.EncryptToFile(filePath, file, config.UploadConfig.ChunkSize, keyBytes, ivBytes);
             }
             else
             {

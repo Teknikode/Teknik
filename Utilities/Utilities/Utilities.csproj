@@ -106,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountType.cs" />
+    <Compile Include="Cryptography\AES.cs" />
     <Compile Include="Cryptography\AesCounterMode.cs" />
     <Compile Include="CurrencyHelper.cs" />
     <Compile Include="CurrencyType.cs" />

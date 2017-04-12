@@ -14,7 +14,16 @@ namespace Teknik.Utilities
         private Stream _Inner;
         private CounterModeCryptoTransform _Cipher;
 
-        public AESCryptoStream(Stream stream, bool encrypt, byte[] key, byte[] iv, string mode, string padding)
+        /// <summary>
+        /// Performs Encryption or Decryption on a stream with the given Key and IV
+        /// 
+        /// Cipher is AES-256 in CTR mode with no padding
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="encrypt"></param>
+        /// <param name="key"></param>
+        /// <param name="iv"></param>
+        public AESCryptoStream(Stream stream, bool encrypt, byte[] key, byte[] iv)
         {
             _Inner = stream;
 
@@ -44,7 +53,7 @@ namespace Teknik.Utilities
                 int bytesRead = _Inner.Read(readBuf, 0, count);
                 if (bytesRead > 0)
                 {
-                    // Process the 
+                    // Process the read buffer
                     processed = _Cipher.TransformBlock(readBuf, 0, bytesRead, buffer, 0);
                 }
 
@@ -68,11 +77,19 @@ namespace Teknik.Utilities
             {
                 // Process the cipher
                 byte[] output = new byte[count];
-                //int processed = _Cipher.ProcessBytes(buffer, offset, count, output, 0);
 
-                // Finalize the cipher
-                //AES.FinalizeCipherBlock(_Cipher, output, processed);
-                
+                // Process the buffer
+                int processed = _Cipher.TransformBlock(buffer, 0, count, output, 0);
+
+                // Do we have more?
+                if (processed < count)
+                {
+                    // Finalize the cipher
+                    byte[] finalBuf = _Cipher.TransformFinalBlock(buffer, processed, count);
+                    finalBuf.CopyTo(output, processed);
+                    processed += finalBuf.Length;
+                }
+
                 _Inner.Write(output, 0, count);
             }
         }
@@ -187,7 +204,7 @@ namespace Teknik.Utilities
                 int counterPos = (int)(_Inner.Position % _Cipher.InputBlockSize);
 
                 // Are we out of sync with the cipher?
-                if (_Cipher.Iterations != iterations || _Cipher.CounterPosition != counterPos)
+                if (_Cipher.Iterations != iterations + 1 || _Cipher.CounterPosition != counterPos)
                 {
                     // Reset the current counter
                     _Cipher.ResetCounter();

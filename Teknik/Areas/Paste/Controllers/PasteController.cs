@@ -15,6 +15,7 @@ using Teknik.Filters;
 using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Attributes;
+using Teknik.Utilities.Cryptography;
 
 namespace Teknik.Areas.Paste.Controllers
 {
