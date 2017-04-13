@@ -68,6 +68,10 @@ namespace Teknik.Utilities
                 }
                 while (processedBytes > 0 && bytesRemaining > 0);
             }
+            catch (Exception ex)
+            {
+                // Don't worry about it.  Just leave
+            }
             finally
             {
                 // dispose of file stream
