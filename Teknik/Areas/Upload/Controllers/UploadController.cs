@@ -273,7 +273,7 @@ namespace Teknik.Areas.Upload.Controllers
                             Response.AddHeader("Content-Disposition", cd.ToString());
 
                             // Apply content security policy for downloads
-                            Response.AddHeader("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action 'none';");
+                            Response.AddHeader("Content-Security-Policy", "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; media-src 'self'; child-src 'self'; form-action 'none';");
 
                             // Read in the file
                             FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
