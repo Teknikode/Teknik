@@ -172,8 +172,8 @@ namespace Teknik.Areas.Upload.Controllers
                 {
                     // Are they downloading it by range?
                     bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]); // We do not support ranges
-                                                                                                 // Check to see if they have a cache
-                    bool isCached = !string.IsNullOrEmpty(Request.Headers["If-Modified-Since"]);
+                                                                                                 
+                    bool isCached = !string.IsNullOrEmpty(Request.Headers["If-Modified-Since"]); // Check to see if they have a cache
 
                     if (isCached)
                     {
@@ -272,11 +272,8 @@ namespace Teknik.Areas.Upload.Controllers
 
                             Response.AddHeader("Content-Disposition", cd.ToString());
 
-                            // We need to prevent html (make cleaner later)
-                            if (contentType == "text/html")
-                            {
-                                contentType = "text/plain";
-                            }
+                            // Apply content security policy for downloads
+                            Response.AddHeader("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; form-action 'none';");
 
                             // Read in the file
                             FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
