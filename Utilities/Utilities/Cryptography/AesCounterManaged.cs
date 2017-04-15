@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Teknik.Utilities.Cryptography
 {
 
-    public class AES
+    public class AesCounterManaged
     {
         public static byte[] Decrypt(byte[] data, string key, string iv)
         {
@@ -44,7 +44,7 @@ namespace Teknik.Utilities.Cryptography
             // Make sure the input stream is at the beginning
             input.Seek(0, SeekOrigin.Begin);
 
-            AESCryptoStream cryptoStream = new AESCryptoStream(input, encrypt, key, iv);
+            AesCounterStream cryptoStream = new AesCounterStream(input, encrypt, key, iv);
 
             // Initialize variables
             byte[] output = new byte[input.Length];
@@ -83,7 +83,7 @@ namespace Teknik.Utilities.Cryptography
             // Make sure the input stream is at the beginning
             input.Seek(0, SeekOrigin.Begin);
 
-            AESCryptoStream cryptoStream = new AESCryptoStream(input, true, key, iv);
+            AesCounterStream cryptoStream = new AesCounterStream(input, true, key, iv);
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {

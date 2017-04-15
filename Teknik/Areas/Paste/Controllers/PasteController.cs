@@ -79,7 +79,7 @@ namespace Teknik.Areas.Paste.Controllers
                     string hash = string.Empty;
                     if (!string.IsNullOrEmpty(password))
                     {
-                        byte[] passBytes = Utilities.SHA384.Hash(paste.Key, password);
+                        byte[] passBytes = Utilities.Cryptography.SHA384.Hash(paste.Key, password);
                         hash = passBytes.ToHex();
                         // We need to convert old pastes to the new password scheme
                         if (paste.Transfers.ToList().Exists(t => t.Type == TransferTypes.ASCIIPassword))
@@ -103,8 +103,8 @@ namespace Teknik.Areas.Paste.Controllers
                     data = Convert.FromBase64String(paste.Content);
                     // Now we decrypt the content
                     byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
-                    byte[] keyBytes = AES.CreateKey(password, ivBytes, paste.KeySize);
-                    data = AES.Decrypt(data, keyBytes, ivBytes);
+                    byte[] keyBytes = AesCounterManaged.CreateKey(password, ivBytes, paste.KeySize);
+                    data = AesCounterManaged.Decrypt(data, keyBytes, ivBytes);
                     model.Content = Encoding.Unicode.GetString(data);
                 }
 

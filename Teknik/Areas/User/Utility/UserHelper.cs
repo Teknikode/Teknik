@@ -17,6 +17,7 @@ using Teknik.Areas.Users.Models;
 using Teknik.Configuration;
 using Teknik.Utilities;
 using Teknik.Models;
+using Teknik.Utilities.Cryptography;
 
 namespace Teknik.Areas.Users.Utility
 {

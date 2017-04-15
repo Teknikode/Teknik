@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using Newtonsoft.Json;
 using Teknik.Utilities;
+using Teknik.Utilities.Cryptography;
 
 namespace Teknik.Configuration
 {

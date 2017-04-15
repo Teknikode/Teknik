@@ -55,7 +55,7 @@ namespace Teknik.Areas.Upload
                 byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
                 // Encrypt the file to disk
-                AES.EncryptToFile(filePath, file, config.UploadConfig.ChunkSize, keyBytes, ivBytes);
+                AesCounterManaged.EncryptToFile(filePath, file, config.UploadConfig.ChunkSize, keyBytes, ivBytes);
             }
             else
             {

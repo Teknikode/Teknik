@@ -20,6 +20,7 @@ using Teknik.Models;
 using Teknik.Attributes;
 using System.Text;
 using Org.BouncyCastle.Crypto;
+using Teknik.Utilities.Cryptography;
 
 namespace Teknik.Areas.Upload.Controllers
 {
@@ -291,7 +292,7 @@ namespace Teknik.Areas.Upload.Controllers
 
                                     return new FileGenerateResult(url,
                                                                 contentType,
-                                                                (response) => ResponseHelper.StreamToOutput(response, true, new AESCryptoStream(fs, false, keyBytes, ivBytes), (int)length, Config.UploadConfig.ChunkSize),
+                                                                (response) => ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)length, Config.UploadConfig.ChunkSize),
                                                                 false);
                                 }
                                 else // Otherwise just send it

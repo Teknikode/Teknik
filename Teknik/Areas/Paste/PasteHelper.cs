@@ -65,8 +65,8 @@ namespace Teknik.Areas.Paste
                 // Encrypt Content
                 byte[] data = Encoding.Unicode.GetBytes(content);
                 byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
-                byte[] keyBytes = AES.CreateKey(password, ivBytes, config.PasteConfig.KeySize);
-                byte[] encData = AES.Encrypt(data, keyBytes, ivBytes);
+                byte[] keyBytes = AesCounterManaged.CreateKey(password, ivBytes, config.PasteConfig.KeySize);
+                byte[] encData = AesCounterManaged.Encrypt(data, keyBytes, ivBytes);
                 content = Convert.ToBase64String(encData);
 
                 paste.Key = key;

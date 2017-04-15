@@ -56,10 +56,6 @@
       <HintPath>..\..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SecurityDriven.Inferno, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Inferno.1.4.0\lib\net452\SecurityDriven.Inferno.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -106,8 +102,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountType.cs" />
-    <Compile Include="Cryptography\AES.cs" />
+    <Compile Include="Cryptography\AesCounterStream.cs" />
+    <Compile Include="Cryptography\AesCounterManaged.cs" />
     <Compile Include="Cryptography\AesCounterMode.cs" />
+    <Compile Include="Cryptography\MD5.cs" />
+    <Compile Include="Cryptography\PGP.cs" />
+    <Compile Include="Cryptography\SHA256.cs" />
+    <Compile Include="Cryptography\SHA384.cs" />
     <Compile Include="CurrencyHelper.cs" />
     <Compile Include="CurrencyType.cs" />
     <Compile Include="EntityExtensions.cs" />
@@ -117,7 +118,6 @@
     <Compile Include="ByteExtensions.cs" />
     <Compile Include="ByteHelper.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Crypto.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="HttpRequestExtensions.cs" />
@@ -128,7 +128,6 @@
     <Compile Include="RequestHelper.cs" />
     <Compile Include="ResponseHelper.cs" />
     <Compile Include="RSSFeedResult.cs" />
-    <Compile Include="StreamHelper.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="StringHelper.cs" />
     <Compile Include="UrlExtensions.cs" />

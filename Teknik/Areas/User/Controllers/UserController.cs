@@ -16,6 +16,7 @@ using QRCoder;
 using TwoStepsAuthenticator;
 using System.Drawing;
 using Teknik.Attributes;
+using Teknik.Utilities.Cryptography;
 
 namespace Teknik.Areas.Users.Controllers
 {

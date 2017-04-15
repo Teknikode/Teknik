@@ -132,10 +132,6 @@
       <HintPath>..\packages\QRCoder.1.2.3\lib\net40\QRCoder.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SecurityDriven.Inferno, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Inferno.1.4.0\lib\net452\SecurityDriven.Inferno.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />

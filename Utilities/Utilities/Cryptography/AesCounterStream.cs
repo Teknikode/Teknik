@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Teknik.Utilities.Cryptography;
 
-namespace Teknik.Utilities
+namespace Teknik.Utilities.Cryptography
 {
-    public class AESCryptoStream : Stream
+    public class AesCounterStream : Stream
     {
         private Stream _Inner;
         private CounterModeCryptoTransform _Cipher;
@@ -23,7 +21,7 @@ namespace Teknik.Utilities
         /// <param name="encrypt"></param>
         /// <param name="key"></param>
         /// <param name="iv"></param>
-        public AESCryptoStream(Stream stream, bool encrypt, byte[] key, byte[] iv)
+        public AesCounterStream(Stream stream, bool encrypt, byte[] key, byte[] iv)
         {
             _Inner = stream;
 

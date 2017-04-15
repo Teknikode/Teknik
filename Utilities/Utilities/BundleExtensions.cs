@@ -56,7 +56,7 @@ namespace Teknik.Utilities
                 return;
             }            
 
-            using (var hashAlgorithm = SHA256.CreateHashAlgorithm())
+            using (var hashAlgorithm = Cryptography.SHA256.CreateHashAlgorithm())
             {
                 var hash = HttpServerUtility.UrlTokenEncode(hashAlgorithm.ComputeHash(Encoding.Unicode.GetBytes(response.Content)));
                 context.BundleCollection.GetBundleFor(context.BundleVirtualPath).CdnPath = string.Format("{0}/{1}/{2}?v={3}&group={4}", CdnHost.TrimEnd('/'), dir, file, hash, group);
