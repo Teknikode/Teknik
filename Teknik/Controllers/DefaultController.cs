@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Teknik.Areas.Error.Controllers;
 using Teknik.Configuration;
 
@@ -36,6 +37,8 @@ namespace Teknik.Controllers
             get { return HttpContext.User as TeknikPrincipal; }
         }
 
+        public object ObjectFactory { get; private set; }
+
         public DefaultController()
         {
             ViewBag.Title = Config.Title;
@@ -45,6 +48,28 @@ namespace Teknik.Controllers
             {
                 Response.SuppressFormsAuthenticationRedirect = true;
             }
+        }
+
+        protected override void HandleUnknownAction(string actionName)
+        {
+            this.InvokeHttp404(HttpContext);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult InvokeHttp404(HttpContextBase httpContext)
+        {
+            IController errorController = new ErrorController();
+            var errorRoute = new RouteData();
+            errorRoute.DataTokens.Add("namespaces", new[] { typeof(ErrorController).Namespace });
+            errorRoute.DataTokens.Add("area", "Error");
+            errorRoute.Values.Add("controller", "Error");
+            errorRoute.Values.Add("action", "Http404");
+            errorRoute.Values.Add("exception", null);
+            errorController.Execute(new RequestContext(
+                 httpContext, errorRoute));
+
+            return new EmptyResult();
         }
 
         // Get the Favicon
@@ -81,12 +106,7 @@ namespace Teknik.Controllers
         [AllowAnonymous]
         public ActionResult NotFound()
         {
-            var errorController = new ErrorController();
-            if (errorController != null)
-            {
-                return errorController.Http404(new Exception("Page Not Found"));
-            }
-            return null;
+            return InvokeHttp404(HttpContext);
         }
 
         protected ActionResult GenerateActionResult(object json)

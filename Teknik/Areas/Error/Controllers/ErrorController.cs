@@ -145,7 +145,12 @@ namespace Teknik.Areas.Error.Controllers
                     errorMessage += " for page: " + Request.Url.AbsoluteUri;
                 }
 
-                errorMessage += " - using Method: " + Request.HttpMethod;
+                if (Request.UrlReferrer != null)
+                {
+                    errorMessage += " | for referred page: " + Request.Url.AbsoluteUri;
+                }
+
+                errorMessage += " | using Method: " + Request.HttpMethod;
             }
 
             Logger.WriteEntry(LogLevel.Warning, errorMessage, exception);
@@ -181,22 +186,6 @@ namespace Teknik.Areas.Error.Controllers
             model.Exception = exception;
 
             return View("~/Areas/Error/Views/Error/Http500.cshtml", model);
-        }
-
-        private string GetIPAddress()
-        {
-            string ipAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-
-            if (!string.IsNullOrEmpty(ipAddress))
-            {
-                string[] addresses = ipAddress.Split(',');
-                if (addresses.Length != 0)
-                {
-                    return addresses[0];
-                }
-            }
-
-            return Request.ServerVariables["REMOTE_ADDR"];
         }
     }
 }
