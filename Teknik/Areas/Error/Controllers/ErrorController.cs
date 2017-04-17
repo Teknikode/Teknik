@@ -137,9 +137,15 @@ namespace Teknik.Areas.Error.Controllers
             }
 
             string errorMessage = "Page Not Found";
-            if (Request != null && Request.Url != null)
+
+            if (Request != null)
             {
-                errorMessage += " for page: " + Request.Url.AbsoluteUri;
+                if (Request.Url != null)
+                {
+                    errorMessage += " for page: " + Request.Url.AbsoluteUri;
+                }
+
+                errorMessage += " - using Method: " + Request.HttpMethod;
             }
 
             Logger.WriteEntry(LogLevel.Warning, errorMessage, exception);
