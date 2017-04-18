@@ -92,7 +92,7 @@ namespace Teknik.Controllers
             return File(imageFile, "image/svg+xml");
         }
 
-        // Get the Logo
+        // Get the Robots.txt
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Robots()

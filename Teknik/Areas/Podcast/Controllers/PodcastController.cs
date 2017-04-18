@@ -80,9 +80,15 @@ namespace Teknik.Areas.Podcast.Controllers
             return View("~/Areas/Podcast/Views/Podcast/ViewPodcast.cshtml", model);
         }
 
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult Download(int episode, string fileName)
         {
+            string path = string.Empty;
+            string contentType = string.Empty;
+            long contentLength = 0;
+            DateTime dateUploaded = new DateTime(1900, 1, 1);
+
             using (TeknikEntities db = new TeknikEntities())
             {
                 // find the podcast specified
@@ -92,27 +98,131 @@ namespace Teknik.Areas.Podcast.Controllers
                     PodcastFile file = foundPodcast.Files.Where(f => f.FileName == fileName).FirstOrDefault();
                     if (file != null)
                     {
-                        if (System.IO.File.Exists(file.Path))
-                        {
-                            FileStream fileStream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                            Response.AddHeader("Content-Length", file.ContentLength.ToString());
-
-                            var cd = new System.Net.Mime.ContentDisposition
-                            {
-                                FileName = file.FileName,
-                                Inline = true
-                            };
-
-                            Response.AppendHeader("Content-Disposition", cd.ToString());
-
-                            return new FileGenerateResult(file.FileName, file.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, fileStream, file.ContentLength, 4 * 1024), false);
-                            //return File(data, file.ContentType);
-                        }
+                        path = file.Path;
+                        contentType = file.ContentType;
+                        contentLength = file.ContentLength;
+                        fileName = file.FileName;
+                        dateUploaded = foundPodcast.DateEdited;
+                    }
+                    else
+                    {
+                        return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
                     }
                 }
-                return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                else
+                {
+                    return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                }
             }
+            if (System.IO.File.Exists(path))
+            {
+                // Are they downloading it by range?
+                bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]); // We do not support ranges
+
+                bool isCached = !string.IsNullOrEmpty(Request.Headers["If-Modified-Since"]); // Check to see if they have a cache
+
+                if (isCached)
+                {
+                    // The file is cached, let's just 304 this
+                    Response.StatusCode = 304;
+                    Response.StatusDescription = "Not Modified";
+                    Response.AddHeader("Content-Length", "0");
+                    return Content(string.Empty);
+                }
+                else
+                {
+                    long startByte = 0;
+                    long endByte = contentLength - 1;
+                    long length = contentLength;
+
+                    #region Range Calculation
+                    // check to see if we need to pass a specified range
+                    if (byRange)
+                    {
+                        long anotherStart = startByte;
+                        long anotherEnd = endByte;
+                        string[] arr_split = Request.ServerVariables["HTTP_RANGE"].Split(new char[] { '=' });
+                        string range = arr_split[1];
+
+                        // Make sure the client hasn't sent us a multibyte range 
+                        if (range.IndexOf(",") > -1)
+                        {
+                            // (?) Shoud this be issued here, or should the first 
+                            // range be used? Or should the header be ignored and 
+                            // we output the whole content? 
+                            Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+                            throw new HttpException(416, "Requested Range Not Satisfiable");
+                        }
+
+                        // If the range starts with an '-' we start from the beginning 
+                        // If not, we forward the file pointer 
+                        // And make sure to get the end byte if spesified 
+                        if (range.StartsWith("-"))
+                        {
+                            // The n-number of the last bytes is requested 
+                            anotherStart = startByte - Convert.ToInt64(range.Substring(1));
+                        }
+                        else
+                        {
+                            arr_split = range.Split(new char[] { '-' });
+                            anotherStart = Convert.ToInt64(arr_split[0]);
+                            long temp = 0;
+                            anotherEnd = (arr_split.Length > 1 && Int64.TryParse(arr_split[1].ToString(), out temp)) ? Convert.ToInt64(arr_split[1]) : contentLength;
+                        }
+
+                        /* Check the range and make sure it's treated according to the specs. 
+                         * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html 
+                         */
+                        // End bytes can not be larger than $end. 
+                        anotherEnd = (anotherEnd > endByte) ? endByte : anotherEnd;
+                        // Validate the requested range and return an error if it's not correct. 
+                        if (anotherStart > anotherEnd || anotherStart > contentLength - 1 || anotherEnd >= contentLength)
+                        {
+
+                            Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+                            throw new HttpException(416, "Requested Range Not Satisfiable");
+                        }
+                        startByte = anotherStart;
+                        endByte = anotherEnd;
+
+                        length = endByte - startByte + 1; // Calculate new content length 
+
+                        // Ranges are response of 206
+                        Response.StatusCode = 206;
+                    }
+                    #endregion
+
+                    // Add cache parameters
+                    Response.Cache.SetCacheability(HttpCacheability.Public);
+                    Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
+                    Response.Cache.SetLastModified(dateUploaded);
+
+                    // We accept ranges
+                    Response.AddHeader("Accept-Ranges", "0-" + contentLength);
+
+                    // Notify the client the byte range we'll be outputting 
+                    Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+
+                    // Notify the client the content length we'll be outputting 
+                    Response.AddHeader("Content-Length", length.ToString());
+
+                    var cd = new System.Net.Mime.ContentDisposition
+                    {
+                        FileName = fileName,
+                        Inline = true
+                    };
+
+                    Response.AppendHeader("Content-Disposition", cd.ToString());
+
+                    FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                    // Reset file stream to starting position (or start of range)
+                    fileStream.Seek(startByte, SeekOrigin.Begin);
+
+                    return new FileGenerateResult(fileName, contentType, (response) => ResponseHelper.StreamToOutput(response, true, fileStream, (int)length, 4 * 1024), false);
+                }
+            }
+            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
 
         [HttpPost]
