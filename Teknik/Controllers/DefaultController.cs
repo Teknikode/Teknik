@@ -54,8 +54,7 @@ namespace Teknik.Controllers
         {
             this.InvokeHttp404(HttpContext);
         }
-
-        [HttpGet]
+        
         [AllowAnonymous]
         public ActionResult InvokeHttp404(HttpContextBase httpContext)
         {
@@ -73,7 +72,6 @@ namespace Teknik.Controllers
         }
 
         // Get the Favicon
-        [HttpGet]
         [AllowAnonymous]
         public ActionResult Favicon()
         {
@@ -83,7 +81,6 @@ namespace Teknik.Controllers
         }
 
         // Get the Logo
-        [HttpGet]
         [AllowAnonymous]
         public ActionResult Logo()
         {
@@ -93,7 +90,6 @@ namespace Teknik.Controllers
         }
 
         // Get the Robots.txt
-        [HttpGet]
         [AllowAnonymous]
         public ActionResult Robots()
         {
@@ -101,8 +97,7 @@ namespace Teknik.Controllers
             string file = Server.MapPath(Constants.ROBOTS_PATH);
             return File(file, "text/plain");
         }
-
-        [HttpGet]
+        
         [AllowAnonymous]
         public ActionResult NotFound()
         {

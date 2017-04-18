@@ -30,13 +30,7 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
-            string errorMessage = "General Exception";
-            if (Request != null && Request.Url != null)
-            {
-                errorMessage += " on page: " + Request.Url.AbsoluteUri;
-            }
-
-            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+            LogError(LogLevel.Error, "General Exception", exception);
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
@@ -57,13 +51,7 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
-            string errorMessage = "General HTTP Exception";
-            if (Request != null && Request.Url != null)
-            {
-                errorMessage += " on page: " + Request.Url.AbsoluteUri;
-            }
-
-            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+            LogError(LogLevel.Error, "General HTTP Exception", exception);
 
             ErrorViewModel model = new ErrorViewModel();
             model.Description = exception.Message;
@@ -84,13 +72,7 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
-            string errorMessage = "Unauthorized";
-            if (Request != null && Request.Url != null)
-            {
-                errorMessage += " for page: " + Request.Url.AbsoluteUri;
-            }
-
-            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+            LogError(LogLevel.Error, "Unauthorized", exception);
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
@@ -110,13 +92,7 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
-            string errorMessage = "Access Denied";
-            if (Request != null && Request.Url != null)
-            {
-                errorMessage += " on page: " + Request.Url.AbsoluteUri;
-            }
-
-            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+            LogError(LogLevel.Error, "Access Denied", exception);
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
@@ -136,24 +112,7 @@ namespace Teknik.Areas.Error.Controllers
                 Response.TrySkipIisCustomErrors = true;
             }
 
-            string errorMessage = "Page Not Found";
-
-            if (Request != null)
-            {
-                if (Request.Url != null)
-                {
-                    errorMessage += " for page: " + Request.Url.AbsoluteUri;
-                }
-
-                if (Request.UrlReferrer != null)
-                {
-                    errorMessage += " | for referred page: " + Request.Url.AbsoluteUri;
-                }
-
-                errorMessage += " | using Method: " + Request.HttpMethod;
-            }
-
-            Logger.WriteEntry(LogLevel.Warning, errorMessage, exception);
+            LogError(LogLevel.Warning, "Page Not Found", exception);
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
@@ -173,19 +132,35 @@ namespace Teknik.Areas.Error.Controllers
                 Response.StatusCode = 500;
                 Response.TrySkipIisCustomErrors = true;
             }
-
-            string errorMessage = "Server Error";
-            if (Request != null && Request.Url != null)
-            {
-                errorMessage += " on page: " + Request.Url.AbsoluteUri;
-            }
-
-            Logger.WriteEntry(LogLevel.Error, errorMessage, exception);
+            
+            LogError(LogLevel.Error, "Server Error", exception);
 
             ErrorViewModel model = new ErrorViewModel();
             model.Exception = exception;
 
             return View("~/Areas/Error/Views/Error/Http500.cshtml", model);
+        }
+
+        private void LogError(LogLevel level, string message, Exception exception)
+        {
+            if (Request != null)
+            {
+                if (Request.Url != null)
+                {
+                    message += " | Url: " + Request.Url.AbsoluteUri;
+                }
+
+                if (Request.UrlReferrer != null)
+                {
+                    message += " | Referred Url: " + Request.Url.AbsoluteUri;
+                }
+                
+                message += " | Method: " + Request.HttpMethod;
+
+                message += " | User Agent: " + Request.UserAgent;
+            }
+
+            Logger.WriteEntry(level, message, exception);
         }
     }
 }

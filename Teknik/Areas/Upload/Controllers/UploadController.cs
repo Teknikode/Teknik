@@ -171,18 +171,28 @@ namespace Teknik.Areas.Upload.Controllers
                 }
                 else // We have the key, so that means server side decryption
                 {
-                    // Are they downloading it by range?
-                    bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]); // We do not support ranges
-                                                                                                 
-                    bool isCached = !string.IsNullOrEmpty(Request.Headers["If-Modified-Since"]); // Check to see if they have a cache
+                    // Check for the cache
+                    bool isCached = false;
+                    string modifiedSince = Request.Headers["If-Modified-Since"];
+                    if (!string.IsNullOrEmpty(modifiedSince))
+                    {
+                        DateTime modTime = new DateTime();
+                        bool parsed = DateTime.TryParse(modifiedSince, out modTime);
+                        if (parsed)
+                        {
+                            if ((modTime - dateUploaded).TotalSeconds <= 1)
+                            {
+                                isCached = true;
+                            }
+                        }
+                    }
 
                     if (isCached)
                     {
                         // The file is cached, let's just 304 this
                         Response.StatusCode = 304;
                         Response.StatusDescription = "Not Modified";
-                        Response.AddHeader("Content-Length", "0");
-                        return Content(string.Empty);
+                        return new EmptyResult();
                     }
                     else
                     {
@@ -194,6 +204,9 @@ namespace Teknik.Areas.Upload.Controllers
                         if (System.IO.File.Exists(filePath))
                         {
                             #region Range Calculation
+                            // Are they downloading it by range?
+                            bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]); // We do not support ranges
+
                             // check to see if we need to pass a specified range
                             if (byRange)
                             {
@@ -274,7 +287,7 @@ namespace Teknik.Areas.Upload.Controllers
                             Response.AddHeader("Content-Disposition", cd.ToString());
 
                             // Apply content security policy for downloads
-                            Response.AddHeader("Content-Security-Policy", "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; media-src 'self'; child-src 'self'; form-action 'none';");
+                            Response.AddHeader("Content-Security-Policy", "default-src 'none'; script-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; media-src 'self'; child-src 'self'; form-action 'none';");
 
                             // Read in the file
                             FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);

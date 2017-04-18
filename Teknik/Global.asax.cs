@@ -159,6 +159,7 @@ namespace Teknik
                 routeData.DataTokens.Add("namespaces", new[] { typeof(ErrorController).Namespace });
                 routeData.DataTokens.Add("area", "Error");
                 routeData.Values.Add("controller", "Error");
+                routeData.Values.Add("scheme", "https");
 
                 if (httpException == null)
                 {
