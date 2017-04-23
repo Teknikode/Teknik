@@ -21,28 +21,26 @@
                                     <div id="authCheckStatus"></div>
                                 </div>
                             </div>
-                            <form role="form" id="twoFactorCheckForm" action="##" method="post" accept-charset="UTF-8">
-                                <input name="ReturnUrl" id="ReturnUrl" type="hidden" value="@Model.ReturnUrl" />
-                                <input name="RememberMe" id="RememberMe" type="hidden" value="@Model.RememberMe" />
-                                <div class="form-group text-left">
-                                    <label for="update_website">Authentication code</label>
-                                    <input type="text" class="form-control" id="Code" name="Code" data-val-required="The Authentication Code is required." data-val="true" />
-                                </div>
-                                @if (Model.AllowTrustedDevice)
-                                {
-                                <div class="checkbox">
-                                    <label>
-                                        <input id="RememberDevice" type="checkbox" value="true" name="RememberDevice" /><input name="RememberDevice" type="hidden" value="false"> Remember Device 
-                                    </label>
-                                </div>
-                                <small>Set this device as a trusted device.  It is not advised to trust a public computer.</small>
-                                <br />
-                                <br />
-                                }
-                                <div class="form-group">
-                                    <button class="btn btn-primary btn-block" id="verifyCodeSubmit" type="button" name="verifyCodeSubmit">Verify</button>
-                                </div>
-                            </form>
+                            <input name="ReturnUrl" id="ReturnUrl" type="hidden" value="@Model.ReturnUrl" />
+                            <input name="RememberMe" id="RememberMe" type="hidden" value="@Model.RememberMe" />
+                            <div class="form-group text-left">
+                                <label for="update_website">Authentication code</label>
+                                <input type="text" class="form-control" id="Code" name="Code" data-val-required="The Authentication Code is required." data-val="true" />
+                            </div>
+                            @if (Model.AllowTrustedDevice)
+                            {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="RememberDevice" type="checkbox" value="true" name="RememberDevice" /><input name="RememberDevice" type="hidden" value="false"> Remember Device 
+                                </label>
+                            </div>
+                            <small>Set this device as a trusted device.  It is not advised to trust a public computer.</small>
+                            <br />
+                            <br />
+                            }
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-block" id="verifyCodeSubmit" type="button" name="verifyCodeSubmit">Verify</button>
+                            </div>
                             <p class="text-left">Open the two-factor authentication app on your device to view your authentication code and verify your identity.</p>
                         </div>
                     </div>

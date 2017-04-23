@@ -2,6 +2,12 @@
     $("#authCheckStatus").css('display', 'none', 'important');
     $('#Code').focus();
 
+    $("#Code").keyup(function (event) {
+        if (event.keyCode == 13) {
+            $("#verifyCodeSubmit").click();
+        }
+    });
+
     $("#verifyCodeSubmit").click(function () {
         setCode = $("#Code").val();
         returnUrl = $("#ReturnUrl").val();
