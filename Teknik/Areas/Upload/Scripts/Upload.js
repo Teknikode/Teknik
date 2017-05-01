@@ -128,8 +128,6 @@ function linkAddToVault(element) {
     });
 }
 
-var fileCount = 0;
-
 var dropZone = new Dropzone(document.body, {
     url: uploadFileURL, 
     maxFilesize: maxUploadSize, // MB
@@ -138,49 +136,63 @@ var dropZone = new Dropzone(document.body, {
     clickable: "#uploadButton",
     previewTemplate: function () { },
     addedfile: function (file) {
-        // Create the UI element for the new item
-        var fileID = fileCount;
-        fileCount++;
 
-        $("#upload-links").css('display', 'inline', 'important');
+        // Convert file to blob
+        var blob = file.slice(0, file.size);
 
-        var itemDiv = $('#upload-template').clone();
-        itemDiv.attr('id', 'upload-panel-' + fileID);
+        // Create the Upload
+        var fileID = createUpload(file.name);
 
-        // Hide Upload Details 
-        itemDiv.find('#upload-link-panel').hide();
+        // Process the file
+        processFile(blob, file.name, file.type, file.size, fileID);
 
-        // Assign buttons
-        linkRemove(itemDiv.find('#upload-close'), fileID);
-
-        // Set the info
-        itemDiv.find('#upload-title').html(file.name);
-
-        // Add the upload panel to the list
-        $("#upload-links").prepend(itemDiv);
-
-        // save ID to the file object
-        file.ID = fileID;
-
-        // Check the file size
-        if (file.size <= maxUploadSize) {
-            // Encrypt the file and upload it
-            encryptFile(file, uploadFile);
-        }
-        else
-        {
-            // An error occured
-            setProgress(fileID, 100, 'progress-bar-danger', '', 'File Too Large');
-        }
+        // Remove this file from the dropzone set
         this.removeFile(file);
     }
 });
 
+var fileCount = 0;
+
+function createUpload(fileName) {
+    // Create the UI element for the new item
+    var fileID = fileCount;
+    fileCount++;
+
+    $("#upload-links").css('display', 'inline', 'important');
+
+    var itemDiv = $('#upload-template').clone();
+    itemDiv.attr('id', 'upload-panel-' + fileID);
+
+    // Hide Upload Details 
+    itemDiv.find('#upload-link-panel').hide();
+
+    // Assign buttons
+    linkRemove(itemDiv.find('#upload-close'), fileID);
+
+    // Set the info
+    itemDiv.find('#upload-title').html(fileName);
+
+    // Add the upload panel to the list
+    $("#upload-links").prepend(itemDiv);
+
+    return fileID;
+}
+
+function processFile(fileBlob, fileName, contentType, contentSize, fileID) {
+    // Check the file size
+    if (contentSize <= maxUploadSize) {
+        // Encrypt the file and upload it
+        encryptFile(fileBlob, fileName, contentType, fileID, uploadFile);
+    }
+    else {
+        // An error occured
+        setProgress(fileID, 100, 'progress-bar-danger', '', 'File Too Large');
+    }
+}
+
 // Function to encrypt a file, overide the file's data attribute with the encrypted value, and then call a callback function if supplied
-function encryptFile(file, callback) {
-    var filetype = file.type;
-    var fileID = file.ID;
-    var fileExt = getFileExtension(file.name);
+function encryptFile(blob, fileName, contentType, ID, callback) {
+    var fileExt = getFileExtension(fileName);
 
     // Get session settings
     var encrypt = $('#encrypt').is(':checked');
@@ -194,7 +206,7 @@ function encryptFile(file, callback) {
 
             // Just send straight to server if they don't want to encrypt it
             if (!encrypt) {
-                callback(e.target.result, null, null, filetype, fileExt, fileID, encrypt);
+                callback(e.target.result, null, null, contentType, fileExt, ID, encrypt);
             }
             else {
                 // Set variables for tracking
@@ -217,13 +229,13 @@ function encryptFile(file, callback) {
                                 lastTime = curTime;
                                 lastData = e.data.processed;
                                 var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
-                                setProgress(fileID, percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Encrypting [' + getReadableFileSizeString(e.data.processed) + ' / ' + getReadableFileSizeString(e.data.total) + ' @ ' + getReadableBandwidthString(speed * 8) + ']');
+                                setProgress(ID, percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Encrypting [' + getReadableFileSizeString(e.data.processed) + ' / ' + getReadableFileSizeString(e.data.total) + ' @ ' + getReadableBandwidthString(speed * 8) + ']');
                             }
                             break;
                         case 'finish':
                             if (callback != null) {
                                 // Finish 
-                                callback(e.data.buffer, keyStr, ivStr, filetype, fileExt, fileID, encrypt);
+                                callback(e.data.buffer, keyStr, ivStr, contentType, fileExt, ID, encrypt);
                             }
                             break;
                     }
@@ -231,8 +243,8 @@ function encryptFile(file, callback) {
 
                 worker.onerror = function (err) {
                     // An error occured
-                    setProgress(fileID, 100, 'progress-bar-danger', '', 'Error Occured');
-                    $('#upload-panel-' + fileID).find('.panel').addClass('panel-danger');
+                    setProgress(ID, 100, 'progress-bar-danger', '', 'Error Occured');
+                    $('#upload-panel-' + ID).find('.panel').addClass('panel-danger');
                 }
 
                 // Generate the script to include as a blob
@@ -256,12 +268,11 @@ function encryptFile(file, callback) {
     reader.onprogress = function (data) {
         if (data.lengthComputable) {
             var progress = parseInt(((data.loaded / data.total) * 100), 10);
-            setProgress(fileID, progress, 'progress-bar-success progress-bar-striped active', progress + '%', 'Loading');
+            setProgress(ID, progress, 'progress-bar-success progress-bar-striped active', progress + '%', 'Loading');
         }
     }
 
     // Start async read
-    var blob = file.slice(0, file.size);
     reader.readAsArrayBuffer(blob);
 }
 
