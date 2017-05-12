@@ -206,7 +206,7 @@
                     <div class="tab-pane" id="shortenedUrls" style="overflow-y: auto; max-height: 500px;">
                         @foreach (Teknik.Areas.Shortener.Models.ShortenedUrl url in Model.ShortenedUrls)
                         {
-                            string shortUrl = Url.SubRouteUrl(string.Empty, "Shortener.View", new { url = url.ShortUrl });
+                            string shortUrl = string.Format("{0}://{1}/{2}", Request.Url.Scheme, Model.Config.ShortenerConfig.ShortenerHost, url.ShortUrl);
                             if (Model.Config.DevEnvironment)
                             {
                                 shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = url.ShortUrl });
