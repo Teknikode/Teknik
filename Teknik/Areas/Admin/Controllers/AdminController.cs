@@ -4,10 +4,12 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Teknik.Areas.Admin.ViewModels;
+using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Models;
+using Teknik.Utilities;
 using Teknik.ViewModels;
 
 namespace Teknik.Areas.Admin.Controllers
@@ -34,9 +36,15 @@ namespace Teknik.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult UserInfo(string username)
         {
-            UserInfoViewModel model = new UserInfoViewModel();
-            model.Username = username;
-            return View(model);
+            if (UserHelper.UserExists(db, username))
+            {
+                User user = UserHelper.GetUser(db, username);
+                UserInfoViewModel model = new UserInfoViewModel();
+                model.Username = user.Username;
+                model.AccountType = user.AccountType;
+                return View(model);
+            }
+            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
 
         [HttpGet]
@@ -89,6 +97,19 @@ namespace Teknik.Areas.Admin.Controllers
                 return PartialView("~/Areas/Admin/Views/Admin/UploadResult.cshtml", model);
             }
             return Json(new { error = new { message = "Upload does not exist" } });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditUserAccountType(string username, AccountType accountType)
+        {
+            if (UserHelper.UserExists(db, username))
+            {
+                // Edit the user's account type
+                UserHelper.EditAccountType(db, Config, username, accountType);
+                return Json(new { result = new { success = true } });
+            }
+            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
     }
 }

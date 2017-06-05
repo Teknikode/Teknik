@@ -19,6 +19,8 @@ namespace Teknik.Configuration
 
         public int MaxSize { get; set; }
 
+        public DatabaseConfig CounterDatabase { get; set; }
+
         public EmailConfig()
         {
             Enabled = true;
@@ -27,6 +29,7 @@ namespace Teknik.Configuration
             Domain = string.Empty;
             MailHost = string.Empty;
             MaxSize = 1000;
+            CounterDatabase = new DatabaseConfig();
         }
     }
 }

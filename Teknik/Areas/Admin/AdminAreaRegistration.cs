@@ -68,6 +68,9 @@ namespace Teknik.Areas.Admin
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/UploadSearch", config.CdnHost).Include(
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Areas/Admin/Scripts/UploadSearch.js"));
+
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/UserInfo", config.CdnHost).Include(
+                "~/Areas/Admin/Scripts/UserInfo.js"));
         }
     }
 }

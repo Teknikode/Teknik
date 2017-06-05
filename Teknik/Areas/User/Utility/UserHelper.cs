@@ -216,6 +216,47 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
+        public static void EditAccountType(TeknikEntities db, Config config, string username, AccountType type)
+        {
+            try
+            {
+                if (!UserExists(db, username))
+                    throw new Exception($"The user provided does not exist: {username}");
+
+                // Get the user to edit
+                User user = GetUser(db, username);
+
+                string email = GetUserEmailAddress(config, username);
+
+                // Edit the user type
+                user.AccountType = type;
+                EditUser(db, config, user);
+
+                // Add/Remove account type features depending on the type
+                switch (type)
+                {
+                    case AccountType.Basic:
+                        // Set the email size to 1GB
+                        EditUserEmailMaxSize(config, email, config.EmailConfig.MaxSize);
+
+                        // Set the email max/day to 100
+                        EditUserEmailMaxEmailsPerDay(config, email, 100);
+                        break;
+                    case AccountType.Premium:
+                        // Set the email size to 5GB
+                        EditUserEmailMaxSize(config, email, 5000);
+
+                        // Set the email max/day to infinite (-1)
+                        EditUserEmailMaxEmailsPerDay(config, email, -1);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unable to edit the account type [{type}] for: {username}", ex);
+            }
+        }
+
         public static void DeleteAccount(TeknikEntities db, Config config, User user)
         {
             try
@@ -424,6 +465,11 @@ namespace Teknik.Areas.Users.Utility
             {
                 throw new Exception("Unable to create user.", ex);
             }
+        }
+
+        public static void EditUser(TeknikEntities db, Config config, User user)
+        {
+            EditUser(db, config, user, false, string.Empty);
         }
 
         public static void EditUser(TeknikEntities db, Config config, User user, bool changePass, string password)
@@ -824,6 +870,50 @@ If you recieved this email and you did not reset your password, you can ignore t
             catch (Exception ex)
             {
                 throw new Exception("Unable to edit email account password.", ex);
+            }
+        }
+
+        public static void EditUserEmailMaxSize(Config config, string email, int size)
+        {
+            try
+            {
+                // If Email Server is enabled
+                if (config.EmailConfig.Enabled)
+                {
+                    var app = new hMailServer.Application();
+                    app.Connect();
+                    app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
+                    var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
+                    var account = domain.Accounts.ItemByAddress[email];
+                    account.MaxSize = size;
+                    account.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to edit email account mailbox size.", ex);
+            }
+        }
+
+        public static void EditUserEmailMaxEmailsPerDay(Config config, string email, int maxPerDay)
+        {
+            try
+            {
+                // If Email Server is enabled
+                if (config.EmailConfig.Enabled)
+                {
+                    // Query the Email DB 
+
+                    // We need to check the actual git database
+                    MysqlDatabase mySQL = new MysqlDatabase(config.EmailConfig.CounterDatabase.Server, config.EmailConfig.CounterDatabase.Database, config.EmailConfig.CounterDatabase.Username, config.EmailConfig.CounterDatabase.Password, config.EmailConfig.CounterDatabase.Port);
+                    string sql = @"INSERT INTO mailcounter.counts (qname, lastdate, qlimit, count) VALUES ({1}, NOW(), {0}, 0)
+                                    ON DUPLICATE KEY UPDATE qlimit = {0}";
+                    mySQL.Execute(sql, new object[] { maxPerDay, email });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to edit email account mailbox size.", ex);
             }
         }
 
