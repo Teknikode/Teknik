@@ -268,7 +268,8 @@ $(document).ready(function () {
         yAxis: {
             title: {
                 text: 'Visitors'
-            }
+            },
+            min: 0
         },
         tooltip: {
             shared: true,
