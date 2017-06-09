@@ -4,6 +4,7 @@ Teknik is a suite of services with attractive and functional interfaces.
 
 ## Features
   * File Upload w/ encryption
+  * Album Support
   * Pastebin
   * URL Shortening
   * Blogs
