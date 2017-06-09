@@ -121,7 +121,7 @@ namespace Teknik.Utilities.Cryptography
         }
         public static byte[] CreateKey(string password, byte[] iv, int keySize = 256)
         {
-            const int Iterations = 300;
+            const int Iterations = 5000;
             var keyGenerator = new Rfc2898DeriveBytes(password, iv, Iterations);
             return keyGenerator.GetBytes(keySize / 8);
         }

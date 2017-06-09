@@ -12,7 +12,7 @@ namespace Teknik.Utilities.Cryptography
     {
         public static string Hash(string value)
         {
-            byte[] valueBytes = Encoding.Unicode.GetBytes(value);
+            byte[] valueBytes = Encoding.UTF8.GetBytes(value);
             return Hash(valueBytes);
         }
 

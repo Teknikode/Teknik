@@ -84,7 +84,7 @@ namespace Teknik.Utilities.Cryptography
             }
             set
             {
-                if (value > 0 && value < _EncryptedCounter.Length)
+                if (value >= 0 && value < _EncryptedCounter.Length)
                 {
                     _CounterPosition = value;
                 }

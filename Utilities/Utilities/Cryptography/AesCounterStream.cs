@@ -52,14 +52,14 @@ namespace Teknik.Utilities.Cryptography
                 if (bytesRead > 0)
                 {
                     // Process the read buffer
-                    processed = _Cipher.TransformBlock(readBuf, 0, bytesRead, buffer, 0);
+                    processed = _Cipher.TransformBlock(readBuf, 0, bytesRead, buffer, offset);
                 }
 
                 // Do we have more?
                 if (processed < bytesRead)
                 {
                     // Finalize the cipher
-                    byte[] finalBuf = _Cipher.TransformFinalBlock(readBuf, processed, bytesRead);
+                    byte[] finalBuf = _Cipher.TransformFinalBlock(readBuf, processed + offset, bytesRead);
                     finalBuf.CopyTo(buffer, processed);
                     processed += finalBuf.Length;
                 }
@@ -77,15 +77,14 @@ namespace Teknik.Utilities.Cryptography
                 byte[] output = new byte[count];
 
                 // Process the buffer
-                int processed = _Cipher.TransformBlock(buffer, 0, count, output, 0);
+                int processed = _Cipher.TransformBlock(buffer, offset, count, output, 0);
 
                 // Do we have more?
                 if (processed < count)
                 {
                     // Finalize the cipher
-                    byte[] finalBuf = _Cipher.TransformFinalBlock(buffer, processed, count);
+                    byte[] finalBuf = _Cipher.TransformFinalBlock(buffer, processed + offset, count);
                     finalBuf.CopyTo(output, processed);
-                    processed += finalBuf.Length;
                 }
 
                 _Inner.Write(output, 0, count);
