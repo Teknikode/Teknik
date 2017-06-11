@@ -906,8 +906,6 @@ If you recieved this email and you did not reset your password, you can ignore t
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    // Query the Email DB 
-
                     // We need to check the actual git database
                     MysqlDatabase mySQL = new MysqlDatabase(config.EmailConfig.CounterDatabase.Server, config.EmailConfig.CounterDatabase.Database, config.EmailConfig.CounterDatabase.Username, config.EmailConfig.CounterDatabase.Password, config.EmailConfig.CounterDatabase.Port);
                     string sql = @"INSERT INTO mailcounter.counts (qname, lastdate, qlimit, count) VALUES ({1}, NOW(), {0}, 0)
@@ -976,7 +974,7 @@ If you recieved this email and you did not reset your password, you can ignore t
             if (config.GitConfig.Enabled)
             {
                 // Git user exists?
-                if (UserGitExists(config, username))
+                if (!UserGitExists(config, username))
                 {
                     throw new Exception($"Git User '{username}' does not exist.");
                 }
@@ -1041,7 +1039,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                 if (config.GitConfig.Enabled)
                 {
                     // Git user exists?
-                    if (UserGitExists(config, username))
+                    if (!UserGitExists(config, username))
                     {
                         throw new Exception($"Git User '{username}' does not exist.");
                     }
@@ -1072,7 +1070,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                 if (config.GitConfig.Enabled)
                 {
                     // Git user exists?
-                    if (UserGitExists(config, username))
+                    if (!UserGitExists(config, username))
                     {
                         throw new Exception($"Git User '{username}' does not exist.");
                     }
@@ -1135,7 +1133,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                 if (config.GitConfig.Enabled)
                 {
                     // Git user exists?
-                    if (UserGitExists(config, username))
+                    if (!UserGitExists(config, username))
                     {
                         throw new Exception($"Git User '{username}' does not exist.");
                     }
@@ -1168,7 +1166,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                 if (config.GitConfig.Enabled)
                 {
                     // Git user exists?
-                    if (UserGitExists(config, username))
+                    if (!UserGitExists(config, username))
                     {
                         throw new Exception($"Git User '{username}' does not exist.");
                     }
