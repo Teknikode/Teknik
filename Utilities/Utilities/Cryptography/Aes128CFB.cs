@@ -43,13 +43,20 @@ namespace Teknik.Utilities.Cryptography
             int keySize = 128;
 
             // Grab the IV and encrypted text from the original text
-            byte[] ivBytes = text.Take(blockSize / 8).ToArray();
-            text = text.Skip(blockSize / 8).Take(text.Length - (blockSize / 8)).ToArray();
+            byte[] ivBytes = new byte[blockSize / 8];
+            byte[] encText = new byte[text.Length - (blockSize / 8)];
+            byte[] output = new byte[text.Length - (blockSize / 8)];
+
+            text.Take(blockSize / 8).ToArray().CopyTo(ivBytes, 0);
+            text.Skip(blockSize / 8).ToArray().CopyTo(encText, 0);
+
+            // Pad the text for decryption
+            ByteHelper.PadToMultipleOf(ref encText, 16);
 
             // Process the cipher
-            ProcessCipher(false, text, key, ivBytes, blockSize, keySize, ref text, 0);
+            ProcessCipher(false, encText, key, ivBytes, blockSize, keySize, ref output, 0);
 
-            string encodedText = Encoding.UTF8.GetString(text);
+            string encodedText = Encoding.UTF8.GetString(output);
             return Convert.FromBase64String(encodedText);
         }
 
@@ -61,8 +68,8 @@ namespace Teknik.Utilities.Cryptography
                 cipher.KeySize = keySize;
 
                 cipher.Mode = CipherMode.CFB;
-                cipher.FeedbackSize = 8;
-                cipher.Padding = PaddingMode.None;
+                cipher.FeedbackSize = 128;
+                cipher.Padding = PaddingMode.Zeros;
 
                 cipher.Key = key;
                 cipher.IV = iv;
@@ -75,7 +82,12 @@ namespace Teknik.Utilities.Cryptography
                     bw.Write(text);
                     bw.Close();
 
-                    ms.ToArray().CopyTo(output, offset);
+                    byte[] textBytes = ms.ToArray();
+                    
+                    for (int i = 0; i < output.Length - offset; i++)
+                    {
+                        output[i + offset] = textBytes[i];
+                    }
                 }
             }
         }

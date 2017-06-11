@@ -1090,32 +1090,36 @@ If you recieved this email and you did not reset your password, you can ignore t
 
                     // Create connection to the DB
                     MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
+                    mySQL.MysqlErrorEvent += (sender, s) =>
+                    {
+                        throw new Exception("Unable to edit git account two factor.  Mysql Exception: " + s);
+                    };
 
                     // Get the user's UID
                     string email = GetUserEmailAddress(config, username);
-                    string userSelect = @"SELECT id FROM gogs.user WHERE gogs.user.login_name = {0}";
+                    string userSelect = @"SELECT gogs.user.id FROM gogs.user WHERE gogs.user.login_name = {0}";
                     var uid = mySQL.ScalarQuery(userSelect, new object[] { email });
 
                     // See if they have Two Factor already
-                    string sqlSelect = @"SELECT id 
-                                FROM gogs.two_factor
-                                LEFT JOIN gogs.user ON gogs.user.id = gogs.gogs.two_factor.uid
-                                WHERE gogs.user.login_name = {0}";
+                    string sqlSelect = @"SELECT tf.id 
+                                FROM gogs.two_factor tf
+                                LEFT JOIN gogs.user u ON u.id = tf.uid
+                                WHERE u.login_name = {0}";
                     var result = mySQL.ScalarQuery(sqlSelect, new object[] { email });
                     
                     if (result != null)
                     {
                         // They have an entry!  Let's update it
-                        string insert = @"UPDATE gogs.two_factor SET uid = {1}, secret = {2}, scratch_token = {3}, updated_unix = {4} WHERE gogs.two_factor.id = {0}";
+                        string update = @"UPDATE gogs.two_factor tf SET tf.uid = {1}, tf.secret = {2}, tf.scratch_token = {3}, tf.updated_unix = {4} WHERE tf.id = {0}";
 
-                        mySQL.Execute(insert, new object[] { result, uid, finalSecret, token, unixTime });
+                        mySQL.Execute(update, new object[] { result, uid, finalSecret, token, unixTime });
                     }
                     else
                     {
                         // They need a new entry
-                        string update = @"INSERT INTO gogs.two_factor SET (uid, secret, scratch_token, created_unix, updated_unix) VALUES ({0}, {1}, {2}, {3}, {4})";
+                        string insert = @"INSERT INTO gogs.two_factor (uid, secret, scratch_token, created_unix, updated_unix) VALUES ({0}, {1}, {2}, {3}, {4})";
 
-                        mySQL.Execute(update, new object[] { uid, finalSecret, token, unixTime, 0 });
+                        mySQL.Execute(insert, new object[] { uid, finalSecret, token, unixTime, 0 });
                     }
                 }
             }

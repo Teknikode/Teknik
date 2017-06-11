@@ -14,8 +14,8 @@ namespace Teknik.Tests.UtilitiesTests.Cryptography
         [Fact]
         public void Aes128DataTest()
         {
-            string secret = "426KOBTS66KYLFLQ";
-            string key = "8fj3Ff83nfQoe01";
+            string secret = "WXEYUXXH7X6OUVPK";
+            string key = "df9Nfjhq89KAwvs";
 
             // Get the Encryption Key from the git secret key
             byte[] keyBytes = MD5.Hash(Encoding.UTF8.GetBytes(key));
@@ -27,7 +27,6 @@ namespace Teknik.Tests.UtilitiesTests.Cryptography
             byte[] encValue = Aes128CFB.Encrypt(secBytes, keyBytes);
             string finalSecret = Convert.ToBase64String(encValue);
 
-            // Decode it
             byte[] decodedSecret = Convert.FromBase64String(finalSecret);
             byte[] val = Aes128CFB.Decrypt(decodedSecret, keyBytes);
             string verify = Encoding.UTF8.GetString(val);
