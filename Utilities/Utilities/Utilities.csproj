@@ -102,6 +102,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountType.cs" />
+    <Compile Include="Cryptography\AES.cs" />
+    <Compile Include="Cryptography\Aes128CFB.cs" />
     <Compile Include="Cryptography\AesCounterStream.cs" />
     <Compile Include="Cryptography\AesCounterManaged.cs" />
     <Compile Include="Cryptography\AesCounterMode.cs" />
@@ -111,6 +113,7 @@
     <Compile Include="Cryptography\SHA384.cs" />
     <Compile Include="CurrencyHelper.cs" />
     <Compile Include="CurrencyType.cs" />
+    <Compile Include="DateTimeHelper.cs" />
     <Compile Include="EntityExtensions.cs" />
     <Compile Include="FileGenerateResult.cs" />
     <Compile Include="HttpWebResponseResult.cs" />

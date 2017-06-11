@@ -19,7 +19,6 @@ using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Attributes;
 using System.Text;
-using Org.BouncyCastle.Crypto;
 using Teknik.Utilities.Cryptography;
 
 namespace Teknik.Areas.Upload.Controllers

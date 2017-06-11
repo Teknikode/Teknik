@@ -8,7 +8,12 @@ namespace Teknik.Utilities
 {
     public static class StringHelper
     {
-        public static string RandomString(int length, string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+        public static string RandomString(int length)
+        {
+            return RandomString(length, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+        }
+
+        public static string RandomString(int length, string allowedChars)
         {
             const int byteSize = 0x100;
             var allowedCharSet = new HashSet<char>(allowedChars).ToArray();

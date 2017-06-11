@@ -452,11 +452,23 @@ namespace Teknik.Areas.Users.Controllers
                             {
                                 // They just enabled it, let's regen the key
                                 newKey = Authenticator.GenerateKey();
+
+                                // New key, so let's upsert their key into git
+                                if (Config.GitConfig.Enabled)
+                                {
+                                    UserHelper.CreateUserGitTwoFactor(Config, user.Username, newKey, DateTimeHelper.GetUnixTimestamp());
+                                }
                             }
                             else if (!twoFactorEnabled)
                             {
                                 // remove the key when it's disabled
                                 newKey = string.Empty;
+
+                                // Removed the key, so delete it from git as well
+                                if (Config.GitConfig.Enabled)
+                                {
+                                    UserHelper.DeleteUserGitTwoFactor(Config, user.Username);
+                                }
                             }
                             else
                             {

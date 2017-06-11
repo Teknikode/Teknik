@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -18,6 +19,9 @@ using Teknik.Configuration;
 using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Utilities.Cryptography;
+using MD5 = Teknik.Utilities.Cryptography.MD5;
+using SHA256 = Teknik.Utilities.Cryptography.SHA256;
+using SHA384 = Teknik.Utilities.Cryptography.SHA384;
 
 namespace Teknik.Areas.Users.Utility
 {
@@ -971,6 +975,12 @@ If you recieved this email and you did not reset your password, you can ignore t
 
             if (config.GitConfig.Enabled)
             {
+                // Git user exists?
+                if (UserGitExists(config, username))
+                {
+                    throw new Exception($"Git User '{username}' does not exist.");
+                }
+
                 string email = GetUserEmailAddress(config, username);
                 // We need to check the actual git database
                 MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
@@ -1030,10 +1040,16 @@ If you recieved this email and you did not reset your password, you can ignore t
                 // If Git is enabled
                 if (config.GitConfig.Enabled)
                 {
+                    // Git user exists?
+                    if (UserGitExists(config, username))
+                    {
+                        throw new Exception($"Git User '{username}' does not exist.");
+                    }
+
                     string email = GetUserEmailAddress(config, username);
                     using (var client = new WebClient())
                     {
-                        var obj = new { source_id = config.GitConfig.SourceId, email = email, login_name = email, password = password };
+                        var obj = new {source_id = config.GitConfig.SourceId, email = email, login_name = email, password = password};
                         string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                         client.Headers[HttpRequestHeader.ContentType] = "application/json";
                         Uri baseUri = new Uri(config.GitConfig.Host);
@@ -1048,6 +1064,102 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
 
+        public static void CreateUserGitTwoFactor(Config config, string username, string secret, int unixTime)
+        {
+            try
+            {
+                // If Git is enabled
+                if (config.GitConfig.Enabled)
+                {
+                    // Git user exists?
+                    if (UserGitExists(config, username))
+                    {
+                        throw new Exception($"Git User '{username}' does not exist.");
+                    }
+
+                    // Generate the scratch token
+                    string token = StringHelper.RandomString(8);
+
+                    // Get the Encryption Key from the git secret key
+                    byte[] keyBytes = MD5.Hash(Encoding.UTF8.GetBytes(config.GitConfig.SecretKey));
+
+                    // Modify the input secret
+                    byte[] secBytes = Encoding.UTF8.GetBytes(secret);
+
+                    // Generate the encrypted secret using AES CGM
+                    byte[] encValue = Aes128CFB.Encrypt(secBytes, keyBytes);
+                    string finalSecret = Convert.ToBase64String(encValue);
+
+                    // Create connection to the DB
+                    MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
+
+                    // Get the user's UID
+                    string email = GetUserEmailAddress(config, username);
+                    string userSelect = @"SELECT id FROM gogs.user WHERE gogs.user.login_name = {0}";
+                    var uid = mySQL.ScalarQuery(userSelect, new object[] { email });
+
+                    // See if they have Two Factor already
+                    string sqlSelect = @"SELECT id 
+                                FROM gogs.two_factor
+                                LEFT JOIN gogs.user ON gogs.user.id = gogs.gogs.two_factor.uid
+                                WHERE gogs.user.login_name = {0}";
+                    var result = mySQL.ScalarQuery(sqlSelect, new object[] { email });
+                    
+                    if (result != null)
+                    {
+                        // They have an entry!  Let's update it
+                        string insert = @"UPDATE gogs.two_factor SET uid = {1}, secret = {2}, scratch_token = {3}, updated_unix = {4} WHERE gogs.two_factor.id = {0}";
+
+                        mySQL.Execute(insert, new object[] { result, uid, finalSecret, token, unixTime });
+                    }
+                    else
+                    {
+                        // They need a new entry
+                        string update = @"INSERT INTO gogs.two_factor SET (uid, secret, scratch_token, created_unix, updated_unix) VALUES ({0}, {1}, {2}, {3}, {4})";
+
+                        mySQL.Execute(update, new object[] { uid, finalSecret, token, unixTime, 0 });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to edit git account two factor.", ex);
+            }
+        }
+
+        public static void DeleteUserGitTwoFactor(Config config, string username)
+        {
+            try
+            {
+                // If Git is enabled
+                if (config.GitConfig.Enabled)
+                {
+                    // Git user exists?
+                    if (UserGitExists(config, username))
+                    {
+                        throw new Exception($"Git User '{username}' does not exist.");
+                    }
+
+                    // Create connection to the DB
+                    MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
+
+                    // Get the user's UID
+                    string email = GetUserEmailAddress(config, username);
+
+                    // See if they have Two Factor already
+                    string deleteSql = @"DELETE tf.* 
+                                FROM gogs.two_factor tf
+                                LEFT JOIN gogs.user u ON u.id = tf.uid
+                                WHERE u.login_name = {0}";
+                    mySQL.Execute(deleteSql, new object[] { email });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to delete git account two factor.", ex);
+            }
+        }
+
         public static void DeleteUserGit(Config config, string username)
         {
             try
@@ -1055,6 +1167,12 @@ If you recieved this email and you did not reset your password, you can ignore t
                 // If Git is enabled
                 if (config.GitConfig.Enabled)
                 {
+                    // Git user exists?
+                    if (UserGitExists(config, username))
+                    {
+                        throw new Exception($"Git User '{username}' does not exist.");
+                    }
+
                     try
                     {
                         Uri baseUri = new Uri(config.GitConfig.Host);

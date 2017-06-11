@@ -29,6 +29,12 @@ namespace Teknik.Utilities.Cryptography
 
         }
 
+        public static byte[] Hash(byte[] value)
+        {
+            System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
+            return md5.ComputeHash(value);
+        }
+
         public static string FileHash(string filename)
         {
             try
