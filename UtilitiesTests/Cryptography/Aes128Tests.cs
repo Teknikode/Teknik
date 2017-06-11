@@ -15,7 +15,7 @@ namespace Teknik.Tests.UtilitiesTests.Cryptography
         public void Aes128DataTest()
         {
             string secret = "426KOBTS66KYLFLQ";
-            string key = "u1GIRvmnIFFHLov";
+            string key = "8fj3Ff83nfQoe01";
 
             // Get the Encryption Key from the git secret key
             byte[] keyBytes = MD5.Hash(Encoding.UTF8.GetBytes(key));
