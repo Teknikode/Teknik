@@ -173,18 +173,18 @@ namespace Teknik.Areas.Upload.Controllers
                     // Check for the cache
                     bool isCached = false;
                     string modifiedSince = Request.Headers["If-Modified-Since"];
-                    if (!string.IsNullOrEmpty(modifiedSince))
-                    {
-                        DateTime modTime = new DateTime();
-                        bool parsed = DateTime.TryParse(modifiedSince, out modTime);
-                        if (parsed)
-                        {
-                            if ((modTime - dateUploaded).TotalSeconds <= 1)
-                            {
-                                isCached = true;
-                            }
-                        }
-                    }
+                    //if (!string.IsNullOrEmpty(modifiedSince))
+                    //{
+                    //    DateTime modTime = new DateTime();
+                    //    bool parsed = DateTime.TryParse(modifiedSince, out modTime);
+                    //    if (parsed)
+                    //    {
+                    //        if ((modTime - dateUploaded).TotalSeconds <= 1)
+                    //        {
+                    //            isCached = true;
+                    //        }
+                    //    }
+                    //}
 
                     if (isCached)
                     {
@@ -286,7 +286,7 @@ namespace Teknik.Areas.Upload.Controllers
                             Response.AddHeader("Content-Disposition", cd.ToString());
 
                             // Apply content security policy for downloads
-                            Response.AddHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src *; connect-src 'self'; media-src 'self'; child-src 'self'; form-action 'none';");
+                            //Response.AddHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src *; connect-src 'self'; media-src 'self'; child-src 'self'; form-action 'none';");
 
                             // Read in the file
                             FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
