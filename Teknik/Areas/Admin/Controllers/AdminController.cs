@@ -64,15 +64,22 @@ namespace Teknik.Areas.Admin.Controllers
             {
                 foreach (Users.Models.User user in results)
                 {
-                    SearchResultViewModel model = new SearchResultViewModel();
-                    model.Username = user.Username;
-                    if (Config.EmailConfig.Enabled)
+                    try
                     {
-                        model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                        SearchResultViewModel model = new SearchResultViewModel();
+                        model.Username = user.Username;
+                        if (Config.EmailConfig.Enabled)
+                        {
+                            model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                        }
+                        model.JoinDate = user.JoinDate;
+                        model.LastSeen = UserHelper.GetLastAccountActivity(db, Config, user);
+                        models.Add(model);
                     }
-                    model.JoinDate = user.JoinDate;
-                    model.LastSeen = UserHelper.GetLastAccountActivity(db, Config, user);
-                    models.Add(model);
+                    catch (Exception ex)
+                    {
+                        // Skip this result
+                    }
                 }
             }
 
