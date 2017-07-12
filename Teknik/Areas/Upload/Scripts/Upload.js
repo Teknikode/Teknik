@@ -181,8 +181,19 @@ function createUpload(fileName) {
 function processFile(fileBlob, fileName, contentType, contentSize, fileID) {
     // Check the file size
     if (contentSize <= maxUploadSize) {
-        // Encrypt the file and upload it
-        encryptFile(fileBlob, fileName, contentType, fileID, uploadFile);
+
+        var fileExt = getFileExtension(fileName);
+
+        // Get session settings
+        var encrypt = $('#encrypt').is(':checked');
+
+        if (encrypt) {
+            // Encrypt the file and upload it
+            encryptFile(fileBlob, fileName, contentType, fileID, uploadFile);
+        } else {
+            // pass it along
+            uploadFile(fileBlob, null, null, contentType, fileExt, fileID, encrypt);
+        }
     }
     else {
         // An error occured
