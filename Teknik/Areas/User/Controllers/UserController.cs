@@ -378,7 +378,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(string curPass, string newPass, string newPassConfirm, string pgpPublicKey, string recoveryEmail, bool allowTrustedDevices, bool twoFactorEnabled, string website, string quote, string about, string blogTitle, string blogDesc, bool encrypt)
+        public ActionResult Edit(EditSettingsViewModel settings)
         {
             if (ModelState.IsValid)
             {
@@ -392,15 +392,15 @@ namespace Teknik.Areas.Users.Controllers
                             bool changePass = false;
                             string email = string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain);
                             // Changing Password?
-                            if (!string.IsNullOrEmpty(curPass) && (!string.IsNullOrEmpty(newPass) || !string.IsNullOrEmpty(newPassConfirm)))
+                            if (!string.IsNullOrEmpty(settings.CurrentPassword) && (!string.IsNullOrEmpty(settings.NewPassword) || !string.IsNullOrEmpty(settings.NewPasswordConfirm)))
                             {
                                 // Old Password Valid?
-                                if (!UserHelper.UserPasswordCorrect(db, Config, user, curPass))
+                                if (!UserHelper.UserPasswordCorrect(db, Config, user, settings.CurrentPassword))
                                 {
                                     return Json(new { error = "Invalid Original Password." });
                                 }
                                 // The New Password Match?
-                                if (newPass != newPassConfirm)
+                                if (settings.NewPassword != settings.NewPasswordConfirm)
                                 {
                                     return Json(new { error = "New Password Must Match." });
                                 }
@@ -413,24 +413,24 @@ namespace Teknik.Areas.Users.Controllers
                             }
 
                             // PGP Key valid?
-                            if (!string.IsNullOrEmpty(pgpPublicKey) && !PGP.IsPublicKey(pgpPublicKey))
+                            if (!string.IsNullOrEmpty(settings.PgpPublicKey) && !PGP.IsPublicKey(settings.PgpPublicKey))
                             {
                                 return Json(new { error = "Invalid PGP Public Key" });
                             }
-                            user.SecuritySettings.PGPSignature = pgpPublicKey;
+                            user.SecuritySettings.PGPSignature = settings.PgpPublicKey;
 
                             // Recovery Email
                             bool newRecovery = false;
-                            if (recoveryEmail != user.SecuritySettings.RecoveryEmail)
+                            if (settings.RecoveryEmail != user.SecuritySettings.RecoveryEmail)
                             {
                                 newRecovery = true;
-                                user.SecuritySettings.RecoveryEmail = recoveryEmail;
+                                user.SecuritySettings.RecoveryEmail = settings.RecoveryEmail;
                                 user.SecuritySettings.RecoveryVerified = false;
                             }
 
                             // Trusted Devices
-                            user.SecuritySettings.AllowTrustedDevices = allowTrustedDevices;
-                            if (!allowTrustedDevices)
+                            user.SecuritySettings.AllowTrustedDevices = settings.AllowTrustedDevices;
+                            if (!settings.AllowTrustedDevices)
                             {
                                 // They turned it off, let's clear the trusted devices
                                 user.TrustedDevices.Clear();
@@ -446,9 +446,9 @@ namespace Teknik.Areas.Users.Controllers
 
                             // Two Factor Authentication
                             bool oldTwoFactor = user.SecuritySettings.TwoFactorEnabled;
-                            user.SecuritySettings.TwoFactorEnabled = twoFactorEnabled;
+                            user.SecuritySettings.TwoFactorEnabled = settings.TwoFactorEnabled;
                             string newKey = string.Empty;
-                            if (!oldTwoFactor && twoFactorEnabled)
+                            if (!oldTwoFactor && settings.TwoFactorEnabled)
                             {
                                 // They just enabled it, let's regen the key
                                 newKey = Authenticator.GenerateKey();
@@ -459,7 +459,7 @@ namespace Teknik.Areas.Users.Controllers
                                     UserHelper.CreateUserGitTwoFactor(Config, user.Username, newKey, DateTimeHelper.GetUnixTimestamp());
                                 }
                             }
-                            else if (!twoFactorEnabled)
+                            else if (!settings.TwoFactorEnabled)
                             {
                                 // remove the key when it's disabled
                                 newKey = string.Empty;
@@ -478,21 +478,21 @@ namespace Teknik.Areas.Users.Controllers
                             user.SecuritySettings.TwoFactorKey = newKey;
 
                             // Profile Info
-                            user.UserSettings.Website = website;
-                            user.UserSettings.Quote = quote;
-                            user.UserSettings.About = about;
+                            user.UserSettings.Website = settings.Website;
+                            user.UserSettings.Quote = settings.Quote;
+                            user.UserSettings.About = settings.About;
 
                             // Blogs
-                            user.BlogSettings.Title = blogTitle;
-                            user.BlogSettings.Description = blogDesc;
+                            user.BlogSettings.Title = settings.BlogTitle;
+                            user.BlogSettings.Description = settings.BlogDesc;
 
                             // Uploads
-                            user.UploadSettings.Encrypt = encrypt;
+                            user.UploadSettings.Encrypt = settings.Encrypt;
 
-                            UserHelper.EditAccount(db, Config, user, changePass, newPass);
+                            UserHelper.EditAccount(db, Config, user, changePass, settings.NewPassword);
 
                             // If they have a recovery email, let's send a verification
-                            if (!string.IsNullOrEmpty(recoveryEmail) && newRecovery)
+                            if (!string.IsNullOrEmpty(settings.RecoveryEmail) && newRecovery)
                             {
                                 string verifyCode = UserHelper.CreateRecoveryEmailVerification(db, Config, user);
                                 string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
@@ -500,7 +500,7 @@ namespace Teknik.Areas.Users.Controllers
                                 UserHelper.SendRecoveryEmailVerification(Config, user.Username, user.SecuritySettings.RecoveryEmail, resetUrl, verifyUrl);
                             }
 
-                            if (!oldTwoFactor && twoFactorEnabled)
+                            if (!oldTwoFactor && settings.TwoFactorEnabled)
                             {
                                 return Json(new { result = new { checkAuth = true, key = newKey, qrUrl = Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = newKey }) } });
                             }
@@ -683,7 +683,7 @@ namespace Teknik.Areas.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult SetUserPassword(string password, string confirmPassword)
+        public ActionResult SetUserPassword(SetPasswordViewModel passwordViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -695,11 +695,11 @@ namespace Teknik.Areas.Users.Controllers
                         User user = (User)Session["AuthenticatedUser"];
                         if (user != null)
                         {
-                            if (string.IsNullOrEmpty(password))
+                            if (string.IsNullOrEmpty(passwordViewModel.Password))
                             {
                                 return Json(new { error = "Password must not be empty" });
                             }
-                            if (password != confirmPassword)
+                            if (passwordViewModel.Password != passwordViewModel.PasswordConfirm)
                             {
                                 return Json(new { error = "Passwords must match" });
                             }
@@ -707,7 +707,7 @@ namespace Teknik.Areas.Users.Controllers
                             using (TeknikEntities db = new TeknikEntities())
                             {
                                 User newUser = UserHelper.GetUser(db, user.Username);
-                                UserHelper.EditAccount(db, Config, newUser, true, password);
+                                UserHelper.EditAccount(db, Config, newUser, true, passwordViewModel.Password);
                             }
 
                             return Json(new { result = true });

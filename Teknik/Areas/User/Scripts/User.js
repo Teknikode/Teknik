@@ -212,19 +212,19 @@
             type: "POST",
             url: editUserURL,
             data: AddAntiForgeryToken({
-                curPass: current_password,
-                newPass: password,
-                newPassConfirm: password_confirm,
-                pgpPublicKey: update_pgp_public_key,
-                allowTrustedDevices: update_security_allow_trusted,
-                twoFactorEnabled: update_security_two_factor,
-                recoveryEmail: recovery,
-                website: website,
-                quote: quote,
-                about: about,
-                blogTitle: blog_title,
-                blogDesc: blog_desc,
-                encrypt: upload_encrypt
+                CurrentPassword: current_password,
+                NewPassword: password,
+                NewPasswordConfirm: password_confirm,
+                PgpPublicKey: update_pgp_public_key,
+                AllowTrustedDevices: update_security_allow_trusted,
+                TwoFactorEnabled: update_security_two_factor,
+                RecoveryEmail: recovery,
+                Website: website,
+                Quote: quote,
+                About: about,
+                BlogTitle: blog_title,
+                BlogDesc: blog_desc,
+                Encrypt: upload_encrypt
             }),
             success: function (html) {
                 $.unblockUI();
@@ -287,8 +287,8 @@
             type: "POST",
             url: form.attr('action'),
             data: AddAntiForgeryToken({
-                password: password,
-                confirmPassword: confirmPassword
+                Password: password,
+                PasswordConfirm: confirmPassword
             }),
             success: function (html) {
                 if (html.result) {
