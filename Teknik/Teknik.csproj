@@ -380,8 +380,6 @@
     <Compile Include="BaseViewPage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\libgnurx-0.dll" />
-    <Content Include="App_Data\libmagic-1.dll" />
     <Content Include="App_Data\reservedUsernames.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -664,7 +662,6 @@
     <Content Include="Areas\IRC\Views\web.config" />
     <Content Include="Areas\IRC\Views\IRC\Client.cshtml" />
     <Content Include="Areas\IRC\Views\_ViewStart.cshtml" />
-    <Content Include="App_Data\magic.mgc" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
