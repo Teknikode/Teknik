@@ -11,6 +11,8 @@ using Teknik.Controllers;
 using Teknik.Utilities;
 using Teknik.Models;
 using System.Text;
+using MimeDetective;
+using MimeDetective.Extensions;
 using Teknik.Areas.Shortener.Models;
 using nClam;
 using Teknik.Filters;
@@ -70,7 +72,19 @@ namespace Teknik.Areas.API.Controllers
                             // Need to grab the contentType if it's empty
                             if (string.IsNullOrEmpty(model.contentType))
                             {
-                                model.contentType = (string.IsNullOrEmpty(model.file.ContentType)) ? "application/octet-stream" : model.file.ContentType;
+                                model.contentType = model.file.ContentType;
+
+                                if (string.IsNullOrEmpty(model.contentType))
+                                {
+                                    model.file.InputStream.Seek(0, SeekOrigin.Begin);
+                                    FileType fileType = model.file.InputStream.GetFileType();
+                                    if (fileType != null)
+                                        model.contentType = fileType.Mime;
+                                    if (string.IsNullOrEmpty(model.contentType))
+                                    {
+                                        model.contentType = "application/octet-stream";
+                                    }
+                                }
                             }
 
                             // Initialize the key size and block size if empty

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Win32;
+using MimeDetective;
+using MimeDetective.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -87,6 +89,14 @@ namespace Teknik.Utilities
             result = value != null ? value.ToString() : defaultExtension;
 
             return result;
+        }
+
+        public static string GetDefaultExtension(Stream fileStream, string defaultExtension)
+        {
+            FileType fileType = fileStream.GetFileType();
+            if (!string.IsNullOrEmpty(fileType.Extension))
+                return fileType.Extension;
+            return defaultExtension;
         }
     }
 }

@@ -17,22 +17,22 @@ namespace Teknik.Areas.Upload
         {
             return SaveFile(db, config, file, contentType, contentLength, encrypt, string.Empty, null, null, 256, 128);
         }
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string defaultExtension)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string fileExt)
         {
-            return SaveFile(db, config, file, contentType, contentLength, encrypt, defaultExtension, null, null, 256, 128);
+            return SaveFile(db, config, file, contentType, contentLength, encrypt, fileExt, null, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string defaultExtension, string iv)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string fileExt, string iv)
         {
-            return SaveFile(db, config, file, contentType, contentLength, encrypt, defaultExtension, iv, null, 256, 128);
+            return SaveFile(db, config, file, contentType, contentLength, encrypt, fileExt, iv, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string defaultExtension, string iv, string key)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string fileExt, string iv, string key)
         {
-            return SaveFile(db, config, file, contentType, contentLength, encrypt, defaultExtension, iv, key, 256, 128);
+            return SaveFile(db, config, file, contentType, contentLength, encrypt, fileExt, iv, key, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string defaultExtension, string iv, string key, int keySize, int blockSize)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string fileExt, string iv, string key, int keySize, int blockSize)
         {
             if (!Directory.Exists(config.UploadConfig.UploadDirectory))
             {
@@ -67,7 +67,7 @@ namespace Teknik.Areas.Upload
             }
 
             // Generate a unique url
-            string extension = (config.UploadConfig.IncludeExtension) ? FileHelper.GetDefaultExtension(contentType, defaultExtension) : string.Empty;
+            string extension = (config.UploadConfig.IncludeExtension) ? fileExt : string.Empty;
             string url = StringHelper.RandomString(config.UploadConfig.UrlLength) + extension;
             while (db.Uploads.Where(u => u.Url == url).FirstOrDefault() != null)
             {
