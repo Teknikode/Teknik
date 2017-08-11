@@ -2,7 +2,10 @@
     $("textarea.mdd_editor").MarkdownDeep({
         help_location: helpURL,
         disableTabHandling: false,
-        resizebar: false
+        resizebar: false,
+        SafeMode: true,
+        ExtraMode: true,
+        MarkdownInHtml: true
     });
 
     $('.hideContent').each(function () {

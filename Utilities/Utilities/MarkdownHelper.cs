@@ -20,6 +20,7 @@ namespace Teknik.Utilities
 			var markdownTransformer = new Markdown();
 		    markdownTransformer.ExtraMode = true;
 		    markdownTransformer.SafeMode = true;
+		    markdownTransformer.MarkdownInHtml = true;
 			string html = markdownTransformer.Transform(text);
 
 			// Wrap the html in an MvcHtmlString otherwise it'll be HtmlEncoded and displayed to the user as HTML :(
