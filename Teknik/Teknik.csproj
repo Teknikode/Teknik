@@ -235,6 +235,8 @@
     <Compile Include="Areas\Blog\Models\BlogPostComment.cs" />
     <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
     <Compile Include="Areas\Blog\ViewModels\CommentViewModel.cs" />
+    <Compile Include="Areas\Blog\ViewModels\CreatePostViewModel.cs" />
+    <Compile Include="Areas\Blog\ViewModels\EditPostViewModel.cs" />
     <Compile Include="Areas\Blog\ViewModels\PostViewModel.cs" />
     <Compile Include="Areas\Contact\ContactAreaRegistration.cs" />
     <Compile Include="Areas\Contact\Controllers\ContactController.cs" />

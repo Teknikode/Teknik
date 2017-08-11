@@ -26,18 +26,18 @@
         </div>
     </div>
     <form class="form" action="@Url.SubRouteUrl("blog", "Blog.Action", new { action = "EditPost" })" method="post" id="newPost">
-        <input name="postID" id="postID" type="hidden" value="@Model.PostId" />
+        <input name="PostID" id="postID" type="hidden" value="@Model.PostId" />
         <div class="row">
             <div class="form-group col-sm-10 col-sm-offset-1">
                 <label for="title"><h4>Title</h4></label>
-                <input class="form-control" name="title" id="title" placeholder="generic click bait" title="enter a title for your post." type="text" value="@Model.Title" />
+                <input class="form-control" name="Title" id="title" placeholder="generic click bait" title="enter a title for your post." type="text" value="@Model.Title" />
             </div>
         </div>
         <div class="row">
             <div class="form-group col-sm-10 col-sm-offset-1">
                 <label for="article"><h4>Article</h4></label>
                 <div class="mdd_toolbar"></div>
-                <textarea class="form-control mdd_editor" name="article" id="article" placeholder="I ate a burger today." title="enter any information you want to share with the world." data-provide="markdown" rows="10">@Model.Article</textarea>
+                <textarea class="form-control mdd_editor" name="Article" id="article" placeholder="I ate a burger today." title="enter any information you want to share with the world." data-provide="markdown" rows="10">@Model.Article</textarea>
             </div>
         </div>
         <div class="row">

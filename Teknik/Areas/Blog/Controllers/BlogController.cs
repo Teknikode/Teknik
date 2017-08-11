@@ -207,45 +207,45 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreatePost(int blogID, string title, string article)
+        public ActionResult CreatePost(CreatePostViewModel data)
         {
             BlogViewModel model = new BlogViewModel();
             if (ModelState.IsValid)
             {
                 bool isAuth = User.IsInRole("Admin");
-                var blog = db.Blogs.Where(p => (p.BlogId == blogID) && (p.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+                var blog = db.Blogs.Where(p => (p.BlogId == data.BlogId) && (p.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
                 if (blog != null)
                 {
                     if (User.IsInRole("Admin") || db.Blogs.Where(b => b.User.Username == User.Identity.Name).FirstOrDefault() != null)
                     {
                         // Validate the fields
-                        if (string.IsNullOrEmpty(title))
+                        if (string.IsNullOrEmpty(data.Title))
                         {
                             model.Error = true;
                             model.ErrorMessage = "You must write something for the title";
                             return View("~/Areas/Blog/Views/Blog/NewPost.cshtml", model);
                         }
 
-                        if (string.IsNullOrEmpty(article))
+                        if (string.IsNullOrEmpty(data.Article))
                         {
                             model.Error = true;
                             model.ErrorMessage = "You must write something for the article";
                             return View("~/Areas/Blog/Views/Blog/NewPost.cshtml", model);
                         }
 
-                        bool system = (blogID == Config.BlogConfig.ServerBlogId);
+                        bool system = (data.BlogId == Config.BlogConfig.ServerBlogId);
                         if (system)
                         {
                             var user = db.Blogs.Where(b => b.User.Username == User.Identity.Name);
                             if (user != null)
                             {
-                                blogID = user.First().BlogId;
+                                data.BlogId = user.First().BlogId;
                             }
                         }
                         BlogPost post = db.BlogPosts.Create();
-                        post.BlogId = blogID;
-                        post.Title = title;
-                        post.Article = article;
+                        post.BlogId = data.BlogId;
+                        post.Title = data.Title;
+                        post.Article = data.Article;
                         post.System = system;
                         post.DatePosted = DateTime.Now;
                         post.DatePublished = DateTime.Now;
@@ -269,34 +269,34 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditPost(int postID, string title, string article)
+        public ActionResult EditPost(EditPostViewModel data)
         {
             PostViewModel model = new PostViewModel();
             if (ModelState.IsValid)
             {
-                BlogPost post = db.BlogPosts.Where(p => p.BlogPostId == postID).FirstOrDefault();
+                BlogPost post = db.BlogPosts.Where(p => p.BlogPostId == data.PostId).FirstOrDefault();
                 if (post != null)
                 {
                     model = new PostViewModel(post);
                     if (User.IsInRole("Admin") || post.Blog.User.Username == User.Identity.Name)
                     {
                         // Validate the fields
-                        if (string.IsNullOrEmpty(title))
+                        if (string.IsNullOrEmpty(data.Title))
                         {
                             model.Error = true;
                             model.ErrorMessage = "You must write something for the title";
                             return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);
                         }
 
-                        if (string.IsNullOrEmpty(article))
+                        if (string.IsNullOrEmpty(data.Article))
                         {
                             model.Error = true;
                             model.ErrorMessage = "You must write something for the article";
                             return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);
                         }
 
-                        post.Title = title;
-                        post.Article = article;
+                        post.Title = data.Title;
+                        post.Article = data.Article;
                         post.DateEdited = DateTime.Now;
                         db.Entry(post).State = EntityState.Modified;
                         db.SaveChanges();
