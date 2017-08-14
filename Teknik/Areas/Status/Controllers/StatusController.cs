@@ -32,21 +32,16 @@ namespace Teknik.Areas.Status.Controllers
             {
                 // Load initial status info
                 #region Statistics
-                Upload.Models.Upload upload = db.Uploads.OrderByDescending(u => u.UploadId).FirstOrDefault();
-                model.UploadCount = (upload != null) ? upload.UploadId : 0;
-                model.UploadSize = (upload != null) ? db.Uploads.Sum(u => (long)u.ContentLength) : 0;
-
-                Paste.Models.Paste paste = db.Pastes.OrderByDescending(p => p.PasteId).FirstOrDefault();
-                model.PasteCount = (paste != null) ? paste.PasteId : 0;
-
-                Users.Models.User user = db.Users.OrderByDescending(u => u.UserId).FirstOrDefault();
-                model.UserCount = (user != null) ? user.UserId : 0;
-
-                Shortener.Models.ShortenedUrl url = db.ShortenedUrls.OrderByDescending(s => s.ShortenedUrlId).FirstOrDefault();
-                model.ShortenedUrlCount = (url != null) ? url.ShortenedUrlId : 0;
-
-                Vault.Models.Vault vault = db.Vaults.OrderByDescending(v => v.VaultId).FirstOrDefault();
-                model.VaultCount = (url != null) ? vault.VaultId : 0;
+                model.UploadCount = db.Uploads.Count();
+                model.UploadSize = db.Uploads.Sum(u => u.ContentLength);
+                
+                model.PasteCount = db.Pastes.Count();
+                
+                model.UserCount = db.Users.Count();
+                
+                model.ShortenedUrlCount = db.ShortenedUrls.Count();
+                
+                model.VaultCount = db.Vaults.Count();
                 #endregion
 
                 // Get Transaction Inforomation
