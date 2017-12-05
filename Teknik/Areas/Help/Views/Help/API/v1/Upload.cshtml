@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
+@model Teknik.Areas.Help.ViewModels.HelpViewModel
 
 @using Teknik.Utilities
 
@@ -137,7 +137,7 @@
                         <var>@Model.Config.UploadConfig.KeySize</var>
                     </td>
                     <td>
-                        The size of the key provided in bytes.  Only needed if encrypting and no key is provided.
+                        The size of the key provided in bits.  Only needed if encrypting and no key is provided.
                     </td>
                 </tr>
                 <tr>
@@ -165,7 +165,7 @@
                         <var>@Model.Config.UploadConfig.BlockSize</var>
                     </td>
                     <td>
-                        The size of the iv provided in bytes.  Only needed if encrypting and no iv is provided.
+                        The size of the iv provided in bits.  Only needed if encrypting and no iv is provided.
                     </td>
                 </tr>
                 <tr>
@@ -273,7 +273,7 @@
                         <code>int</code>
                     </td>
                     <td>
-                        The size of the key used in bytes.
+                        The size of the key used in bits.
                     </td>
                 </tr>
                 <tr>
@@ -296,7 +296,7 @@
                         <code>int</code>
                     </td>
                     <td>
-                        The size of the iv used in bytes.
+                        The size of the iv used in bits.
                     </td>
                 </tr>
                 <tr>
