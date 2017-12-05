@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
@@ -100,6 +100,8 @@ namespace Teknik.Areas.API.Controllers
 
                                 if (upload != null)
                                 {
+                                    string fileKey = upload.Key;
+
                                     // Associate this with the user if they provided an auth key
                                     if (User.Identity.IsAuthenticated)
                                     {
@@ -120,18 +122,26 @@ namespace Teknik.Areas.API.Controllers
                                         db.SaveChanges();
                                     }
 
+                                    // remove the key if we don't want to save it
+                                    if (!model.saveKey)
+                                    {
+                                        upload.Key = null;
+                                        db.Entry(upload).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+
                                     // Pull all the information together 
                                     string fullUrl = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url });
                                     var returnData = new
                                     {
-                                        url = (model.saveKey || string.IsNullOrEmpty(model.key)) ? fullUrl : fullUrl + "#" + model.key,
+                                        url = (model.saveKey || string.IsNullOrEmpty(fileKey)) ? fullUrl : fullUrl + "#" + fileKey,
                                         fileName = upload.Url,
-                                        contentType = model.contentType,
-                                        contentLength = contentLength,
-                                        key = model.key,
-                                        keySize = model.keySize,
-                                        iv = model.iv,
-                                        blockSize = model.blockSize,
+                                        contentType = upload.ContentType,
+                                        contentLength = upload.ContentLength,
+                                        key = fileKey,
+                                        keySize = upload.KeySize,
+                                        iv = upload.IV,
+                                        blockSize = upload.BlockSize,
                                         deletionKey = upload.DeleteKey
 
                                     };

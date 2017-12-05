@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -47,8 +47,10 @@ namespace Teknik.Areas.Upload
             if (encrypt)
             {
                 // Generate a key and iv
-                key = StringHelper.RandomString(config.UploadConfig.KeySize / 8);
-                iv = StringHelper.RandomString(config.UploadConfig.BlockSize / 8);
+                if (string.IsNullOrEmpty(key))
+                    key = StringHelper.RandomString(config.UploadConfig.KeySize / 8);
+                if (string.IsNullOrEmpty(iv))
+                    iv = StringHelper.RandomString(config.UploadConfig.BlockSize / 8);
 
                 byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                 byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
