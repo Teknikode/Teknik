@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $("#upload-links").css('display', 'none', 'important');
     $("#upload-links").html('');
 
@@ -298,7 +298,8 @@ function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt)
     var fd = new FormData();
     fd.append('fileType', filetype);
     fd.append('fileExt', fileExt);
-    fd.append('iv', iv);
+    if (iv != null)
+        fd.append('iv', iv);
     fd.append('keySize', keySize);
     fd.append('blockSize', blockSize);
     fd.append('data', blob);
