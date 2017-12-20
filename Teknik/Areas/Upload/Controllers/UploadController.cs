@@ -1,4 +1,4 @@
-﻿using nClam;
+using nClam;
 using Piwik.Tracker;
 using System;
 using System.Collections.Generic;
@@ -81,6 +81,15 @@ namespace Teknik.Areas.Upload.Controllers
                                     return Json(new { error = new { message = string.Format("Error scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
                                 case ClamScanResults.Unknown:
                                     return Json(new { error = new { message = string.Format("Unknown result while scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
+                            }
+                        }
+
+                        // Check content type restrictions (Only for encrypting server side
+                        if (encrypt)
+                        {
+                            if (Config.UploadConfig.RestrictedContentTypes.Contains(fileType))
+                            {
+                                return Json(new { error = new { message = "File Type Not Allowed" } });
                             }
                         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,6 +31,8 @@ namespace Teknik.Configuration
         public bool VirusScanEnable { get; set; }
         public string ClamServer { get; set; }
         public int ClamPort { get; set; }
+        // Content Type Restrictions
+        public List<string> RestrictedContentTypes { get; set; }
 
         public UploadConfig()
         {
@@ -55,6 +57,7 @@ namespace Teknik.Configuration
             VirusScanEnable = false;
             ClamServer = "localhost";
             ClamPort = 3310;
+            RestrictedContentTypes = new List<string>();
         }
     }
 }

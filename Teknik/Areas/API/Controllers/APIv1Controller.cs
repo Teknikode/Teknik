@@ -87,6 +87,15 @@ namespace Teknik.Areas.API.Controllers
                                 }
                             }
 
+                            // Check content type restrictions (Only for encrypting server side
+                            if (model.encrypt || !string.IsNullOrEmpty(model.key))
+                            {
+                                if (Config.UploadConfig.RestrictedContentTypes.Contains(model.contentType))
+                                {
+                                    return Json(new { error = new { message = "File Type Not Allowed" } });
+                                }
+                            }
+
                             // Initialize the key size and block size if empty
                             if (model.keySize <= 0)
                                 model.keySize = Config.UploadConfig.KeySize;
