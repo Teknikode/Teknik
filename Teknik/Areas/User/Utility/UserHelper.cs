@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
@@ -341,6 +341,13 @@ namespace Teknik.Areas.Users.Utility
             User foundUser = GetUser(db, username);
             if (foundUser != null)
             {
+                // Update the user's last seen date
+                if (foundUser.LastSeen < lastUsed)
+                {
+                    foundUser.LastSeen = lastUsed;
+                    db.Entry(foundUser).State = EntityState.Modified;
+                }
+
                 string hashedToken = SHA256.Hash(token);
                 List<AuthToken> tokens = foundUser.AuthTokens.Where(t => t.HashedToken == hashedToken).ToList();
                 if (tokens != null)
@@ -350,8 +357,8 @@ namespace Teknik.Areas.Users.Utility
                         foundToken.LastDateUsed = lastUsed;
                         db.Entry(foundToken).State = EntityState.Modified;
                     }
-                    db.SaveChanges();
                 }
+                db.SaveChanges();
             }
         }
 
