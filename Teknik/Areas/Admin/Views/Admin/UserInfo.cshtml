@@ -1,10 +1,11 @@
-﻿@model Teknik.Areas.Admin.ViewModels.UserInfoViewModel
+@model Teknik.Areas.Admin.ViewModels.UserInfoViewModel
 
 @using Teknik.Utilities
 
 <script>
     // We need to define the action URLs for the script
     var editAccountType = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "EditUserAccountType" })';
+    var editAccountStatus = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "EditUserAccountStatus" })';
     var username = '@Model.Username';
 </script>
 
@@ -12,18 +13,41 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-10 col-sm-offset-1">
+        <div class="col-sm-2 col-sm-offset-1">
+            Username:
+        </div>
+        <div class="col-sm-8">
             <a href="@Url.SubRouteUrl("user", "User.ViewProfile", new { username = Model.Username })">@Model.Username</a>
         </div>
     </div>
+    <br />
     <div class="row">
-        <div class="col-sm-4 col-sm-offset-1">Account Type: 
+        <div class="col-sm-2 col-sm-offset-1">
+            Account Type:
+        </div>
+        <div class="col-sm-8">
             <select class="userAccountType">
                 @{
-                    foreach (AccountType value in Enum.GetValues(typeof(AccountType)))
-                    {
-                        <option @(value == Model.AccountType ? "selected" : string.Empty)>@value.ToString()</option>
-                    }
+                foreach (AccountType value in Enum.GetValues(typeof(AccountType)))
+                {
+                    <option @(value == Model.AccountType ? "selected" : string.Empty)>@value.ToString()</option>
+            }
+                }
+            </select>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-2 col-sm-offset-1">
+            Account Status:
+        </div>
+        <div class="col-sm-8">
+            <select class="userAccountStatus">
+                @{
+                foreach (AccountStatus value in Enum.GetValues(typeof(AccountStatus)))
+                {
+                    <option @(value == Model.AccountStatus ? "selected" : string.Empty)>@value.ToString()</option>
+            }
                 }
             </select>
         </div>

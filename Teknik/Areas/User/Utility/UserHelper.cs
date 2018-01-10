@@ -261,6 +261,45 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
+        public static void EditAccountStatus(TeknikEntities db, Config config, string username, AccountStatus status)
+        {
+            try
+            {
+                if (!UserExists(db, username))
+                    throw new Exception($"The user provided does not exist: {username}");
+
+                // Get the user to edit
+                User user = GetUser(db, username);
+
+                string email = GetUserEmailAddress(config, username);
+
+                // Edit the user type
+                user.AccountStatus = status;
+                EditUser(db, config, user);
+
+                // Add/Remove account type features depending on the type
+                switch (status)
+                {
+                    case AccountStatus.Active:
+                        // Enable Email
+                        EnableUserEmail(config, email);
+                        // Enable Git
+                        EnableUserGit(config, username);
+                        break;
+                    case AccountStatus.Banned:
+                        // Disable Email
+                        DisableUserEmail(config, email);
+                        // Disable Git
+                        DisableUserGit(config, username);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unable to edit the account status [{status}] for: {username}", ex);
+            }
+        }
+
         public static void DeleteAccount(TeknikEntities db, Config config, User user)
         {
             try
@@ -385,7 +424,7 @@ namespace Teknik.Areas.Users.Utility
             return false;
         }
 
-        public static bool UserHasRoles(TeknikEntities db, User user, params string[] roles)
+        public static bool UserHasRoles(User user, params string[] roles)
         {
             bool hasRole = true;
             if (user != null)
@@ -862,6 +901,38 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
 
+        public static void EnableUserEmail(Config config, string email)
+        {
+            EditUserEmailActivity(config, email, true);
+        }
+
+        public static void DisableUserEmail(Config config, string email)
+        {
+            EditUserEmailActivity(config, email, false);
+        }
+
+        public static void EditUserEmailActivity(Config config, string email, bool active)
+        {
+            try
+            {
+                // If Email Server is enabled
+                if (config.EmailConfig.Enabled)
+                {
+                    var app = new hMailServer.Application();
+                    app.Connect();
+                    app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
+                    var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
+                    var account = domain.Accounts.ItemByAddress[email];
+                    account.Active = active;
+                    account.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to edit email account mailbox size.", ex);
+            }
+        }
+
         public static void EditUserEmailPassword(Config config, string email, string password)
         {
             try
@@ -1055,6 +1126,47 @@ If you recieved this email and you did not reset your password, you can ignore t
                     using (var client = new WebClient())
                     {
                         var obj = new {source_id = config.GitConfig.SourceId, email = email, login_name = email, password = password};
+                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                        client.Headers[HttpRequestHeader.ContentType] = "application/json";
+                        Uri baseUri = new Uri(config.GitConfig.Host);
+                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + username + "?token=" + config.GitConfig.AccessToken);
+                        string result = client.UploadString(finalUri, "PATCH", json);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to edit git account password.", ex);
+            }
+        }
+
+        public static void EnableUserGit(Config config, string username)
+        {
+            EditUserGitActivity(config, username, true);
+        }
+
+        public static void DisableUserGit(Config config, string username)
+        {
+            EditUserGitActivity(config, username, false);
+        }
+
+        public static void EditUserGitActivity(Config config, string username, bool active)
+        {
+            try
+            {
+                // If Git is enabled
+                if (config.GitConfig.Enabled)
+                {
+                    // Git user exists?
+                    if (!UserGitExists(config, username))
+                    {
+                        throw new Exception($"Git User '{username}' does not exist.");
+                    }
+
+                    string email = GetUserEmailAddress(config, username);
+                    using (var client = new WebClient())
+                    {
+                        var obj = new { active = active, email = email };
                         string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                         client.Headers[HttpRequestHeader.ContentType] = "application/json";
                         Uri baseUri = new Uri(config.GitConfig.Host);

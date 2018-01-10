@@ -26,6 +26,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -219,10 +220,10 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminController.cs" />
     <Compile Include="Areas\Admin\ViewModels\DashboardViewModel.cs" />
-    <Compile Include="Areas\Admin\ViewModels\SearchResultViewModel.cs" />
+    <Compile Include="Areas\Admin\ViewModels\UserResultViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\UploadResultViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\UploadSearchViewModel.cs" />
-    <Compile Include="Areas\Admin\ViewModels\SearchViewModel.cs" />
+    <Compile Include="Areas\Admin\ViewModels\UserSearchViewModel.cs" />
     <Compile Include="Areas\Admin\ViewModels\UserInfoViewModel.cs" />
     <Compile Include="Areas\API\APIAreaRegistration.cs" />
     <Compile Include="Areas\API\Controllers\APIController.cs" />
@@ -309,6 +310,7 @@
     <Compile Include="Areas\Vault\ViewModels\VaultItemViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
     <Compile Include="Hubs\IRCClientHub.cs" />
+    <Compile Include="Modules\UserCheckModule.cs" />
     <Compile Include="Security\ITeknikPrincipal.cs" />
     <Compile Include="Security\TeknikPrincipal.cs" />
     <Compile Include="Filters\CORSActionFilter.cs" />
@@ -389,7 +391,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Areas\Admin\Scripts\UploadSearch.js" />
-    <Content Include="Areas\Admin\Scripts\Search.js" />
+    <Content Include="Areas\Admin\Scripts\UserSearch.js" />
     <Content Include="Areas\Admin\Scripts\UserInfo.js" />
     <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
@@ -628,10 +630,10 @@
     <Content Include="Areas\Help\Views\Help\Markdown.cshtml" />
     <Content Include="Areas\Help\Views\Help\Tools.cshtml" />
     <Content Include="Areas\Admin\Views\web.config" />
-    <Content Include="Areas\Admin\Views\Admin\Search.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\UserSearch.cshtml" />
     <Content Include="Areas\Admin\Views\Admin\Dashboard.cshtml" />
-    <Content Include="Areas\Admin\Views\Admin\SearchResult.cshtml" />
-    <Content Include="Areas\Admin\Views\Admin\SearchResults.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\UserResult.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin\UserResults.cshtml" />
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="App_Data\MachineKey.config" />
     <Content Include="Areas\Admin\Views\Admin\UserInfo.cshtml" />

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -69,6 +69,8 @@ namespace Teknik.Areas.Users.Controllers
                         }
                         model.JoinDate = user.JoinDate;
                         model.LastSeen = UserHelper.GetLastAccountActivity(db, Config, user);
+                        model.AccountType = user.AccountType;
+                        model.AccountStatus = user.AccountStatus;
 
                         model.UserSettings = user.UserSettings;
                         model.SecuritySettings = user.SecuritySettings;
@@ -196,6 +198,15 @@ namespace Teknik.Areas.Users.Controllers
                             user.LastSeen = DateTime.Now;
                             db.Entry(user).State = EntityState.Modified;
                             db.SaveChanges();
+
+                            // Make sure they aren't banned or anything
+                            if (user.AccountStatus == AccountStatus.Banned)
+                            {
+                                model.Error = true;
+                                model.ErrorMessage = "Account has been banned.";
+
+                                return GenerateActionResult(new { error = model.ErrorMessage }, View("/Areas/User/Views/User/ViewLogin.cshtml", model));
+                            }
 
                             // Let's double check their email and git accounts to make sure they exist
                             string email = UserHelper.GetUserEmailAddress(Config, username);

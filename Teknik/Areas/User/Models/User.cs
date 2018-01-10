@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
@@ -25,6 +25,8 @@ namespace Teknik.Areas.Users.Models
         public DateTime LastSeen { get; set; }
 
         public AccountType AccountType { get; set; }
+
+        public AccountStatus AccountStatus { get; set; }
 
         public virtual ICollection<Group> Groups { get; set; }
         
@@ -56,6 +58,7 @@ namespace Teknik.Areas.Users.Models
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;
             AccountType = AccountType.Basic;
+            AccountStatus = AccountStatus.Active;
             Groups = new List<Group>();
             TrustedDevices = new List<TrustedDevice>();
             AuthTokens = new List<AuthToken>();

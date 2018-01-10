@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -29,6 +29,7 @@ namespace Teknik.Areas.Users.ViewModels
         
         public string Quote { get; set; }
         
+        [AllowHtml]
         public string About { get; set; }
         
         public string BlogTitle { get; set; }

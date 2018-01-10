@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Teknik.Areas.Users.Models;
+using Teknik.Utilities;
 using Teknik.ViewModels;
 
 namespace Teknik.Areas.Users.ViewModels
@@ -18,6 +19,10 @@ namespace Teknik.Areas.Users.ViewModels
         public DateTime JoinDate { get; set; }
 
         public DateTime LastSeen { get; set; }
+
+        public AccountType AccountType { get; set; }
+
+        public AccountStatus AccountStatus { get; set; }
 
         public List<Upload.Models.Upload> Uploads { get; set; }
 

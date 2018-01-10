@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -99,7 +99,7 @@ namespace Teknik.Areas.Error.Controllers
 
             return View("~/Areas/Error/Views/Error/Http403.cshtml", model);
         }
-        
+
         [AllowAnonymous]
         public ActionResult Http404(Exception exception)
         {

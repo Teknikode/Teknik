@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,5 +11,6 @@ namespace Teknik.Areas.Admin.ViewModels
     {
         public string Username { get; set; }
         public AccountType AccountType { get; set; }
+        public AccountStatus AccountStatus { get; set; }
     }
 }

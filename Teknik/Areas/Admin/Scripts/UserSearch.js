@@ -1,9 +1,9 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $('#Query').on('input', function (e) {
         query = $(this).val();
         $.ajax({
             type: "POST",
-            url: searchResultsURL,
+            url: userSearchResultsURL,
             data: { query: query },
             success: function (html) {
                 if (html) {

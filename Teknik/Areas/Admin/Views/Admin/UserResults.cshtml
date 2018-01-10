@@ -1,4 +1,4 @@
-﻿@model List<Teknik.Areas.Admin.ViewModels.SearchResultViewModel>
+@model List<Teknik.Areas.Admin.ViewModels.UserResultViewModel>
 
 @if (Model.Any())
 {
@@ -10,7 +10,7 @@
     </div>
     foreach (var post in Model)
     {
-        @Html.Partial("SearchResult", post)
+        @Html.Partial("UserResult", post)
     }
 }
 else

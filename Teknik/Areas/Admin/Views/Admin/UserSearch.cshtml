@@ -1,13 +1,13 @@
-﻿@model Teknik.Areas.Admin.ViewModels.SearchViewModel
+@model Teknik.Areas.Admin.ViewModels.UserSearchViewModel
 
 @using Teknik.Utilities
 
 <script>
     // We need to define the action URLs for the script
-    var searchResultsURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "GetSearchResults" })';
+    var userSearchResultsURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "GetUserSearchResults" })';
 </script>
 
-@Scripts.Render("~/bundles/Search")
+@Scripts.Render("~/bundles/UserSearch")
 
 <div class="container">
     <div class="row">

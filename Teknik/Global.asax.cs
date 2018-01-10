@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -77,70 +77,70 @@ namespace Teknik
             }
         }
 
-        protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
-        {
-            // We support both Auth Tokens and Cookie Authentication
+        //protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
+        //{
+        //    // We support both Auth Tokens and Cookie Authentication
 
-            // Username and Roles for the current user
-            string username = string.Empty;
+        //    // Username and Roles for the current user
+        //    string username = string.Empty;
             
-            bool hasAuthToken = false;
-            if (Request != null)
-            {
-                if (Request.Headers.HasKeys())
-                {
-                    string auth = Request.Headers["Authorization"];
-                    if (!string.IsNullOrEmpty(auth))
-                    {
-                        string[] parts = auth.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        string type = string.Empty;
-                        string value = string.Empty;
-                        if (parts.Length > 0)
-                        {
-                            type = parts[0].ToLower();
-                        }
-                        if (parts.Length > 1)
-                        {
-                            value = parts[1];
-                        }
+        //    bool hasAuthToken = false;
+        //    if (Request != null)
+        //    {
+        //        if (Request.Headers.HasKeys())
+        //        {
+        //            string auth = Request.Headers["Authorization"];
+        //            if (!string.IsNullOrEmpty(auth))
+        //            {
+        //                string[] parts = auth.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        //                string type = string.Empty;
+        //                string value = string.Empty;
+        //                if (parts.Length > 0)
+        //                {
+        //                    type = parts[0].ToLower();
+        //                }
+        //                if (parts.Length > 1)
+        //                {
+        //                    value = parts[1];
+        //                }
 
-                        using (TeknikEntities entities = new TeknikEntities())
-                        {
-                            // Get the user information based on the auth type
-                            switch (type)
-                            {
-                                case "basic":
-                                    KeyValuePair<string, string> authCreds = StringHelper.ParseBasicAuthHeader(value);
+        //                using (TeknikEntities entities = new TeknikEntities())
+        //                {
+        //                    // Get the user information based on the auth type
+        //                    switch (type)
+        //                    {
+        //                        case "basic":
+        //                            KeyValuePair<string, string> authCreds = StringHelper.ParseBasicAuthHeader(value);
 
-                                    bool tokenValid = UserHelper.UserTokenCorrect(entities, authCreds.Key, authCreds.Value);
-                                    if (tokenValid)
-                                    {
-                                        // it's valid, so let's update it's Last Used date
-                                        UserHelper.UpdateTokenLastUsed(entities, authCreds.Key, authCreds.Value, DateTime.Now);
+        //                            bool tokenValid = UserHelper.UserTokenCorrect(entities, authCreds.Key, authCreds.Value);
+        //                            if (tokenValid)
+        //                            {
+        //                                // it's valid, so let's update it's Last Used date
+        //                                UserHelper.UpdateTokenLastUsed(entities, authCreds.Key, authCreds.Value, DateTime.Now);
 
-                                        // Set the username
-                                        username = authCreds.Key;
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
+        //                                // Set the username
+        //                                username = authCreds.Key;
+        //                            }
+        //                            break;
+        //                        default:
+        //                            break;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
 
-            if (FormsAuthentication.CookiesSupported == true && !hasAuthToken)
-            {
-                if (Request.Cookies[FormsAuthentication.FormsCookieName] != null)
-                {
-                    //let us take out the username now                
-                    username = FormsAuthentication.Decrypt(Request.Cookies[FormsAuthentication.FormsCookieName].Value).Name;
-                }
-            }
+        //    if (FormsAuthentication.CookiesSupported == true && !hasAuthToken)
+        //    {
+        //        if (Request.Cookies[FormsAuthentication.FormsCookieName] != null)
+        //        {
+        //            //let us take out the username now                
+        //            username = FormsAuthentication.Decrypt(Request.Cookies[FormsAuthentication.FormsCookieName].Value).Name;
+        //        }
+        //    }
 
-            HttpContext.Current.User = new TeknikPrincipal(username);
-        }
+        //    HttpContext.Current.User = new TeknikPrincipal(username);
+        //}
 
         protected void Application_Error(object sender, EventArgs e)
         {

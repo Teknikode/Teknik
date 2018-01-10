@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Users.ViewModels.ProfileViewModel
+@model Teknik.Areas.Users.ViewModels.ProfileViewModel
 
 @using Teknik.Utilities
 @using Teknik.Utilities.Cryptography
@@ -11,7 +11,7 @@
 <div class="container">
     @if (!Model.Error)
     {
-        bool OwnProfile = (Model.Username == User.Identity.Name || User.IsInRole("Admin"));
+        bool OwnProfile = (Model.Username == User.Identity.Name || User.IsInRole("Admin")) && User.Identity.IsAuthenticated;
         string gitHost = Model.Config.GitConfig.Host;
         string gitFullUrl = string.Empty;
         if (!string.IsNullOrEmpty(gitHost))
@@ -32,6 +32,12 @@
         <div class="row text-center">
             <div class="col-sm-3"><h1>@Model.Username</h1></div>
         </div>
+        if (User.IsInRole("Admin"))
+        {
+            <div class="row text-center">
+                <div class="col-sm-3"><a href="@Url.SubRouteUrl("admin", "Admin.UserInfo", new { username = Model.Username })">edit</a></div>
+            </div>
+        }
         <div class="modal fade" id="pgpSignature" tabindex="-1" role="dialog" aria-labelledby="pgpSignatureLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -78,11 +84,18 @@
             <!-- Left Info Box -->
             <div class="col-sm-3"><!--left col-->
                 <ul class="list-group">
-                    <li class="list-group-item text-muted">Profile</li>
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.LastSeen.ToString("s")">@Model.JoinDate.ToString("MMMM dd, yyyy")</time></li>
-                    @if (OwnProfile && User.Identity.IsAuthenticated)
+                    @if (OwnProfile)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("s")">@Model.LastSeen.ToString("MMMM dd, yyyy hh:mm tt")</time></li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("s")">@Model.LastSeen.ToString("dd/MM/yyyy hh:mm tt")</time></li>
+                    }
+                    @if (OwnProfile)
+                    {
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Type</strong></span> @Model.AccountType</li>
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Status</strong></span> @Model.AccountStatus</li>
                     }
                     @if (!string.IsNullOrEmpty(pgpFingerprint))
                     {

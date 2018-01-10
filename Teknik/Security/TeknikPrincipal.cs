@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
@@ -6,6 +6,7 @@ using System.Web;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Models;
+using Teknik.Utilities;
 
 namespace Teknik.Security
 {
@@ -41,21 +42,7 @@ namespace Teknik.Security
 
         public bool IsInRole(string role)
         {
-            if (Info != null)
-            {
-                // Grab all their roles
-                foreach (Group grp in Info.Groups)
-                {
-                    foreach (Role curRole in grp.Roles)
-                    {
-                        if (curRole.Name == role)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
+            return UserHelper.UserHasRoles(Info, role);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -27,9 +27,9 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public ActionResult Search()
+        public ActionResult UserSearch()
         {
-            SearchViewModel model = new SearchViewModel();
+            UserSearchViewModel model = new UserSearchViewModel();
             return View(model);
         }
 
@@ -42,6 +42,7 @@ namespace Teknik.Areas.Admin.Controllers
                 UserInfoViewModel model = new UserInfoViewModel();
                 model.Username = user.Username;
                 model.AccountType = user.AccountType;
+                model.AccountStatus = user.AccountStatus;
                 return View(model);
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
@@ -55,9 +56,9 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetSearchResults(string query)
+        public ActionResult GetUserSearchResults(string query)
         {
-            List<SearchResultViewModel> models = new List<SearchResultViewModel>();
+            List<UserResultViewModel> models = new List<UserResultViewModel>();
 
             var results = db.Users.Where(u => u.Username.Contains(query)).ToList();
             if (results != null)
@@ -66,7 +67,7 @@ namespace Teknik.Areas.Admin.Controllers
                 {
                     try
                     {
-                        SearchResultViewModel model = new SearchResultViewModel();
+                        UserResultViewModel model = new UserResultViewModel();
                         model.Username = user.Username;
                         if (Config.EmailConfig.Enabled)
                         {
@@ -83,7 +84,7 @@ namespace Teknik.Areas.Admin.Controllers
                 }
             }
 
-            return PartialView("~/Areas/Admin/Views/Admin/SearchResults.cshtml", models);
+            return PartialView("~/Areas/Admin/Views/Admin/UserResults.cshtml", models);
         }
 
         [HttpPost]
@@ -114,6 +115,19 @@ namespace Teknik.Areas.Admin.Controllers
             {
                 // Edit the user's account type
                 UserHelper.EditAccountType(db, Config, username, accountType);
+                return Json(new { result = new { success = true } });
+            }
+            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditUserAccountStatus(string username, AccountStatus accountStatus)
+        {
+            if (UserHelper.UserExists(db, username))
+            {
+                // Edit the user's account type
+                UserHelper.EditAccountStatus(db, Config, username, accountStatus);
                 return Json(new { result = new { success = true } });
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -122,7 +122,8 @@ namespace Teknik.Attributes
                                             if (validToken)
                                             {
                                                 User user = UserHelper.GetUserFromToken(entities, authCreds.Key, authCreds.Value);
-                                                return UserHelper.UserHasRoles(entities, user, Roles);
+
+                                                return UserHelper.UserHasRoles(user, Roles);
                                             }
                                             break;
                                         default:
