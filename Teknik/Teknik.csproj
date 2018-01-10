@@ -310,7 +310,7 @@
     <Compile Include="Areas\Vault\ViewModels\VaultItemViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
     <Compile Include="Hubs\IRCClientHub.cs" />
-    <Compile Include="Modules\UserCheckModule.cs" />
+    <Compile Include="Modules\UserAuthModule.cs" />
     <Compile Include="Security\ITeknikPrincipal.cs" />
     <Compile Include="Security\TeknikPrincipal.cs" />
     <Compile Include="Filters\CORSActionFilter.cs" />

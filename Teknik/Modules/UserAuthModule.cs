@@ -12,7 +12,7 @@ using Teknik.Utilities;
 
 namespace Teknik.Modules
 {
-    public class UserCheckModule : IHttpModule
+    public class UserAuthModule : IHttpModule
     {
         public void Dispose()
         {
