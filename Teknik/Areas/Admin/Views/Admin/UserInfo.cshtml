@@ -6,6 +6,7 @@
     // We need to define the action URLs for the script
     var editAccountType = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "EditUserAccountType" })';
     var editAccountStatus = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "EditUserAccountStatus" })';
+    var createInviteCode = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "CreateInviteCode" })';
     var username = '@Model.Username';
 </script>
 
@@ -50,6 +51,12 @@
             }
                 }
             </select>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-2 col-sm-offset-1">
+            <button type="button" class="list-group-item btn-info" id="createInviteCode">Create Invite Code</button>
         </div>
     </div>
 </div>

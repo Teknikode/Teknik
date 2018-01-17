@@ -132,5 +132,24 @@ namespace Teknik.Areas.Admin.Controllers
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateInviteCode(string username)
+        {
+            if (UserHelper.UserExists(db, username))
+            {
+                User user = UserHelper.GetUser(db, username);
+                InviteCode inviteCode = db.InviteCodes.Create();
+                inviteCode.Active = true;
+                inviteCode.Code = Guid.NewGuid().ToString();
+                inviteCode.Owner = user;
+                db.InviteCodes.Add(inviteCode);
+                db.SaveChanges();
+
+                return Json(new { result = new { code = inviteCode.Code } });
+            }
+            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+        }
     }
 }

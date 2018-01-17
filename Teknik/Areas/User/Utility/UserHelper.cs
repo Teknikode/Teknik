@@ -186,6 +186,11 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
+        public static void EditAccount(TeknikEntities db, Config config, User user)
+        {
+            EditAccount(db, config, user, false, string.Empty);
+        }
+
         public static void EditAccount(TeknikEntities db, Config config, User user, bool changePass, string password)
         {
             try
@@ -652,6 +657,34 @@ namespace Teknik.Areas.Users.Utility
                     foreach (ResetPasswordVerification ver in verPass)
                     {
                         db.ResetPasswordVerifications.Remove(ver);
+                    }
+                    db.SaveChanges();
+                }
+
+                // Delete Owned Invite Codes
+                if (user.OwnedInviteCodes != null)
+                {
+                    foreach (InviteCode code in user.OwnedInviteCodes)
+                    {
+                        db.InviteCodes.Remove(code);
+                    }
+                    db.SaveChanges();
+                }
+
+                // Delete Claimed Invite Code
+                if (user.ClaimedInviteCode != null)
+                {
+                    db.InviteCodes.Remove(user.ClaimedInviteCode);
+                    db.SaveChanges();
+                }
+
+                // Delete Auth Tokens
+                List<AuthToken> authTokens = db.AuthTokens.Where(t => t.User.UserId == user.UserId).ToList();
+                if (authTokens != null)
+                {
+                    foreach (AuthToken authToken in authTokens)
+                    {
+                        db.AuthTokens.Remove(authToken);
                     }
                     db.SaveChanges();
                 }

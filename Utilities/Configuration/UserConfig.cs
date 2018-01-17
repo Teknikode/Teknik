@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +19,7 @@ namespace Teknik.Configuration
         public string ReservedUsernameDefinitionFile { get; set; }
         public decimal PremiumAccountPrice { get; set; }
         public string PaymentType { get; set; } 
+        public bool InviteCodeRequired { get; set; }
 
         public UserConfig()
         {
@@ -32,6 +33,7 @@ namespace Teknik.Configuration
             ReservedUsernameDefinitionFile = string.Empty;
             PremiumAccountPrice = 0;
             PaymentType = "Donation";
+            InviteCodeRequired = false;
         }
     }
 }

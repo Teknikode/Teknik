@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using Teknik.Configuration;
@@ -58,6 +58,46 @@ namespace Teknik.Areas.Users
                  "Settings",    // URL with parameters 
                  new { controller = "User", action = "Settings" },  // Parameter defaults 
                  new[] { typeof(Controllers.UserController).Namespace }
+            );
+            context.MapSubdomainRoute(
+                "User.SecuritySettings", // Route name
+                new List<string>() { "user" }, // Subdomains
+                new List<string>() { config.Host }, // domains
+                "Settings/Security",    // URL with parameters 
+                new { controller = "User", action = "SecuritySettings" },  // Parameter defaults 
+                new[] { typeof(Controllers.UserController).Namespace }
+            );
+            context.MapSubdomainRoute(
+                "User.ProfileSettings", // Route name
+                new List<string>() { "user" }, // Subdomains
+                new List<string>() { config.Host }, // domains
+                "Settings/Profile",    // URL with parameters 
+                new { controller = "User", action = "ProfileSettings" },  // Parameter defaults 
+                new[] { typeof(Controllers.UserController).Namespace }
+            );
+            context.MapSubdomainRoute(
+                "User.InviteSettings", // Route name
+                new List<string>() { "user" }, // Subdomains
+                new List<string>() { config.Host }, // domains
+                "Settings/Invites",    // URL with parameters 
+                new { controller = "User", action = "InviteSettings" },  // Parameter defaults 
+                new[] { typeof(Controllers.UserController).Namespace }
+            );
+            context.MapSubdomainRoute(
+                "User.BlogSettings", // Route name
+                new List<string>() { "user" }, // Subdomains
+                new List<string>() { config.Host }, // domains
+                "Settings/Blog",    // URL with parameters 
+                new { controller = "User", action = "BlogSettings" },  // Parameter defaults 
+                new[] { typeof(Controllers.UserController).Namespace }
+            );
+            context.MapSubdomainRoute(
+                "User.UploadSettings", // Route name
+                new List<string>() { "user" }, // Subdomains
+                new List<string>() { config.Host }, // domains
+                "Settings/Uploads",    // URL with parameters 
+                new { controller = "User", action = "UploadSettings" },  // Parameter defaults 
+                new[] { typeof(Controllers.UserController).Namespace }
             );
             context.MapSubdomainRoute(
                  "User.ResetPassword", // Route name
@@ -123,11 +163,37 @@ namespace Teknik.Areas.Users
                       "~/Scripts/bootstrap-switch.js",
                       "~/Areas/User/Scripts/User.js"));
 
-            // Register Script Bundle
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/reset", config.CdnHost).Include(
+                "~/Areas/User/Scripts/ResetPass.js"));
+
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings", config.CdnHost).Include(
+                "~/Scripts/bootbox/bootbox.min.js",
+                "~/Areas/User/Scripts/Settings.js"));
+
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/blog", config.CdnHost).Include(
+                "~/Scripts/jquery.blockUI.js",
+                "~/Areas/User/Scripts/BlogSettings.js"));
+
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/invite", config.CdnHost).Include(
+                "~/Areas/User/Scripts/InviteSettings.js"));
+
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/profile", config.CdnHost).Include(
+                "~/Scripts/jquery.blockUI.js",
+                "~/Areas/User/Scripts/ProfileSettings.js"));
+
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/security", config.CdnHost).Include(
+                "~/Scripts/jquery.blockUI.js",
+                "~/Scripts/bootstrap-switch.js",
+                "~/Areas/User/Scripts/SecuritySettings.js"));
+
+            BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/upload", config.CdnHost).Include(
+                "~/Scripts/jquery.blockUI.js",
+                "~/Scripts/bootstrap-switch.js",
+                "~/Areas/User/Scripts/UploadSettings.js"));
+
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/checkAuthCode", config.CdnHost).Include(
                       "~/Areas/User/Scripts/CheckAuthCode.js"));
-
-            // Register Script Bundle
+            
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/profile", config.CdnHost).Include(
                       "~/Scripts/bootbox/bootbox.min.js",
                       "~/Areas/User/Scripts/Profile.js"));
@@ -135,6 +201,12 @@ namespace Teknik.Areas.Users
             // Register Style Bundles
             BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/user", config.CdnHost).Include(
                       "~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css"));
+            
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/user/settings/security", config.CdnHost).Include(
+                "~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css"));
+
+            BundleTable.Bundles.Add(new CdnStyleBundle("~/Content/user/settings/upload", config.CdnHost).Include(
+                "~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.css"));
         }
     }
 }

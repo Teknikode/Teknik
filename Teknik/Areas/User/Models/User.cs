@@ -24,6 +24,10 @@ namespace Teknik.Areas.Users.Models
 
         public DateTime LastSeen { get; set; }
 
+        public virtual InviteCode ClaimedInviteCode { get; set; }
+
+        public virtual ICollection<InviteCode> OwnedInviteCodes { get; set; }
+
         public AccountType AccountType { get; set; }
 
         public AccountStatus AccountStatus { get; set; }
@@ -62,6 +66,8 @@ namespace Teknik.Areas.Users.Models
             Groups = new List<Group>();
             TrustedDevices = new List<TrustedDevice>();
             AuthTokens = new List<AuthToken>();
+            ClaimedInviteCode = null;
+            OwnedInviteCodes = new List<InviteCode>();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $("#top_msg").css('display', 'none', 'important');
 
     // Opt-in for tooltips
@@ -280,6 +280,41 @@ function addParamsToUrl(origUrl, params) {
     var appendix = (hasQuery ? "&" : "?") + paramStr;
     return hasHash ? origUrl.replace("#", appendix + "#") : origUrl + appendix;
 }
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function parseErrorMessage(errorObj) {
+    var errorMsg = "";
+    if (errorObj === null || errorObj === undefined) {
+        // Do nothing
+    }
+    else if (errorObj.constructor === {}.constructor) {
+        if (errorObj.error) {
+            errorMsg = errorObj.error;
+            if (errorObj.error.message) {
+                errorMsg = errorObj.error.message;
+            }
+        }
+    }
+    else {
+        try {
+            var json = $.parseJSON(errorObj);
+            if (json.error) {
+                errorMsg = json.error;
+                if (json.error.message) {
+                    errorMsg = json.error.message;
+                }
+            }
+        }
+        catch (err) {
+            // Don't do anything
+        }
+    }
+    return errorMsg;
+}
+
 /***************************** TIMER Page Load *******************************/
 var loopTime;
 var startTime = new Date();

@@ -1,0 +1,21 @@
+@using Teknik.Utilities
+@model Teknik.Areas.Users.ViewModels.InviteCodeViewModel
+
+@{
+    bool codeClaimed = Model.ClaimedUser != null;
+}
+
+<li class="list-group-item @(Model.Active ? string.Empty : ".disabled")" id="inviteCode_@Model.InviteCodeId">
+    @if (!codeClaimed)
+    {
+    <div class="btn-group btn-group-sm pull-right" role="group" aria-label="...">
+        <button type="button" class="btn btn-default" id="copyCode_@Model.InviteCodeId" onclick="copyCode(@(Model.InviteCodeId), '@(Model.Code)');" data-toggle="popover" data-trigger="manual" data-placement="top" data-content="Copied to Clipboard" data-container="body"><i class="fa fa-clipboard"></i></button>
+        <button type="button" class="btn btn-default" onclick="createExternalLink(@Model.InviteCodeId);"><i class="fa fa-external-link"></i></button>
+    </div>
+    }
+    <h4 class="list-group-item-heading" id="inviteCode_Code_@Model.InviteCodeId">@Model.Code</h4>
+    @if (codeClaimed)
+    {
+        <p class="list-group-item-text">Claimed by <a href="@Url.SubRouteUrl("user", "User.ViewProfile", new {username = Model.ClaimedUser.Username})">@Model.ClaimedUser.Username</a></p>
+    }
+</li>

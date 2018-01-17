@@ -1,0 +1,36 @@
+@model Teknik.Areas.Users.ViewModels.BlogSettingsViewModel
+
+@using Teknik.Utilities
+@using Teknik.Areas.Users.ViewModels
+
+@{
+    Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
+}
+
+<script>
+    var editURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditBlog" })';
+</script>
+
+@Styles.Render("~/Content/user/settings/blog")
+@Scripts.Render("~/bundles/user/settings/blog")
+
+
+<form class="form" action="##" method="post" id="updateForm">
+    <div class="row">
+        <div class="form-group col-sm-6">
+            <label for="update_blog_title"><h4>Title</h4></label>
+            <input class="form-control" id="update_blog_title" name="update_blog_title" placeholder="click bait" title="enter your blog's title" type="text" value="@Model.Title" />
+        </div>
+        <div class="form-group col-sm-6">
+            <label for="update_blog_description"><h4>Description</h4></label>
+            <input class="form-control" id="update_blog_description" name="update_blog_description" placeholder="This blog is not worth reading." title="enter your blog's description" type="text" value="@Model.Description" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-sm-10">
+            <br />
+            <button class="btn btn-lg btn-success" id="update_submit" type="submit"><i class="glyphicon glyphicon-ok-sign"></i> Save</button>
+            <button class="btn btn-lg" type="reset"><i class="glyphicon glyphicon-repeat"></i> Reset</button>
+        </div>
+    </div>
+</form>

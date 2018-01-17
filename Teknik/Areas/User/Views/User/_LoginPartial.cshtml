@@ -1,11 +1,11 @@
-﻿@model Teknik.ViewModels.ViewModelBase
+@model Teknik.ViewModels.ViewModelBase
 
 @using Teknik.Utilities
 @using Microsoft.AspNet.Identity
 
 @if (Model.Config.UserConfig.RegistrationEnabled || Model.Config.UserConfig.LoginEnabled)
 {
-    <div class="nav navbar-nav pull-right">
+<div class="nav navbar-nav pull-right">
     @if (Request.IsAuthenticated)
     {
         <li class="dropdown">
@@ -22,9 +22,9 @@
                 </li>
                 @if (User.IsInRole("Admin"))
                 {
-                <li>
-                    <a href="@Url.SubRouteUrl("admin", "Admin.Dashboard")">Administration</a>
-                </li>
+                    <li>
+                        <a href="@Url.SubRouteUrl("admin", "Admin.Dashboard")">Administration</a>
+                    </li>
                 }
                 <li>
                     <a href="@Url.SubRouteUrl("user", "User.Logout")">Sign Out</a>
@@ -49,5 +49,5 @@
             </noscript>
         }
     }
-    </div>
+</div>
 }

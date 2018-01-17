@@ -1,0 +1,36 @@
+@model Teknik.Areas.Users.ViewModels.UploadSettingsViewModel
+
+@using Teknik.Utilities
+@using Teknik.Areas.Users.ViewModels
+
+@{
+    Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
+}
+
+<script>
+    var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
+    var editURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditUpload" })';
+</script>
+
+@Styles.Render("~/Content/user/settings/upload")
+@Scripts.Render("~/bundles/user/settings/upload")
+
+<form class="form" action="##" method="post" id="updateForm">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="checkbox">
+                <label>
+                    <label for="update_upload_encrypt"><h4>Encrypt in Browser</h4></label>
+                    <input id="update_upload_encrypt" name="update_upload_encrypt" title="whether the file should be encrypted in the browser before upload" type="checkbox" value="true" @(Model.Encrypt ? "checked" : string.Empty) />
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-sm-10">
+            <br />
+            <button class="btn btn-lg btn-success" id="update_submit" type="submit"><i class="glyphicon glyphicon-ok-sign"></i> Save</button>
+            <button class="btn btn-lg" type="reset"><i class="glyphicon glyphicon-repeat"></i> Reset</button>
+        </div>
+    </div>
+</form>

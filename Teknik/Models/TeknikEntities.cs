@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using Teknik.Areas.Blog.Models;
@@ -26,6 +26,7 @@ namespace Teknik.Models
         public DbSet<TrustedDevice> TrustedDevices { get; set; }
         public DbSet<AuthToken> AuthTokens { get; set; }
         public DbSet<TransferType> TransferTypes { get; set; }
+        public DbSet<InviteCode> InviteCodes { get; set; }
         // User Settings
         public DbSet<UserSettings> UserSettings { get; set; }
         public DbSet<SecuritySettings> SecuritySettings { get; set; }
@@ -115,6 +116,16 @@ namespace Teknik.Models
                 .WithOptional(u => u.User)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.OwnedInviteCodes)
+                .WithOptional(c => c.Owner)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<User>()
+                .HasOptional(u => u.ClaimedInviteCode)
+                .WithOptionalPrincipal(c => c.ClaimedUser)
+                .WillCascadeOnDelete(false);
+
             // Upload Mappings
             modelBuilder.Entity<Upload>()
                 .HasOptional(u => u.User);
@@ -130,13 +141,14 @@ namespace Teknik.Models
             // Vault Mappings
             modelBuilder.Entity<Vault>()
                 .HasOptional(u => u.User);
-
+            
             // Users
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Group>().ToTable("Groups");
             modelBuilder.Entity<Role>().ToTable("Roles");
             modelBuilder.Entity<TrustedDevice>().ToTable("TrustedDevices");
             modelBuilder.Entity<AuthToken>().ToTable("AuthTokens");
+            modelBuilder.Entity<InviteCode>().ToTable("InviteCodes");
             modelBuilder.Entity<TransferType>().ToTable("TransferTypes");
             modelBuilder.Entity<RecoveryEmailVerification>().ToTable("RecoveryEmailVerifications");
             modelBuilder.Entity<ResetPasswordVerification>().ToTable("ResetPasswordVerifications");

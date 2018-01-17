@@ -7,12 +7,13 @@ using Teknik.ViewModels;
 
 namespace Teknik.Areas.Users.ViewModels
 {
-    public class SettingsViewModel : ViewModelBase
+    public class UploadSettingsViewModel : SettingsViewModel
     {
-        public int UserID { get; set; }
+        public bool Encrypt { get; set; }
 
-        public string Username { get; set; }
-
-        public string Page { get; set; }
+        public UploadSettingsViewModel()
+        {
+            Encrypt = false;
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿$(document).ready(function () {
-    $("[name='update_upload_encrypt']").bootstrapSwitch();
+$(document).ready(function () {
     $("[name='update_security_two_factor']").bootstrapSwitch();
     $("[name='update_security_allow_trusted']").bootstrapSwitch();
 
@@ -10,18 +9,12 @@
             data: AddAntiForgeryToken({}),
             success: function (html) {
                 if (html.result) {
-                    window.location.reload();
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-info alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Recovery Email Verification Sent.</div>');
                 }
                 else {
-                    errorMsg = html;
-                    if (html.error) {
-                        errorMsg = html.error;
-                        if (html.error.message) {
-                            errorMsg = html.error.message;
-                        }
-                    }
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
             }
         });
@@ -51,15 +44,8 @@
                     $("#authSetupStatus").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Success!</div>');
                 }
                 else {
-                    errorMsg = html;
-                    if (html.error) {
-                        errorMsg = html.error;
-                        if (html.error.message) {
-                            errorMsg = html.error.message;
-                        }
-                    }
                     $("#authSetupStatus").css('display', 'inline', 'important');
-                    $("#authSetupStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                    $("#authSetupStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
             }
         });
@@ -77,15 +63,8 @@
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Successfully Cleared Trusted Devices</div>');
                 }
                 else {
-                    errorMsg = html;
-                    if (html.error) {
-                        errorMsg = html.error;
-                        if (html.error.message) {
-                            errorMsg = html.error.message;
-                        }
-                    }
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
             }
         });
@@ -119,15 +98,8 @@
                             });
                         }
                         else {
-                            errorMsg = response;
-                            if (response.error) {
-                                errorMsg = response.error;
-                                if (response.error.message) {
-                                    errorMsg = response.error.message;
-                                }
-                            }
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
                 });
@@ -147,43 +119,8 @@
                             $('#authTokenList').html('<li class="list-group-item text-center" id="noAuthTokens">No Authentication Tokens</li>');
                         }
                         else {
-                            errorMsg = response;
-                            if (response.error) {
-                                errorMsg = response.error;
-                                if (response.error.message) {
-                                    errorMsg = response.error.message;
-                                }
-                            }
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
-                        }
-                    }
-                });
-            }
-        });
-    });
-
-    $('#delete_account').click(function () {
-        bootbox.confirm("Are you sure you want to delete your account?", function (result) {
-            if (result) {
-                $.ajax({
-                    type: "POST",
-                    url: deleteUserURL,
-                    data: AddAntiForgeryToken({}),
-                    success: function (html) {
-                        if (html.result) {
-                            window.location.replace(homeUrl);
-                        }
-                        else {
-                            errorMsg = html;
-                            if (html.error) {
-                                errorMsg = html.error;
-                                if (html.error.message) {
-                                    errorMsg = html.error.message;
-                                }
-                            }
-                            $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
                 });
@@ -202,15 +139,9 @@
         update_security_allow_trusted = $("#update_security_allow_trusted").is(":checked");
         update_security_two_factor = $("#update_security_two_factor").is(":checked");
         recovery = $("#update_recovery_email").val();
-        website = $("#update_website").val();
-        quote = $("#update_quote").val();
-        about = $("#update_about").val();
-        blog_title = $("#update_blog_title").val();
-        blog_desc = $("#update_blog_description").val();
-        upload_encrypt = $("#update_upload_encrypt").is(":checked");
         $.ajax({
             type: "POST",
-            url: editUserURL,
+            url: editURL,
             data: AddAntiForgeryToken({
                 CurrentPassword: current_password,
                 NewPassword: password,
@@ -218,13 +149,7 @@
                 PgpPublicKey: update_pgp_public_key,
                 AllowTrustedDevices: update_security_allow_trusted,
                 TwoFactorEnabled: update_security_two_factor,
-                RecoveryEmail: recovery,
-                Website: website,
-                Quote: quote,
-                About: about,
-                BlogTitle: blog_title,
-                BlogDesc: blog_desc,
-                Encrypt: upload_encrypt
+                RecoveryEmail: recovery
             }),
             success: function (html) {
                 $.unblockUI();
@@ -238,15 +163,13 @@
                     }
                     else
                     {
-                        window.location.reload();
+                        $("#top_msg").css('display', 'inline', 'important');
+                        $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Settings Saved!</div>');
                     }
                 }
                 else {
-                    var error = html;
-                    if (html.error)
-                        error = html.error;
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
             }
         });
@@ -268,11 +191,8 @@
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>The Password Reset Link has been sent to your recovery email.</div>');
                 }
                 else {
-                    var error = html;
-                    if (html.error)
-                        error = html.error;
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
             }
         });
@@ -296,11 +216,8 @@
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Password has successfully been reset.</div>');
                 }
                 else {
-                    var error = html;
-                    if (html.error)
-                        error = html.error;
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
             }
         });
@@ -320,15 +237,8 @@ function editAuthToken(authTokenId) {
                         $('#authTokenName_' + authTokenId).html(response.result.name);
                     }
                     else {
-                        errorMsg = response;
-                        if (response.error) {
-                            errorMsg = response.error;
-                            if (response.error.message) {
-                                errorMsg = response.error.message;
-                            }
-                        }
                         $("#top_msg").css('display', 'inline', 'important');
-                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                     }
                 }
             });
@@ -351,15 +261,8 @@ function deleteAuthToken(authTokenId) {
                         }
                     }
                     else {
-                        errorMsg = response;
-                        if (response.error) {
-                            errorMsg = response.error;
-                            if (response.error.message) {
-                                errorMsg = response.error.message;
-                            }
-                        }
                         $("#top_msg").css('display', 'inline', 'important');
-                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                     }
                 }
             });

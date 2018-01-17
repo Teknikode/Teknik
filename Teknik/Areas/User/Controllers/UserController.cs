@@ -102,23 +102,56 @@ namespace Teknik.Areas.Users.Controllers
         [TrackPageView]
         public ActionResult Settings()
         {
-            string username = User.Identity.Name;
+            return Redirect(Url.SubRouteUrl("user", "User.SecuritySettings"));
+        }
 
-            SettingsViewModel model = new SettingsViewModel();
-            ViewBag.Title = "User Does Not Exist - " + Config.Title;
-            ViewBag.Description = "The User does not exist";
-
+        [TrackPageView]
+        public ActionResult ProfileSettings()
+        {
             using (TeknikEntities db = new TeknikEntities())
             {
+                string username = User.Identity.Name;
                 User user = UserHelper.GetUser(db, username);
 
                 if (user != null)
                 {
                     Session["AuthenticatedUser"] = user;
 
-                    ViewBag.Title = "Settings - " + Config.Title;
-                    ViewBag.Description = "Your " + Config.Title + " Settings";
+                    ViewBag.Title = "Profile Settings - " + Config.Title;
+                    ViewBag.Description = "Your " + Config.Title + " Profile Settings";
 
+                    ProfileSettingsViewModel model = new ProfileSettingsViewModel();
+                    model.Page = "Profile";
+                    model.UserID = user.UserId;
+                    model.Username = user.Username;
+                    model.About = user.UserSettings.About;
+                    model.Quote = user.UserSettings.Quote;
+                    model.Website = user.UserSettings.Website;
+
+                    return View("/Areas/User/Views/User/Settings/ProfileSettings.cshtml", model);
+                }
+            }
+
+            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+        }
+
+        [TrackPageView]
+        public ActionResult SecuritySettings()
+        {
+            using (TeknikEntities db = new TeknikEntities())
+            {
+                string username = User.Identity.Name;
+                User user = UserHelper.GetUser(db, username);
+
+                if (user != null)
+                {
+                    Session["AuthenticatedUser"] = user;
+
+                    ViewBag.Title = "Security Settings - " + Config.Title;
+                    ViewBag.Description = "Your " + Config.Title + " Security Settings";
+
+                    SecuritySettingsViewModel model = new SecuritySettingsViewModel();
+                    model.Page = "Security";
                     model.UserID = user.UserId;
                     model.Username = user.Username;
                     model.TrustedDeviceCount = user.TrustedDevices.Count;
@@ -133,16 +166,126 @@ namespace Teknik.Areas.Users.Controllers
                         model.AuthTokens.Add(tokenModel);
                     }
 
-                    model.UserSettings = user.UserSettings;
-                    model.SecuritySettings = user.SecuritySettings;
-                    model.BlogSettings = user.BlogSettings;
-                    model.UploadSettings = user.UploadSettings;
+                    model.PgpPublicKey = user.SecuritySettings.PGPSignature;
+                    model.RecoveryEmail = user.SecuritySettings.RecoveryEmail;
+                    model.RecoveryVerified = user.SecuritySettings.RecoveryVerified;
+                    model.AllowTrustedDevices = user.SecuritySettings.AllowTrustedDevices;
+                    model.TwoFactorEnabled = user.SecuritySettings.TwoFactorEnabled;
+                    model.TwoFactorKey = user.SecuritySettings.TwoFactorKey;
 
-                    return View(model);
+                    return View("/Areas/User/Views/User/Settings/SecuritySettings.cshtml", model);
                 }
             }
-            model.Error = true;
-            return View(model);
+
+            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+        }
+
+        [TrackPageView]
+        public ActionResult InviteSettings()
+        {
+            using (TeknikEntities db = new TeknikEntities())
+            {
+                string username = User.Identity.Name;
+                User user = UserHelper.GetUser(db, username);
+
+                if (user != null)
+                {
+                    Session["AuthenticatedUser"] = user;
+
+                    ViewBag.Title = "Invite Settings - " + Config.Title;
+                    ViewBag.Description = "Your " + Config.Title + " Invite Settings";
+
+                    InviteSettingsViewModel model = new InviteSettingsViewModel();
+                    model.Page = "Invite";
+                    model.UserID = user.UserId;
+                    model.Username = user.Username;
+
+                    List<InviteCodeViewModel> availableCodes = new List<InviteCodeViewModel>();
+                    List<InviteCodeViewModel> claimedCodes = new List<InviteCodeViewModel>();
+                    if (user.OwnedInviteCodes != null)
+                    {
+                        foreach (InviteCode inviteCode in user.OwnedInviteCodes.Where(c => c.Active))
+                        {
+                            InviteCodeViewModel inviteCodeViewModel = new InviteCodeViewModel();
+                            inviteCodeViewModel.ClaimedUser = inviteCode.ClaimedUser;
+                            inviteCodeViewModel.Active = inviteCode.Active;
+                            inviteCodeViewModel.Code = inviteCode.Code;
+                            inviteCodeViewModel.InviteCodeId = inviteCode.InviteCodeId;
+                            inviteCodeViewModel.Owner = inviteCode.Owner;
+
+                            if (inviteCode.ClaimedUser == null)
+                                availableCodes.Add(inviteCodeViewModel);
+
+                            if (inviteCode.ClaimedUser != null)
+                                claimedCodes.Add(inviteCodeViewModel);
+                        }
+                    }
+
+                    model.AvailableCodes = availableCodes;
+                    model.ClaimedCodes = claimedCodes;
+
+                    return View("/Areas/User/Views/User/Settings/InviteSettings.cshtml", model);
+                }
+            }
+
+            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+        }
+
+        [TrackPageView]
+        public ActionResult BlogSettings()
+        {
+            using (TeknikEntities db = new TeknikEntities())
+            {
+                string username = User.Identity.Name;
+                User user = UserHelper.GetUser(db, username);
+
+                if (user != null)
+                {
+                    Session["AuthenticatedUser"] = user;
+
+                    ViewBag.Title = "Blog Settings - " + Config.Title;
+                    ViewBag.Description = "Your " + Config.Title + " Blog Settings";
+
+                    BlogSettingsViewModel model = new BlogSettingsViewModel();
+                    model.Page = "Blog";
+                    model.UserID = user.UserId;
+                    model.Username = user.Username;
+                    model.Title = user.BlogSettings.Title;
+                    model.Description = user.BlogSettings.Description;
+
+                    return View("/Areas/User/Views/User/Settings/BlogSettings.cshtml", model);
+                }
+            }
+
+            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+        }
+
+        [TrackPageView]
+        public ActionResult UploadSettings()
+        {
+            using (TeknikEntities db = new TeknikEntities())
+            {
+                string username = User.Identity.Name;
+                User user = UserHelper.GetUser(db, username);
+
+                if (user != null)
+                {
+                    Session["AuthenticatedUser"] = user;
+
+                    ViewBag.Title = "Upload Settings - " + Config.Title;
+                    ViewBag.Description = "Your " + Config.Title + " Upload Settings";
+
+                    UploadSettingsViewModel model = new UploadSettingsViewModel();
+                    model.Page = "Upload";
+                    model.UserID = user.UserId;
+                    model.Username = user.Username;
+                    model.Encrypt = user.UploadSettings.Encrypt;
+
+                    return View("/Areas/User/Views/User/Settings/UploadSettings.cshtml", model);
+                }
+            }
+
+            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
         }
 
         [HttpGet]
@@ -295,9 +438,10 @@ namespace Teknik.Areas.Users.Controllers
         [HttpGet]
         [TrackPageView]
         [AllowAnonymous]
-        public ActionResult Register(string ReturnUrl)
+        public ActionResult Register(string inviteCode, string ReturnUrl)
         {
             RegisterViewModel model = new RegisterViewModel();
+            model.InviteCode = inviteCode;
             model.ReturnUrl = ReturnUrl;
 
             return View("/Areas/User/Views/User/ViewRegistration.cshtml", model);
@@ -331,6 +475,18 @@ namespace Teknik.Areas.Users.Controllers
                             model.ErrorMessage = "Passwords must match";
                         }
 
+                        // Validate the Invite Code
+                        if (!model.Error && Config.UserConfig.InviteCodeRequired && string.IsNullOrEmpty(model.InviteCode))
+                        {
+                            model.Error = true;
+                            model.ErrorMessage = "An Invite Code is required to register";
+                        }
+                        if (!model.Error && !string.IsNullOrEmpty(model.InviteCode) && db.InviteCodes.Where(c => c.Code == model.InviteCode && c.Active && c.ClaimedUser == null).FirstOrDefault() == null)
+                        {
+                            model.Error = true;
+                            model.ErrorMessage = "Invalid Invite Code";
+                        }
+
                         // PGP Key valid?
                         if (!model.Error && !string.IsNullOrEmpty(model.PublicKey) && !PGP.IsPublicKey(model.PublicKey))
                         {
@@ -354,6 +510,16 @@ namespace Teknik.Areas.Users.Controllers
                                     newUser.SecuritySettings.PGPSignature = model.PublicKey;
                                 if (!string.IsNullOrEmpty(model.RecoveryEmail))
                                     newUser.SecuritySettings.RecoveryEmail = model.RecoveryEmail;
+
+                                // if they provided an invite code, let's assign them to it
+                                if (!string.IsNullOrEmpty(model.InviteCode))
+                                {
+                                    InviteCode code = db.InviteCodes.Where(c => c.Code == model.InviteCode).FirstOrDefault();
+                                    db.Entry(code).State = EntityState.Modified;
+                                    db.SaveChanges();
+
+                                    newUser.ClaimedInviteCode = code;
+                                }
 
                                 UserHelper.AddAccount(db, Config, newUser, model.Password);
 
@@ -389,7 +555,70 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(EditSettingsViewModel settings)
+        public ActionResult EditBlog(BlogSettingsViewModel settings)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    using (TeknikEntities db = new TeknikEntities())
+                    {
+                        User user = UserHelper.GetUser(db, User.Identity.Name);
+                        if (user != null)
+                        {
+                            // Blogs
+                            user.BlogSettings.Title = settings.Title;
+                            user.BlogSettings.Description = settings.Description;
+
+                            UserHelper.EditAccount(db, Config, user);
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "User does not exist" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { error = ex.GetFullMessage(true) });
+                }
+            }
+            return Json(new { error = "Invalid Parameters" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditProfile(ProfileSettingsViewModel settings)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    using (TeknikEntities db = new TeknikEntities())
+                    {
+                        User user = UserHelper.GetUser(db, User.Identity.Name);
+                        if (user != null)
+                        {
+                            // Profile Info
+                            user.UserSettings.Website = settings.Website;
+                            user.UserSettings.Quote = settings.Quote;
+                            user.UserSettings.About = settings.About;
+
+                            UserHelper.EditAccount(db, Config, user);
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "User does not exist" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { error = ex.GetFullMessage(true) });
+                }
+            }
+            return Json(new { error = "Invalid Parameters" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditSecurity(SecuritySettingsViewModel settings)
         {
             if (ModelState.IsValid)
             {
@@ -401,7 +630,6 @@ namespace Teknik.Areas.Users.Controllers
                         if (user != null)
                         {
                             bool changePass = false;
-                            string email = string.Format("{0}@{1}", User.Identity.Name, Config.EmailConfig.Domain);
                             // Changing Password?
                             if (!string.IsNullOrEmpty(settings.CurrentPassword) && (!string.IsNullOrEmpty(settings.NewPassword) || !string.IsNullOrEmpty(settings.NewPasswordConfirm)))
                             {
@@ -488,18 +716,6 @@ namespace Teknik.Areas.Users.Controllers
                             }
                             user.SecuritySettings.TwoFactorKey = newKey;
 
-                            // Profile Info
-                            user.UserSettings.Website = settings.Website;
-                            user.UserSettings.Quote = settings.Quote;
-                            user.UserSettings.About = settings.About;
-
-                            // Blogs
-                            user.BlogSettings.Title = settings.BlogTitle;
-                            user.BlogSettings.Description = settings.BlogDesc;
-
-                            // Uploads
-                            user.UploadSettings.Encrypt = settings.Encrypt;
-
                             UserHelper.EditAccount(db, Config, user, changePass, settings.NewPassword);
 
                             // If they have a recovery email, let's send a verification
@@ -515,6 +731,36 @@ namespace Teknik.Areas.Users.Controllers
                             {
                                 return Json(new { result = new { checkAuth = true, key = newKey, qrUrl = Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = newKey }) } });
                             }
+                            return Json(new { result = true });
+                        }
+                        return Json(new { error = "User does not exist" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { error = ex.GetFullMessage(true) });
+                }
+            }
+            return Json(new { error = "Invalid Parameters" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditUpload(UploadSettingsViewModel settings)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    using (TeknikEntities db = new TeknikEntities())
+                    {
+                        User user = UserHelper.GetUser(db, User.Identity.Name);
+                        if (user != null)
+                        {
+                            // Profile Info
+                            user.UploadSettings.Encrypt = settings.Encrypt;
+
+                            UserHelper.EditAccount(db, Config, user);
                             return Json(new { result = true });
                         }
                         return Json(new { error = "User does not exist" });
@@ -913,7 +1159,7 @@ namespace Teknik.Areas.Users.Controllers
                             model.Name = token.Name;
                             model.LastDateUsed = token.LastDateUsed;
 
-                            return Json(new { result = new { token = newTokenStr, html = PartialView("~/Areas/User/Views/User/AuthToken.cshtml", model).RenderToString() } });
+                            return Json(new { result = new { token = newTokenStr, html = PartialView("~/Areas/User/Views/User/Settings/AuthToken.cshtml", model).RenderToString() } });
                         }
                         return Json(new { error = "Unable to generate Auth Token" });
                     }
@@ -1015,6 +1261,32 @@ namespace Teknik.Areas.Users.Controllers
                         return Json(new { error = "Authentication Token does not exist" });
                     }
                     return Json(new { error = "User does not exist" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateInviteCodeLink(int inviteCodeId)
+        {
+            try
+            {
+                using (TeknikEntities db = new TeknikEntities())
+                {
+                    InviteCode code = db.InviteCodes.Where(c => c.InviteCodeId == inviteCodeId).FirstOrDefault();
+                    if (code != null)
+                    {
+                        if (code.Owner.UserId == User.Info.UserId)
+                        {
+                            return Json(new { result = Url.SubRouteUrl("user", "User.Register", new { inviteCode = code.Code })});
+                        }
+                        return Json(new { error = "Invite Code not associated with this user"});
+                    }
+                    return Json(new { error = "Invalid Invite Code" });
                 }
             }
             catch (Exception ex)

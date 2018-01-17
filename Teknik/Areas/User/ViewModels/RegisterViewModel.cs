@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using Teknik.Areas.Users.Models;
 using Teknik.Utilities;
@@ -23,6 +23,9 @@ namespace Teknik.Areas.Users.ViewModels
         [Display(Name = "Confirm Password")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "InviteCode")]
+        public string InviteCode { get; set; }
 
         [Display(Name = "Recovery Email")]
         [DataType(DataType.EmailAddress)]

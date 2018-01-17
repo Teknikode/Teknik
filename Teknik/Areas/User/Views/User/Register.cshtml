@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Users.ViewModels.RegisterViewModel
+@model Teknik.Areas.Users.ViewModels.RegisterViewModel
 
 @using Teknik.Utilities
 
@@ -17,19 +17,30 @@
     <form id="registrationForm" action="@Url.SubRouteUrl("user", "User.Register")" method="post" accept-charset="UTF-8">
         <input name="Register.ReturnUrl" id="registerReturnUrl" type="hidden" value="@Model.ReturnUrl" />
         <div class="form-group">
-            <input type="text" class="form-control" id="registerUsername" value="" placeholder="Username" name="Register.Username" data-val-required="The Username field is required." data-val="true"/>
+            <label for="registerUsername">Username</label>
+            <input type="text" class="form-control" id="registerUsername" value="" placeholder="Bob" name="Register.Username" data-val-required="The Username field is required." data-val="true"/>
         </div>
         <div class="form-group">
-            <input type="password" class="form-control" id="registerPassword" value="" placeholder="Password" name="Register.Password" data-val-required="The Password field is required." data-val="true"/>
+            <label for="registerPassword">Password</label>
+            <input type="password" class="form-control" id="registerPassword" value="" placeholder="********" name="Register.Password" data-val-required="The Password field is required." data-val="true"/>
         </div>
         <div class="form-group">
-            <input type="password" class="form-control" id="registerConfirmPassword" value="" placeholder="Confirm Password" name="Register.ConfirmPassword" data-val-required="The Confirm Password field is required." data-val="true" />
+            <label for="registerConfirmPassword">Confirm Password</label>
+            <input type="password" class="form-control" id="registerConfirmPassword" value="" placeholder="********" name="Register.ConfirmPassword" data-val-required="The Confirm Password field is required." data-val="true"/>
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" id="registerRecoveryEmail" value="" placeholder="Recovery Email (Optional)" name="Register.RecoveryEmail" />
+            <label for="registerInviteCode">Invite Code@(Model.Config.UserConfig.InviteCodeRequired ? string.Empty : " (Optional)")</label>
+            <input type="text" class="form-control" id="registerInviteCode" value="@Model.InviteCode" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" name="Register.InviteCode"/>
         </div>
         <div class="form-group">
-            <textarea class="form-control" id="registerPublicKey" name="Register.PublicKey" placeholder="PGP Public Key (Optional)" title="enter your pgp public key" rows="5"></textarea>
+            <label for="registerRecoveryEmail">Recovery Email (Optional)</label>
+            <input type="text" class="form-control" id="registerRecoveryEmail" value="" placeholder="user@example.com" name="Register.RecoveryEmail"/>
+        </div>
+        <div class="form-group">
+            <label for="registerPublicKey">PGP Public Key (Optional)</label>
+            <textarea class="form-control" id="registerPublicKey" name="Register.PublicKey" placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----
+ ...
+-----END PGP PUBLIC KEY BLOCK-----" title="enter your pgp public key" rows="5"></textarea>
         </div>
         <p class="text-center">
             <small>
