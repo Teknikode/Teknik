@@ -63,7 +63,7 @@ namespace Teknik.Areas.Admin.Controllers
             var results = db.Users.Where(u => u.Username.Contains(query)).ToList();
             if (results != null)
             {
-                foreach (Users.Models.User user in results)
+                foreach (User user in results)
                 {
                     try
                     {
@@ -84,7 +84,7 @@ namespace Teknik.Areas.Admin.Controllers
                 }
             }
 
-            return PartialView("~/Areas/Admin/Views/Admin/UserResults.cshtml", models);
+            return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UserResults.cshtml", models) } });
         }
 
         [HttpPost]
@@ -102,7 +102,7 @@ namespace Teknik.Areas.Admin.Controllers
                 model.Downloads = foundUpload.Downloads;
                 model.DeleteKey = foundUpload.DeleteKey;
 
-                return PartialView("~/Areas/Admin/Views/Admin/UploadResult.cshtml", model);
+                return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UploadResult.cshtml", model) } });
             }
             return Json(new { error = new { message = "Upload does not exist" } });
         }

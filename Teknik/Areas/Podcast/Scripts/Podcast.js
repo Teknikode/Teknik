@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $("#podcast_submit").click(function () {
         $.blockUI({ message: '<div class="text-center"><h3>Saving...</h3></div>' });
         $('#newPodcast').modal('hide');
@@ -27,11 +27,8 @@
                     window.location.reload();
                 }
                 else {
-                    var error = obj;
-                    if (obj.error)
-                        error = obj.error;
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(obj) + '</div>');
                 }
             }
         };
@@ -135,11 +132,8 @@
                     window.location.reload();
                 }
                 else {
-                    var error = obj;
-                    if (obj.error)
-                        error = obj.error;
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(obj) + '</div>');
                 }
             }
         };
@@ -154,13 +148,13 @@
             type: "POST",
             url: addCommentURL,
             data: { podcastId: postID, article: post },
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -191,13 +185,13 @@
             type: "POST",
             url: editCommentURL,
             data: { commentID: postID, article: post },
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -263,13 +257,13 @@ function linkPodcastUnpublish(selector) {
             type: "POST",
             url: publishPodcastURL,
             data: { podcastId: podcastId, publish: false },
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -284,13 +278,13 @@ function linkPodcastPublish(selector) {
             type: "POST",
             url: publishPodcastURL,
             data: { podcastId: podcastId, publish: true },
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -307,13 +301,13 @@ function linkPodcastDelete(selector) {
                     type: "POST",
                     url: deletePodcastURL,
                     data: { podcastId: podcastId },
-                    success: function (html) {
-                        if (html.result) {
+                    success: function (response) {
+                        if (response.result) {
                             window.location.reload();
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
                 });
@@ -348,13 +342,13 @@ function linkCommentDelete(selector) {
                     type: "POST",
                     url: deleteCommentURL,
                     data: { commentID: post_id },
-                    success: function (html) {
-                        if (html.result) {
+                    success: function (response) {
+                        if (response.result) {
                             window.location.reload();
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
                 });

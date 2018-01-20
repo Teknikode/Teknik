@@ -1,4 +1,4 @@
-﻿var cpuUsageChart;
+var cpuUsageChart;
 var memUsageChart;
 var networkUsageChart;
 
@@ -346,12 +346,8 @@ $(document).ready(function () {
                     visitChart.redraw();
                 }
                 else {
-                    var err = response;
-                    if (response.error) {
-                        err = response.error.message;
-                    }
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + err + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });

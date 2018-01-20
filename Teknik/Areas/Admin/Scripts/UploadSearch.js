@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $('#Query').on('input', function (e) {
         query = $(this).val();
 
@@ -12,18 +12,16 @@
             type: "POST",
             url: searchResultsURL,
             data: { url: query },
-            success: function (html) {
-                if (html) {
-                    if (html.error) {
-                        $("#top_msg").css('display', 'inline', 'important');
-                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error.message + '</div>');
-                    }
-                    else {
-                        $("#top_msg").css('display', 'none');
-                        $("#top_msg").html('');
-                        $("#results").html(html);
-                        LinkUploadDelete($('.delete-upload-button'));
-                    }
+            success: function (response) {
+                if (response.result) {
+                    $("#top_msg").css('display', 'none');
+                    $("#top_msg").html('');
+                    $("#results").html(response.result.html);
+                    LinkUploadDelete($('.delete-upload-button'));
+                }
+                else {
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -49,14 +47,14 @@ function LinkUploadDelete(selector) {
                         xhrFields: {
                             withCredentials: true
                         },
-                        success: function (html) {
-                            if (html.result) {
-                                window.open(html.result.url, '_blank');
+                        success: function (response) {
+                            if (response.result) {
+                                window.open(response.result.url, '_blank');
                                 window.location.reload();
                             }
                             else {
                                 $("#top_msg").css('display', 'inline', 'important');
-                                $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error.message + '</div>');
+                                $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                             }
                         }
                     });

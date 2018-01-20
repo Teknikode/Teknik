@@ -6,13 +6,13 @@ $(document).ready(function () {
                     type: "POST",
                     url: deleteUserURL,
                     data: AddAntiForgeryToken({}),
-                    success: function (html) {
-                        if (html.result) {
+                    success: function (response) {
+                        if (response.result) {
                             window.location.replace(homeUrl);
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
                 });

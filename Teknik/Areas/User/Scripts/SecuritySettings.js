@@ -7,14 +7,14 @@ $(document).ready(function () {
             type: "POST",
             url: resendVerifyURL,
             data: AddAntiForgeryToken({}),
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-info alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Recovery Email Verification Sent.</div>');
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -38,14 +38,14 @@ $(document).ready(function () {
             data: AddAntiForgeryToken({
                 code: setCode
             }),
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     $("#authSetupStatus").css('display', 'inline', 'important');
                     $("#authSetupStatus").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Success!</div>');
                 }
                 else {
                     $("#authSetupStatus").css('display', 'inline', 'important');
-                    $("#authSetupStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
+                    $("#authSetupStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -56,15 +56,15 @@ $(document).ready(function () {
             type: "POST",
             url: clearTrustedDevicesURL,
             data: AddAntiForgeryToken({}),
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     $('#ClearDevices').html('Clear Trusted Devices (0)');
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Successfully Cleared Trusted Devices</div>');
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -151,14 +151,14 @@ $(document).ready(function () {
                 TwoFactorEnabled: update_security_two_factor,
                 RecoveryEmail: recovery
             }),
-            success: function (html) {
+            success: function (response) {
                 $.unblockUI();
-                if (html.result) {
-                    if (html.result.checkAuth)
+                if (response.result) {
+                    if (response.result.checkAuth)
                     {
                         $('#setupAuthenticatorLink').removeClass('hide');
-                        $('#authSetupSecretKey').text(html.result.key);
-                        $('#authQRCode').attr("src", html.result.qrUrl);
+                        $('#authSetupSecretKey').text(response.result.key);
+                        $('#authQRCode').attr("src", response.result.qrUrl);
                         $('#authenticatorSetup').modal('show');
                     }
                     else
@@ -169,7 +169,7 @@ $(document).ready(function () {
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -185,14 +185,14 @@ $(document).ready(function () {
             data: AddAntiForgeryToken({
                 username: username
             }),
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>The Password Reset Link has been sent to your recovery email.</div>');
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -210,14 +210,14 @@ $(document).ready(function () {
                 Password: password,
                 PasswordConfirm: confirmPassword
             }),
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Password has successfully been reset.</div>');
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });

@@ -14,15 +14,15 @@ $(document).ready(function () {
                 Quote: quote,
                 About: about
             }),
-            success: function (html) {
+            success: function (response) {
                 $.unblockUI();
-                if (html.result) {
+                if (response.result) {
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Settings Saved!</div>');
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });

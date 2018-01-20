@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $("#authCheckStatus").css('display', 'none', 'important');
     $('#Code').focus();
 
@@ -25,13 +25,13 @@
             xhrFields: {
                 withCredentials: true
             },
-            success: function (html) {
-                if (html.result) {
-                    window.location = html.result;
+            success: function (response) {
+                if (response.result) {
+                    window.location = response.result;
                 }
                 else {
                     $("#authCheckStatus").css('display', 'inline', 'important');
-                    $("#authCheckStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#authCheckStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });

@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $("textarea.mdd_editor").MarkdownDeep({
         help_location: helpURL,
         disableTabHandling: false,
@@ -16,13 +16,13 @@
             type: "POST",
             url: addCommentURL,
             data: { postID: postID, article: post },
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -37,9 +37,9 @@
             type: "POST",
             url: getCommentArticleURL,
             data: { commentID: commentID },
-            success: function (html) {
-                if (html.result) {
-                    $("#edit_comment_post").val(html.result);
+            success: function (response) {
+                if (response.result) {
+                    $("#edit_comment_post").val(response.result);
                 }
             }
         });
@@ -53,13 +53,13 @@
             type: "POST",
             url: editCommentURL,
             data: { commentID: postID, article: post },
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -73,9 +73,9 @@ function loadMorePosts(start, count) {
         type: "POST",
         url: getPostsURL,
         data: { blogID: blog_id, count: count, startPostID: start },
-        success: function (html) {
-            if (html) {
-                $(".blog-main").append(html);
+        success: function (response) {
+            if (response) {
+                $(".blog-main").append(response);
                 linkPostDelete('.delete_post');
                 linkPostPublish('.publish_post');
                 linkPostUnpublish('.unpublish_post');
@@ -91,9 +91,9 @@ function loadMoreComments(start, count) {
         type: "POST",
         url: getCommentsURL,
         data: { postID: post_id, count: count, startCommentID: start },
-        success: function (html) {
-            if (html) {
-                $(".post-comments").append(html);
+        success: function (response) {
+            if (response) {
+                $(".post-comments").append(response);
                 linkCommentDelete('.delete_comment');
                 $(window).bind('scroll', bindScrollComments);
             }
@@ -125,13 +125,13 @@ function linkPostUnpublish(selector) {
             type: "POST",
             url: publishPostURL,
             data: { postID: post_id, publish: false },
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -146,13 +146,13 @@ function linkPostPublish(selector) {
             type: "POST",
             url: publishPostURL,
             data: {postID: post_id, publish: true },
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     window.location.reload();
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -169,13 +169,13 @@ function linkPostDelete(selector) {
                     type: "POST",
                     url: deletePostURL,
                     data: { postID: post_id },
-                    success: function (html) {
-                        if (html.result) {
+                    success: function (response) {
+                        if (response.result) {
                             window.location.reload();
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
                 });
@@ -194,13 +194,13 @@ function linkCommentDelete(selector) {
                     type: "POST",
                     url: deleteCommentURL,
                     data: { commentID: post_id },
-                    success: function (html) {
-                        if (html.result) {
+                    success: function (response) {
+                        if (response.result) {
                             window.location.reload();
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
                 });

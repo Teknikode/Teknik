@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $('.delete-upload-button').click(function () {
         var deleteUrl = $(this).attr('id');
         var uploadID = $(this).data('upload-id');
@@ -17,14 +17,14 @@
                         xhrFields: {
                             withCredentials: true
                         },
-                        success: function (html) {
-                            if (html.result) {
-                                window.open(html.result.url, '_blank');
+                        success: function (response) {
+                            if (response.result) {
+                                window.open(response.result.url, '_blank');
                                 window.location.reload();
                             }
                             else {
                                 $("#top_msg").css('display', 'inline', 'important');
-                                $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error.message + '</div>');
+                                $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                             }
                         }
                     });
@@ -45,13 +45,13 @@
                     xhrFields: {
                         withCredentials: true
                     },
-                    success: function (html) {
-                        if (html.result) {
-                            window.location = html.result.url;
+                    success: function (response) {
+                        if (response.result) {
+                            window.location = response.result.url;
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error.message + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
                 });

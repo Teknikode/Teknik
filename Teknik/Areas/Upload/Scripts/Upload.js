@@ -29,15 +29,15 @@ function linkShortenUrl(element, fileID, url) {
             type: "POST",
             url: shortenURL,
             data: { url: url },
-            success: function (html) {
-                if (html.result) {
+            success: function (response) {
+                if (response.result) {
                     element.prop('disabled', true);
-                    $('#upload-panel-' + fileID).find('#upload-link').attr('href', html.result.shortUrl);
-                    $('#upload-panel-' + fileID).find('#upload-link').text(html.result.shortUrl);
+                    $('#upload-panel-' + fileID).find('#upload-link').attr('href', response.result.shortUrl);
+                    $('#upload-panel-' + fileID).find('#upload-link').text(response.result.shortUrl);
                 }
                 else {
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + html.error + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });

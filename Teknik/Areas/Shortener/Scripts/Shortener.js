@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $('#url').focus();
 
     $("#shortenSubmit").click(function () {
@@ -9,18 +9,13 @@
             type: "POST",
             url: $("#shortenerForm").attr('action'),
             data: { url: url },
-            success: function (html) {
-                if (html.result) {
-                    $('#url').val(html.result.shortUrl);
+            success: function (response) {
+                if (response.result) {
+                    $('#url').val(response.result.shortUrl);
                 }
                 else {
-                    var errorMsg = "Invalid Url";
-                    if (html.error)
-                    {
-                        errorMsg = html.error;
-                    }
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errorMsg + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
                 $('#url').focus();
                 $('#url').select();

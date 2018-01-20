@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
     $("textarea.mdd_editor").MarkdownDeep({
         help_location: helpURL,
         disableTabHandling: false,
@@ -175,12 +175,8 @@
                     window.location = response.result.url;
                 }
                 else {
-                    var err = response;
-                    if (response.error) {
-                        err = response.error.message;
-                    }
                     $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + err + '</div>');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
             }
         });
@@ -199,17 +195,13 @@
                     xhrFields: {
                         withCredentials: true
                     },
-                    success: function (html) {
-                        if (html.result) {
-                            window.location = html.result.url;
+                    success: function (response) {
+                        if (response.result) {
+                            window.location = response.result.url;
                         }
                         else {
-                            var err = html;
-                            if (html.error) {
-                                err = html.error.message;
-                            }
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + err + '</div>');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
                 });
