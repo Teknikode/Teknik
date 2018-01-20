@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -61,7 +61,8 @@ namespace Teknik.Areas.Contact.Controllers
                         client.Credentials = new System.Net.NetworkCredential(Config.ContactConfig.EmailAccount.Username, Config.ContactConfig.EmailAccount.Password);
                         client.Timeout = 5000;
 
-                        MailMessage mail = new MailMessage(Config.ContactConfig.EmailAccount.EmailAddress, Config.SupportEmail);
+                        MailMessage mail = new MailMessage(model.Email, Config.SupportEmail);
+                        mail.Sender = new MailAddress(Config.ContactConfig.EmailAccount.EmailAddress);
                         mail.Subject = string.Format("Support Message from: {0} <{1}>", model.Name, model.Email);
                         mail.Body = string.Format(@"
 New Support Message from: {0} <{1}>
