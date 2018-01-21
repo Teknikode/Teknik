@@ -61,15 +61,10 @@ namespace Teknik.Areas.Contact.Controllers
                         client.Credentials = new System.Net.NetworkCredential(Config.ContactConfig.EmailAccount.Username, Config.ContactConfig.EmailAccount.Password);
                         client.Timeout = 5000;
 
-                        MailMessage mail = new MailMessage(model.Email, Config.SupportEmail);
+                        MailMessage mail = new MailMessage(new MailAddress(model.Email, model.Name), new MailAddress(Config.SupportEmail, "Teknik Support"));
                         mail.Sender = new MailAddress(Config.ContactConfig.EmailAccount.EmailAddress);
-                        mail.Subject = string.Format("Support Message from: {0} <{1}>", model.Name, model.Email);
-                        mail.Body = string.Format(@"
-New Support Message from: {0} <{1}>
-                                                
----------------------------------
-Subject: {2}
-Message: {3}", model.Name, model.Email, model.Subject, model.Message);
+                        mail.Subject = model.Subject;
+                        mail.Body = model.Message;
                         mail.BodyEncoding = UTF8Encoding.UTF8;
                         mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
