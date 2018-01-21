@@ -354,14 +354,18 @@ $(document).ready(function () {
     }
 
     // Resize the chart when viewing the tab (initial width is wrong due to chart being hidden)
-    $('a[href="#site-stats"]').on('shown.bs.tab', function (e) {
-        visitChart.setSize($('#visitor-chart').width(), $('#visitor-chart').height());
-    })
+    $('a[href="#site-stats"]').on('shown.bs.tab',
+        function (e) {
+            if (showVisitorStats) {
+                visitChart.setSize($('#visitor-chart').width(), $('#visitor-chart').height());
+            }
+        });
 
     // Resize the chart when viewing the tab (initial width is wrong due to chart being hidden)
-    $('a[href="#realtime-stats"]').on('shown.bs.tab', function (e) {
-        cpuUsageChart.setSize($('#cpu-usage-chart').width(), $('#cpu-usage-chart').height());
-        memUsageChart.setSize($('#mem-usage-chart').width(), $('#mem-usage-chart').height());
-        networkUsageChart.setSize($('#network-usage-chart').width(), $('#network-usage-chart').height());
-    })
+    $('a[href="#realtime-stats"]').on('shown.bs.tab',
+        function(e) {
+            cpuUsageChart.setSize($('#cpu-usage-chart').width(), $('#cpu-usage-chart').height());
+            memUsageChart.setSize($('#mem-usage-chart').width(), $('#mem-usage-chart').height());
+            networkUsageChart.setSize($('#network-usage-chart').width(), $('#network-usage-chart').height());
+        });
 });
