@@ -84,7 +84,7 @@ namespace Teknik.Areas.Admin.Controllers
                 }
             }
 
-            return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UserResults.cshtml", models) } });
+            return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UserResults.cshtml", models).RenderToString() } });
         }
 
         [HttpPost]
@@ -102,7 +102,7 @@ namespace Teknik.Areas.Admin.Controllers
                 model.Downloads = foundUpload.Downloads;
                 model.DeleteKey = foundUpload.DeleteKey;
 
-                return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UploadResult.cshtml", model) } });
+                return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UploadResult.cshtml", model).RenderToString() } });
             }
             return Json(new { error = new { message = "Upload does not exist" } });
         }
