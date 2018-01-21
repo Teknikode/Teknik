@@ -217,6 +217,9 @@
     <Compile Include="Areas\About\AboutAreaRegistration.cs" />
     <Compile Include="Areas\About\Controllers\AboutController.cs" />
     <Compile Include="Areas\About\ViewModels\AboutViewModel.cs" />
+    <Compile Include="Areas\Abuse\AbuseAreaRegistration.cs" />
+    <Compile Include="Areas\Abuse\Controllers\AbuseController.cs" />
+    <Compile Include="Areas\Abuse\ViewModels\AbuseViewModel.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AdminController.cs" />
     <Compile Include="Areas\Admin\ViewModels\DashboardViewModel.cs" />
@@ -686,6 +689,9 @@
     <Content Include="Areas\User\Views\User\Settings\UploadSettings.cshtml" />
     <Content Include="Areas\User\Views\User\Settings\SettingsBase.cshtml" />
     <Content Include="Areas\User\Views\User\Settings\InviteCode.cshtml" />
+    <Content Include="Areas\Abuse\Views\web.config" />
+    <Content Include="Areas\Abuse\Views\Abuse\Index.cshtml" />
+    <Content Include="Areas\Abuse\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
     <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
@@ -764,6 +770,8 @@
   <ItemGroup>
     <Folder Include="Areas\About\Models\" />
     <Folder Include="Areas\About\Views\Shared\" />
+    <Folder Include="Areas\Abuse\Models\" />
+    <Folder Include="Areas\Abuse\Views\Shared\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\API\Views\APIv1\" />
