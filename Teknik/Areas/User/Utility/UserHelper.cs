@@ -89,17 +89,26 @@ namespace Teknik.Areas.Users.Utility
             {
                 DateTime lastActive = new DateTime(1900, 1, 1);
 
-                DateTime emailLastActive = UserEmailLastActive(config, GetUserEmailAddress(config, user.Username));
-                if (lastActive < emailLastActive)
-                    lastActive = emailLastActive;
+                if (UserEmailExists(config, GetUserEmailAddress(config, user.Username)))
+                {
+                    DateTime emailLastActive = UserEmailLastActive(config, GetUserEmailAddress(config, user.Username));
+                    if (lastActive < emailLastActive)
+                        lastActive = emailLastActive;
+                }
 
-                DateTime gitLastActive = UserGitLastActive(config, user.Username);
-                if (lastActive < gitLastActive)
-                    lastActive = gitLastActive;
+                if (UserGitExists(config, user.Username))
+                {
+                    DateTime gitLastActive = UserGitLastActive(config, user.Username);
+                    if (lastActive < gitLastActive)
+                        lastActive = gitLastActive;
+                }
 
-                DateTime userLastActive = UserLastActive(db, config, user);
-                if (lastActive < userLastActive)
-                    lastActive = userLastActive;
+                if (UserExists(db, user.Username))
+                {
+                    DateTime userLastActive = UserLastActive(db, config, user);
+                    if (lastActive < userLastActive)
+                        lastActive = userLastActive;
+                }
 
                 return lastActive;
             }

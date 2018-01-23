@@ -1,4 +1,4 @@
-﻿using nClam;
+using nClam;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -538,7 +538,15 @@ Thank you for your continued use of Teknik!
                 }
 
                 #region Inactivity Finding
-                DateTime lastActivity = UserHelper.GetLastAccountActivity(db, config, user);
+                DateTime lastActivity = DateTime.Now;
+                try
+                {
+                    lastActivity = UserHelper.GetLastAccountActivity(db, config, user);
+                }
+                catch
+                {
+                    continue;
+                }
 
                 TimeSpan inactiveTime = DateTime.Now.Subtract(lastActivity);
 

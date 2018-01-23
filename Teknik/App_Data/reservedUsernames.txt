@@ -108,6 +108,7 @@ sales
 save
 search
 security
+server admin
 sessions
 settings
 sftp
