@@ -455,8 +455,8 @@ Thank you for your continued use of Teknik!
                                 UserHelper.GetLastAccountActivity(db, config, user).ToString("g"),
                                 user.JoinDate.ToString("g"),
                                 user.LastSeen.ToString("g"),
-                                UserHelper.UserEmailLastActive(config, UserHelper.GetUserEmailAddress(config, user.Username)).ToString("g"),
-                                UserHelper.UserGitLastActive(config, user.Username).ToString("g")));
+                                UserHelper.UserEmailExists(config, UserHelper.GetUserEmailAddress(config, user.Username)) ? UserHelper.UserEmailLastActive(config, UserHelper.GetUserEmailAddress(config, user.Username)).ToString("g") : null,
+                                UserHelper.UserGitExists(config, user.Username) ? UserHelper.UserGitLastActive(config, user.Username).ToString("g") : null));
             }
 
             sb.AppendLine();
@@ -470,8 +470,8 @@ Thank you for your continued use of Teknik!
                                 UserHelper.GetLastAccountActivity(db, config, user).ToString("g"),
                                 user.JoinDate.ToString("g"),
                                 user.LastSeen.ToString("g"),
-                                UserHelper.UserEmailLastActive(config, UserHelper.GetUserEmailAddress(config, user.Username)).ToString("g"),
-                                UserHelper.UserGitLastActive(config, user.Username).ToString("g")));
+                                UserHelper.UserEmailExists(config, UserHelper.GetUserEmailAddress(config, user.Username)) ? UserHelper.UserEmailLastActive(config, UserHelper.GetUserEmailAddress(config, user.Username)).ToString("g") : null,
+                                UserHelper.UserGitExists(config, user.Username) ? UserHelper.UserGitLastActive(config, user.Username).ToString("g") : null));
             }
 
             sb.AppendLine();
@@ -481,7 +481,7 @@ Thank you for your continued use of Teknik!
             {
                 sb.AppendLine(string.Format("{0},{1}",
                                 account,
-                                UserHelper.UserEmailLastActive(config, account).ToString("g")));
+                                UserHelper.UserEmailExists(config, account) ? UserHelper.UserEmailLastActive(config, account).ToString("g") : null));
             }
 
             sb.AppendLine();
@@ -491,7 +491,7 @@ Thank you for your continued use of Teknik!
             {
                 sb.AppendLine(string.Format("{0},{1}",
                                 account,
-                                UserHelper.UserGitLastActive(config, account).ToString("g")));
+                                UserHelper.UserGitExists(config, account) ? UserHelper.UserGitLastActive(config, account).ToString("g") : null));
             }
 
             string dir = Path.GetDirectoryName(fileName);
@@ -569,7 +569,7 @@ Thank you for your continued use of Teknik!
                     noData &= !(podCom != null && podCom.Any());
 
                     // Any email?
-                    if (config.EmailConfig.Enabled)
+                    if (config.EmailConfig.Enabled && UserHelper.UserEmailExists(config, UserHelper.GetUserEmailAddress(config, user.Username)))
                     {
                         var app = new hMailServer.Application();
                         app.Connect();
@@ -585,7 +585,7 @@ Thank you for your continued use of Teknik!
                     }
 
                     // Any git repos?
-                    if (config.GitConfig.Enabled)
+                    if (config.GitConfig.Enabled && UserHelper.UserGitExists(config, user.Username))
                     {
                         string email = UserHelper.GetUserEmailAddress(config, user.Username);
                         // We need to check the actual git database
