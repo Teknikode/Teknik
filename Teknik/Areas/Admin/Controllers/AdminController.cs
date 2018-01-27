@@ -151,5 +151,28 @@ namespace Teknik.Areas.Admin.Controllers
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteAccount(string username)
+        {
+            try
+            {
+                using (TeknikEntities db = new TeknikEntities())
+                {
+                    User user = UserHelper.GetUser(db, username);
+                    if (user != null)
+                    {
+                        UserHelper.DeleteAccount(db, Config, user);
+                        return Json(new { result = true });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
+            return Json(new { error = "Unable to delete user" });
+        }
     }
 }

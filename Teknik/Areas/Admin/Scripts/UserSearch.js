@@ -1,6 +1,6 @@
 $(document).ready(function () {
-    $('#Query').on('input', function (e) {
-        query = $(this).val();
+    $('#search').click(function () {
+        query = $('#query').val();
         $.ajax({
             type: "POST",
             url: userSearchResultsURL,

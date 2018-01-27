@@ -4,6 +4,8 @@
 
 <script>
     // We need to define the action URLs for the script
+    var homeUrl = '@Url.SubRouteUrl("admin", "Admin.UserSearch")';
+    var deleteUserURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "DeleteAccount" })';
     var editAccountType = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "EditUserAccountType" })';
     var editAccountStatus = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "EditUserAccountStatus" })';
     var createInviteCode = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "CreateInviteCode" })';
@@ -29,10 +31,10 @@
         <div class="col-sm-8">
             <select class="userAccountType">
                 @{
-                foreach (AccountType value in Enum.GetValues(typeof(AccountType)))
-                {
-                    <option @(value == Model.AccountType ? "selected" : string.Empty)>@value.ToString()</option>
-            }
+                    foreach (AccountType value in Enum.GetValues(typeof(AccountType)))
+                    {
+                        <option @(value == Model.AccountType ? "selected" : string.Empty)>@value.ToString()</option>
+                    }
                 }
             </select>
         </div>
@@ -45,10 +47,10 @@
         <div class="col-sm-8">
             <select class="userAccountStatus">
                 @{
-                foreach (AccountStatus value in Enum.GetValues(typeof(AccountStatus)))
-                {
-                    <option @(value == Model.AccountStatus ? "selected" : string.Empty)>@value.ToString()</option>
-            }
+                    foreach (AccountStatus value in Enum.GetValues(typeof(AccountStatus)))
+                    {
+                        <option @(value == Model.AccountStatus ? "selected" : string.Empty)>@value.ToString()</option>
+                    }
                 }
             </select>
         </div>
@@ -56,7 +58,13 @@
     <br />
     <div class="row">
         <div class="col-sm-2 col-sm-offset-1">
-            <button type="button" class="list-group-item btn-info" id="createInviteCode">Create Invite Code</button>
+            <button type="button" class="btn btn-info" id="createInviteCode">Create Invite Code</button>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-2 col-sm-offset-1">
+            <button type="button" class="btn btn-danger" id="delete_account">Delete Account</button>
         </div>
     </div>
 </div>

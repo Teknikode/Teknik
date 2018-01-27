@@ -572,7 +572,7 @@ namespace Teknik.Areas.Users.Utility
             {
                 // Update uploads
                 List<Upload.Models.Upload> uploads = db.Uploads.Where(u => u.User.Username == user.Username).ToList();
-                if (uploads != null)
+                if (uploads.Any())
                 {
                     foreach (Upload.Models.Upload upload in uploads)
                     {
@@ -584,7 +584,7 @@ namespace Teknik.Areas.Users.Utility
 
                 // Update pastes
                 List<Paste.Models.Paste> pastes = db.Pastes.Where(u => u.User.Username == user.Username).ToList();
-                if (pastes != null)
+                if (pastes.Any())
                 {
                     foreach (Paste.Models.Paste paste in pastes)
                     {
@@ -596,7 +596,7 @@ namespace Teknik.Areas.Users.Utility
 
                 // Update shortened urls
                 List<ShortenedUrl> shortUrls = db.ShortenedUrls.Where(u => u.User.Username == user.Username).ToList();
-                if (shortUrls != null)
+                if (shortUrls.Any())
                 {
                     foreach (ShortenedUrl shortUrl in shortUrls)
                     {
@@ -608,7 +608,7 @@ namespace Teknik.Areas.Users.Utility
 
                 // Update vaults
                 List<Vault.Models.Vault> vaults = db.Vaults.Where(u => u.User.Username == user.Username).ToList();
-                if (vaults != null)
+                if (vaults.Any())
                 {
                     foreach (Vault.Models.Vault vault in vaults)
                     {
@@ -628,7 +628,7 @@ namespace Teknik.Areas.Users.Utility
 
                 // Delete post comments
                 List<BlogPostComment> postComments = db.BlogComments.Where(u => u.User.Username == user.Username).ToList();
-                if (postComments != null)
+                if (postComments.Any())
                 {
                     foreach (BlogPostComment postComment in postComments)
                     {
@@ -639,7 +639,7 @@ namespace Teknik.Areas.Users.Utility
 
                 // Delete podcast comments
                 List<Podcast.Models.PodcastComment> podComments = db.PodcastComments.Where(u => u.User.Username == user.Username).ToList();
-                if (podComments != null)
+                if (podComments.Any())
                 {
                     foreach (Podcast.Models.PodcastComment podComment in podComments)
                     {
@@ -650,7 +650,7 @@ namespace Teknik.Areas.Users.Utility
 
                 // Delete Recovery Email Verifications
                 List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Where(r => r.User.Username == user.Username).ToList();
-                if (verCodes != null)
+                if (verCodes.Any())
                 {
                     foreach (RecoveryEmailVerification verCode in verCodes)
                     {
@@ -661,7 +661,7 @@ namespace Teknik.Areas.Users.Utility
 
                 // Delete Password Reset Verifications 
                 List<ResetPasswordVerification> verPass = db.ResetPasswordVerifications.Where(r => r.User.Username == user.Username).ToList();
-                if (verPass != null)
+                if (verPass.Any())
                 {
                     foreach (ResetPasswordVerification ver in verPass)
                     {
@@ -671,9 +671,10 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Delete Owned Invite Codes
-                if (user.OwnedInviteCodes != null)
+                List<InviteCode> ownedCodes = db.InviteCodes.Where(i => i.Owner.Username == user.Username).ToList();
+                if (ownedCodes.Any())
                 {
-                    foreach (InviteCode code in user.OwnedInviteCodes)
+                    foreach (InviteCode code in ownedCodes)
                     {
                         db.InviteCodes.Remove(code);
                     }
@@ -681,15 +682,19 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Delete Claimed Invite Code
-                if (user.ClaimedInviteCode != null)
+                List<InviteCode> claimedCodes = db.InviteCodes.Where(i => i.ClaimedUser.Username == user.Username).ToList();
+                if (claimedCodes.Any())
                 {
-                    db.InviteCodes.Remove(user.ClaimedInviteCode);
+                    foreach (InviteCode code in claimedCodes)
+                    {
+                        db.InviteCodes.Remove(code);
+                    }
                     db.SaveChanges();
                 }
 
                 // Delete Auth Tokens
                 List<AuthToken> authTokens = db.AuthTokens.Where(t => t.User.UserId == user.UserId).ToList();
-                if (authTokens != null)
+                if (authTokens.Any())
                 {
                     foreach (AuthToken authToken in authTokens)
                     {
