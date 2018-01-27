@@ -537,6 +537,12 @@ Thank you for your continued use of Teknik!
                     continue;
                 }
 
+                // If they are Premium, don't worry about it either
+                if (user.AccountType == AccountType.Premium && user.AccountStatus != AccountStatus.Banned)
+                {
+                    continue;
+                }
+
                 #region Inactivity Finding
                 DateTime lastActivity = DateTime.Now;
                 try
