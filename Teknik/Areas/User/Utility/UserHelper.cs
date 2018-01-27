@@ -748,11 +748,9 @@ namespace Teknik.Areas.Users.Utility
             client.Credentials = new NetworkCredential(config.ContactConfig.EmailAccount.Username, config.ContactConfig.EmailAccount.Password);
             client.Timeout = 5000;
 
-            MailMessage mail = new MailMessage(config.ContactConfig.EmailAccount.EmailAddress, email);
+            MailMessage mail = new MailMessage(new MailAddress(config.ContactConfig.EmailAccount.EmailAddress, "Teknik"), new MailAddress(email, username));
             mail.Subject = "Recovery Email Validation";
             mail.Body = string.Format(@"Hello {0},
-
-Welcome to Teknik!  
 
 You are recieving this email because you have specified this email address as your recovery email.  In the event that you forget your password, you can visit {1} and request a temporary password reset key be sent to this email.  You will then be able to reset and choose a new password.
 
@@ -760,9 +758,7 @@ In order to verify that you own this email, please click the following link or p
 
 If you recieved this email and you did not sign up for an account, please email us at {3} and ignore the verification link.
 
-Thank you and enjoy!
-
-- Teknik Administration", username, resetUrl, verifyUrl, config.SupportEmail);
+- Teknik", username, resetUrl, verifyUrl, config.SupportEmail);
             mail.BodyEncoding = UTF8Encoding.UTF8;
             mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
@@ -829,7 +825,7 @@ Thank you and enjoy!
             client.Credentials = new NetworkCredential(config.ContactConfig.EmailAccount.Username, config.ContactConfig.EmailAccount.Password);
             client.Timeout = 5000;
 
-            MailMessage mail = new MailMessage(config.ContactConfig.EmailAccount.EmailAddress, email);
+            MailMessage mail = new MailMessage(new MailAddress(config.ContactConfig.EmailAccount.EmailAddress, "Teknik"), new MailAddress(email, username));
             mail.Subject = "Password Reset Request";
             mail.Body = string.Format(@"Hello {0},
 
@@ -839,7 +835,7 @@ To proceed in resetting your password, please click the following link or paste 
 
 If you recieved this email and you did not reset your password, you can ignore this email and email us at {2} to prevent it occuring again.
 
-- Teknik Administration", username, resetUrl, config.SupportEmail);
+- Teknik", username, resetUrl, config.SupportEmail);
             mail.BodyEncoding = UTF8Encoding.UTF8;
             mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
