@@ -509,14 +509,14 @@ Thank you for your continued use of Teknik!
             foreach (User user in curUsers)
             {
                 // If the username is reserved, let's add it to the list
-                if (UserHelper.UsernameReserved(config, user.Username))
+                if (UserHelper.UsernameReserved(config, user.Username) && user.Username != Constants.SERVERUSER)
                 {
                     foundUsers.Add(user.Username);
                     continue;
                 }
 
                 // If the username is invalid, let's add it to the list
-                if (!UserHelper.ValidUsername(config, user.Username) && user.Username != "Server Admin")
+                if (!UserHelper.ValidUsername(config, user.Username) && user.Username != Constants.SERVERUSER)
                 {
                     foundUsers.Add(user.Username);
                     continue;
@@ -532,7 +532,7 @@ Thank you for your continued use of Teknik!
             foreach (User user in curUsers)
             {
                 // If the username is reserved, don't worry about it
-                if (UserHelper.UsernameReserved(config, user.Username))
+                if (UserHelper.UsernameReserved(config, user.Username) || user.Username == Constants.SERVERUSER)
                 {
                     continue;
                 }
