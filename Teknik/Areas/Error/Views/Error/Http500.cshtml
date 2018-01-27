@@ -1,6 +1,11 @@
-﻿@model Teknik.Areas.Error.ViewModels.ErrorViewModel
+@model Teknik.Areas.Error.ViewModels.ErrorViewModel
 
 @using Teknik.Utilities
+
+@Scripts.Render("~/bundles/error")
+<script>
+    var submitErrorReportURL = '@Url.SubRouteUrl("error", "Error.Action", new { action = "SubmitErrorReport" })';
+</script>
 
 <div class="container">
     <div class="row">
@@ -9,33 +14,38 @@
                 <h1>Whoops!</h1>
                 <h2>500 Server Error</h2>
                 <div class="error-details">
-                    Sorry, a server error occured.  Please contact an Administrator about this error.
-                    <br />
-                    <br />
+                    <p>Sorry, a server error occured.  Please contact an Administrator about this error.</p>
+                    <div class="error-actions">
+                        <a href="@Url.SubRouteUrl("www", "Home.Index")" class="btn btn-default btn-lg">
+                            <span class="glyphicon glyphicon-home"></span>
+                            Take Me Home
+                        </a>
+                        @if (Model != null && Model.Exception != null)
+                        {
+                            <div class="btn btn-primary btn-lg" id="submitErrorReport">
+                                <span class="fa fa-bug"></span>
+                                Submit Bug Report
+                            </div>
+                        }
+                    </div>
                     @if (Model != null && Model.Exception != null)
                     {
-                        <div class="text-left">
+                        <br />
+                        <div class="show-more" id="view-details">
+                            <button role="button" class="btn btn-default btn-sm view-details-button" data-toggle="collapse" data-target="#errorMsg">Show Details</button>
+                        </div>
+                        <div class="text-left collapse" id="errorMsg">
+                            <br />
                             <p>
                                 <b>Exception:</b> @Model.Exception.GetFullMessage(true)
-                                <br />
+                                <br/>
                                 <b>Source:</b> @Model.Exception.Source
                             </p>
-                            <div style="overflow:scroll">
+                            <div style="overflow: scroll">
                                 <pre>@Model.Exception.StackTrace</pre>
                             </div>
                         </div>
                     }
-                </div>
-                <br />
-                <div class="error-actions">
-                    <a href="@Url.SubRouteUrl("www", "Home.Index")" class="btn btn-primary btn-lg">
-                        <span class="glyphicon glyphicon-home"></span>
-                        Take Me Home
-                    </a>
-                    <a href="@Url.SubRouteUrl("contact", "Contact.Index")" class="btn btn-default btn-lg">
-                        <span class="glyphicon glyphicon-envelope"></span> 
-                        Contact Support 
-                    </a>
                 </div>
             </div>
         </div>

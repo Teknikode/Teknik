@@ -124,6 +124,8 @@ namespace Teknik.Areas.Error.Controllers
         [AllowAnonymous]
         public ActionResult Http500(Exception exception)
         {
+            Session["Exception"] = exception;
+
             ViewBag.Title = "500 - " + Config.Title;
             ViewBag.Description = "Something Borked";
 
@@ -139,6 +141,67 @@ namespace Teknik.Areas.Error.Controllers
             model.Exception = exception;
 
             return View("~/Areas/Error/Views/Error/Http500.cshtml", model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult SubmitErrorReport(SubmitReportViewModel model)
+        {
+            try
+            {
+                string exceptionMsg = model.Exception;
+
+                // Try to grab the actual exception that occured
+                object exceptionObj = Session["Exception"];
+                if (exceptionObj != null)
+                {
+                    Exception ex = (Exception) exceptionObj;
+                    exceptionMsg = string.Format(@"
+Exception: {0}
+
+Source: {1}
+
+Stack Trace:
+
+{2}
+", ex.GetFullMessage(true), ex.Source, ex.StackTrace);
+                }
+
+                // Let's also email the message to support
+                SmtpClient client = new SmtpClient();
+                client.Host = Config.ContactConfig.EmailAccount.Host;
+                client.Port = Config.ContactConfig.EmailAccount.Port;
+                client.EnableSsl = Config.ContactConfig.EmailAccount.SSL;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.UseDefaultCredentials = true;
+                client.Credentials = new System.Net.NetworkCredential(Config.ContactConfig.EmailAccount.Username, Config.ContactConfig.EmailAccount.Password);
+                client.Timeout = 5000;
+
+                MailMessage mail = new MailMessage(new MailAddress(Config.NoReplyEmail, Config.NoReplyEmail), new MailAddress(Config.SupportEmail, "Teknik Support"));
+                mail.Sender = new MailAddress(Config.ContactConfig.EmailAccount.EmailAddress);
+                mail.Subject = "[Exception] Application Exception Occured";
+                mail.Body = @"
+An exception has occured at: " + model.CurrentUrl + @"
+
+----------------------------------------
+User Message:
+
+" + model.Message + @"
+
+----------------------------------------
+" + exceptionMsg;
+                mail.BodyEncoding = UTF8Encoding.UTF8;
+                mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
+
+                client.Send(mail);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = "Error submitting report. Exception: " + ex.Message });
+            }
+
+            return Json(new { result = "true" });
         }
 
         private void LogError(LogLevel level, string message, Exception exception)

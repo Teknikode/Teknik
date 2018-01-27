@@ -250,6 +250,7 @@
     <Compile Include="Areas\Error\Controllers\ErrorController.cs" />
     <Compile Include="Areas\Error\ErrorAreaRegistration.cs" />
     <Compile Include="Areas\Error\ViewModels\ErrorViewModel.cs" />
+    <Compile Include="Areas\Error\ViewModels\SubmitReportViewModel.cs" />
     <Compile Include="Areas\FAQ\Controllers\FAQController.cs" />
     <Compile Include="Areas\FAQ\FAQAreaRegistration.cs" />
     <Compile Include="Areas\FAQ\ViewModels\FAQViewModel.cs" />
@@ -406,6 +407,7 @@
     <Content Include="Areas\Blog\Content\Blog.css" />
     <Content Include="Areas\Blog\Scripts\Blog.js" />
     <Content Include="Areas\Contact\Scripts\Contact.js" />
+    <Content Include="Areas\Error\Scripts\Error.js" />
     <Content Include="Areas\FAQ\Content\FAQ.css" />
     <Content Include="Areas\Help\Content\Help.css" />
     <Content Include="Areas\Home\Content\Home.css" />

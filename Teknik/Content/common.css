@@ -1,4 +1,4 @@
-﻿html,
+html,
 body {
   height: 100%;
   /* The html and body elements cannot have any padding or margin. */
@@ -320,7 +320,7 @@ textarea{
 .hero-widget label { font-size: 17px; }
 .hero-widget .options { margin-top: 10px; }
 
-.error-template {padding: 40px 15px;text-align: center;}
+.error-template {text-align: center;}
 .error-actions {margin-top:15px;margin-bottom:15px;}
 .error-actions .btn { margin-right:10px; }
 
