@@ -182,18 +182,18 @@ namespace Teknik.Areas.Upload.Controllers
                     // Check for the cache
                     bool isCached = false;
                     string modifiedSince = Request.Headers["If-Modified-Since"];
-                    //if (!string.IsNullOrEmpty(modifiedSince))
-                    //{
-                    //    DateTime modTime = new DateTime();
-                    //    bool parsed = DateTime.TryParse(modifiedSince, out modTime);
-                    //    if (parsed)
-                    //    {
-                    //        if ((modTime - dateUploaded).TotalSeconds <= 1)
-                    //        {
-                    //            isCached = true;
-                    //        }
-                    //    }
-                    //}
+                    if (!string.IsNullOrEmpty(modifiedSince))
+                    {
+                        DateTime modTime = new DateTime();
+                        bool parsed = DateTime.TryParse(modifiedSince, out modTime);
+                        if (parsed)
+                        {
+                            if ((modTime - dateUploaded).TotalSeconds <= 1)
+                            {
+                                isCached = true;
+                            }
+                        }
+                    }
 
                     if (isCached)
                     {
