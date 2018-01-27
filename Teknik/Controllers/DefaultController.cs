@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.UI;
 using Teknik.Areas.Error.Controllers;
 using Teknik.Configuration;
 
@@ -72,7 +73,11 @@ namespace Teknik.Controllers
         }
 
         // Get the Favicon
+        [HttpGet]
         [AllowAnonymous]
+        [OutputCache(
+            Duration = 31536000,
+            Location = OutputCacheLocation.ServerAndClient)]
         public ActionResult Favicon()
         {
             // Get favicon
@@ -81,7 +86,11 @@ namespace Teknik.Controllers
         }
 
         // Get the Logo
+        [HttpGet]
         [AllowAnonymous]
+        [OutputCache(
+            Duration = 31536000,
+            Location = OutputCacheLocation.ServerAndClient)]
         public ActionResult Logo()
         {
             // Get favicon
@@ -90,6 +99,7 @@ namespace Teknik.Controllers
         }
 
         // Get the Robots.txt
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult Robots()
         {
