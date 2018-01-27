@@ -246,51 +246,53 @@ $(document).ready(function () {
     /* ----------------------------------------
                 Visitor History                      
     -----------------------------------------*/
-    visitChart = new Highcharts.chart({
-        chart: {
-            renderTo: 'visitor-chart',
-            type: 'line',
-            marginRight: 10
-        },
-        title: {
-            text: 'Daily Visitors'
-        },
-        xAxis: {
-            type: 'datetime',
-            dateTimeLabelFormats: { // don't display the dummy year
-                month: '%e. %b',
-                year: '%b'
+    if (showVisitorStats) {
+        visitChart = new Highcharts.chart({
+            chart: {
+                renderTo: 'visitor-chart',
+                type: 'line',
+                marginRight: 10
             },
             title: {
-                text: 'Date'
-            }
-        },
-        yAxis: {
-            title: {
-                text: 'Visitors'
+                text: 'Daily Visitors'
             },
-            min: 0
-        },
-        tooltip: {
-            shared: true,
-            crosshairs: true,
-            headerFormat: '<span style="font-size: 10px">{point.key:%B %e, %Y}</span><br/>',
-            pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y}</b><br/>'
-        },
-        credits: {
-            enabled: false
-        },
-        series: [
-            {
-                name: 'All Visitors',
-                data: []
+            xAxis: {
+                type: 'datetime',
+                dateTimeLabelFormats: { // don't display the dummy year
+                    month: '%e. %b',
+                    year: '%b'
+                },
+                title: {
+                    text: 'Date'
+                }
             },
-            {
-                name: 'Unique Visitors',
-                data: []
-            }
-        ]
-    });
+            yAxis: {
+                title: {
+                    text: 'Visitors'
+                },
+                min: 0
+            },
+            tooltip: {
+                shared: true,
+                crosshairs: true,
+                headerFormat: '<span style="font-size: 10px">{point.key:%B %e, %Y}</span><br/>',
+                pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y}</b><br/>'
+            },
+            credits: {
+                enabled: false
+            },
+            series: [
+                {
+                    name: 'All Visitors',
+                    data: []
+                },
+                {
+                    name: 'Unique Visitors',
+                    data: []
+                }
+            ]
+        });
+    }
 
 
     /* ----------------------------------------

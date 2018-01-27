@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,23 +14,19 @@ namespace Teknik.Utilities
         {
             try
             {
-                if (flush)
-                {
-                    // If the client isn't here, just quit early
-                    if (!response.IsClientConnected)
-                    {
-                        return;
-                    }
-                    response.Flush();
-                }
-
-                int curByte = 0;
                 int processedBytes = 0;
                 byte[] buffer = new byte[chunkSize];
                 int bytesRemaining = length;
                 int bytesToRead = chunkSize;
                 do
                 {
+                    // Flush the response
+                    if (flush)
+                    {
+                        //response.OutputStream.Write(buffer, 0, 1);
+                        response.Flush();
+                    }
+
                     if (chunkSize > bytesRemaining)
                     {
                         bytesToRead = bytesRemaining;
@@ -39,30 +35,11 @@ namespace Teknik.Utilities
                     processedBytes = stream.Read(buffer, 0, bytesToRead);
                     if (processedBytes > 0)
                     {
-                        // If the client isn't here, just quit early
-                        if (!response.IsClientConnected)
-                        {
-                            return;
-                        }
-
                         response.OutputStream.Write(buffer, 0, processedBytes);
 
                         // Clear the buffer
                         Array.Clear(buffer, 0, chunkSize);
-
-                        // Flush the response
-                        if (flush)
-                        {
-                            // If the client isn't here, just quit early
-                            if (!response.IsClientConnected)
-                            {
-                                return;
-                            }
-                            //response.OutputStream.Write(buffer, 0, 1);
-                            response.Flush();
-                        }
                     }
-                    curByte += processedBytes;
                     bytesRemaining -= processedBytes;
                 }
                 while (processedBytes > 0 && bytesRemaining > 0);
