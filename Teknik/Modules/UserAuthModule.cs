@@ -29,46 +29,45 @@ namespace Teknik.Modules
             string username = string.Empty;
 
             bool hasAuthToken = false;
-            if (context.Request != null)
+            if (context.Request.Headers.HasKeys())
             {
-                if (context.Request.Headers.HasKeys())
+                string auth = context.Request.Headers["Authorization"];
+                if (!string.IsNullOrEmpty(auth))
                 {
-                    string auth = context.Request.Headers["Authorization"];
-                    if (!string.IsNullOrEmpty(auth))
+                    string[] parts = auth.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+                    string type = string.Empty;
+                    string value = string.Empty;
+                    if (parts.Length > 0)
                     {
-                        string[] parts = auth.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        string type = string.Empty;
-                        string value = string.Empty;
-                        if (parts.Length > 0)
-                        {
-                            type = parts[0].ToLower();
-                        }
-                        if (parts.Length > 1)
-                        {
-                            value = parts[1];
-                        }
+                        type = parts[0].ToLower();
+                    }
 
-                        using (TeknikEntities entities = new TeknikEntities())
+                    if (parts.Length > 1)
+                    {
+                        value = parts[1];
+                    }
+
+                    using (TeknikEntities entities = new TeknikEntities())
+                    {
+                        // Get the user information based on the auth type
+                        switch (type)
                         {
-                            // Get the user information based on the auth type
-                            switch (type)
-                            {
-                                case "basic":
-                                    KeyValuePair<string, string> authCreds = StringHelper.ParseBasicAuthHeader(value);
+                            case "basic":
+                                KeyValuePair<string, string> authCreds = StringHelper.ParseBasicAuthHeader(value);
 
-                                    bool tokenValid = UserHelper.UserTokenCorrect(entities, authCreds.Key, authCreds.Value);
-                                    if (tokenValid)
-                                    {
-                                        // it's valid, so let's update it's Last Used date
-                                        UserHelper.UpdateTokenLastUsed(entities, authCreds.Key, authCreds.Value, DateTime.Now);
+                                bool tokenValid = UserHelper.UserTokenCorrect(entities, authCreds.Key, authCreds.Value);
+                                if (tokenValid)
+                                {
+                                    // it's valid, so let's update it's Last Used date
+                                    UserHelper.UpdateTokenLastUsed(entities, authCreds.Key, authCreds.Value, DateTime.Now);
 
-                                        // Set the username
-                                        username = authCreds.Key;
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
+                                    // Set the username
+                                    username = authCreds.Key;
+                                }
+
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }

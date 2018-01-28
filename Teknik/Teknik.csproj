@@ -321,6 +321,7 @@
     <Compile Include="Areas\Vault\ViewModels\VaultItemViewModel.cs" />
     <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
     <Compile Include="Hubs\IRCClientHub.cs" />
+    <Compile Include="Modules\BlacklistModule.cs" />
     <Compile Include="Modules\UserAuthModule.cs" />
     <Compile Include="Security\ITeknikPrincipal.cs" />
     <Compile Include="Security\TeknikPrincipal.cs" />
@@ -395,6 +396,8 @@
     <Compile Include="BaseViewPage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\ipBlacklist.txt" />
+    <Content Include="App_Data\referrerBlacklist.txt" />
     <Content Include="App_Data\reservedUsernames.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

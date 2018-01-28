@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading;
 using Newtonsoft.Json;
@@ -29,6 +29,8 @@ namespace Teknik.Configuration
         private string              _Salt1;
         private string              _Salt2;
         private string              _CdnHost;
+        private string              _IPBlacklistFile;
+        private string              _ReferrerBlacklistFile;
         private UserConfig          _UserConfig;
         private ContactConfig       _ContactConfig;
         private EmailConfig         _EmailConfig;
@@ -46,21 +48,23 @@ namespace Teknik.Configuration
         private PiwikConfig         _PiwikConfig;
         private IRCConfig           _IRCConfig;
 
-        public bool         DevEnvironment  { get { return _DevEnvironment; }       set { _DevEnvironment = value; } }
-        public bool         Migrate         { get { return _Migrate; }              set { _Migrate = value; } }
-        public bool         UseCdn          { get { return _UseCdn; }               set { _UseCdn = value; } }
+        public bool         DevEnvironment          { get { return _DevEnvironment; }       set { _DevEnvironment = value; } }
+        public bool         Migrate                 { get { return _Migrate; }              set { _Migrate = value; } }
+        public bool         UseCdn                  { get { return _UseCdn; }               set { _UseCdn = value; } }
 
         // Site Information
-        public string       Title           { get { return _Title; }                set { _Title = value; } }
-        public string       Description     { get { return _Description; }          set { _Description = value; } }
-        public string       Author          { get { return _Author; }               set { _Author = value; } }
-        public string       Host            { get { return _Host; }                 set { _Host = value; } }
-        public string       SupportEmail    { get { return _SupportEmail; }         set { _SupportEmail = value; } }
-        public string       NoReplyEmail    { get { return _NoReplyEmail; }         set { _NoReplyEmail = value; } }
-        public string       BitcoinAddress  { get { return _BitcoinAddress; }       set { _BitcoinAddress = value; } }
-        public string       Salt1           { get { return _Salt1; }                set { _Salt1 = value; } }
-        public string       Salt2           { get { return _Salt2; }                set { _Salt2 = value; } }
-        public string       CdnHost         { get { return _CdnHost; }              set { _CdnHost = value; } }
+        public string       Title                   { get { return _Title; }                set { _Title = value; } }
+        public string       Description             { get { return _Description; }          set { _Description = value; } }
+        public string       Author                  { get { return _Author; }               set { _Author = value; } }
+        public string       Host                    { get { return _Host; }                 set { _Host = value; } }
+        public string       SupportEmail            { get { return _SupportEmail; }         set { _SupportEmail = value; } }
+        public string       NoReplyEmail            { get { return _NoReplyEmail; }         set { _NoReplyEmail = value; } }
+        public string       BitcoinAddress          { get { return _BitcoinAddress; }       set { _BitcoinAddress = value; } }
+        public string       Salt1                   { get { return _Salt1; }                set { _Salt1 = value; } }
+        public string       Salt2                   { get { return _Salt2; }                set { _Salt2 = value; } }
+        public string       CdnHost                 { get { return _CdnHost; }              set { _CdnHost = value; } }
+        public string       IPBlacklistFile         { get { return _IPBlacklistFile;}       set { _IPBlacklistFile = value; }}
+        public string       ReferrerBlacklistFile   { get { return _ReferrerBlacklistFile;} set { _ReferrerBlacklistFile = value; }}
 
         // User Configuration
         public UserConfig           UserConfig          { get { return _UserConfig; }           set { _UserConfig = value; } }
@@ -122,35 +126,37 @@ namespace Teknik.Configuration
 
         public void SetDefaults()
         {
-            DevEnvironment      = false;
-            Migrate             = false;
-            UseCdn              = false;
-            Title               = string.Empty;
-            Description         = string.Empty;
-            Author              = string.Empty;
-            Host                = string.Empty;
-            SupportEmail        = string.Empty;
-            NoReplyEmail        = string.Empty;
-            BitcoinAddress      = string.Empty;
-            Salt1               = string.Empty;
-            Salt2               = string.Empty;
-            CdnHost             = string.Empty;
-            UserConfig          = new UserConfig();
-            EmailConfig         = new EmailConfig();
-            ContactConfig       = new ContactConfig();
-            GitConfig           = new GitConfig();
-            BlogConfig          = new BlogConfig();
-            UploadConfig        = new UploadConfig();
-            PasteConfig         = new PasteConfig();
-            ApiConfig           = new ApiConfig();
-            PodcastConfig       = new PodcastConfig();
-            StreamConfig        = new StreamConfig();
-            ShortenerConfig     = new ShortenerConfig();
-            VaultConfig         = new VaultConfig();
-            StatusConfig        = new StatusConfig();
-            LoggingConfig       = new LoggingConfig();
-            PiwikConfig         = new PiwikConfig();
-            IRCConfig           = new IRCConfig();
+            DevEnvironment          = false;
+            Migrate                 = false;
+            UseCdn                  = false;
+            Title                   = string.Empty;
+            Description             = string.Empty;
+            Author                  = string.Empty;
+            Host                    = string.Empty;
+            SupportEmail            = string.Empty;
+            NoReplyEmail            = string.Empty;
+            BitcoinAddress          = string.Empty;
+            Salt1                   = string.Empty;
+            Salt2                   = string.Empty;
+            CdnHost                 = string.Empty;
+            IPBlacklistFile         = string.Empty;
+            ReferrerBlacklistFile   = string.Empty;
+            UserConfig              = new UserConfig();
+            EmailConfig             = new EmailConfig();
+            ContactConfig           = new ContactConfig();
+            GitConfig               = new GitConfig();
+            BlogConfig              = new BlogConfig();
+            UploadConfig            = new UploadConfig();
+            PasteConfig             = new PasteConfig();
+            ApiConfig               = new ApiConfig();
+            PodcastConfig           = new PodcastConfig();
+            StreamConfig            = new StreamConfig();
+            ShortenerConfig         = new ShortenerConfig();
+            VaultConfig             = new VaultConfig();
+            StatusConfig            = new StatusConfig();
+            LoggingConfig           = new LoggingConfig();
+            PiwikConfig             = new PiwikConfig();
+            IRCConfig               = new IRCConfig();
         }
 
         public static Config Deserialize(string text)
