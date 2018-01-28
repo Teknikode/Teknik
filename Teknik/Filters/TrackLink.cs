@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,16 +19,21 @@ namespace Teknik.Filters
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            HttpRequestBase request = filterContext.HttpContext.Request;
-            // Fire and forget.  Don't need to wait for it.
-            Task.Run(() => AsyncTrackLink(request, request.Url.ToString()));
+            Config config = Config.Load();
+
+            if (config.PiwikConfig.Enabled)
+            {
+                HttpRequestBase request = filterContext.HttpContext.Request;
+
+                // Fire and forget.  Don't need to wait for it.
+                Task.Run(() => AsyncTrackLink(request, config, request.Url?.ToString()));
+            }
 
             base.OnActionExecuted(filterContext);
         }
 
-        private void AsyncTrackLink(HttpRequestBase request, string url)
+        private void AsyncTrackLink(HttpRequestBase request, Config config, string url)
         {
-            Config config = Config.Load();
             Tracking.TrackLink(request, config, url);
         }
     }
