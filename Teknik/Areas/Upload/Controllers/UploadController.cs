@@ -20,10 +20,12 @@ using Teknik.Models;
 using Teknik.Attributes;
 using System.Text;
 using Teknik.Utilities.Cryptography;
+using System.Web.SessionState;
 
 namespace Teknik.Areas.Upload.Controllers
 {
     [TeknikAuthorize]
+    [SessionState(SessionStateBehavior.ReadOnly)]
     public class UploadController : DefaultController
     {
         // GET: Upload/Upload
