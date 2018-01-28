@@ -40,9 +40,8 @@
       <HintPath>..\..\packages\Piwik.Analytics.0.3.0\lib\net40\Piwik.Analytics.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Piwik.Tracker, Version=2.16.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Piwik.Tracker.2.16.0.0\lib\net40\Piwik.Tracker.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Piwik.Tracker, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Piwik.Tracker.3.0.0\lib\net40\Piwik.Tracker.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

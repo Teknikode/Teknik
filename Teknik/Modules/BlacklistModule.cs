@@ -33,56 +33,11 @@ namespace Teknik.Modules
             context.BeginRequest += onBeginRequest;
         }
 
-        #region Referrer Info
-        private const string BLOCKEDREFERRERKEY = "BlockedReferrer";
-        private static string referrerFileName = null;
-        private static object referrerFileNameObj = new object();
-
-        public static string GetReferrerFilePath()
-        {
-            if (referrerFileName != null)
-                return referrerFileName;
-            lock (referrerFileNameObj)
-            {
-                if (referrerFileName == null)
-                {
-                    Config config = Config.Load();
-                    referrerFileName = config.ReferrerBlacklistFile;
-                }
-            }
-
-            return referrerFileName;
-        }
-        #endregion
-
-        #region IP Info
-        private const string BLOCKEDIPKEY = "BlockedIP";
-        private static string ipFileName = null;
-        private static object ipFileNameObj = new object();
-
-        public static string GetIPFilePath()
-        {
-            if (ipFileName != null)
-                return ipFileName;
-            lock (ipFileNameObj)
-            {
-                if (ipFileName == null)
-                {
-                    Config config = Config.Load();
-                    ipFileName = config.IPBlacklistFile;
-                }
-            }
-
-            return ipFileName;
-        }
-        #endregion
-
-        public static StringDictionary GetFileData(HttpContext context, string key, Func<string> fn)
+        public static StringDictionary GetFileData(HttpContext context, string key, string filePath)
         {
             StringDictionary data = (StringDictionary)context.Cache[key];
             if (data == null)
             {
-                string filePath = fn();
                 data = GetFileLines(filePath);
                 context.Cache.Insert(key, data, new CacheDependency(filePath));
             }
@@ -118,6 +73,8 @@ namespace Teknik.Modules
 
             if (app != null)
             {
+                Config config = Config.Load();
+
                 bool blocked = false;
                 string blockReason = string.Empty;
 
@@ -127,7 +84,7 @@ namespace Teknik.Modules
                     string IPAddr = app.Context.Request.ServerVariables["REMOTE_ADDR"];
                     if (!string.IsNullOrEmpty(IPAddr))
                     {
-                        StringDictionary badIPs = GetFileData(app.Context, BLOCKEDIPKEY, GetIPFilePath);
+                        StringDictionary badIPs = GetFileData(app.Context, "BlockedIPs", config.IPBlacklistFile);
 
                         blocked |= (badIPs != null && badIPs.ContainsKey(IPAddr));
                         blockReason = $"This IP address ({IPAddr}) has been blacklisted.  If you feel this is in error, please contact support@teknik.io for assistance.";
@@ -141,7 +98,7 @@ namespace Teknik.Modules
                     string referrer = app.Context.Request.UrlReferrer?.Host;
                     if (!string.IsNullOrEmpty(referrer))
                     {
-                        StringDictionary badReferrers = GetFileData(app.Context, BLOCKEDREFERRERKEY, GetReferrerFilePath);
+                        StringDictionary badReferrers = GetFileData(app.Context, "BlockedReferrers", config.ReferrerBlacklistFile);
 
                         blocked |= (badReferrers != null && badReferrers.ContainsKey(referrer));
                         blockReason = $"This referrer ({referrer}) has been blacklisted.  If you feel this is in error, please contact support@teknik.io for assistance.";
