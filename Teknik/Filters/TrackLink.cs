@@ -20,15 +20,11 @@ namespace Teknik.Filters
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            Config config = Config.Load();
+            HttpRequestBase request = filterContext.HttpContext.Request;
 
-            if (config.PiwikConfig.Enabled)
+            string doNotTrack = request.Headers["DNT"];
+            if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
             {
-                HttpRequestBase request = filterContext.HttpContext.Request;
-
-                string doNotTrack = request.Headers["DNT"];
-                bool dnt = (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1");
-
                 string userAgent = request.UserAgent;
 
                 string ipAddress = request.ClientIPFromRequest(true);
@@ -40,15 +36,15 @@ namespace Teknik.Filters
                     url = request.Url.ToString();
 
                 // Fire and forget.  Don't need to wait for it.
-                Task.Run(() => AsyncTrackLink(dnt, config.PiwikConfig.SiteId, config.PiwikConfig.Url, userAgent, ipAddress, config.PiwikConfig.TokenAuth, url, urlReferrer));
+                Task.Run(() => AsyncTrackLink(userAgent, ipAddress, url, urlReferrer));
             }
 
             base.OnActionExecuted(filterContext);
         }
 
-        private void AsyncTrackLink(bool dnt, int siteId, string siteUrl, string userAgent, string clientIp, string token, string url, string urlReferrer)
+        private static void AsyncTrackLink(string userAgent, string clientIp, string url, string urlReferrer)
         {
-            Tracking.TrackLink(dnt, siteId, siteUrl, userAgent, clientIp, token, url, urlReferrer);
+            Tracking.TrackLink(userAgent, clientIp, url, urlReferrer);
         }
     }
 }

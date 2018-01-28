@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Threading;
+using System.Web;
+using System.Web.Caching;
 using Newtonsoft.Json;
 using Teknik.Utilities;
 using Teknik.Utilities.Cryptography;
@@ -9,11 +11,10 @@ namespace Teknik.Configuration
 {
     public class Config
     {
-        private static Config _Config { get; set; }
-        private static string _FileHash { get; set; }
+        private const string _ConfigCacheKey = "ConfigCache";
 
-        private ReaderWriterLockSlim _ConfigRWLock;
-        private ReaderWriterLockSlim _ConfigFileRWLock;
+        private static Config _Config { get; set; }
+        
         private JsonSerializerSettings _JsonSettings;
 
         private bool                _DevEnvironment;
@@ -116,8 +117,6 @@ namespace Teknik.Configuration
 
         public Config()
         {
-            _ConfigRWLock               = new ReaderWriterLockSlim();
-            _ConfigFileRWLock           = new ReaderWriterLockSlim();
             _JsonSettings               = new JsonSerializerSettings();
             _JsonSettings.Formatting    = Formatting.Indented;
 
@@ -171,16 +170,13 @@ namespace Teknik.Configuration
 
         public static Config Load()
         {
-            string path = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
-            string newHash = string.Empty;
-            if (File.Exists(Path.Combine(path, "Config.json")))
+            HttpContext context = HttpContext.Current;
+            _Config = (Config)context.Cache[_ConfigCacheKey];
+            if (_Config == null)
             {
-                newHash = MD5.FileHash(Path.Combine(path, "Config.json"));
-            }
-            if (_Config == null || _FileHash == null || newHash != _FileHash)
-            {
+                string path = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
                 _Config = Load(path);
-                _FileHash = newHash;
+                context.Cache.Insert(_ConfigCacheKey, _Config, new CacheDependency(path));
             }
             return _Config;
         }

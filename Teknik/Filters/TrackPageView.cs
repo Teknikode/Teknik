@@ -21,23 +21,48 @@ namespace Teknik.Filters
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            Config config = Config.Load();
+            HttpRequestBase request = filterContext.HttpContext.Request;
 
-            if (config.PiwikConfig.Enabled)
+            string doNotTrack = request.Headers["DNT"];
+            if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
             {
                 string title = filterContext.Controller?.ViewBag?.Title;
 
-                HttpRequestBase request = filterContext.HttpContext.Request;
+                string sub = request.RequestContext.RouteData.Values["sub"].ToString();
+                if (string.IsNullOrEmpty(sub))
+                {
+                    sub = request.Url?.AbsoluteUri.GetSubdomain();
+                }
+
+                string ipAddress = request.ClientIPFromRequest(true);
+
+                string url = string.Empty;
+                if (request.Url != null)
+                    url = request.Url.ToString();
+
+                string urlReferrer = request.UrlReferrer?.ToString();
+
+                string userAgent = request.UserAgent;
+
+                int pixelWidth = request.Browser.ScreenPixelsWidth;
+                int pixelHeight = request.Browser.ScreenPixelsHeight;
+
+                bool hasCookies = request.Browser.Cookies;
+
+                string acceptLang = request.Headers["Accept-Language"];
+
+                bool hasJava = request.Browser.JavaApplets;
+
                 // Fire and forget.  Don't need to wait for it.
-                Task.Run(() => AsyncTrackPageView(request, config, title));
+                Task.Run(() => AsyncTrackPageView(title, sub, ipAddress, url, urlReferrer, userAgent,pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava));
             }
 
             base.OnActionExecuted(filterContext);
         }
 
-        private void AsyncTrackPageView(HttpRequestBase request, Config config, string title)
+        private static void AsyncTrackPageView(string title, string sub, string clientIp, string url, string urlReferrer, string userAgent, int pixelWidth, int pixelHeight, bool hasCookies, string acceptLang, bool hasJava)
         {
-            Tracking.TrackPageView(request, config, title);
+            Tracking.TrackPageView(title, sub, clientIp, url, urlReferrer, userAgent, pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava);
         }
     }
 }

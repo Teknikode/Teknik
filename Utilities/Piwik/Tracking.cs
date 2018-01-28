@@ -8,20 +8,14 @@ namespace Teknik.Piwik
 {
     public static class Tracking
     {
-        public static void TrackPageView(HttpRequestBase request, Config config, string title)
+        public static void TrackPageView(string title, string sub, string clientIp, string url, string urlReferrer, string userAgent, int pixelWidth, int pixelHeight, bool hasCookies, string acceptLang, bool hasJava)
         {
             try
             {
-                // Follow Do Not Track
-                string doNotTrack = request.Headers["DNT"];
-                if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
-                {
-                    string sub = request.RequestContext.RouteData.Values["sub"].ToString();
-                    if (string.IsNullOrEmpty(sub))
-                    {
-                        sub = request.Url.AbsoluteUri.GetSubdomain();
-                    }
+                Config config = Config.Load();
 
+                if (config.PiwikConfig.Enabled)
+                {
                     if (config.DevEnvironment)
                     {
                         sub = "dev - " + sub;
@@ -30,29 +24,25 @@ namespace Teknik.Piwik
                     //PiwikTracker.URL = config.PiwikConfig.Url;
                     PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId, config.PiwikConfig.Url);
 
-                    // Get Request Info
-                    string ipAddress = request.ClientIPFromRequest(true);
-                    tracker.SetIp(ipAddress);
+                    // Set Request Info
+                    tracker.SetIp(clientIp);
                     tracker.SetTokenAuth(config.PiwikConfig.TokenAuth);
-                    tracker.SetUrl(request.Url.ToString());
 
-                    tracker.SetUserAgent(request.UserAgent);
+                    tracker.SetUserAgent(userAgent);
 
-                    // Get browser info
-                    tracker.SetResolution(request.Browser.ScreenPixelsWidth, request.Browser.ScreenPixelsHeight);
-                    tracker.SetBrowserHasCookies(request.Browser.Cookies);
-                    if (!string.IsNullOrEmpty(request.Headers["Accept-Language"]))
-                        tracker.SetBrowserLanguage(request.Headers["Accept-Language"]);
-                    BrowserPlugins plugins = new BrowserPlugins();
-                    plugins.Java = request.Browser.JavaApplets;
-                    tracker.SetPlugins(plugins);
+                    // Set browser info
+                    tracker.SetResolution(pixelWidth, pixelHeight);
+                    tracker.SetBrowserHasCookies(hasCookies);
+                    if (!string.IsNullOrEmpty(acceptLang))
+                        tracker.SetBrowserLanguage(acceptLang);
+                    tracker.SetPlugins(new BrowserPlugins {Java = hasJava});
 
                     // Get Referral
-                    if (request.UrlReferrer != null)
-                        tracker.SetUrlReferrer(request.UrlReferrer.ToString());
+                    if (!string.IsNullOrEmpty(urlReferrer))
+                        tracker.SetUrlReferrer(urlReferrer);
 
-                    if (request.Url != null)
-                        tracker.SetUrl(request.Url.ToString());
+                    if (!string.IsNullOrEmpty(url))
+                        tracker.SetUrl(url);
 
                     // Send the tracking request
                     tracker.DoTrackPageView(string.Format("{0}/{1}", sub, title));
@@ -64,29 +54,30 @@ namespace Teknik.Piwik
             }
         }
 
-        public static void TrackDownload(bool dnt, int siteId, string siteUrl, string userAgent, string clientIp, string token, string url, string urlReferrer)
+        public static void TrackDownload(string userAgent, string clientIp, string url, string urlReferrer)
         {
-            TrackAction(ActionType.Download, dnt, siteId, siteUrl, userAgent, clientIp, token, url, urlReferrer);
+            TrackAction(ActionType.Download, userAgent, clientIp, url, urlReferrer);
         }
 
-        public static void TrackLink(bool dnt, int siteId, string siteUrl, string userAgent, string clientIp, string token, string url, string urlReferrer)
+        public static void TrackLink(string userAgent, string clientIp, string url, string urlReferrer)
         {
-            TrackAction(ActionType.Link, dnt, siteId, siteUrl, userAgent, clientIp, token, url, urlReferrer);
+            TrackAction(ActionType.Link, userAgent, clientIp, url, urlReferrer);
         }
 
-        private static void TrackAction(ActionType type, bool dnt, int siteId, string siteUrl, string userAgent, string clientIp, string token, string url, string urlReferrer)
+        private static void TrackAction(ActionType type, string userAgent, string clientIp, string url, string urlReferrer)
         {
             try
             {
-                // Follow Do Not Track
-                if (dnt)
+                Config config = Config.Load();
+
+                if (config.PiwikConfig.Enabled)
                 {
-                    PiwikTracker tracker = new PiwikTracker(siteId, siteUrl);
+                    PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId, config.PiwikConfig.Url);
 
                     tracker.SetUserAgent(userAgent);
 
                     tracker.SetIp(clientIp);
-                    tracker.SetTokenAuth(token);
+                    tracker.SetTokenAuth(config.PiwikConfig.TokenAuth);
 
                     // Get Referral
                     if (!string.IsNullOrEmpty(urlReferrer))
