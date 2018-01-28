@@ -26,16 +26,30 @@ namespace Teknik.Filters
             if (config.PiwikConfig.Enabled)
             {
                 HttpRequestBase request = filterContext.HttpContext.Request;
+                
+                string doNotTrack = request.Headers["DNT"];
+                bool dnt = (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1");
+
+                string userAgent = request.UserAgent;
+
+                string ipAddress = request.ClientIPFromRequest(true);
+
+                string urlReferrer = request.UrlReferrer?.ToString();
+
+                string url = string.Empty;
+                if (request.Url != null)
+                    url = request.Url.ToString();
+
                 // Fire and forget.  Don't need to wait for it.
-                Task.Run(() => AsyncTrackDownload(request, config, request.Url?.ToString()));
+                Task.Run(() => AsyncTrackDownload(dnt, config.PiwikConfig.SiteId, config.PiwikConfig.Url, userAgent, ipAddress, config.PiwikConfig.TokenAuth, url, urlReferrer));
             }
 
             base.OnActionExecuted(filterContext);
         }
 
-        private void AsyncTrackDownload(HttpRequestBase request, Config config, string url)
+        private void AsyncTrackDownload(bool dnt, int siteId, string siteUrl, string userAgent, string clientIp, string token, string url, string urlReferrer)
         {
-            Tracking.TrackDownload(request, config, url);
+            Tracking.TrackDownload(dnt, siteId, siteUrl, userAgent, clientIp, token, url, urlReferrer);
         }
     }
 }

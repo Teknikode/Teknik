@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using Teknik.Configuration;
 using Teknik.Piwik;
+using Teknik.Utilities;
 
 namespace Teknik.Filters
 {
@@ -25,16 +26,29 @@ namespace Teknik.Filters
             {
                 HttpRequestBase request = filterContext.HttpContext.Request;
 
+                string doNotTrack = request.Headers["DNT"];
+                bool dnt = (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1");
+
+                string userAgent = request.UserAgent;
+
+                string ipAddress = request.ClientIPFromRequest(true);
+
+                string urlReferrer = request.UrlReferrer?.ToString();
+
+                string url = string.Empty;
+                if (request.Url != null)
+                    url = request.Url.ToString();
+
                 // Fire and forget.  Don't need to wait for it.
-                Task.Run(() => AsyncTrackLink(request, config, request.Url?.ToString()));
+                Task.Run(() => AsyncTrackLink(dnt, config.PiwikConfig.SiteId, config.PiwikConfig.Url, userAgent, ipAddress, config.PiwikConfig.TokenAuth, url, urlReferrer));
             }
 
             base.OnActionExecuted(filterContext);
         }
 
-        private void AsyncTrackLink(HttpRequestBase request, Config config, string url)
+        private void AsyncTrackLink(bool dnt, int siteId, string siteUrl, string userAgent, string clientIp, string token, string url, string urlReferrer)
         {
-            Tracking.TrackLink(request, config, url);
+            Tracking.TrackLink(dnt, siteId, siteUrl, userAgent, clientIp, token, url, urlReferrer);
         }
     }
 }
