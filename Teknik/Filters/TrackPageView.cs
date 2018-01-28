@@ -34,7 +34,7 @@ namespace Teknik.Filters
                     sub = request.Url?.AbsoluteUri.GetSubdomain();
                 }
 
-                string ipAddress = request.ClientIPFromRequest(true);
+                string clientIp = request.ClientIPFromRequest(true);
 
                 string url = string.Empty;
                 if (request.Url != null)
@@ -54,15 +54,10 @@ namespace Teknik.Filters
                 bool hasJava = request.Browser.JavaApplets;
 
                 // Fire and forget.  Don't need to wait for it.
-                Task.Run(() => AsyncTrackPageView(title, sub, ipAddress, url, urlReferrer, userAgent,pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava));
+                Tracking.TrackPageView(title, sub, clientIp, url, urlReferrer, userAgent, pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava);
             }
 
             base.OnActionExecuted(filterContext);
-        }
-
-        private static void AsyncTrackPageView(string title, string sub, string clientIp, string url, string urlReferrer, string userAgent, int pixelWidth, int pixelHeight, bool hasCookies, string acceptLang, bool hasJava)
-        {
-            Tracking.TrackPageView(title, sub, clientIp, url, urlReferrer, userAgent, pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava);
         }
     }
 }

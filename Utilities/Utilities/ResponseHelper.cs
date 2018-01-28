@@ -20,13 +20,6 @@ namespace Teknik.Utilities
                 int bytesToRead = chunkSize;
                 do
                 {
-                    // Flush the response
-                    if (flush)
-                    {
-                        //response.OutputStream.Write(buffer, 0, 1);
-                        response.Flush();
-                    }
-
                     if (chunkSize > bytesRemaining)
                     {
                         bytesToRead = bytesRemaining;
@@ -37,10 +30,18 @@ namespace Teknik.Utilities
                     {
                         response.OutputStream.Write(buffer, 0, processedBytes);
 
+                        // Flush the response
+                        if (flush)
+                        {
+                            response.Flush();
+                        }
+
                         // Clear the buffer
                         Array.Clear(buffer, 0, chunkSize);
+
+                        // decrement the total bytes remaining to process
+                        bytesRemaining -= processedBytes;
                     }
-                    bytesRemaining -= processedBytes;
                 }
                 while (processedBytes > 0 && bytesRemaining > 0);
             }
@@ -51,10 +52,7 @@ namespace Teknik.Utilities
             finally
             {
                 // dispose of file stream
-                if (stream != null)
-                {
-                    stream.Dispose();
-                }
+                stream?.Dispose();
             }
         }
     }

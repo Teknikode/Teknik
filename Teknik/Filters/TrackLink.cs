@@ -27,7 +27,7 @@ namespace Teknik.Filters
             {
                 string userAgent = request.UserAgent;
 
-                string ipAddress = request.ClientIPFromRequest(true);
+                string clientIp = request.ClientIPFromRequest(true);
 
                 string urlReferrer = request.UrlReferrer?.ToString();
 
@@ -36,15 +36,10 @@ namespace Teknik.Filters
                     url = request.Url.ToString();
 
                 // Fire and forget.  Don't need to wait for it.
-                Task.Run(() => AsyncTrackLink(userAgent, ipAddress, url, urlReferrer));
+                Tracking.TrackLink(userAgent, clientIp, url, urlReferrer);
             }
 
             base.OnActionExecuted(filterContext);
-        }
-
-        private static void AsyncTrackLink(string userAgent, string clientIp, string url, string urlReferrer)
-        {
-            Tracking.TrackLink(userAgent, clientIp, url, urlReferrer);
         }
     }
 }
