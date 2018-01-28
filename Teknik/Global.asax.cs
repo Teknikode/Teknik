@@ -32,6 +32,8 @@ namespace Teknik
 
             AntiForgeryConfig.RequireSsl = true;
 
+            MvcHandler.DisableMvcResponseHeader = true;
+
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
@@ -43,6 +45,12 @@ namespace Teknik
             var stopwatch = new Stopwatch();
             HttpContext.Current.Items["Stopwatch"] = stopwatch;
             stopwatch.Start();
+        }
+
+        protected void Application_PreSendRequestHeaders(object sender, EventArgs e)
+        {
+            // Remove stupid headers
+            HttpContext.Current.Response.Headers.Remove("Server");
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)

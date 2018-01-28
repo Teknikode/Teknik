@@ -75,26 +75,30 @@ namespace Teknik.Controllers
         // Get the Favicon
         [HttpGet]
         [AllowAnonymous]
-        [OutputCache(
-            Duration = 31536000,
-            Location = OutputCacheLocation.ServerAndClient)]
         public ActionResult Favicon()
         {
             // Get favicon
             string imageFile = Server.MapPath(Constants.FAVICON_PATH);
+
+            Response.Cache.SetCacheability(HttpCacheability.Public);
+            Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
+            Response.Cache.SetLastModified(System.IO.File.GetLastWriteTime(imageFile));
+
             return File(imageFile, "image/x-icon");
         }
 
         // Get the Logo
         [HttpGet]
         [AllowAnonymous]
-        [OutputCache(
-            Duration = 31536000,
-            Location = OutputCacheLocation.ServerAndClient)]
         public ActionResult Logo()
         {
             // Get favicon
             string imageFile = Server.MapPath(Constants.LOGO_PATH);
+
+            Response.Cache.SetCacheability(HttpCacheability.Public);
+            Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
+            Response.Cache.SetLastModified(System.IO.File.GetLastWriteTime(imageFile));
+
             return File(imageFile, "image/svg+xml");
         }
 
