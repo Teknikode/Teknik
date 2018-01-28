@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
@@ -81,6 +81,7 @@ namespace Teknik.Areas.Podcast.Controllers
         }
 
         [HttpGet]
+        [TrackDownload]
         [AllowAnonymous]
         public ActionResult Download(int episode, string fileName)
         {

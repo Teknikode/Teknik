@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -12,6 +12,7 @@ using Teknik.Areas.Vault.ViewModels;
 using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Controllers;
+using Teknik.Filters;
 using Teknik.Models;
 using Teknik.Utilities;
 
@@ -20,6 +21,7 @@ namespace Teknik.Areas.Vault.Controllers
     [TeknikAuthorize]
     public class VaultController : DefaultController
     {
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult ViewVault(string id)
         {
@@ -100,6 +102,7 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpGet]
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult NewVault()
         {
@@ -110,6 +113,7 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpGet]
+        [TrackPageView]
         [AllowAnonymous]
         public ActionResult NewVaultFromService(string type, string items)
         {
@@ -147,6 +151,7 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpGet]
+        [TrackPageView]
         public ActionResult EditVault(string url, string type, string items)
         {
             using (TeknikEntities db = new TeknikEntities())

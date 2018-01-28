@@ -17,7 +17,6 @@ namespace Teknik.Areas.Error.Controllers
     [TeknikAuthorize]
     public class ErrorController : DefaultController
     {
-        [TrackPageView]
         [AllowAnonymous]
         public ActionResult Exception(Exception exception)
         {
@@ -37,8 +36,7 @@ namespace Teknik.Areas.Error.Controllers
 
             return View("~/Areas/Error/Views/Error/Exception.cshtml", model);
         }
-
-        [TrackPageView]
+        
         [AllowAnonymous]
         public ActionResult General(Exception exception)
         {
@@ -119,8 +117,7 @@ namespace Teknik.Areas.Error.Controllers
 
             return View("~/Areas/Error/Views/Error/Http404.cshtml", model);
         }
-
-        [TrackPageView]
+        
         [AllowAnonymous]
         public ActionResult Http500(Exception exception)
         {

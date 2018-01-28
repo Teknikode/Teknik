@@ -8,6 +8,7 @@ using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Attributes;
 using Teknik.Controllers;
+using Teknik.Filters;
 using Teknik.Models;
 using Teknik.Utilities;
 using Teknik.ViewModels;
@@ -20,6 +21,7 @@ namespace Teknik.Areas.Admin.Controllers
         private TeknikEntities db = new TeknikEntities();
 
         [HttpGet]
+        [TrackPageView]
         public ActionResult Dashboard()
         {
             DashboardViewModel model = new DashboardViewModel();
@@ -27,6 +29,7 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [TrackPageView]
         public ActionResult UserSearch()
         {
             UserSearchViewModel model = new UserSearchViewModel();
@@ -34,6 +37,7 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [TrackPageView]
         public ActionResult UserInfo(string username)
         {
             if (UserHelper.UserExists(db, username))
