@@ -172,6 +172,7 @@ namespace Teknik.Areas.Upload.Controllers
                 if (string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
                 {
                     DownloadViewModel model = new DownloadViewModel();
+                    model.CurrentSub = Subdomain;
                     model.FileName = file;
                     model.ContentType = contentType;
                     model.ContentLength = contentLength;

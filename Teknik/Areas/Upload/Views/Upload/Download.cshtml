@@ -5,7 +5,7 @@
 <script nonce="@Context.Items[Constants.NONCE_KEY]">
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
-    var downloadDataUrl = '@Url.SubRouteUrl("upload", "Upload.Action", new { action = "DownloadData" })';
+    var downloadDataUrl = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action = "DownloadData" })';
     var fileName = '@Model.FileName';
     var fileType = '@Model.ContentType';
     var iv = '@Model.IV';
