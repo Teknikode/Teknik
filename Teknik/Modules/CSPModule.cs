@@ -29,9 +29,8 @@ namespace Teknik.Modules
                     if (!string.IsNullOrEmpty(host))
                     {
                         string domain = host.GetDomain();
-                        string sub = host.GetSubdomain();
 
-                        allowedDomain = string.Format("{0}.{1} {1}", (string.IsNullOrEmpty(sub) ? "*" : sub), domain);
+                        allowedDomain = string.Format("*.{0} {0}", domain);
                     }
 
                     // If a CDN is enabled, then add the cdn host

@@ -53,6 +53,10 @@ namespace Teknik
 
         protected void Application_PreSendRequestHeaders(object sender, EventArgs e)
         {
+            // Don't server HSTS over HTTP
+            if (HttpContext.Current.Request.Url.Scheme != "https")
+                HttpContext.Current.Response.Headers.Remove("strict-transport-security");
+
             // Remove stupid headers
             HttpContext.Current.Response.Headers.Remove("Server");
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -27,5 +27,7 @@ namespace Teknik.Areas.Paste.ViewModels
         public string Password { get; set; }
 
         public bool Hide { get; set; }
+
+        public string CurrentSub { get; set; }
     }
 }
