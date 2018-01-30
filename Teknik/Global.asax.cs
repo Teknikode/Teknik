@@ -43,8 +43,12 @@ namespace Teknik
         {
             // Start the generation time stopwatcher
             var stopwatch = new Stopwatch();
-            HttpContext.Current.Items["Stopwatch"] = stopwatch;
+            HttpContext.Current.Items[Constants.PERF_KEY] = stopwatch;
             stopwatch.Start();
+
+            // Generate the NONCE used for this request
+            string nonce = Convert.ToBase64String(Encoding.UTF8.GetBytes(StringHelper.RandomString(24)));
+            HttpContext.Current.Items[Constants.NONCE_KEY] = nonce;
         }
 
         protected void Application_PreSendRequestHeaders(object sender, EventArgs e)
@@ -60,20 +64,13 @@ namespace Teknik
                 HttpContext context = HttpContext.Current;
 
                 // Set the generation time in the header
-                Stopwatch stopwatch = (Stopwatch)context.Items["Stopwatch"];
+                Stopwatch stopwatch = (Stopwatch)context.Items[Constants.PERF_KEY];
                 stopwatch.Stop();
 
                 TimeSpan ts = stopwatch.Elapsed;
                 string elapsedTime = String.Format("{0} seconds", ts.TotalSeconds);
 
                 context.Response.AppendHeader("GenerationTime", elapsedTime);
-
-                // Allow this domain, or everything if local
-                string origin = (Request.IsLocal) ? "*" : context.Request.Headers.Get("Origin");
-                if (!string.IsNullOrEmpty(origin))
-                {
-                    context.Response.AppendHeader("Access-Control-Allow-Origin", origin);
-                }
             }
             catch (Exception ex)
             {

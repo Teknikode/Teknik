@@ -79,7 +79,7 @@ $(document).ready(function () {
                     data: AddAntiForgeryToken({ name: result }),
                     success: function (response) {
                         if (response.result) {
-                            bootbox.dialog({
+                            var dialog = bootbox.dialog({
                                 closeButton: false,
                                 buttons: {
                                     close: {
@@ -89,12 +89,33 @@ $(document).ready(function () {
                                             if ($('#noAuthTokens')) {
                                                 $('#noAuthTokens').remove();
                                             }
-                                            $('#authTokenList').append(response.result.html);
+                                            var item = $(response.result.html);
+
+                                            var deleteBtn = item.find('.deleteAuthToken');
+                                            var editBtn = item.find('.editAuthToken');
+
+                                            deleteBtn.click(function () {
+                                                var authTokenId = $(this).attr("data-authid");
+                                                deleteAuthToken(authTokenId);
+                                            });
+
+                                            editBtn.click(function () {
+                                                var authTokenId = $(this).attr("data-authid");
+                                                editAuthToken(authTokenId);
+                                            });
+
+                                            $('#authTokenList').append(item);
                                         }
                                     }
                                 },
                                 title: "Authentication Token",
-                                message: '<label for="authToken">Make sure to copy your new personal access token now.<br />You won\'t be able to see it again!</label><input type="text" class="form-control" id="authToken" onClick="this.select();" value="' + response.result.token + '">',
+                                message: '<label for="authToken">Make sure to copy your new personal access token now.<br />You won\'t be able to see it again!</label><input type="text" class="form-control" id="authToken" value="' + response.result.token + '">',
+                            });
+
+                            dialog.init(function () {
+                                dialog.find('#authToken').click(function () {
+                                    $(this).select();
+                                });
                             });
                         }
                         else {
@@ -222,6 +243,16 @@ $(document).ready(function () {
             }
         });
         return false;
+    });
+
+    $(".deleteAuthToken").click(function() {
+        var authTokenId = $(this).attr("data-authid");
+        deleteAuthToken(authTokenId);
+    });
+
+    $(".editAuthToken").click(function () {
+        var authTokenId = $(this).attr("data-authid");
+        editAuthToken(authTokenId);
     });
 });
 

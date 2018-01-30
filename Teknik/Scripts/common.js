@@ -79,6 +79,8 @@ $(document).ready(function () {
         });
         return false;
     });
+
+
 });
 
 $(function () {
@@ -107,7 +109,9 @@ $(function () {
     }
 
     // Auo-select bitcoin address
-    $('#bitcoin_address_footer').on('click', 'input[type=text]', function () { this.select(); });
+    $('#bitcoin_address_footer').click(function() {
+        SelectAll('bitcoin_address_footer');
+    });
 
     // Setup anti-forgery functions
     $.appendAntiForgeryToken = function (data, token) {

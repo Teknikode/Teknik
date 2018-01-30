@@ -3,7 +3,7 @@
 @using Teknik.Utilities
 @using Teknik.Utilities.Cryptography
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var generateDeleteKeyURL = '@Url.SubRouteUrl("u", "Upload.GenerateDeleteKey")';
     var deleteVaultURL = '@Url.SubRouteUrl("v", "Vault.DeleteVault")';
 </script>
@@ -73,7 +73,7 @@
                         <br />
                         <div class="row">
                             <div class="col-sm-12">
-                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" onClick="SelectAll('pgpKeyBlock');" readonly>@Model.SecuritySettings.PGPSignature</textarea>
+                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" readonly>@Model.SecuritySettings.PGPSignature</textarea>
                             </div>
                         </div>
                     </div>

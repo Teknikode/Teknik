@@ -1,8 +1,8 @@
-﻿@model Teknik.Areas.Admin.ViewModels.UploadSearchViewModel
+@model Teknik.Areas.Admin.ViewModels.UploadSearchViewModel
 
 @using Teknik.Utilities
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     // We need to define the action URLs for the script
     var searchResultsURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "GetUploadSearchResults" })';
     var generateDeleteKeyURL = '@Url.SubRouteUrl("u", "Upload.GenerateDeleteKey")';

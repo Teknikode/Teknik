@@ -9,8 +9,8 @@
     @if (!codeClaimed)
     {
     <div class="btn-group btn-group-sm pull-right" role="group" aria-label="...">
-        <button type="button" class="btn btn-default" id="copyCode_@Model.InviteCodeId" onclick="copyCode(@(Model.InviteCodeId), '@(Model.Code)');" data-toggle="popover" data-trigger="manual" data-placement="top" data-content="Copied to Clipboard" data-container="body"><i class="fa fa-clipboard"></i></button>
-        <button type="button" class="btn btn-default" onclick="createExternalLink(@Model.InviteCodeId);"><i class="fa fa-external-link"></i></button>
+        <button type="button" class="btn btn-default copyCodeBtn" id="copyCodeBtn_@Model.InviteCodeId" data-code="@Model.Code" data-toggle="popover" data-trigger="manual" data-placement="top" data-content="Copied to Clipboard" data-container="body"><i class="fa fa-clipboard"></i></button>
+        <button type="button" class="btn btn-default extCodeBtn" id="extCodeBtn_@Model.InviteCodeId" data-codeid="@Model.InviteCodeId"><i class="fa fa-external-link"></i></button>
     </div>
     }
     <h4 class="list-group-item-heading" id="inviteCode_Code_@Model.InviteCodeId">@Model.Code</h4>

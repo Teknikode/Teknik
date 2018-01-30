@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Teknik.Utilities;
 
 namespace Teknik.Modules
 {
@@ -35,7 +36,7 @@ namespace Teknik.Modules
                     string result = string.Format("{0:F0}", ms);
 
                     requestContext.Response.Write(
-                            "<script type=\"text/javascript\">" +
+                            "<script nonce=\"" + requestContext.Items[Constants.NONCE_KEY] + "\">" +
                                 "var pageGenerationTime = '" + result + "';" +
                                 "pageloadStopTimer();" +
                             "</script >");

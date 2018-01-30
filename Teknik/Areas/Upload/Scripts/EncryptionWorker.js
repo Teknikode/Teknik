@@ -1,4 +1,4 @@
-﻿self.addEventListener('message', function (e) {
+self.addEventListener('message', function (e) {
     importScripts(e.data.script);
     var bytes = new Uint8Array(e.data.file);
 
@@ -33,7 +33,7 @@
         var curBytes = bytes.subarray(startByte, endByte);
 
         //var b64encoded = btoa(String.fromCharCode.apply(null, curBytes));
-        var wordArray = CryptoJS.lib.WordArray.create(curBytes)
+        var wordArray = CryptoJS.lib.WordArray.create(curBytes);
 
         // encrypt the passed in file data
         var enc = aesCrypto.process(wordArray);

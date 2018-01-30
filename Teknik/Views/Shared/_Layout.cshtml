@@ -25,7 +25,7 @@
         <meta name="wot-verification" content="e858b91d99b767ad70db" /> 
 
         <!-- Start of page 'load' -->
-        <script type="text/javascript">
+        <script nonce="@Context.Items[Constants.NONCE_KEY]">
             var startTime = new Date();
         </script>
 
@@ -71,7 +71,7 @@
         </div> 
         @Html.Partial("_Footer")
 
-        <script type="text/javascript">
+        <script nonce="@Context.Items[Constants.NONCE_KEY]">
             $(document).ready(function () {pageloadDoTimer();});
         </script>
     </body>

@@ -1,8 +1,8 @@
-﻿@model Teknik.Areas.Podcast.ViewModels.MainViewModel
+@model Teknik.Areas.Podcast.ViewModels.MainViewModel
 
 @using Teknik.Utilities
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     // We need to define the action URLs for the script
 
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
@@ -146,7 +146,7 @@
     @if (!Model.Error)
     {
     <div class="podcast-main"></div>
-    <script>
+    <script nonce="@Context.Items[Constants.NONCE_KEY]">
         var podcasts = @Model.Config.PodcastConfig.PodcastsToLoad;
         var startPodcast = 0;
         loadMorePodcasts(startPodcast, podcasts);

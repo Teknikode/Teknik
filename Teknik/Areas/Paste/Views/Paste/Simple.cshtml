@@ -1,4 +1,6 @@
-﻿@model Teknik.Areas.Paste.ViewModels.PasteViewModel
+@model Teknik.Areas.Paste.ViewModels.PasteViewModel
+@using Teknik.Utilities
+
 @{
     Layout = "";
     string syntax = string.Empty;
@@ -24,7 +26,7 @@
 </head>
 <body data-twttr-rendered="true">
     @Html.Raw(Model.Content)
-    <script>
+    <script nonce="@Context.Items[Constants.NONCE_KEY]">
         function pageloadStopTimer() { }
     </script>
 </body>

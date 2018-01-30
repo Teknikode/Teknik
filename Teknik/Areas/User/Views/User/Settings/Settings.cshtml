@@ -10,7 +10,7 @@
 @Styles.Render("~/Content/user/settings")
 @Scripts.Render("~/bundles/user/settings")
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
     var deleteUserURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Delete" })';
 </script>

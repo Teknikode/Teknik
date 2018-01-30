@@ -10,7 +10,7 @@
 @Styles.Render("~/Content/user/settings/invite")
 @Scripts.Render("~/bundles/user/settings/invite")
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var createExternalLinkURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "CreateInviteCodeLink" })';
 </script>
 

@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Status.ViewModels.StatusViewModel
+@model Teknik.Areas.Status.ViewModels.StatusViewModel
 
 @using Teknik.Utilities
 @using Teknik.Areas.Status.Models
@@ -7,7 +7,7 @@
 @Scripts.Render("~/signalr/hubs")
 @Scripts.Render("~/bundles/status")
 
-<script type="text/javascript">
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var getVisitorDataURL = '@Url.SubRouteUrl("status", "Status.Action", new { action = "GetVisitorData" })';
     var showWebCPU = @Model.Config.StatusConfig.ShowWebStatus.ToString().ToLower();
     var showDatabaseCPU = @Model.Config.StatusConfig.ShowDatabaseStatus.ToString().ToLower();

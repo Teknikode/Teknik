@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Admin.ViewModels.UploadResultViewModel
+@model Teknik.Areas.Admin.ViewModels.UploadResultViewModel
 
 @using Teknik.Utilities
 
@@ -23,7 +23,7 @@
             <label for="downloads">Downloads</label>
             <p id="downloads">@Model.Downloads</p>
         </div>
-        <div class="col-sm-2 text-center" style="overflow-x: hidden">
+        <div class="col-sm-2 text-center">
             @{
                 string deleteUrl = (string.IsNullOrEmpty(Model.DeleteKey)) ? string.Empty : Url.SubRouteUrl("u", "Upload.Delete", new { file = Model.Url, key = Model.DeleteKey });
             }

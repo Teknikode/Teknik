@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Paste.ViewModels.PasteCreateViewModel
+@model Teknik.Areas.Paste.ViewModels.PasteCreateViewModel
 
 @using Teknik.Utilities
 @using Teknik.Pygments
@@ -83,7 +83,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     $("select[name='ExpireUnit']").change(function () {
         if ($(this).val() == "never") {
             $('#length-div').addClass("hidden");

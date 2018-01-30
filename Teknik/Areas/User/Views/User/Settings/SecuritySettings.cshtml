@@ -7,7 +7,7 @@
     Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
 }
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
     var editURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditSecurity" })';
     var resendVerifyURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ResendVerifyRecoveryEmail"})';

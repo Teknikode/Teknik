@@ -1,8 +1,8 @@
-﻿@model Teknik.Areas.Blog.ViewModels.PostViewModel
+@model Teknik.Areas.Blog.ViewModels.PostViewModel
 
 @using Teknik.Utilities
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     // We need to define the action URLs for the script
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
     var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
@@ -92,7 +92,7 @@
     }
     <a name="replies"></a>
     <div class="post-comments" id="@Model.PostId"></div>
-    <script>
+    <script nonce="@Context.Items[Constants.NONCE_KEY]">
             linkPostDelete('.delete_post');
             linkPostPublish('.publish_post');
             linkPostUnpublish('.unpublish_post');

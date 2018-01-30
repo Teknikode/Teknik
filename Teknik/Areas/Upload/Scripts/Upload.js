@@ -2,6 +2,15 @@ $(document).ready(function () {
     $("#upload-links").css('display', 'none', 'important');
     $("#upload-links").html('');
 
+    $('[data-toggle="popover"]').popover();
+
+    $('[data-toggle="popover"]').on('shown.bs.popover', function () {
+        var $this = $(this);
+        setTimeout(function () {
+            $this.popover('hide');
+        }, 3000);
+    });
+
     $("[name='encrypt']").bootstrapSwitch();
 
     linkCopyAll($('#copy-all'));
@@ -14,9 +23,15 @@ $(document).ready(function () {
 
 function linkUploadDelete(element, deleteUrl) {
     element.click(function () {
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             title: "Direct Deletion URL",
-            message: '<input type="text" class="form-control" id="deletionLink" onClick="this.select();" value="' + deleteUrl + '">'
+            message: '<input type="text" class="form-control" id="deletionLink" value="' + deleteUrl + '">'
+        });
+
+        dialog.init(function() {
+            dialog.find('#deletionLink').click(function() {
+                    $(this).select();
+                });
         });
         return false;
     });
@@ -76,6 +91,7 @@ function linkCopyAll(element) {
             var urlList = allUploads.join();
             copyTextToClipboard(urlList);
         }
+        element.popover('show');
     });
 }
 

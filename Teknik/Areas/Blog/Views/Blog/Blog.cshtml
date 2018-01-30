@@ -1,8 +1,8 @@
-﻿@model Teknik.Areas.Blog.ViewModels.BlogViewModel
+@model Teknik.Areas.Blog.ViewModels.BlogViewModel
 
 @using Teknik.Utilities
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     // We need to define the action URLs for the script
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
     var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
@@ -49,7 +49,7 @@
         if (Model.HasPosts)
         {
             <div class="blog-main" id="@Model.BlogId"></div>
-            <script>
+            <script nonce="@Context.Items[Constants.NONCE_KEY]">
                 var posts = @Model.Config.BlogConfig.PostsToLoad;
                 var start_post = 0;
                 loadMorePosts(start_post, posts);

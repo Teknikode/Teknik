@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Vault.ViewModels.ModifyVaultViewModel
+@model Teknik.Areas.Vault.ViewModels.ModifyVaultViewModel
 
 @using Teknik.Utilities
 @using Teknik.Areas.Vault.ViewModels
@@ -10,7 +10,7 @@
     string title = (Model.isEdit) ? "Edit Vault" : "Create a New Vault";
 }
 
-<script type="text/javascript">
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
 
     var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
     var validateItemURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = "ValidateItem" })';

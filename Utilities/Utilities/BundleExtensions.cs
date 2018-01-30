@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -39,22 +39,15 @@ namespace Teknik.Utilities
         }
 
         public virtual void Process(BundleContext context, BundleResponse response)
-        {           
-            // Don't continue if we aren't using a CDN
-            if (!context.BundleCollection.UseCdn)
-            {
+        {
+            // If we are using a CDN, then set the host as the CDN host
+            if (!context.BundleCollection.UseCdn || string.IsNullOrEmpty(CdnHost))
                 return;
-            }
 
             // Get the directory and filename for the bundle
             var dir = VirtualPathUtility.GetDirectory(context.BundleVirtualPath).TrimStart('/').TrimStart('~').TrimStart('/').TrimEnd('/');
             var file = VirtualPathUtility.GetFileName(context.BundleVirtualPath);
-            var group = string.Format("{0}{1}", file, Ext);
-
-            if (string.IsNullOrEmpty(CdnHost))
-            {
-                return;
-            }            
+            var group = $"{file}{Ext}";
 
             using (var hashAlgorithm = Cryptography.SHA256.CreateHashAlgorithm())
             {

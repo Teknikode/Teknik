@@ -7,12 +7,18 @@ $(document).ready(function () {
             $this.popover('hide');
         }, 3000);
     });
-});
 
-function copyCode(inviteCodeId, inviteCode) {
-    copyTextToClipboard(inviteCode);
-    $('#copyCode_' + inviteCodeId + '').popover('show');
-}
+    $(".copyCodeBtn").click(function () {
+        var code = $(this).attr("data-code");
+        copyTextToClipboard(code);
+        $(this).popover('show');
+    });
+
+    $(".extCodeBtn").click(function () {
+        var codeId = $(this).attr("data-codeid");
+        createExternalLink(codeId);
+    });
+});
 
 function createExternalLink(inviteCodeId) {
     $.ajax({
@@ -21,9 +27,15 @@ function createExternalLink(inviteCodeId) {
         data: AddAntiForgeryToken({ inviteCodeId: inviteCodeId }),
         success: function (response) {
             if (response.result) {
-                bootbox.dialog({
+                var dialog = bootbox.dialog({
                     title: "Send this link to someone to claim this invite code.",
-                    message: '<input type="text" class="form-control" id="inviteCodeLink" onClick="this.select();" value="' + response.result + '">'
+                    message: '<input type="text" class="form-control" id="inviteCodeLink" value="' + response.result + '">'
+                });
+
+                dialog.init(function () {
+                    dialog.find('#inviteCodeLink').click(function () {
+                        $(this).select();
+                    });
                 });
             }
             else {

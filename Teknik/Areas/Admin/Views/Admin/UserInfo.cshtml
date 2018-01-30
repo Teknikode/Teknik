@@ -2,7 +2,7 @@
 
 @using Teknik.Utilities
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     // We need to define the action URLs for the script
     var homeUrl = '@Url.SubRouteUrl("admin", "Admin.UserSearch")';
     var deleteUserURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "DeleteAccount" })';

@@ -3,7 +3,7 @@
 @using Teknik.Utilities
 
 @Scripts.Render("~/bundles/error")
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var submitErrorReportURL = '@Url.SubRouteUrl("error", "Error.Action", new { action = "SubmitErrorReport" })';
 </script>
 

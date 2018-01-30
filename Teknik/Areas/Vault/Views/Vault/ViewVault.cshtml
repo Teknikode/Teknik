@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Vault.ViewModels.VaultViewModel
+@model Teknik.Areas.Vault.ViewModels.VaultViewModel
 
 @using Teknik.Areas.Vault.ViewModels
 @using Teknik.Utilities
@@ -6,7 +6,7 @@
 
 @Styles.Render("~/Content/vault")
 
-<script type="text/javascript">
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
     var validateItemURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = "ValidateItem" })';
     var modifyVaultURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = "EditVault" })';

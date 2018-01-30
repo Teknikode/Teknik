@@ -1,11 +1,11 @@
-﻿@model Teknik.Areas.Paste.ViewModels.PasteViewModel
+@model Teknik.Areas.Paste.ViewModels.PasteViewModel
 
 @using Teknik.Utilities
 @using Teknik.Areas.Vault.Models
 
 @Styles.Render("~/Content/paste")
 
-<script type="text/javascript">
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.NewVaultFromService", new { type = "Paste" })';
 </script>
 

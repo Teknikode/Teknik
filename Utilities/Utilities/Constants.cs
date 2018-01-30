@@ -1,4 +1,4 @@
-﻿namespace Teknik.Utilities
+namespace Teknik.Utilities
 {
     public static class Constants
     {
@@ -9,5 +9,9 @@
         public const string ROBOTS_PATH = "~/App_Data/robots.txt";
         public const string LOG_FILE_NAME_PREFIX = "Teknik";
         public const string LOG_FILE_EXT = ".log";
+
+        public const string PERF_KEY = "Stopwatch";
+
+        public const string NONCE_KEY = "Nonce";
     }
 }

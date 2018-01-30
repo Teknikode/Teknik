@@ -1,8 +1,8 @@
-﻿@model Teknik.Areas.Upload.ViewModels.DownloadViewModel
+@model Teknik.Areas.Upload.ViewModels.DownloadViewModel
 
 @using Teknik.Utilities
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
     var downloadDataUrl = '@Url.SubRouteUrl("upload", "Upload.Action", new { action = "DownloadData" })';

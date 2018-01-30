@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Upload.ViewModels.UploadViewModel
+@model Teknik.Areas.Upload.ViewModels.UploadViewModel
 
 @using Teknik.Utilities
 @using Teknik.Areas.Vault.Models
@@ -15,7 +15,7 @@
     }
 }
 
-<script>
+<script nonce="@Context.Items[Constants.NONCE_KEY]">
     var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
     var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
     var uploadFileURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action = "Upload" })';
@@ -64,7 +64,7 @@
     <div class="row" id="upload-action-buttons" style="display: none">
         <div class="col-sm-12">
             <div class="btn-group pull-right" role="group">
-                <button type="button" class="btn btn-default btn-sm" id="copy-all"><i class="fa fa-clipboard"></i>&nbsp;Copy All Links</button>
+                <button type="button" class="btn btn-default btn-sm" id="copy-all" data-toggle="popover" data-trigger="manual" data-placement="top" data-content="Copied to Clipboard" data-container="body"><i class="fa fa-clipboard"></i>&nbsp;Copy All Links</button>
                 <button type="button" class="btn btn-default btn-sm" id="create-vault"><i class="fa fa-folder"></i>&nbsp;Create Vault</button>
                 @if (User.Identity.IsAuthenticated && Model.Vaults != null && Model.Vaults.Any())
                 {
