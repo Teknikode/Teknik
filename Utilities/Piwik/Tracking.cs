@@ -21,31 +21,31 @@ namespace Teknik.Piwik
                         sub = "dev - " + sub;
                     }
 
-                    //PiwikTracker.URL = config.PiwikConfig.Url;
+                    PiwikTracker.URL = config.PiwikConfig.Url;
                     PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId, config.PiwikConfig.Url);
 
                     // Set Request Info
-                    tracker.SetIp(clientIp);
-                    tracker.SetTokenAuth(config.PiwikConfig.TokenAuth);
+                    tracker.setIp(clientIp);
+                    tracker.setTokenAuth(config.PiwikConfig.TokenAuth);
 
-                    tracker.SetUserAgent(userAgent);
+                    tracker.setUserAgent(userAgent);
 
                     // Set browser info
-                    tracker.SetResolution(pixelWidth, pixelHeight);
-                    tracker.SetBrowserHasCookies(hasCookies);
+                    tracker.setResolution(pixelWidth, pixelHeight);
+                    tracker.setBrowserHasCookies(hasCookies);
                     if (!string.IsNullOrEmpty(acceptLang))
-                        tracker.SetBrowserLanguage(acceptLang);
-                    tracker.SetPlugins(new BrowserPlugins {Java = hasJava});
+                        tracker.setBrowserLanguage(acceptLang);
+                    tracker.setPlugins(new BrowserPlugins {java = hasJava});
 
                     // Get Referral
                     if (!string.IsNullOrEmpty(urlReferrer))
-                        tracker.SetUrlReferrer(urlReferrer);
+                        tracker.setUrlReferrer(urlReferrer);
 
                     if (!string.IsNullOrEmpty(url))
-                        tracker.SetUrl(url);
+                        tracker.setUrl(url);
 
                     // Send the tracking request
-                    tracker.DoTrackPageView(string.Format("{0}/{1}", sub, title));
+                    tracker.doTrackPageView(string.Format("{0}/{1}", sub, title));
                 }
             }
             catch (Exception ex)
@@ -56,15 +56,15 @@ namespace Teknik.Piwik
 
         public static void TrackDownload(string userAgent, string clientIp, string url, string urlReferrer)
         {
-            TrackAction(ActionType.Download, userAgent, clientIp, url, urlReferrer);
+            TrackAction(PiwikTracker.ActionType.download, userAgent, clientIp, url, urlReferrer);
         }
 
         public static void TrackLink(string userAgent, string clientIp, string url, string urlReferrer)
         {
-            TrackAction(ActionType.Link, userAgent, clientIp, url, urlReferrer);
+            TrackAction(PiwikTracker.ActionType.link, userAgent, clientIp, url, urlReferrer);
         }
 
-        private static void TrackAction(ActionType type, string userAgent, string clientIp, string url, string urlReferrer)
+        private static void TrackAction(PiwikTracker.ActionType type, string userAgent, string clientIp, string url, string urlReferrer)
         {
             try
             {
@@ -74,19 +74,19 @@ namespace Teknik.Piwik
                 {
                     PiwikTracker tracker = new PiwikTracker(config.PiwikConfig.SiteId, config.PiwikConfig.Url);
 
-                    tracker.SetUserAgent(userAgent);
+                    tracker.setUserAgent(userAgent);
 
-                    tracker.SetIp(clientIp);
-                    tracker.SetTokenAuth(config.PiwikConfig.TokenAuth);
+                    tracker.setIp(clientIp);
+                    tracker.setTokenAuth(config.PiwikConfig.TokenAuth);
 
                     // Get Referral
                     if (!string.IsNullOrEmpty(urlReferrer))
-                        tracker.SetUrlReferrer(urlReferrer);
+                        tracker.setUrlReferrer(urlReferrer);
 
                     if (!string.IsNullOrEmpty(url))
-                        tracker.SetUrl(url);
+                        tracker.setUrl(url);
 
-                    tracker.DoTrackAction(url, type);
+                    tracker.doTrackAction(url, type);
                 }
             }
             catch (Exception ex)
