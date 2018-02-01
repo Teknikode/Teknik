@@ -53,12 +53,16 @@ namespace Teknik
 
         protected void Application_PreSendRequestHeaders(object sender, EventArgs e)
         {
-            // Don't server HSTS over HTTP
-            if (HttpContext.Current.Request.Url.Scheme != "https")
-                HttpContext.Current.Response.Headers.Remove("strict-transport-security");
+            if (HttpContext.Current != null)
+            {
+                HttpContext context = HttpContext.Current;
+                // Don't server HSTS over HTTP
+                if (context.Request.Url.Scheme != "https")
+                    HttpContext.Current.Response.Headers.Remove("strict-transport-security");
 
-            // Remove stupid headers
-            HttpContext.Current.Response.Headers.Remove("Server");
+                // Remove stupid headers
+                context.Response.Headers.Remove("Server");
+            }
         }
 
         protected void Application_EndRequest(object sender, EventArgs e)

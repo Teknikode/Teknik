@@ -1,4 +1,4 @@
-﻿using Piwik.Analytics;
+using Piwik.Analytics;
 using Piwik.Analytics.Date;
 using Piwik.Analytics.Modules;
 using System;
@@ -32,51 +32,57 @@ namespace Teknik.Piwik
 
                     foreach (string period in results.Keys)
                     {
-                        Hashtable result = (Hashtable)results[period];
                         // Create a new object to return
                         VisitorData data = new VisitorData();
 
+                        // Set Period Date
                         DateTime date = new DateTime(1900, 1, 1);
                         DateTime.TryParse(period, out date);
                         data.Date = date;
 
-                        int UniqueVisitors = 0;
-                        int.TryParse(result["nb_uniq_visitors"].ToString(), out UniqueVisitors);
-                        data.UniqueVisitors = UniqueVisitors;
+                        // Pull Out Data
+                        if (results[period].GetType() == typeof(Hashtable))
+                        {
+                            Hashtable result = (Hashtable) results[period];
 
-                        int visits = 0;
-                        int.TryParse(result[VisitsSummary.NB_VISITS].ToString(), out visits);
-                        data.Visits = visits;
+                            int UniqueVisitors = 0;
+                            int.TryParse(result["nb_uniq_visitors"].ToString(), out UniqueVisitors);
+                            data.UniqueVisitors = UniqueVisitors;
 
-                        int VisitsConverted = 0;
-                        int.TryParse(result[VisitsSummary.NB_VISITS_CONVERTED].ToString(), out VisitsConverted);
-                        data.VisitsConverted = VisitsConverted;
+                            int visits = 0;
+                            int.TryParse(result[VisitsSummary.NB_VISITS].ToString(), out visits);
+                            data.Visits = visits;
 
-                        int Actions = 0;
-                        int.TryParse(result[VisitsSummary.NB_ACTIONS].ToString(), out Actions);
-                        data.Actions = Actions;
+                            int VisitsConverted = 0;
+                            int.TryParse(result[VisitsSummary.NB_VISITS_CONVERTED].ToString(), out VisitsConverted);
+                            data.VisitsConverted = VisitsConverted;
 
-                        decimal ActionsPerVisit = 0;
-                        decimal.TryParse(result[VisitsSummary.NB_ACTIONS_PER_VISIT].ToString(), out ActionsPerVisit);
-                        data.ActionsPerVisit = ActionsPerVisit;
+                            int Actions = 0;
+                            int.TryParse(result[VisitsSummary.NB_ACTIONS].ToString(), out Actions);
+                            data.Actions = Actions;
 
-                        int MaxActions = 0;
-                        int.TryParse(result[VisitsSummary.MAX_ACTIONS].ToString(), out MaxActions);
-                        data.MaxActions = MaxActions;
+                            decimal ActionsPerVisit = 0;
+                            decimal.TryParse(result[VisitsSummary.NB_ACTIONS_PER_VISIT].ToString(), out ActionsPerVisit);
+                            data.ActionsPerVisit = ActionsPerVisit;
 
-                        int BounceCount = 0;
-                        int.TryParse(result[VisitsSummary.BOUNCE_COUNT].ToString(), out BounceCount);
-                        data.BounceCount = BounceCount;
-                        
-                        data.BounceRate = result[VisitsSummary.BOUNCE_RATE].ToString();
+                            int MaxActions = 0;
+                            int.TryParse(result[VisitsSummary.MAX_ACTIONS].ToString(), out MaxActions);
+                            data.MaxActions = MaxActions;
 
-                        int AverageTimeOnSite = 0;
-                        int.TryParse(result[VisitsSummary.AVG_TIME_ON_SITE].ToString(), out AverageTimeOnSite);
-                        data.AverageTimeOnSite = AverageTimeOnSite;
+                            int BounceCount = 0;
+                            int.TryParse(result[VisitsSummary.BOUNCE_COUNT].ToString(), out BounceCount);
+                            data.BounceCount = BounceCount;
 
-                        int VisitLengthTotal = 0;
-                        int.TryParse(result[VisitsSummary.SUM_VISIT_LENGTH].ToString(), out VisitLengthTotal);
-                        data.VisitLengthTotal = VisitLengthTotal;
+                            data.BounceRate = result[VisitsSummary.BOUNCE_RATE].ToString();
+
+                            int AverageTimeOnSite = 0;
+                            int.TryParse(result[VisitsSummary.AVG_TIME_ON_SITE].ToString(), out AverageTimeOnSite);
+                            data.AverageTimeOnSite = AverageTimeOnSite;
+
+                            int VisitLengthTotal = 0;
+                            int.TryParse(result[VisitsSummary.SUM_VISIT_LENGTH].ToString(), out VisitLengthTotal);
+                            data.VisitLengthTotal = VisitLengthTotal;
+                        }
 
                         visitorData.Add(data);
                     }

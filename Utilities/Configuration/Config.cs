@@ -171,12 +171,13 @@ namespace Teknik.Configuration
         public static Config Load()
         {
             HttpContext context = HttpContext.Current;
-            _Config = (Config)context.Cache[_ConfigCacheKey];
+            if (context != null)
+                _Config = (Config)context.Cache[_ConfigCacheKey];
             if (_Config == null)
             {
                 string path = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
                 _Config = Load(path);
-                context.Cache.Insert(_ConfigCacheKey, _Config, new CacheDependency(path));
+                context?.Cache.Insert(_ConfigCacheKey, _Config, new CacheDependency(path));
             }
             return _Config;
         }

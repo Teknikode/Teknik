@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,5 +19,20 @@ namespace Teknik.Piwik
         public string BounceRate { get; set; }
         public int AverageTimeOnSite { get; set; }
         public int VisitLengthTotal { get; set; }
+
+        public VisitorData()
+        {
+            Date = DateTime.Now;
+            UniqueVisitors = 0;
+            Visits = 0;
+            VisitsConverted = 0;
+            Actions = 0;
+            ActionsPerVisit = 0;
+            MaxActions = 0;
+            BounceCount = 0;
+            BounceRate = string.Empty;
+            AverageTimeOnSite = 0;
+            VisitLengthTotal = 0;
+        }
     }
 }
