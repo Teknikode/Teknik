@@ -66,14 +66,6 @@ $(document).ready(function () {
             {
                 name: 'Total',
                 data: []
-            },
-            {
-                name: 'Website',
-                data: []
-            },
-            {
-                name: 'Database',
-                data: []
             }
         ]
     });
@@ -306,12 +298,6 @@ $(document).ready(function () {
 
         // CPU Usage
         cpuUsageChart.series[0].addPoint([x, serverUsage.cpu.total], false, cpuUsageChart.series[0].data.length > 20);
-        if (showWebCPU) {
-            cpuUsageChart.series[1].addPoint([x, serverUsage.cpu.website], false, cpuUsageChart.series[1].data.length > 20);
-        }
-        if (showDatabaseCPU) {
-            cpuUsageChart.series[2].addPoint([x, serverUsage.cpu.database], false, cpuUsageChart.series[2].data.length > 20);
-        }
 
         // Database Usage
         memUsageChart.series[0].addPoint([x, serverUsage.memory.used], false, memUsageChart.series[0].data.length > 20);

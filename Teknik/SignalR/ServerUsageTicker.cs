@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System;
 using System.Collections.Generic;
@@ -86,8 +86,6 @@ namespace Teknik.SignalR
 
                 // CPU
                 PerformanceCounter totalCPU = new PerformanceCounter();
-                PerformanceCounter webCPU = new PerformanceCounter();
-                PerformanceCounter dbCPU = new PerformanceCounter();
                 // Memory
                 PerformanceCounter totalAvailMem = new PerformanceCounter();
                 PerformanceCounter webMem = new PerformanceCounter();
@@ -100,11 +98,7 @@ namespace Teknik.SignalR
 
                 // CPU
                 totalCPU = new PerformanceCounter("Processor", "% Processor Time", "_Total", true);
-                webCPU = new PerformanceCounter("Process", "% Processor Time", processName, true);
-                if (config.StatusConfig.ShowDatabaseStatus)
-                {
-                    dbCPU = new PerformanceCounter("Process", "% Processor Time", config.StatusConfig.DatabaseProcessName, true);
-                }
+
                 // Memory
                 totalAvailMem = new PerformanceCounter("Memory", "Available Bytes", true);
                 webMem = new PerformanceCounter("Process", "Private Bytes", processName, true);
@@ -121,14 +115,6 @@ namespace Teknik.SignalR
 
                 // CPU Sample
                 totalCPU.NextValue();
-                if (config.StatusConfig.ShowWebStatus)
-                {
-                    webCPU.NextValue();
-                }
-                if (config.StatusConfig.ShowDatabaseStatus)
-                {
-                    dbCPU.NextValue();
-                }
 
                 // Network Sample
                 sentPerf.NextValue();
@@ -139,14 +125,6 @@ namespace Teknik.SignalR
 
                 // CPU Values
                 _serverUsage.CPU.Total = totalCPU.NextValue();
-                if (config.StatusConfig.ShowWebStatus)
-                {
-                    _serverUsage.CPU.Website = webCPU.NextValue();
-                }
-                if (config.StatusConfig.ShowDatabaseStatus)
-                {
-                    _serverUsage.CPU.Database = dbCPU.NextValue();
-                }
 
                 // Memory Values
                 _serverUsage.Memory.Total = config.StatusConfig.TotalMemory;

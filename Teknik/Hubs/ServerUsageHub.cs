@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Newtonsoft.Json;
 using System;
@@ -45,16 +45,10 @@ namespace Teknik.Hubs
         {
             [JsonProperty("total")]
             public float Total { get; set; }
-            [JsonProperty("website")]
-            public float Website { get; set; }
-            [JsonProperty("database")]
-            public float Database { get; set; }
 
             public CPUUsage()
             {
                 Total = 0;
-                Website = 0;
-                Database = 0;
             }
         }
 
