@@ -22,6 +22,13 @@ namespace Teknik.Modules
 
                 // Allow this domain, or everything if local
                 string origin = (requestContext.Request.IsLocal) ? "*" : requestContext.Request.Headers.Get("Origin");
+
+                // Is the referrer set to the CDN and we are using a CDN?
+                if (config.UseCdn && requestContext.Request.Headers.Get("Referer") == config.CdnHost)
+                {
+                    origin = requestContext.Request.Headers.Get("Host");
+                }
+
                 string domain = (string.IsNullOrEmpty(origin)) ? string.Empty : origin.GetDomain();
 
                 if (string.IsNullOrEmpty(origin))
