@@ -2,3 +2,4 @@ User-agent: *
 Disallow: /Content/
 Disallow: /Scripts/
 Disallow: /Images/
+Disallow: /Action/
