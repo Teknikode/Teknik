@@ -29,11 +29,6 @@ namespace Teknik.Modules
                     response.AppendHeader("Content-Encoding", "gzip");
                     response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
                 }
-                else if (encodingsAccepted.Contains("deflate"))
-                {
-                    response.AppendHeader("Content-Encoding", "deflate");
-                    response.Filter = new DeflateStream(response.Filter, CompressionMode.Compress);
-                } 
             };
         }
     }
