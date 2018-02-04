@@ -60,12 +60,16 @@ function linkShortenUrl(element, fileID, url) {
     });
 }
 
-function linkRemove(element, fileID) {
+function linkRemove(element, fileID, token) {
     element.click(function () {
-        $('#upload-panel-' + fileID).remove();
-        if ($('#upload-links').children().length == 0) {
-            $("#upload-links").css('display', 'none', 'important');
-            $('#upload-action-buttons').hide();
+        if (token.isCancelable()) {
+            token.cancel();
+        } else {
+            $('#upload-panel-' + fileID).remove();
+            if ($('#upload-links').children().length == 0) {
+                $("#upload-links").css('display', 'none', 'important');
+                $('#upload-action-buttons').hide();
+            }
         }
         return false;
     });
@@ -156,11 +160,22 @@ var dropZone = new Dropzone(document.body, {
         // Convert file to blob
         var blob = file.slice(0, file.size);
 
+        // Create a token for this upload
+        var token = {
+            callback: null,
+            cancel: function() {
+                this.callback();
+            },
+            isCancelable: function() {
+                return this.callback !== null;
+            }
+        };
+
         // Create the Upload
-        var fileID = createUpload(file.name);
+        var fileID = createUpload(file.name, token);
 
         // Process the file
-        processFile(blob, file.name, file.type, file.size, fileID);
+        processFile(blob, file.name, file.type, file.size, fileID, token);
 
         // Remove this file from the dropzone set
         this.removeFile(file);
@@ -169,7 +184,7 @@ var dropZone = new Dropzone(document.body, {
 
 var fileCount = 0;
 
-function createUpload(fileName) {
+function createUpload(fileName, token) {
     // Create the UI element for the new item
     var fileID = fileCount;
     fileCount++;
@@ -183,7 +198,7 @@ function createUpload(fileName) {
     itemDiv.find('#upload-link-panel').hide();
 
     // Assign buttons
-    linkRemove(itemDiv.find('#upload-close'), fileID);
+    linkRemove(itemDiv.find('#upload-close'), fileID, token);
 
     // Set the info
     itemDiv.find('#upload-title').html(fileName);
@@ -194,7 +209,7 @@ function createUpload(fileName) {
     return fileID;
 }
 
-function processFile(fileBlob, fileName, contentType, contentSize, fileID) {
+function processFile(fileBlob, fileName, contentType, contentSize, fileID, token) {
     // Check the file size
     if (contentSize <= maxUploadSize) {
 
@@ -205,10 +220,10 @@ function processFile(fileBlob, fileName, contentType, contentSize, fileID) {
 
         if (encrypt) {
             // Encrypt the file and upload it
-            encryptFile(fileBlob, fileName, contentType, fileID, uploadFile);
+            encryptFile(fileBlob, fileName, contentType, fileID, uploadFile, token);
         } else {
             // pass it along
-            uploadFile(fileBlob, null, null, contentType, fileExt, fileID, encrypt);
+            uploadFile(fileBlob, null, null, contentType, fileExt, fileID, encrypt, token);
         }
     }
     else {
@@ -218,7 +233,7 @@ function processFile(fileBlob, fileName, contentType, contentSize, fileID) {
 }
 
 // Function to encrypt a file, overide the file's data attribute with the encrypted value, and then call a callback function if supplied
-function encryptFile(blob, fileName, contentType, ID, callback) {
+function encryptFile(blob, fileName, contentType, ID, callback, token) {
     var fileExt = getFileExtension(fileName);
 
     // Get session settings
@@ -230,10 +245,9 @@ function encryptFile(blob, fileName, contentType, ID, callback) {
     // When the file has been loaded, encrypt it
     reader.onload = (function (callback) {
         return function (e) {
-
             // Just send straight to server if they don't want to encrypt it
             if (!encrypt) {
-                callback(e.target.result, null, null, contentType, fileExt, ID, encrypt);
+                callback(e.target.result, null, null, contentType, fileExt, ID, encrypt, token);
             }
             else {
                 // Set variables for tracking
@@ -262,17 +276,21 @@ function encryptFile(blob, fileName, contentType, ID, callback) {
                         case 'finish':
                             if (callback != null) {
                                 // Finish 
-                                callback(e.data.buffer, keyStr, ivStr, contentType, fileExt, ID, encrypt);
+                                callback(e.data.buffer, keyStr, ivStr, contentType, fileExt, ID, encrypt, token);
                             }
                             break;
                     }
                 });
 
                 worker.onerror = function (err) {
-                    // An error occured
-                    setProgress(ID, 100, 'progress-bar-danger', '', 'Error Occured');
-                    $('#upload-panel-' + ID).find('.panel').addClass('panel-danger');
+                    uploadFailed(ID, token, err);
                 }
+
+                token.callback = function () {  // SPECIFY CANCELLATION
+                    worker.terminate(); // terminate the worker process
+
+                    uploadCanceled(ID, token, null);
+                };
 
                 // Generate the script to include as a blob
                 var scriptBlob = GenerateBlobURL(aesScriptSrc);
@@ -292,18 +310,30 @@ function encryptFile(blob, fileName, contentType, ID, callback) {
         };
     })(callback);
 
-    reader.onprogress = function (data) {
+    reader.onerror = function (err) {
+        uploadFailed(ID, token, err);
+    }
+
+    reader.onprogress = function(data) {
         if (data.lengthComputable) {
             var progress = parseInt(((data.loaded / data.total) * 100), 10);
             setProgress(ID, progress, 'progress-bar-success progress-bar-striped active', progress + '%', 'Loading');
         }
-    }
+    };
+
+    reader.onabort = function() {
+        uploadCanceled(ID, token, null);
+    };
+
+    token.callback = function () {  // SPECIFY CANCELLATION
+        reader.abort(); // abort request
+    };
 
     // Start async read
     reader.readAsArrayBuffer(blob);
 }
 
-function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt)
+function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt, token)
 {
     // Set variables for tracking
     var startTime = (new Date()).getTime();
@@ -323,14 +353,17 @@ function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt)
 
     var xhr = new XMLHttpRequest();
     xhr.upload.addEventListener("progress", uploadProgress.bind(null, fileID, startTime), false);
-    xhr.addEventListener("load", uploadComplete.bind(null, fileID, key, encrypt), false);
-    xhr.addEventListener("error", uploadFailed.bind(null, fileID), false);
-    xhr.addEventListener("abort", uploadCanceled.bind(null, fileID), false);
+    xhr.addEventListener("load", uploadComplete.bind(null, fileID, key, encrypt, token), false);
+    xhr.addEventListener("error", uploadFailed.bind(null, fileID, token), false);
+    xhr.addEventListener("abort", uploadCanceled.bind(null, fileID, token), false);
+
+    token.callback = function () {  // SPECIFY CANCELLATION
+        xhr.abort(); // abort request
+    };
+
     xhr.open("POST", uploadFileURL);
     xhr.send(fd);
 }
-
-
 
 function uploadProgress(fileID, startTime, evt) {
     if (evt.lengthComputable) {
@@ -347,7 +380,10 @@ function uploadProgress(fileID, startTime, evt) {
     }
 }
 
-function uploadComplete(fileID, key, encrypt, evt) {
+function uploadComplete(fileID, key, encrypt, token, evt) {
+    // Cancel out cancel token
+    token.callback = null;
+
     obj = JSON.parse(evt.target.responseText);
     if (obj.result != null) {
         var itemDiv = $('#upload-panel-' + fileID);
@@ -398,12 +434,18 @@ function uploadComplete(fileID, key, encrypt, evt) {
     }
 }
 
-function uploadFailed(fileID, evt) {
-    setProgress(fileID, 100, 'progress-bar-danger', '', 'Upload Failed');
+function uploadFailed(fileID, token, evt) {
+    // Cancel out cancel token
+    token.callback = null;
+
+    setProgress(fileID, 100, 'progress-bar-danger', '', 'Upload Failed: ' + parseErrorMessage(evt));
     $('#upload-panel-' + fileID).find('.panel').addClass('panel-danger');
 }
 
-function uploadCanceled(fileID, evt) {
+function uploadCanceled(fileID, token, evt) {
+    // Cancel out cancel token
+    token.callback = null;
+
     setProgress(fileID, 100, 'progress-bar-warning', '', 'Upload Canceled');
     $('#upload-panel-' + fileID).find('.panel').addClass('panel-warning');
 }

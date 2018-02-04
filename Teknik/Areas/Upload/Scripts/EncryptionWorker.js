@@ -66,13 +66,6 @@ self.addEventListener('message', function (e) {
     var finalStr = encFinal.toString(CryptoJS.enc.Base64); // to final string
     prog = Uint8Concat(prog, _base64ToArray(finalStr));
 
-    var objData =
-        {
-            cmd: 'progress',
-            processed: bytes.length - 1,
-            total: bytes.length - 1
-        };
-
     // Now package it into a mesage to send home
     var objData =
         {
