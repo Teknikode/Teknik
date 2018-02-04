@@ -142,7 +142,7 @@ namespace Teknik.Areas.Upload.Controllers
                 string iv = string.Empty;
                 string contentType = string.Empty;
                 long contentLength = 0;
-                bool userUploaded = false;
+                bool premiumAccount = false;
                 DateTime dateUploaded = new DateTime();
 
                 using (TeknikEntities db = new TeknikEntities())
@@ -161,7 +161,7 @@ namespace Teknik.Areas.Upload.Controllers
                         contentType = uploads.ContentType;
                         contentLength = uploads.ContentLength;
                         dateUploaded = uploads.DateUploaded;
-                        userUploaded = uploads.User != null;
+                        premiumAccount = uploads.User != null && uploads.User.AccountType == AccountType.Premium;
                     }
                     else
                     {
@@ -182,7 +182,7 @@ namespace Teknik.Areas.Upload.Controllers
 
                     return View(model);
                 }
-                else if (!userUploaded && Config.UploadConfig.MaxDownloadSize < contentLength)
+                else if (!premiumAccount && Config.UploadConfig.MaxDownloadSize < contentLength)
                 {
                     // We want to force them to the dl page due to them being over the max download size for embedded content
                     DownloadViewModel model = new DownloadViewModel();
