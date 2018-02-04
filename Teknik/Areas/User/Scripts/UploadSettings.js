@@ -3,7 +3,7 @@ $(document).ready(function () {
 
     $("#update_submit").click(function () {
         // Start Updating Animation
-        $.blockUI({ message: '<div class="text-center"><h3>Updating...</h3></div>' });
+        disableButton('#update_submit', 'Saving...');
         
         upload_encrypt = $("#update_upload_encrypt").is(":checked");
         $.ajax({
@@ -13,7 +13,7 @@ $(document).ready(function () {
                 Encrypt: upload_encrypt
             }),
             success: function (response) {
-                $.unblockUI();
+                enableButton('#update_submit', 'Save');
                 if (response.result) {
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Settings Saved!</div>');

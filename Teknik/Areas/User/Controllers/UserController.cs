@@ -550,6 +550,11 @@ namespace Teknik.Areas.Users.Controllers
                     model.ErrorMessage = "User Registration is Disabled";
                 }
             }
+            else
+            {
+                model.Error = true;
+                model.ErrorMessage = "Missing Required Fields";
+            }
             return GenerateActionResult(new { error = model.ErrorMessage }, View("/Areas/User/Views/User/ViewRegistration.cshtml", model));
         }
 

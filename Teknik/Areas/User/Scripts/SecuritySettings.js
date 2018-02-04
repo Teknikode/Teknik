@@ -151,7 +151,7 @@ $(document).ready(function () {
 
     $("#update_submit").click(function () {
         // Start Updating Animation
-        $.blockUI({ message: '<div class="text-center"><h3>Updating...</h3></div>' });
+        disableButton('#update_submit', 'Saving...');
 
         current_password = $("#update_password_current").val();
         password = $("#update_password").val();
@@ -173,7 +173,7 @@ $(document).ready(function () {
                 RecoveryEmail: recovery
             }),
             success: function (response) {
-                $.unblockUI();
+                enableButton('#update_submit', 'Save');
                 if (response.result) {
                     if (response.result.checkAuth)
                     {

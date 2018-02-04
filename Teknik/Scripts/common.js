@@ -13,6 +13,13 @@ $(document).ready(function () {
     });
 
     $("#loginSubmit").click(function () {
+        // Reset login status messages
+        $("#loginStatus").css('display', 'none', 'important');
+        $("#loginStatus").html('');
+
+        // Disable the login button
+        disableButton('#loginSubmit', 'Signing In...');
+
         var form = $('#loginForm');
         $.ajax({
             type: "POST",
@@ -27,16 +34,12 @@ $(document).ready(function () {
                     window.location = html.result;
                 }
                 else {
-                    var errMsg = html;
-                    if (html.error) {
-                        errMsg = html.error;
-                        if (html.error.message) {
-                            errMsg = html.error.message;
-                        }
-                    }
                     $("#loginStatus").css('display', 'inline', 'important');
-                    $("#loginStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errMsg + '</div>');
+                    $("#loginStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
+
+                // Re-enable the login button
+                enableButton('#loginSubmit', 'Sign In');
             }
         });
         return false;
@@ -51,6 +54,13 @@ $(document).ready(function () {
     });
 
     $("#registerSubmit").click(function () {
+        // Reset register status messages
+        $("#registerStatus").css('display', 'none', 'important');
+        $("#registerStatus").html('');
+
+        // Disable the register button
+        disableButton('#registerSubmit', 'Signing In...');
+
         var form = $('#registrationForm');
         $.ajax({
             type: "POST",
@@ -65,16 +75,12 @@ $(document).ready(function () {
                     window.location.reload();
                 }
                 else {
-                    var errMsg = html;
-                    if (html.error) {
-                        errMsg = html.error;
-                        if (html.error.message) {
-                            errMsg = html.error.message;
-                        }
-                    }
                     $("#registerStatus").css('display', 'inline', 'important');
-                    $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + errMsg + '</div>');
+                    $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
+
+                // Re-enable the register button
+                enableButton('#registerSubmit', 'Sign Up');
             }
         });
         return false;
@@ -151,6 +157,16 @@ $(function () {
         }
     };
 });
+
+function disableButton(btn, text) {
+    $(btn).addClass('disabled');
+    $(btn).text(text);
+}
+
+function enableButton(btn, text) {
+    $(btn).removeClass('disabled');
+    $(btn).text(text);
+}
 
 function removeAmp(code) {
     code = code.replace(/&amp;/g, '&');
