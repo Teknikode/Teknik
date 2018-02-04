@@ -161,7 +161,8 @@ namespace Teknik.Areas.Upload.Controllers
                         contentType = uploads.ContentType;
                         contentLength = uploads.ContentLength;
                         dateUploaded = uploads.DateUploaded;
-                        premiumAccount = uploads.User != null && uploads.User.AccountType == AccountType.Premium;
+                        premiumAccount = (uploads.User != null && uploads.User.AccountType == AccountType.Premium) || 
+                                         (User.Identity.IsAuthenticated && User.Info != null && User.Info.AccountType == AccountType.Premium);
                     }
                     else
                     {
