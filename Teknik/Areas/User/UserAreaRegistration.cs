@@ -171,23 +171,19 @@ namespace Teknik.Areas.Users
                 "~/Areas/User/Scripts/Settings.js"));
 
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/blog", config.CdnHost).Include(
-                "~/Scripts/jquery.blockUI.js",
                 "~/Areas/User/Scripts/BlogSettings.js"));
 
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/invite", config.CdnHost).Include(
                 "~/Areas/User/Scripts/InviteSettings.js"));
 
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/profile", config.CdnHost).Include(
-                "~/Scripts/jquery.blockUI.js",
                 "~/Areas/User/Scripts/ProfileSettings.js"));
 
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/security", config.CdnHost).Include(
-                "~/Scripts/jquery.blockUI.js",
                 "~/Scripts/bootstrap-switch.js",
                 "~/Areas/User/Scripts/SecuritySettings.js"));
 
             BundleTable.Bundles.Add(new CdnScriptBundle("~/bundles/user/settings/upload", config.CdnHost).Include(
-                "~/Scripts/jquery.blockUI.js",
                 "~/Scripts/bootstrap-switch.js",
                 "~/Areas/User/Scripts/UploadSettings.js"));
 
