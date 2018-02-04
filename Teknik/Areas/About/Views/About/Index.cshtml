@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.About.ViewModels.AboutViewModel
+@model Teknik.Areas.About.ViewModels.AboutViewModel
 
 @using Teknik.Utilities
 
@@ -116,6 +116,12 @@
                             <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizePremium)</td>
                             <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizeBasic)</td>
                             <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Max Embedded Filesize</td>
+                            <td class="text-center">Unlimited</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxDownloadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxDownloadSize)</td>
                         </tr>
                         <tr>
                             <td class="text-left">Url Shortening</td>
