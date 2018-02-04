@@ -142,6 +142,7 @@ namespace Teknik.Areas.Upload.Controllers
                 string iv = string.Empty;
                 string contentType = string.Empty;
                 long contentLength = 0;
+                bool userUploaded = false;
                 DateTime dateUploaded = new DateTime();
 
                 using (TeknikEntities db = new TeknikEntities())
@@ -160,6 +161,7 @@ namespace Teknik.Areas.Upload.Controllers
                         contentType = uploads.ContentType;
                         contentLength = uploads.ContentLength;
                         dateUploaded = uploads.DateUploaded;
+                        userUploaded = uploads.User != null;
                     }
                     else
                     {
@@ -176,6 +178,19 @@ namespace Teknik.Areas.Upload.Controllers
                     model.ContentType = contentType;
                     model.ContentLength = contentLength;
                     model.IV = iv;
+                    model.Decrypt = true;
+
+                    return View(model);
+                }
+                else if (!userUploaded && Config.UploadConfig.MaxDownloadSize < contentLength)
+                {
+                    // We want to force them to the dl page due to them being over the max download size for embedded content
+                    DownloadViewModel model = new DownloadViewModel();
+                    model.CurrentSub = Subdomain;
+                    model.FileName = file;
+                    model.ContentType = contentType;
+                    model.ContentLength = contentLength;
+                    model.Decrypt = false;
 
                     return View(model);
                 }
@@ -296,9 +311,6 @@ namespace Teknik.Areas.Upload.Controllers
 
                             Response.AddHeader("Content-Disposition", cd.ToString());
 
-                            // Apply content security policy for downloads
-                            //Response.AddHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src *; connect-src 'self'; media-src 'self'; child-src 'self'; form-action 'none';");
-
                             // Read in the file
                             FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
@@ -341,7 +353,7 @@ namespace Teknik.Areas.Upload.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public FileResult DownloadData(string file)
+        public ActionResult DownloadData(string file, bool decrypt)
         {
             if (Config.UploadConfig.DownloadEnabled)
             {
@@ -354,16 +366,46 @@ namespace Teknik.Areas.Upload.Controllers
                         string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, upload.FileName);
                         if (System.IO.File.Exists(filePath))
                         {
-                            FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                            return File(fileStream, System.Net.Mime.MediaTypeNames.Application.Octet, file);
+                            // Notify the client the content length we'll be outputting 
+                            Response.AddHeader("Content-Length", upload.ContentLength.ToString());
+
+                            // Create content disposition
+                            var cd = new System.Net.Mime.ContentDisposition
+                            {
+                                FileName = upload.Url,
+                                Inline = true
+                            };
+
+                            Response.AddHeader("Content-Disposition", cd.ToString());
+
+                            // Read in the file
+                            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                            // If the IV is set, and Key is set, then decrypt it while sending
+                            if (decrypt && !string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
+                            {
+                                byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
+                                byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
+
+                                return new FileGenerateResult(upload.Url,
+                                    upload.ContentType,
+                                    (response) => ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)upload.ContentLength, Config.UploadConfig.ChunkSize),
+                                    false);
+                            }
+                            else // Otherwise just send it
+                            {
+                                // Send the file
+                                return new FileGenerateResult(upload.Url,
+                                    upload.ContentType,
+                                    (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)upload.ContentLength, Config.UploadConfig.ChunkSize),
+                                    false);
+                            }
                         }
                     }
-                    Redirect(Url.SubRouteUrl("error", "Error.Http404"));
-                    return null;
+                    return Json(new { error = new { message = "File Does Not Exist" } });
                 }
             }
-            Redirect(Url.SubRouteUrl("error", "Error.Http403"));
-            return null;
+            return Json(new { error = new { message = "Downloads are disabled" } });
         }
 
         [HttpGet]

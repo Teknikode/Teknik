@@ -306,8 +306,7 @@ function encryptFile(blob, fileName, contentType, ID, callback) {
 function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt)
 {
     // Set variables for tracking
-    var lastTime = (new Date()).getTime();
-    var lastData = 0;
+    var startTime = (new Date()).getTime();
 
     var blob = new Blob([data]);
     // Now we need to upload the file
@@ -323,7 +322,7 @@ function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt)
     fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
 
     var xhr = new XMLHttpRequest();
-    xhr.upload.addEventListener("progress", uploadProgress.bind(null, fileID, lastTime, lastData), false);
+    xhr.upload.addEventListener("progress", uploadProgress.bind(null, fileID, startTime), false);
     xhr.addEventListener("load", uploadComplete.bind(null, fileID, key, encrypt), false);
     xhr.addEventListener("error", uploadFailed.bind(null, fileID), false);
     xhr.addEventListener("abort", uploadCanceled.bind(null, fileID), false);
@@ -333,13 +332,11 @@ function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt)
 
 
 
-function uploadProgress(fileID, lastTime, lastData, evt) {
+function uploadProgress(fileID, startTime, evt) {
     if (evt.lengthComputable) {
         var curTime = (new Date()).getTime();
-        var elapsedTime = (curTime - lastTime) / 1000;
-        var speed = ((evt.loaded - lastData) / elapsedTime);
-        lastTime = curTime;
-        lastData = evt.loaded;
+        var elapsedTime = (curTime - startTime) / 1000;
+        var speed = (evt.loaded / elapsedTime);
         var percentComplete = Math.round(evt.loaded * 100 / evt.total);
         if (percentComplete == 100) {
             setProgress(fileID, 100, 'progress-bar-success progress-bar-striped active', '', 'Processing Upload');

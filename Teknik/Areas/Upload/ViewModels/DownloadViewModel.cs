@@ -13,7 +13,6 @@ namespace Teknik.Areas.Upload.ViewModels
         public string ContentType { get; set; }
         public long ContentLength { get; set; }
         public string IV { get; set; }
-        public int keySize { get; set; }
-        public int blockSize { get; set; }
+        public bool Decrypt { get; set; }
     }
 }

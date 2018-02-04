@@ -1,42 +1,81 @@
-﻿$(document).ready(downloadFile);
+$(document).ready(downloadFile);
 
 function downloadFile() {
     var key = window.location.hash.substring(1);
-    if (key == null || key == '') {
+    if (decrypt && (key == null || key == '')) {
         bootbox.prompt("Enter the file's private key", function (result) {
             if (result) {
                 key = result;
             }
-            processDownload(key);
+            processDownload(key, iv, decrypt);
         });
     }
     else {
-        processDownload(key);
+        processDownload(key, iv, decrypt);
     }
 }
 
-function processDownload(key) {
-    if (key !== null && key !== '' && iv !== null && iv !== '') {
-        // speed info
-        var lastTime = (new Date()).getTime();
-        var lastData = 0;
+function processDownload(key, iv, decrypt) {
+    // speed info
+    var startTime = (new Date()).getTime();
 
-        var fd = new FormData();
-        fd.append('file', fileName);
-        fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
+    var fd = new FormData();
+    fd.append('file', fileName);
+    fd.append('decrypt', !decrypt);
+    fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', downloadDataUrl, true);
-        xhr.responseType = 'arraybuffer';
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', downloadDataUrl, true);
+    xhr.responseType = 'arraybuffer';
 
-        xhr.onload = function (e) {
-            if (this.status == 200) {
-                lastTime = (new Date()).getTime();
-                lastData = 0;
+    xhr.onload = function(e) {
+        if (this.status === 200) {
+            decryptDownload(this.response, key, iv, decrypt);
+        }
+    };
 
-                var worker = new Worker(GenerateBlobURL(encScriptSrc));
+    xhr.onprogress = function (e) {
+        if (e.lengthComputable) {
+            var curTime = (new Date()).getTime();
+            var elapsedTime = (curTime - startTime) / 1000;
+            var speed = (e.loaded / elapsedTime);
+            var percentComplete = Math.round(e.loaded * 100 / e.total);
+            setProgress(percentComplete,
+                'progress-bar-success progress-bar-striped active',
+                percentComplete + '%',
+                'Downloading File [' +
+                getReadableFileSizeString(e.loaded) +
+                ' / ' +
+                getReadableFileSizeString(e.total) +
+                ' @ ' +
+                getReadableBandwidthString(speed * 8) +
+                ']');
+        }
+    }
 
-                worker.addEventListener('message', function (e) {
+    xhr.onerror = function(e) {
+        setProgress(100, 'progress-bar-danger', '', 'Download Failed');
+    };
+
+    xhr.onabort = function(e) {
+        setProgress(100, 'progress-bar-warning', '', 'Download Aborted');
+    };
+
+    xhr.send(fd);
+}
+
+function decryptDownload(fileData, key, iv, decrypt) {
+    // speed info
+    var lastTime = (new Date()).getTime();
+    var lastData = 0;
+
+    // Do we need to decrypt the download?
+    if (decrypt) {
+        if (key !== null && key !== '' && iv !== null && iv !== '') {
+            var worker = new Worker(GenerateBlobURL(encScriptSrc));
+
+            worker.addEventListener('message',
+                function (e) {
                     switch (e.data.cmd) {
                         case 'progress':
                             var curTime = (new Date()).getTime();
@@ -46,11 +85,20 @@ function processDownload(key) {
                                 lastTime = curTime;
                                 lastData = e.data.processed;
                                 var percentComplete = Math.round(e.data.processed * 100 / e.data.total);
-                                setProgress(percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Decrypting [' + getReadableFileSizeString(e.data.processed) + ' / ' + getReadableFileSizeString(e.data.total) + ' @ ' + getReadableBandwidthString(speed * 8) + ']');
+                                setProgress(percentComplete,
+                                    'progress-bar-success progress-bar-striped active',
+                                    percentComplete + '%',
+                                    'Decrypting [' +
+                                    getReadableFileSizeString(e.data.processed) +
+                                    ' / ' +
+                                    getReadableFileSizeString(e.data.total) +
+                                    ' @ ' +
+                                    getReadableBandwidthString(speed * 8) +
+                                    ']');
                             }
                             break;
                         case 'finish':
-                            setProgress(100, 'progress-bar-success', '', 'Complete');
+                            setProgress(100, 'progress-bar-success', 'Complete', '');
                             if (fileType == null || fileType == '') {
                                 fileType = "application/octet-stream";
                             }
@@ -62,53 +110,52 @@ function processDownload(key) {
                     }
                 });
 
-                worker.onerror = function (err) {
-                    // An error occured
-                    setProgress(100, 'progress-bar-danger', '', 'Error Occured');
-                }
-
-                // Create a blob for the aes script
-                var scriptBlob = GenerateBlobURL(aesScriptSrc);
-
-                // Execute worker with data
-                var objData =
-                    {
-                        cmd: 'decrypt',
-                        script: scriptBlob,
-                        key: key,
-                        iv: iv,
-                        chunkSize: chunkSize,
-                        file: this.response
-                    };
-                worker.postMessage(objData, [objData.file]);
+            worker.onerror = function (err) {
+                // An error occured
+                setProgress(100, 'progress-bar-danger', '', 'Error Occured');
             }
-        };
 
-        xhr.onprogress = function (e) {
-            if (e.lengthComputable) {
-                var curTime = (new Date()).getTime();
-                var elapsedTime = (curTime - lastTime) / 1000;
-                var speed = ((e.loaded - lastData) / elapsedTime);
-                lastTime = curTime;
-                lastData = e.loaded;
-                var percentComplete = Math.round(e.loaded * 100 / e.total);
-                setProgress(percentComplete, 'progress-bar-success progress-bar-striped active', percentComplete + '%', 'Downloading File [' + getReadableFileSizeString(e.loaded) + ' / ' + getReadableFileSizeString(e.total) + ' @ ' + getReadableBandwidthString(speed * 8) + ']');
-            }
-        };
+            // Create a blob for the aes script
+            var scriptBlob = GenerateBlobURL(aesScriptSrc);
 
-        xhr.onerror = function (e) {
-            setProgress(100, 'progress-bar-danger', '', 'Download Failed');
-        };
+            // Execute worker with data
+            var objData =
+                {
+                    cmd: 'decrypt',
+                    script: scriptBlob,
+                    key: key,
+                    iv: iv,
+                    chunkSize: chunkSize,
+                    file: fileData
+                };
+            worker.postMessage(objData, [objData.file]);
+        } else {
+            setProgress(100, 'progress-bar-danger', '', 'Private Key Needed');
+        }
+    } else {
+        // We want to just prompt the file for DL
+        setProgress(100, 'progress-bar-success', 'Complete', '');
 
-        xhr.onabort = function (e) {
-            setProgress(100, 'progress-bar-warning', '', 'Download Aborted');
-        };
+        // Convert file to blob
+        if (fileType == null || fileType == '') {
+            fileType = "application/octet-stream";
+        }
+        var blob = new Blob([fileData], { type: fileType });
 
-        xhr.send(fd);
+        // Add the file download link
+        addDownloadLink(fileData, key, iv, decrypt);
+
+        saveAs(blob, fileName);
     }
-    else {
-        setProgress(100, 'progress-bar-danger', '', 'Private Key Needed');
-    }
+}
+
+function addDownloadLink(fileData, key, iv, decrypt) {
+
+    var newItem = $('<button type="button" class="btn btn-default" id="reDownloadFile" >Download</button>');
+    newItem.click(function() {
+        decryptDownload(fileData, key, iv, decrypt);
+    });
+    $('#progress-panel').find('#progress-info').append(newItem);
 }
 
 function setProgress(percentage, classes, barMessage, title) {

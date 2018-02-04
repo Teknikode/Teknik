@@ -9,6 +9,7 @@
     var fileName = '@Model.FileName';
     var fileType = '@Model.ContentType';
     var iv = '@Model.IV';
+    var decrypt = @Model.Decrypt.ToString().ToLower();
     var chunkSize = @(Model.Config.UploadConfig.ChunkSize);
 </script>
 
