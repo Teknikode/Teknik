@@ -35,6 +35,7 @@ namespace Teknik.Configuration
         public int ClamPort { get; set; }
         // Content Type Restrictions
         public List<string> RestrictedContentTypes { get; set; }
+        public List<string> RestrictedExtensions { get; set; }
 
         public UploadConfig()
         {
@@ -61,6 +62,7 @@ namespace Teknik.Configuration
             ClamServer = "localhost";
             ClamPort = 3310;
             RestrictedContentTypes = new List<string>();
+            RestrictedExtensions = new List<string>();
         }
     }
 }

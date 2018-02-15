@@ -90,7 +90,7 @@ namespace Teknik.Areas.API.Controllers
                             // Check content type restrictions (Only for encrypting server side
                             if (model.encrypt || !string.IsNullOrEmpty(model.key))
                             {
-                                if (Config.UploadConfig.RestrictedContentTypes.Contains(model.contentType))
+                                if (Config.UploadConfig.RestrictedContentTypes.Contains(model.contentType) || Config.UploadConfig.RestrictedExtensions.Contains(fileExt))
                                 {
                                     return Json(new { error = new { message = "File Type Not Allowed" } });
                                 }

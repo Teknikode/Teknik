@@ -88,7 +88,7 @@ namespace Teknik.Areas.Upload.Controllers
                         // Check content type restrictions (Only for encrypting server side
                         if (encrypt)
                         {
-                            if (Config.UploadConfig.RestrictedContentTypes.Contains(fileType))
+                            if (Config.UploadConfig.RestrictedContentTypes.Contains(fileType) || Config.UploadConfig.RestrictedExtensions.Contains(fileExt))
                             {
                                 return Json(new { error = new { message = "File Type Not Allowed" } });
                             }
