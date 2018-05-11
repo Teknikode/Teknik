@@ -8,7 +8,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Reflection;
 using System.Text;
-using Teknik.Areas.Status.Models;
+using Teknik.Areas.Stats.Models;
 using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;

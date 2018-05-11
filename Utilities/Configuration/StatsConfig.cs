@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Teknik.Configuration
 {
-    public class StatusConfig
+    public class StatsConfig
     {
         public bool Enabled { get; set; }
 
@@ -22,7 +22,7 @@ namespace Teknik.Configuration
 
         public long TotalMemory { get; set; }
 
-        public StatusConfig()
+        public StatsConfig()
         {
             Enabled = false;
             ShowWebStatus = false;

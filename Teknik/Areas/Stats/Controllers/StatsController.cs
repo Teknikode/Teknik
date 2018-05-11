@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
-using Teknik.Areas.Status.Models;
-using Teknik.Areas.Status.ViewModels;
+using Teknik.Areas.Stats.Models;
+using Teknik.Areas.Stats.ViewModels;
 using Teknik.Attributes;
 using Teknik.Controllers;
 using Teknik.Filters;
@@ -14,19 +14,19 @@ using Teknik.Models;
 using Teknik.Piwik;
 using Teknik.Utilities;
 
-namespace Teknik.Areas.Status.Controllers
+namespace Teknik.Areas.Stats.Controllers
 {
     [TeknikAuthorize]
-    public class StatusController : DefaultController
+    public class StatsController : DefaultController
     {
         [TrackPageView]
         [AllowAnonymous]
         public ActionResult Index()
         {
-            ViewBag.Title = "System Status - " + Config.Title;
-            ViewBag.Description = "Current status information for the server and resources.";
+            ViewBag.Title = "System Statistics - " + Config.Title;
+            ViewBag.Description = "Current statistics for the services.";
 
-            StatusViewModel model = new StatusViewModel();
+            StatsViewModel model = new StatsViewModel();
 
             using (TeknikEntities db = new TeknikEntities())
             {

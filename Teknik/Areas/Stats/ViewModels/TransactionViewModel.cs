@@ -1,16 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
+using Teknik.Areas.Stats.Models;
 using Teknik.Utilities;
+using Teknik.ViewModels;
 
-namespace Teknik.Areas.Status.Models
+namespace Teknik.Areas.Stats.ViewModels
 {
-    public class Transaction
+    public class TransactionViewModel : ViewModelBase
     {
-        public int TransactionId { get; set; }
-
         public decimal Amount { get; set; }
 
         public CurrencyType Currency { get; set; }

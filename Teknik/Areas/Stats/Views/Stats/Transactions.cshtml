@@ -1,6 +1,6 @@
-﻿@model Teknik.Areas.Status.ViewModels.TransactionsViewModel
+@model Teknik.Areas.Stats.ViewModels.TransactionsViewModel
 
-@using Teknik.Areas.Status.ViewModels
+@using Teknik.Areas.Stats.ViewModels
 
 @{ 
     decimal totalBills = Model.CurrentMonthBills;
@@ -55,6 +55,6 @@
     </div>
 </div>
 
-@Html.Partial("~/Areas/Status/Views/Status/Bills.cshtml", Model.Bills)
-@Html.Partial("~/Areas/Status/Views/Status/OneTimes.cshtml", Model.OneTimes)
-@Html.Partial("~/Areas/Status/Views/Status/Donations.cshtml", Model.Donations)
+@Html.Partial("~/Areas/Stats/Views/Stats/Bills.cshtml", Model.Bills)
+@Html.Partial("~/Areas/Stats/Views/Stats/OneTimes.cshtml", Model.OneTimes)
+@Html.Partial("~/Areas/Stats/Views/Stats/Donations.cshtml", Model.Donations)

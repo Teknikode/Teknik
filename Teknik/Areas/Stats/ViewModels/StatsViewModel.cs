@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Teknik.Areas.Status.Models;
+using Teknik.Areas.Stats.Models;
 using Teknik.Models;
 using Teknik.ViewModels;
 
-namespace Teknik.Areas.Status.ViewModels
+namespace Teknik.Areas.Stats.ViewModels
 {
-    public class StatusViewModel : ViewModelBase
+    public class StatsViewModel : ViewModelBase
     {
         public int UploadCount { get; set; }
 
@@ -26,7 +26,7 @@ namespace Teknik.Areas.Status.ViewModels
 
         public List<TakedownViewModel> Takedowns { get; set; }
 
-        public StatusViewModel()
+        public StatsViewModel()
         {
             UploadCount = 0;
             UploadSize = 0;

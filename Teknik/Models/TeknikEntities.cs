@@ -8,7 +8,7 @@ using Teknik.Migrations;
 using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Paste.Models;
 using Teknik.Areas.Podcast.Models;
-using Teknik.Areas.Status.Models;
+using Teknik.Areas.Stats.Models;
 using Teknik.Areas.Shortener.Models;
 using Teknik.Attributes;
 using System.Data.Entity.ModelConfiguration.Conventions;

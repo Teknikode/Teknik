@@ -1,19 +1,19 @@
-@model Teknik.Areas.Status.ViewModels.StatusViewModel
+@model Teknik.Areas.Stats.ViewModels.StatsViewModel
 
 @using Teknik.Utilities
-@using Teknik.Areas.Status.Models
+@using Teknik.Areas.Stats.Models
 
 @Scripts.Render("~/bundles/signalr")
 @Scripts.Render("~/signalr/hubs")
-@Scripts.Render("~/bundles/status")
+@Scripts.Render("~/bundles/stats")
 
 <script nonce="@Context.Items[Constants.NONCE_KEY]">
-    var getVisitorDataURL = '@Url.SubRouteUrl("status", "Status.Action", new { action = "GetVisitorData" })';
-    var showWebCPU = @Model.Config.StatusConfig.ShowWebStatus.ToString().ToLower();
-    var showDatabaseCPU = @Model.Config.StatusConfig.ShowDatabaseStatus.ToString().ToLower();
-    var showNetworkUsage = @Model.Config.StatusConfig.ShowNetworkStatus.ToString().ToLower();
+    var getVisitorDataURL = '@Url.SubRouteUrl("stats", "Stats.Action", new { action = "GetVisitorData" })';
+    var showWebCPU = @Model.Config.StatsConfig.ShowWebStatus.ToString().ToLower();
+    var showDatabaseCPU = @Model.Config.StatsConfig.ShowDatabaseStatus.ToString().ToLower();
+    var showNetworkUsage = @Model.Config.StatsConfig.ShowNetworkStatus.ToString().ToLower();
     var showVisitorStats = @Model.Config.PiwikConfig.Enabled.ToString().ToLower();
-    var totalMemory = @Model.Config.StatusConfig.TotalMemory;
+    var totalMemory = @Model.Config.StatsConfig.TotalMemory;
     var tickInterval = totalMemory / 5;
 </script>
 
@@ -86,10 +86,10 @@
 
             </div>
             <div role="tabpanel" class="tab-pane" id="transactions">
-                @Html.Partial("~/Areas/Status/Views/Status/Transactions.cshtml", Model.Transactions)
+                @Html.Partial("~/Areas/Stats/Views/Stats/Transactions.cshtml", Model.Transactions)
             </div>
             <div role="tabpanel" class="tab-pane" id="takedowns">
-                @Html.Partial("~/Areas/Status/Views/Status/Takedowns.cshtml", Model.Takedowns)
+                @Html.Partial("~/Areas/Stats/Views/Stats/Takedowns.cshtml", Model.Takedowns)
             </div>
         </div>
     }
@@ -97,7 +97,7 @@
     {
         <div class="row">
             <div class="col-sm-8 col-sm-offset-2 text-center">
-                <h3>Status Information has been disabled</h3>
+                <h3>Stats Information has been disabled</h3>
             </div>
         </div>
     }
