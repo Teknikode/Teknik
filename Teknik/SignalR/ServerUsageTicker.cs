@@ -102,15 +102,15 @@ namespace Teknik.SignalR
                 // Memory
                 totalAvailMem = new PerformanceCounter("Memory", "Available Bytes", true);
                 webMem = new PerformanceCounter("Process", "Private Bytes", processName, true);
-                if (config.StatusConfig.ShowDatabaseStatus)
+                if (config.StatsConfig.ShowDatabaseStatus)
                 {
-                    dbMem = new PerformanceCounter("Process", "Private Bytes", config.StatusConfig.DatabaseProcessName, true);
+                    dbMem = new PerformanceCounter("Process", "Private Bytes", config.StatsConfig.DatabaseProcessName, true);
                 }
                 // Network
-                if (config.StatusConfig.ShowNetworkStatus)
+                if (config.StatsConfig.ShowNetworkStatus)
                 {
-                    sentPerf = new PerformanceCounter("Network Interface", "Bytes Sent/sec", config.StatusConfig.NetworkInterface, true);
-                    receivedPerf = new PerformanceCounter("Network Interface", "Bytes Received/sec", config.StatusConfig.NetworkInterface, true);
+                    sentPerf = new PerformanceCounter("Network Interface", "Bytes Sent/sec", config.StatsConfig.NetworkInterface, true);
+                    receivedPerf = new PerformanceCounter("Network Interface", "Bytes Received/sec", config.StatsConfig.NetworkInterface, true);
                 }
 
                 // CPU Sample
@@ -127,20 +127,20 @@ namespace Teknik.SignalR
                 _serverUsage.CPU.Total = totalCPU.NextValue();
 
                 // Memory Values
-                _serverUsage.Memory.Total = config.StatusConfig.TotalMemory;
+                _serverUsage.Memory.Total = config.StatsConfig.TotalMemory;
                 _serverUsage.Memory.Available = totalAvailMem.NextValue();
                 _serverUsage.Memory.Used = _serverUsage.Memory.Total - _serverUsage.Memory.Available;
-                if (config.StatusConfig.ShowWebStatus)
+                if (config.StatsConfig.ShowWebStatus)
                 {
                     _serverUsage.Memory.WebsiteUsed = webMem.NextValue();
                 }
-                if (config.StatusConfig.ShowDatabaseStatus)
+                if (config.StatsConfig.ShowDatabaseStatus)
                 {
                     _serverUsage.Memory.DatabaseUsed = dbMem.NextValue();
                 }
 
                 // Network Values
-                if (config.StatusConfig.ShowNetworkStatus)
+                if (config.StatsConfig.ShowNetworkStatus)
                 {
                     _serverUsage.Network.Sent = sentPerf.NextValue() * 8;
                     _serverUsage.Network.Received = receivedPerf.NextValue() * 8;
