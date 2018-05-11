@@ -44,7 +44,7 @@ namespace Teknik.Configuration
         private StreamConfig        _StreamConfig;
         private ShortenerConfig     _ShortenerConfig;
         private VaultConfig         _VaultConfig;
-        private StatsConfig        _StatusConfig;
+        private StatsConfig         _StatsConfig;
         private LoggingConfig       _LoggingConfig;
         private PiwikConfig         _PiwikConfig;
         private IRCConfig           _IRCConfig;
@@ -104,7 +104,7 @@ namespace Teknik.Configuration
         public VaultConfig          VaultConfig         { get { return _VaultConfig; }          set { _VaultConfig = value; } }
 
         // Status Configuration
-        public StatsConfig         StatusConfig        { get { return _StatusConfig; }         set { _StatusConfig = value; } }
+        public StatsConfig          StatsConfig         { get { return _StatsConfig; }          set { _StatsConfig = value; } }
 
         // Logging Configuration
         public LoggingConfig        LoggingConfig       { get { return _LoggingConfig; }        set { _LoggingConfig = value; } }
@@ -152,7 +152,7 @@ namespace Teknik.Configuration
             StreamConfig            = new StreamConfig();
             ShortenerConfig         = new ShortenerConfig();
             VaultConfig             = new VaultConfig();
-            StatusConfig            = new StatsConfig();
+            StatsConfig             = new StatsConfig();
             LoggingConfig           = new LoggingConfig();
             PiwikConfig             = new PiwikConfig();
             IRCConfig               = new IRCConfig();
