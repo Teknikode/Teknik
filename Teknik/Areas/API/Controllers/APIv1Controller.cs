@@ -43,7 +43,16 @@ namespace Teknik.Areas.API.Controllers
                 {
                     if (model.file != null)
                     {
-                        if (model.file.ContentLength <= Config.UploadConfig.MaxUploadSize)
+                        long maxUploadSize = Config.UploadConfig.MaxUploadSize;
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            maxUploadSize = Config.UploadConfig.MaxUploadSizeBasic;
+                            if (User.Info.AccountType == AccountType.Premium)
+                            {
+                                maxUploadSize = Config.UploadConfig.MaxUploadSizePremium;
+                            }
+                        }
+                        if (model.file.ContentLength <= maxUploadSize)
                         {
                             // convert file to bytes
                             string fileExt = Path.GetExtension(model.file.FileName);

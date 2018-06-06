@@ -60,7 +60,16 @@ namespace Teknik.Areas.Upload.Controllers
             {
                 if (Config.UploadConfig.UploadEnabled)
                 {
-                    if (data.ContentLength <= Config.UploadConfig.MaxUploadSize)
+                    long maxUploadSize = Config.UploadConfig.MaxUploadSize;
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        maxUploadSize = Config.UploadConfig.MaxUploadSizeBasic;
+                        if (User.Info.AccountType == AccountType.Premium)
+                        {
+                            maxUploadSize = Config.UploadConfig.MaxUploadSizePremium;
+                        }
+                    }
+                    if (data.ContentLength <= maxUploadSize)
                     {
                         // convert file to bytes
                         int contentLength = data.ContentLength;
