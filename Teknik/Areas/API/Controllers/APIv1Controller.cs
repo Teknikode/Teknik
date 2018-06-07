@@ -62,7 +62,7 @@ namespace Teknik.Areas.API.Controllers
                             if (Config.UploadConfig.VirusScanEnable)
                             {
                                 ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
-                                clam.MaxStreamSize = Config.UploadConfig.MaxUploadSize;
+                                clam.MaxStreamSize = maxUploadSize;
                                 ClamScanResult scanResult = clam.SendAndScanFile(model.file.InputStream);
 
                                 switch (scanResult.Result)
