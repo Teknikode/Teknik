@@ -1,9 +1,6 @@
 @model Teknik.Areas.Error.ViewModels.ErrorViewModel
 
-@using Teknik.Utilities
-
-@Scripts.Render("~/bundles/error")
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     var submitErrorReportURL = '@Url.SubRouteUrl("error", "Error.Action", new { action = "SubmitErrorReport" })';
 </script>
 
@@ -50,3 +47,5 @@
         </div>
     </div>
 </div>
+
+<bundle src="js/error.min.js" append-version="true"></bundle>

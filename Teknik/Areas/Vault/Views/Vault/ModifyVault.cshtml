@@ -1,16 +1,13 @@
 @model Teknik.Areas.Vault.ViewModels.ModifyVaultViewModel
 
-@using Teknik.Utilities
 @using Teknik.Areas.Vault.ViewModels
-
-@Styles.Render("~/Content/vault")
 
 @{ 
     string action = (Model.isEdit) ? "EditVault" : "CreateVault";
     string title = (Model.isEdit) ? "Edit Vault" : "Create a New Vault";
 }
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
 
     var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
     var validateItemURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = "ValidateItem" })';
@@ -19,6 +16,8 @@
     var itemCount = @Model.items.Count();
 
 </script>
+
+<bundle src="css/vault.min.css" append-version="true"></bundle>
 
 <div class="container">
     @if (Model.Error)
@@ -33,7 +32,7 @@
     <div class="modal fade" id="newItem" tabindex="-1" role="dialog" aria-labelledby="newItemLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="##" method="post" id="addItem" enctype="multipart/form-data">
+                <!form class="form" action="##" method="post" id="addItem" enctype="multipart/form-data">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
                         <h4 class="modal-title" id="newItemLabel">Add an Item</h4>
@@ -60,8 +59,8 @@
                             <div class="form-group col-sm-12">
                                 <label for="item_type"><h4>Type</h4></label>
                                 <select class="form-control" name="item_type" id="item_type">
-                                    <option>Upload</option>
-                                    <option>Paste</option>
+                                    <!option>Upload</!option>
+                                    <!option>Paste</!option>
                                 </select>
                             </div>
                         </div>
@@ -76,7 +75,7 @@
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" id="new_item_submit">Add</button>
                     </div>
-                </form>
+                </!form>
             </div>
         </div>
     </div>
@@ -84,7 +83,7 @@
     <div class="modal fade" id="editItem" tabindex="-1" role="dialog" aria-labelledby="editItemLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="##" method="post" id="editItemForm" enctype="multipart/form-data">
+                <!form class="form" action="##" method="post" id="editItemForm" enctype="multipart/form-data">
                     <input type="hidden" value="" id="item_id"/>
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
@@ -113,7 +112,7 @@
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" id="edit_item_submit">Save</button>
                     </div>
-                </form>
+                </!form>
             </div>
         </div>
     </div>
@@ -123,7 +122,7 @@
             <h2>@title</h2>
         </div>
     </div>
-    <form class="form" action="##" method="post" id="vaultForm">
+    <!form class="form" action="##" method="post" id="vaultForm">
         <input type="hidden" id="vaultId" name="vaultId" value="@Model.vaultId" />
         <div class="row">
             <div class="col-sm-10">
@@ -176,15 +175,15 @@
                 {
                     foreach (ModifyVaultItemViewModel item in Model.items)
                     {
-                        @Html.Partial("~/Areas/Vault/Views/Vault/ModifyVaultItem.cshtml", item)
+                        @await Html.PartialAsync("~/Areas/Vault/Views/Vault/ModifyVaultItem.cshtml", item)
                     }
                 }
             </div>
         </div>
-    </form>
+    </!form>
 </div>
 <div id="templates" style="display: none">
-    @Html.Partial("~/Areas/Vault/Views/Vault/ModifyVaultItem.cshtml", new ModifyVaultItemViewModel())
+    @await Html.PartialAsync("~/Areas/Vault/Views/Vault/ModifyVaultItem.cshtml", new ModifyVaultItemViewModel())
 </div>
 
-@Scripts.Render("~/bundles/vault")
+<bundle src="js/vault.min.js" append-version="true"></bundle>

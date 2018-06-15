@@ -1,13 +1,12 @@
 @model Teknik.Areas.Users.ViewModels.SecuritySettingsViewModel
 
-@using Teknik.Utilities
 @using Teknik.Areas.Users.ViewModels
 
 @{
     Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
 }
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
     var editURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditSecurity" })';
     var resendVerifyURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ResendVerifyRecoveryEmail"})';
@@ -19,8 +18,7 @@
     var deleteTokenURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "DeleteToken" })';
 </script>
 
-@Styles.Render("~/Content/user/settings/security")
-@Scripts.Render("~/bundles/user/settings/security")
+<bundle src="css/user.settings.security.min.css" append-version="true"></bundle>
 
 <div class="modal fade" id="authenticatorSetup" tabindex="-1" role="dialog" aria-labelledby="authenticatorSetupLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -35,7 +33,7 @@
                         <div id="authSetupStatus"></div>
                     </div>
                 </div>
-                <form class="form" action="##" method="post" id="confirmAuthSetup">
+                <!form class="form" action="##" method="post" id="confirmAuthSetup">
                     <p>To get a third party app working, either scan the QR code below or type the secret key into the app.</p>
                     <div class="row">
                         <div class="col-sm-4">
@@ -67,13 +65,13 @@
                     <div class="form-group text-right">
                         <button class="btn btn-primary" id="auth_setup_verify" type="button" name="auth_setup_verify">Verify</button>
                     </div>
-                </form>
+                </!form>
             </div>
         </div>
     </div>
 </div>
 
-<form class="form" action="##" method="post" id="updateForm">
+<!form class="form" action="##" method="post" id="updateForm">
     <div class="row">
         <div class="col-sm-4">
             <div class="row">
@@ -157,7 +155,7 @@
                     {
                         foreach (AuthTokenViewModel token in Model.AuthTokens)
                         {
-                            @Html.Partial("Settings/AuthToken", token)
+                            @await Html.PartialAsync("Settings/AuthToken", token)
                         }
                     }
                     else
@@ -175,4 +173,6 @@
             <button class="btn btn-lg" type="reset">Reset</button>
         </div>
     </div>
-</form>
+</!form>
+
+<bundle src="js/user.settings.security.min.js" append-version="true"></bundle>

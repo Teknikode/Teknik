@@ -1,7 +1,5 @@
 ﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
 
-@using Teknik.Utilities
-
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="@Url.SubRouteUrl("help", "Help.Index")">Help Index</a></li>
@@ -12,7 +10,7 @@
         <hr>
         <h3>Mumble Server Info</h3>
         <p>
-            You can connect to the Mumble server by connecting to <b>mumble.@Model.Config.Host</b> on port <b>64738</b>.
+            You can connect to the Mumble server by connecting to <b>mumble.@Config.Host</b> on port <b>64738</b>.
         </p>
     </div>
 </div>

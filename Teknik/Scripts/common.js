@@ -40,6 +40,10 @@ $(document).ready(function () {
 
                 // Re-enable the login button
                 enableButton('#loginSubmit', 'Sign In');
+            },
+            error: function (response) {
+                $("#loginStatus").css('display', 'inline', 'important');
+                $("#loginStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseJSON) + '</div>');
             }
         });
         return false;
@@ -81,6 +85,10 @@ $(document).ready(function () {
 
                 // Re-enable the register button
                 enableButton('#registerSubmit', 'Sign Up');
+            },
+            error: function (response) {
+                $("#registerStatus").css('display', 'inline', 'important');
+                $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseJSON) + '</div>');
             }
         });
         return false;
@@ -175,7 +183,7 @@ function removeAmp(code) {
 
 String.prototype.hashCode = function () {
     var hash = 0, i, chr, len;
-    if (this.length == 0) return hash;
+    if (this.length === 0) return hash;
     for (i = 0, len = this.length; i < len; i++) {
         chr = this.charCodeAt(i);
         hash = ((hash << 5) - hash) + chr;
@@ -217,7 +225,7 @@ function getAnchor() {
 
 function GenerateBlobURL(url) {
     var cachedBlob = null;
-    jQuery.ajax({
+    $.ajax({
         url: url,
         success: function (result) {
             var workerJSBlob = new Blob([result], {
@@ -271,7 +279,7 @@ function getReadableFileSizeString(fileSizeInBytes) {
 
 function moveUp(item) {
     var prev = item.prev();
-    if (prev.length == 0)
+    if (prev.length === 0)
         return;
     prev.css('z-index', 999).css('position', 'relative').animate({ top: item.height() }, 250);
     item.css('z-index', 1000).css('position', 'relative').animate({ top: '-' + prev.height() }, 300, function () {
@@ -283,7 +291,7 @@ function moveUp(item) {
 
 function moveDown(item) {
     var next = item.next();
-    if (next.length == 0)
+    if (next.length === 0)
         return;
     next.css('z-index', 999).css('position', 'relative').animate({ top: '-' + item.height() }, 250);
     item.css('z-index', 1000).css('position', 'relative').animate({ top: next.height() }, 300, function () {

@@ -1,10 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Teknik.Areas.Users.Models;
-using Teknik.Utilities;
-using Teknik.Models;
 using Teknik.ViewModels;
-using System.Web.Mvc;
 
 namespace Teknik.Areas.Users.ViewModels
 {
@@ -30,8 +26,7 @@ namespace Teknik.Areas.Users.ViewModels
         [Display(Name = "Recovery Email")]
         [DataType(DataType.EmailAddress)]
         public string RecoveryEmail { get; set; }
-
-        [AllowHtml]
+        
         [Display(Name = "Public PGP Key")]
         public string PublicKey { get; set; }
 

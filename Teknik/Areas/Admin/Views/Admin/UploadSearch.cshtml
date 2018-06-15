@@ -1,23 +1,19 @@
 @model Teknik.Areas.Admin.ViewModels.UploadSearchViewModel
 
-@using Teknik.Utilities
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     // We need to define the action URLs for the script
     var searchResultsURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "GetUploadSearchResults" })';
     var generateDeleteKeyURL = '@Url.SubRouteUrl("u", "Upload.GenerateDeleteKey")';
 </script>
 
-@Scripts.Render("~/bundles/UploadSearch")
-
 <div class="container">
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-            <form>
+            <!form>
                 <div class="form-group center-block">
                     <input type="text" class="form-control" id="Query" name="Query" placeholder="Upload Url" />
                 </div>
-            </form>
+            </!form>
         </div>
     </div>
     <div class="row">
@@ -26,3 +22,5 @@
         </div>
     </div>
 </div>
+
+<bundle src="js/uploadSearch.min.js" append-version="true"></bundle>

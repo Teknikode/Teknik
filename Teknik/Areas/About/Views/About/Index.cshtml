@@ -1,7 +1,5 @@
 @model Teknik.Areas.About.ViewModels.AboutViewModel
 
-@using Teknik.Utilities
-
 @{ 
     string lifetimeAccount = "The account will not get deleted for inactivity as defined in the ToS";
     string apiAccountAccess = "Passing user credentials allows linking for Uploads/Pastes/Shortened URLs and other account specific features";
@@ -35,7 +33,7 @@
                         <!-- Prices -->
                         <tr>
                             <td class="text-left"></td>
-                            <td class="text-center">$@Model.Config.UserConfig.PremiumAccountPrice @Model.Config.UserConfig.PaymentType</td>
+                            <td class="text-center">$@Config.UserConfig.PremiumAccountPrice @Config.UserConfig.PaymentType</td>
                             <td class="text-center">Free</td>
                             <td class="text-center">Free</td>
                         </tr>
@@ -113,15 +111,15 @@
                         </tr>
                         <tr>
                             <td class="text-left">Max Upload Filesize</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizePremium)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizeBasic)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSizePremium)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSizeBasic)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSize)</td>
                         </tr>
                         <tr>
                             <td class="text-left">Max Embedded Filesize</td>
                             <td class="text-center">Unlimited</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxDownloadSize)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxDownloadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxDownloadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxDownloadSize)</td>
                         </tr>
                         <tr>
                             <td class="text-left">Url Shortening</td>

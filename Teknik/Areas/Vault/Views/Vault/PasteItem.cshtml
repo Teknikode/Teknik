@@ -1,17 +1,16 @@
 ﻿@model Teknik.Areas.Vault.ViewModels.PasteItemViewModel
 
-@using Teknik.Utilities
-@using Teknik.Pygments
+@*@using Teknik.Pygments*@
 
 @{ 
     // Transform content into HTML
-    if (!Highlighter.Lexers.ToList().Exists(l => l.Aliases.Contains(Model.Paste.Syntax)))
-    {
-        Model.Paste.Syntax = "text";
-    }
-    Highlighter highlighter = new Highlighter();
+    //if (!Highlighter.Lexers.ToList().Exists(l => l.Aliases.Contains(Model.Paste.Syntax)))
+    //{
+    //    Model.Paste.Syntax = "text";
+    //}
+    //Highlighter highlighter = new Highlighter();
     // Add a space in front of the content due to bug with pygment (No idea why yet)
-    Model.Paste.Content = highlighter.HighlightToHtml(" " + Model.Paste.Content, Model.Paste.Syntax, Model.Config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
+    Model.Paste.Content = Model.Paste.Content;// highlighter.HighlightToHtml(" " + Model.Paste.Content, Model.Paste.Syntax, Model.Config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
 }
 
 <div class="panel panel-default">

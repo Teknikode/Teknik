@@ -1,24 +1,30 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using System.Threading.Tasks;
 using Teknik.Areas.Admin.ViewModels;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Attributes;
+using Teknik.Configuration;
 using Teknik.Controllers;
+using Teknik.Data;
 using Teknik.Filters;
 using Teknik.Models;
 using Teknik.Utilities;
 using Teknik.ViewModels;
+using Teknik.Logging;
 
 namespace Teknik.Areas.Admin.Controllers
 {
     [TeknikAuthorize(Roles = "Admin")]
+    [Area("Admin")]
     public class AdminController : DefaultController
     {
-        private TeknikEntities db = new TeknikEntities();
+        public AdminController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base (logger, config, dbContext) { }
 
         [HttpGet]
         [TrackPageView]
@@ -40,9 +46,9 @@ namespace Teknik.Areas.Admin.Controllers
         [TrackPageView]
         public ActionResult UserInfo(string username)
         {
-            if (UserHelper.UserExists(db, username))
+            if (UserHelper.UserExists(_dbContext, username))
             {
-                User user = UserHelper.GetUser(db, username);
+                User user = UserHelper.GetUser(_dbContext, username);
                 UserInfoViewModel model = new UserInfoViewModel();
                 model.Username = user.Username;
                 model.AccountType = user.AccountType;
@@ -60,11 +66,11 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetUserSearchResults(string query)
+        public async Task<ActionResult> GetUserSearchResults(string query, [FromServices] ICompositeViewEngine viewEngine)
         {
             List<UserResultViewModel> models = new List<UserResultViewModel>();
 
-            var results = db.Users.Where(u => u.Username.Contains(query)).ToList();
+            var results = _dbContext.Users.Where(u => u.Username.Contains(query)).ToList();
             if (results != null)
             {
                 foreach (User user in results)
@@ -73,12 +79,12 @@ namespace Teknik.Areas.Admin.Controllers
                     {
                         UserResultViewModel model = new UserResultViewModel();
                         model.Username = user.Username;
-                        if (Config.EmailConfig.Enabled)
+                        if (_config.EmailConfig.Enabled)
                         {
-                            model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                            model.Email = string.Format("{0}@{1}", user.Username, _config.EmailConfig.Domain);
                         }
                         model.JoinDate = user.JoinDate;
-                        model.LastSeen = UserHelper.GetLastAccountActivity(db, Config, user);
+                        model.LastSeen = UserHelper.GetLastAccountActivity(_dbContext, _config, user);
                         models.Add(model);
                     }
                     catch (Exception ex)
@@ -88,13 +94,15 @@ namespace Teknik.Areas.Admin.Controllers
                 }
             }
 
-            return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UserResults.cshtml", models).RenderToString() } });
+            string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/Admin/Views/Admin/UserResults.cshtml", models);
+
+            return Json(new { result = new { html = renderedView } });
         }
 
         [HttpPost]
-        public ActionResult GetUploadSearchResults(string url)
+        public async Task<ActionResult> GetUploadSearchResults(string url, [FromServices] ICompositeViewEngine viewEngine)
         {
-            Upload.Models.Upload foundUpload = db.Uploads.Where(u => u.Url == url).FirstOrDefault();
+            Upload.Models.Upload foundUpload = _dbContext.Uploads.Where(u => u.Url == url).FirstOrDefault();
             if (foundUpload != null)
             {
                 UploadResultViewModel model = new UploadResultViewModel();
@@ -106,7 +114,9 @@ namespace Teknik.Areas.Admin.Controllers
                 model.Downloads = foundUpload.Downloads;
                 model.DeleteKey = foundUpload.DeleteKey;
 
-                return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UploadResult.cshtml", model).RenderToString() } });
+                string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/Admin/Views/Admin/UploadResult.cshtml", model);
+
+                return Json(new { result = new { html = renderedView } });
             }
             return Json(new { error = new { message = "Upload does not exist" } });
         }
@@ -115,10 +125,10 @@ namespace Teknik.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditUserAccountType(string username, AccountType accountType)
         {
-            if (UserHelper.UserExists(db, username))
+            if (UserHelper.UserExists(_dbContext, username))
             {
                 // Edit the user's account type
-                UserHelper.EditAccountType(db, Config, username, accountType);
+                UserHelper.EditAccountType(_dbContext, _config, username, accountType);
                 return Json(new { result = new { success = true } });
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
@@ -128,10 +138,10 @@ namespace Teknik.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditUserAccountStatus(string username, AccountStatus accountStatus)
         {
-            if (UserHelper.UserExists(db, username))
+            if (UserHelper.UserExists(_dbContext, username))
             {
                 // Edit the user's account type
-                UserHelper.EditAccountStatus(db, Config, username, accountStatus);
+                UserHelper.EditAccountStatus(_dbContext, _config, username, accountStatus);
                 return Json(new { result = new { success = true } });
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
@@ -141,15 +151,15 @@ namespace Teknik.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateInviteCode(string username)
         {
-            if (UserHelper.UserExists(db, username))
+            if (UserHelper.UserExists(_dbContext, username))
             {
-                User user = UserHelper.GetUser(db, username);
-                InviteCode inviteCode = db.InviteCodes.Create();
+                User user = UserHelper.GetUser(_dbContext, username);
+                InviteCode inviteCode = new InviteCode();
                 inviteCode.Active = true;
                 inviteCode.Code = Guid.NewGuid().ToString();
                 inviteCode.Owner = user;
-                db.InviteCodes.Add(inviteCode);
-                db.SaveChanges();
+                _dbContext.InviteCodes.Add(inviteCode);
+                _dbContext.SaveChanges();
 
                 return Json(new { result = new { code = inviteCode.Code } });
             }
@@ -162,14 +172,11 @@ namespace Teknik.Areas.Admin.Controllers
         {
             try
             {
-                using (TeknikEntities db = new TeknikEntities())
+                User user = UserHelper.GetUser(_dbContext, username);
+                if (user != null)
                 {
-                    User user = UserHelper.GetUser(db, username);
-                    if (user != null)
-                    {
-                        UserHelper.DeleteAccount(db, Config, user);
-                        return Json(new { result = true });
-                    }
+                    UserHelper.DeleteAccount(_dbContext, _config, user);
+                    return Json(new { result = true });
                 }
             }
             catch (Exception ex)

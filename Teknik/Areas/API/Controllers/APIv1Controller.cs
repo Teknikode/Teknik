@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 using Teknik.Areas.Upload;
 using Teknik.Areas.Paste;
 using Teknik.Controllers;
@@ -20,14 +18,26 @@ using Teknik.Areas.API.Models;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Attributes;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+using Teknik.Configuration;
+using Teknik.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using Teknik.Areas.Shortener;
+using Teknik.Logging;
 
 namespace Teknik.Areas.API.Controllers
 {
     [TeknikAuthorize(AuthType.Basic)]
+    [Area("APIv1")]
     public class APIv1Controller : DefaultController
     {
+        public APIv1Controller(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+
         [AllowAnonymous]
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return Redirect(Url.SubRouteUrl("help", "Help.API"));
         }
@@ -35,35 +45,36 @@ namespace Teknik.Areas.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [TrackPageView]
-        public ActionResult Upload(APIv1UploadModel model)
+        public async Task<IActionResult> UploadAsync(APIv1UploadModel model)
         {
             try
             {
-                if (Config.UploadConfig.UploadEnabled)
+                if (_config.UploadConfig.UploadEnabled)
                 {
                     if (model.file != null)
                     {
-                        long maxUploadSize = Config.UploadConfig.MaxUploadSize;
+                        long maxUploadSize = _config.UploadConfig.MaxUploadSize;
                         if (User.Identity.IsAuthenticated)
                         {
-                            maxUploadSize = Config.UploadConfig.MaxUploadSizeBasic;
-                            if (User.Info.AccountType == AccountType.Premium)
+                            maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
+                            User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                            if (user.AccountType == AccountType.Premium)
                             {
-                                maxUploadSize = Config.UploadConfig.MaxUploadSizePremium;
+                                maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
                             }
                         }
-                        if (model.file.ContentLength <= maxUploadSize)
+                        if (model.file.Length <= maxUploadSize)
                         {
                             // convert file to bytes
                             string fileExt = Path.GetExtension(model.file.FileName);
-                            int contentLength = model.file.ContentLength;
+                            long contentLength = model.file.Length;
 
                             // Scan the file to detect a virus
-                            if (Config.UploadConfig.VirusScanEnable)
+                            if (_config.UploadConfig.VirusScanEnable)
                             {
-                                ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
+                                ClamClient clam = new ClamClient(_config.UploadConfig.ClamServer, _config.UploadConfig.ClamPort);
                                 clam.MaxStreamSize = maxUploadSize;
-                                ClamScanResult scanResult = clam.SendAndScanFile(model.file.InputStream);
+                                ClamScanResult scanResult = await clam.SendAndScanFileAsync(model.file.OpenReadStream());
 
                                 switch (scanResult.Result)
                                 {
@@ -85,13 +96,16 @@ namespace Teknik.Areas.API.Controllers
 
                                 if (string.IsNullOrEmpty(model.contentType))
                                 {
-                                    model.file.InputStream.Seek(0, SeekOrigin.Begin);
-                                    FileType fileType = model.file.InputStream.GetFileType();
-                                    if (fileType != null)
-                                        model.contentType = fileType.Mime;
-                                    if (string.IsNullOrEmpty(model.contentType))
+                                    using (System.IO.Stream fileStream = model.file.OpenReadStream())
                                     {
-                                        model.contentType = "application/octet-stream";
+                                        fileStream.Seek(0, SeekOrigin.Begin);
+                                        FileType fileType = fileStream.GetFileType();
+                                        if (fileType != null)
+                                            model.contentType = fileType.Mime;
+                                        if (string.IsNullOrEmpty(model.contentType))
+                                        {
+                                            model.contentType = "application/octet-stream";
+                                        }
                                     }
                                 }
                             }
@@ -99,7 +113,7 @@ namespace Teknik.Areas.API.Controllers
                             // Check content type restrictions (Only for encrypting server side
                             if (model.encrypt || !string.IsNullOrEmpty(model.key))
                             {
-                                if (Config.UploadConfig.RestrictedContentTypes.Contains(model.contentType) || Config.UploadConfig.RestrictedExtensions.Contains(fileExt))
+                                if (_config.UploadConfig.RestrictedContentTypes.Contains(model.contentType) || _config.UploadConfig.RestrictedExtensions.Contains(fileExt))
                                 {
                                     return Json(new { error = new { message = "File Type Not Allowed" } });
                                 }
@@ -107,66 +121,64 @@ namespace Teknik.Areas.API.Controllers
 
                             // Initialize the key size and block size if empty
                             if (model.keySize <= 0)
-                                model.keySize = Config.UploadConfig.KeySize;
+                                model.keySize = _config.UploadConfig.KeySize;
                             if (model.blockSize <= 0)
-                                model.blockSize = Config.UploadConfig.BlockSize;
+                                model.blockSize = _config.UploadConfig.BlockSize;
 
-                            using (TeknikEntities db = new TeknikEntities())
+                            // Save the file data
+                            Upload.Models.Upload upload = Uploader.SaveFile(_dbContext, _config, model.file.OpenReadStream(), model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.keySize, model.blockSize);
+
+                            if (upload != null)
                             {
-                                // Save the file data
-                                Upload.Models.Upload upload = Uploader.SaveFile(db, Config, model.file.InputStream, model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.keySize, model.blockSize);
+                                string fileKey = upload.Key;
 
-                                if (upload != null)
+                                // Associate this with the user if they provided an auth key
+                                if (User.Identity.IsAuthenticated)
                                 {
-                                    string fileKey = upload.Key;
-
-                                    // Associate this with the user if they provided an auth key
-                                    if (User.Identity.IsAuthenticated)
+                                    User foundUser = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                                    if (foundUser != null)
                                     {
-                                        User foundUser = UserHelper.GetUser(db, User.Identity.Name);
-                                        if (foundUser != null)
-                                        {
-                                            upload.UserId = foundUser.UserId;
-                                            db.Entry(upload).State = EntityState.Modified;
-                                            db.SaveChanges();
-                                        }
+                                        upload.UserId = foundUser.UserId;
+                                        _dbContext.Entry(upload).State = EntityState.Modified;
+                                        _dbContext.SaveChanges();
                                     }
-
-                                    // Generate delete key only if asked to
-                                    if (!model.genDeletionKey)
-                                    {
-                                        upload.DeleteKey = string.Empty;
-                                        db.Entry(upload).State = EntityState.Modified;
-                                        db.SaveChanges();
-                                    }
-
-                                    // remove the key if we don't want to save it
-                                    if (!model.saveKey)
-                                    {
-                                        upload.Key = null;
-                                        db.Entry(upload).State = EntityState.Modified;
-                                        db.SaveChanges();
-                                    }
-
-                                    // Pull all the information together 
-                                    string fullUrl = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url });
-                                    var returnData = new
-                                    {
-                                        url = (model.saveKey || string.IsNullOrEmpty(fileKey)) ? fullUrl : fullUrl + "#" + fileKey,
-                                        fileName = upload.Url,
-                                        contentType = upload.ContentType,
-                                        contentLength = upload.ContentLength,
-                                        key = fileKey,
-                                        keySize = upload.KeySize,
-                                        iv = upload.IV,
-                                        blockSize = upload.BlockSize,
-                                        deletionKey = upload.DeleteKey
-
-                                    };
-                                    return Json(new { result = returnData });
                                 }
-                                return Json(new { error = new { message = "Unable to save file" } });
+
+                                // Generate delete key only if asked to
+                                if (!model.genDeletionKey)
+                                {
+                                    upload.DeleteKey = string.Empty;
+                                    _dbContext.Entry(upload).State = EntityState.Modified;
+                                    _dbContext.SaveChanges();
+                                }
+
+                                // remove the key if we don't want to save it
+                                if (!model.saveKey)
+                                {
+                                    upload.Key = null;
+                                    _dbContext.Entry(upload).State = EntityState.Modified;
+                                    _dbContext.SaveChanges();
+                                }
+
+                                // Pull all the information together 
+                                string fullUrl = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url });
+                                var returnData = new
+                                {
+                                    url = (model.saveKey || string.IsNullOrEmpty(fileKey)) ? fullUrl : fullUrl + "#" + fileKey,
+                                    fileName = upload.Url,
+                                    contentType = upload.ContentType,
+                                    contentLength = upload.ContentLength,
+                                    key = fileKey,
+                                    keySize = upload.KeySize,
+                                    iv = upload.IV,
+                                    blockSize = upload.BlockSize,
+                                    deletionKey = upload.DeleteKey
+
+                                };
+                                return Json(new { result = returnData });
                             }
+                            return Json(new { error = new { message = "Unable to save file" } });
+
                         }
                         else
                         {
@@ -186,42 +198,39 @@ namespace Teknik.Areas.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [TrackPageView]
-        public ActionResult Paste(APIv1PasteModel model)
+        public IActionResult Paste(APIv1PasteModel model)
         {
             try
             {
                 if (model != null && model.code != null)
                 {
-                    using (TeknikEntities db = new TeknikEntities())
+                    Paste.Models.Paste paste = PasteHelper.CreatePaste(_config, _dbContext, model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password, model.hide);
+
+                    // Associate this with the user if they are logged in
+                    if (User.Identity.IsAuthenticated)
                     {
-                        Paste.Models.Paste paste = PasteHelper.CreatePaste(db, model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password, model.hide);
-
-                        // Associate this with the user if they are logged in
-                        if (User.Identity.IsAuthenticated)
+                        User foundUser = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                        if (foundUser != null)
                         {
-                            User foundUser = UserHelper.GetUser(db, User.Identity.Name);
-                            if (foundUser != null)
-                            {
-                                paste.UserId = foundUser.UserId;
-                            }
+                            paste.UserId = foundUser.UserId;
                         }
-
-                        db.Pastes.Add(paste);
-                        db.SaveChanges();
-
-                        return Json(new
-                        {
-                            result = new
-                            {
-                                id = paste.Url,
-                                url = Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url, password = model.password }),
-                                title = paste.Title,
-                                syntax = paste.Syntax,
-                                expiration = paste.ExpireDate,
-                                password = model.password
-                            }
-                        });
                     }
+
+                    _dbContext.Pastes.Add(paste);
+                    _dbContext.SaveChanges();
+
+                    return Json(new
+                    {
+                        result = new
+                        {
+                            id = paste.Url,
+                            url = Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url, password = model.password }),
+                            title = paste.Title,
+                            syntax = paste.Syntax,
+                            expiration = paste.ExpireDate,
+                            password = model.password
+                        }
+                    });
                 }
                 return Json(new { error = new { message = "Invalid Paste Request" } });
             }
@@ -234,44 +243,41 @@ namespace Teknik.Areas.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [TrackPageView]
-        public ActionResult Shorten(APIv1ShortenModel model)
+        public IActionResult Shorten(APIv1ShortenModel model)
         {
             try
             {
                 if (model.url.IsValidUrl())
                 {
-                    using (TeknikEntities db = new TeknikEntities())
+                    ShortenedUrl newUrl = ShortenerHelper.ShortenUrl(_dbContext, model.url, _config.ShortenerConfig.UrlLength);
+
+                    // Associate this with the user if they are logged in
+                    if (User.Identity.IsAuthenticated)
                     {
-                        ShortenedUrl newUrl = Shortener.Shortener.ShortenUrl(db, model.url, Config.ShortenerConfig.UrlLength);
-
-                        // Associate this with the user if they are logged in
-                        if (User.Identity.IsAuthenticated)
+                        User foundUser = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                        if (foundUser != null)
                         {
-                            User foundUser = UserHelper.GetUser(db, User.Identity.Name);
-                            if (foundUser != null)
-                            {
-                                newUrl.UserId = foundUser.UserId;
-                            }
+                            newUrl.UserId = foundUser.UserId;
                         }
-
-                        db.ShortenedUrls.Add(newUrl);
-                        db.SaveChanges();
-
-                        string shortUrl = string.Format("{0}://{1}/{2}", HttpContext.Request.Url.Scheme, Config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl);
-                        if (Config.DevEnvironment)
-                        {
-                            shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
-                        }
-
-                        return Json(new
-                        {
-                            result = new
-                            {
-                                shortUrl = shortUrl,
-                                originalUrl = model.url
-                            }
-                        });
                     }
+
+                    _dbContext.ShortenedUrls.Add(newUrl);
+                    _dbContext.SaveChanges();
+
+                    string shortUrl = string.Format("{0}://{1}/{2}", HttpContext.Request.Scheme, _config.ShortenerConfig.ShortenerHost, newUrl.ShortUrl);
+                    if (_config.DevEnvironment)
+                    {
+                        shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = newUrl.ShortUrl });
+                    }
+
+                    return Json(new
+                    {
+                        result = new
+                        {
+                            shortUrl = shortUrl,
+                            originalUrl = model.url
+                        }
+                    });
                 }
                 return Json(new { error = new { message = "Must be a valid Url" } });
             }

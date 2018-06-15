@@ -10,7 +10,7 @@
     </div>
     foreach (var post in Model)
     {
-        @Html.Partial("UserResult", post)
+        @await Html.PartialAsync("UserResult", post)
     }
 }
 else

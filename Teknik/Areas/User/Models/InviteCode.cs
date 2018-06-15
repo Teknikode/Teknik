@@ -15,7 +15,11 @@ namespace Teknik.Areas.Users.Models
         [CaseSensitive]
         public string Code { get; set; }
 
+        public int? OwnerId { get; set; }
+
         public virtual User Owner { get; set; }
+
+        public int? ClaimedUserId { get; set; }
 
         public virtual User ClaimedUser { get; set; }
 

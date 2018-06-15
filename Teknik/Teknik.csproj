@@ -1,918 +1,112 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
-  <Import Project="..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>
-    </ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B20317CD-76C6-4A7B-BCE1-E4BEF8E4F964}</ProjectGuid>
-    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <UserSecretsId>aspnet-TeknikCore-BE9563D1-0DFB-4141-903C-287B23FF22C7</UserSecretsId>
     <RootNamespace>Teknik</RootNamespace>
     <AssemblyName>Teknik</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>44300</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
-    <UseGlobalApplicationHostFile />
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <Use64BitIISExpress />
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="IRCSharp, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IRCSharp.1.0.0.1\lib\net462\IRCSharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.2\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.2.0.4\lib\net45\Microsoft.Azure.KeyVault.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.8.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.3.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.3.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Mime-Detective, Version=0.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mime-Detective.0.0.5\lib\net45\Mime-Detective.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data, Version=6.10.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.10.6\lib\net452\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="NBitcoin, Version=3.0.2.10, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NBitcoin.3.0.2.10\lib\net45\NBitcoin.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="nClam, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\nClam.2.0.6.0\lib\net40-Client\nClam.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PresentationFramework" />
-    <Reference Include="QRCoder, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\QRCoder.1.2.3\lib\net40\QRCoder.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel" />
-    <Reference Include="System.Configuration.Install" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Design" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Web.DynamicData" />
-    <Reference Include="System.Web.Entity" />
-    <Reference Include="System.Web.ApplicationServices" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Abstractions" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Routing" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.EnterpriseServices" />
-    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http">
-    </Reference>
-    <Reference Include="System.Net.Http.WebRequest">
-    </Reference>
-    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Mvc, Version=__MvcPagesVersion__, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Optimization">
-      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Teknik.Pygments, Version=2.0.2.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Teknik.Pygments.2.0.2.3\lib\net40\Teknik.Pygments.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="TwoStepsAuthenticator, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwoStepsAuthenticator.1.2.0\lib\net45\TwoStepsAuthenticator.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\QRCoder.1.2.3\lib\net40\UnityEngine.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Compile Remove="Areas\About\Data\**" />
+    <Compile Remove="Areas\About\Scripts\**" />
+    <Compile Remove="Areas\Home\Data\**" />
+    <Content Remove="Areas\About\Data\**" />
+    <Content Remove="Areas\About\Scripts\**" />
+    <Content Remove="Areas\Home\Data\**" />
+    <EmbeddedResource Remove="Areas\About\Data\**" />
+    <EmbeddedResource Remove="Areas\About\Scripts\**" />
+    <EmbeddedResource Remove="Areas\Home\Data\**" />
+    <None Remove="Areas\About\Data\**" />
+    <None Remove="Areas\About\Scripts\**" />
+    <None Remove="Areas\Home\Data\**" />
   </ItemGroup>
+
+
   <ItemGroup>
-    <Compile Include="App_Start\BundleConfig.cs" />
-    <Compile Include="App_Start\CustomRazorViewEngine.cs" />
-    <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Areas\About\AboutAreaRegistration.cs" />
-    <Compile Include="Areas\About\Controllers\AboutController.cs" />
-    <Compile Include="Areas\About\ViewModels\AboutViewModel.cs" />
-    <Compile Include="Areas\Abuse\AbuseAreaRegistration.cs" />
-    <Compile Include="Areas\Abuse\Controllers\AbuseController.cs" />
-    <Compile Include="Areas\Abuse\ViewModels\AbuseViewModel.cs" />
-    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-    <Compile Include="Areas\Admin\Controllers\AdminController.cs" />
-    <Compile Include="Areas\Admin\ViewModels\DashboardViewModel.cs" />
-    <Compile Include="Areas\Admin\ViewModels\UserResultViewModel.cs" />
-    <Compile Include="Areas\Admin\ViewModels\UploadResultViewModel.cs" />
-    <Compile Include="Areas\Admin\ViewModels\UploadSearchViewModel.cs" />
-    <Compile Include="Areas\Admin\ViewModels\UserSearchViewModel.cs" />
-    <Compile Include="Areas\Admin\ViewModels\UserInfoViewModel.cs" />
-    <Compile Include="Areas\API\APIAreaRegistration.cs" />
-    <Compile Include="Areas\API\Controllers\APIController.cs" />
-    <Compile Include="Areas\API\Controllers\APIv1Controller.cs" />
-    <Compile Include="Areas\API\Models\APIv1BaseModel.cs" />
-    <Compile Include="Areas\API\Models\APIv1PasteModel.cs" />
-    <Compile Include="Areas\API\Models\APIv1ShortenModel.cs" />
-    <Compile Include="Areas\API\Models\APIv1UploadModel.cs" />
-    <Compile Include="Areas\Blog\BlogAreaRegistration.cs" />
-    <Compile Include="Areas\Blog\Models\BlogPostComment.cs" />
-    <Compile Include="Areas\Blog\ViewModels\BlogViewModel.cs" />
-    <Compile Include="Areas\Blog\ViewModels\CommentViewModel.cs" />
-    <Compile Include="Areas\Blog\ViewModels\CreatePostViewModel.cs" />
-    <Compile Include="Areas\Blog\ViewModels\EditPostViewModel.cs" />
-    <Compile Include="Areas\Blog\ViewModels\PostViewModel.cs" />
-    <Compile Include="Areas\Contact\ContactAreaRegistration.cs" />
-    <Compile Include="Areas\Contact\Controllers\ContactController.cs" />
-    <Compile Include="Areas\Contact\Models\Contact.cs" />
-    <Compile Include="Areas\Contact\ViewModels\ContactViewModel.cs" />
-    <Compile Include="Areas\Dev\DevAreaRegistration.cs" />
-    <Compile Include="Areas\Error\Controllers\ErrorController.cs" />
-    <Compile Include="Areas\Error\ErrorAreaRegistration.cs" />
-    <Compile Include="Areas\Error\ViewModels\ErrorViewModel.cs" />
-    <Compile Include="Areas\Error\ViewModels\SubmitReportViewModel.cs" />
-    <Compile Include="Areas\FAQ\Controllers\FAQController.cs" />
-    <Compile Include="Areas\FAQ\FAQAreaRegistration.cs" />
-    <Compile Include="Areas\FAQ\ViewModels\FAQViewModel.cs" />
-    <Compile Include="Areas\Help\Controllers\HelpController.cs" />
-    <Compile Include="Areas\Help\HelpAreaRegistration.cs" />
-    <Compile Include="Areas\Help\ViewModels\HelpViewModel.cs" />
-    <Compile Include="Areas\Home\Controllers\HomeController.cs" />
-    <Compile Include="Areas\Home\HomeAreaRegistration.cs" />
-    <Compile Include="Areas\Home\ViewModels\HomeViewModel.cs" />
-    <Compile Include="Areas\IRC\Controllers\IRCController.cs" />
-    <Compile Include="Areas\IRC\IRCAreaRegistration.cs" />
-    <Compile Include="Areas\IRC\ViewModels\ClientViewModel.cs" />
-    <Compile Include="Areas\Paste\Controllers\PasteController.cs" />
-    <Compile Include="Areas\Paste\Models\Paste.cs" />
-    <Compile Include="Areas\Paste\PasteHelper.cs" />
-    <Compile Include="Areas\Paste\ViewModels\PasteCreateViewModel.cs" />
-    <Compile Include="Areas\Paste\PasteAreaRegistration.cs" />
-    <Compile Include="Areas\Paste\ViewModels\PasswordViewModel.cs" />
-    <Compile Include="Areas\Paste\ViewModels\PasteViewModel.cs" />
-    <Compile Include="Areas\Podcast\Controllers\PodcastController.cs" />
-    <Compile Include="Areas\Podcast\Models\PodcastComment.cs" />
-    <Compile Include="Areas\Podcast\Models\Podcast.cs" />
-    <Compile Include="Areas\Podcast\Models\PodcastFile.cs" />
-    <Compile Include="Areas\Podcast\PodcastAreaRegistration.cs" />
-    <Compile Include="Areas\Podcast\ViewModels\CommentViewModel.cs" />
-    <Compile Include="Areas\Podcast\ViewModels\MainViewModel.cs" />
-    <Compile Include="Areas\Podcast\ViewModels\PodcastViewModel.cs" />
-    <Compile Include="Areas\Privacy\Controllers\PrivacyController.cs" />
-    <Compile Include="Areas\Privacy\PrivacyAreaRegistration.cs" />
-    <Compile Include="Areas\Privacy\ViewModels\PrivacyViewModel.cs" />
-    <Compile Include="Areas\Stats\Controllers\StatsController.cs" />
-    <Compile Include="Areas\Stats\Models\Bill.cs" />
-    <Compile Include="Areas\Stats\Models\Donation.cs" />
-    <Compile Include="Areas\Stats\Models\OneTime.cs" />
-    <Compile Include="Areas\Stats\Models\Takedown.cs" />
-    <Compile Include="Areas\Stats\Models\Transaction.cs" />
-    <Compile Include="Areas\Stats\StatsAreaRegistration.cs" />
-    <Compile Include="Areas\Stats\ViewModels\OneTimeViewModel.cs" />
-    <Compile Include="Areas\Stats\ViewModels\DonationViewModel.cs" />
-    <Compile Include="Areas\Stats\ViewModels\StatsViewModel.cs" />
-    <Compile Include="Areas\Stats\ViewModels\TakedownViewModel.cs" />
-    <Compile Include="Areas\Stats\ViewModels\TransactionsViewModel.cs" />
-    <Compile Include="Areas\Stats\ViewModels\BillViewModel.cs" />
-    <Compile Include="Areas\Stats\ViewModels\TransactionViewModel.cs" />
-    <Compile Include="Areas\User\Controllers\UserController.cs" />
-    <Compile Include="Areas\User\Models\BlogSettings.cs" />
-    <Compile Include="Areas\User\Models\InviteCode.cs" />
-    <Compile Include="Areas\User\Models\ResetPasswordVerification.cs" />
-    <Compile Include="Areas\User\Models\RecoveryEmailVerification.cs" />
-    <Compile Include="Areas\User\Models\SecuritySettings.cs" />
-    <Compile Include="Areas\User\Models\AuthToken.cs" />
-    <Compile Include="Areas\User\Models\TrustedDevice.cs" />
-    <Compile Include="Areas\User\ViewModels\AuthTokenViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\InviteCodeViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\InviteSettingsViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\UploadSettingsViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\EditSettingsViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\GetPremiumViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\BlogSettingsViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\SecuritySettingsViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\SetPasswordViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\ProfileSettingsViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\TwoFactorViewModel.cs" />
-    <Compile Include="Areas\Vault\ViewModels\ModifyVaultViewModel.cs" />
-    <Compile Include="Areas\Vault\ViewModels\ModifyVaultItemViewModel.cs" />
-    <Compile Include="Areas\Vault\ViewModels\UploadItemViewModel.cs" />
-    <Compile Include="Areas\Vault\ViewModels\PasteItemViewModel.cs" />
-    <Compile Include="Areas\Vault\ViewModels\VaultItemViewModel.cs" />
-    <Compile Include="Attributes\TeknikAuthorizeAttribute.cs" />
-    <Compile Include="Hubs\IRCClientHub.cs" />
-    <Compile Include="Modules\BlacklistModule.cs" />
-    <Compile Include="Modules\CompressionModule.cs" />
-    <Compile Include="Modules\CORSModule.cs" />
-    <Compile Include="Modules\CSPModule.cs" />
-    <Compile Include="Modules\UserAuthModule.cs" />
-    <Compile Include="Security\ITeknikPrincipal.cs" />
-    <Compile Include="Security\TeknikPrincipal.cs" />
-    <Compile Include="Filters\CORSActionFilter.cs" />
-    <Compile Include="Hubs\ServerUsageHub.cs" />
-    <Compile Include="Models\DataPoint.cs" />
-    <Compile Include="Models\TransferTypes.cs" />
-    <Compile Include="Areas\User\Models\UploadSettings.cs" />
-    <Compile Include="Areas\User\Models\UserSettings.cs" />
-    <Compile Include="Areas\User\UserAreaRegistration.cs" />
-    <Compile Include="Areas\User\Utility\UserHelper.cs" />
-    <Compile Include="Areas\User\ViewModels\ProfileViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\ResetPasswordVerificationViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\ResetPasswordViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\RecoveryEmailVerificationViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\SettingsViewModel.cs" />
-    <Compile Include="Areas\RSS\Controllers\RSSController.cs" />
-    <Compile Include="Areas\RSS\RSSAreaRegistration.cs" />
-    <Compile Include="Areas\Shortener\Controllers\ShortenerController.cs" />
-    <Compile Include="Areas\Shortener\Models\ShortenedUrl.cs" />
-    <Compile Include="Areas\Shortener\ShortenerAreaRegistration.cs" />
-    <Compile Include="Areas\Shortener\Shortener.cs" />
-    <Compile Include="Areas\Shortener\ViewModels\ShortenViewModel.cs" />
-    <Compile Include="Areas\Stream\Controllers\StreamController.cs" />
-    <Compile Include="Areas\Stream\StreamAreaRegistration.cs" />
-    <Compile Include="Areas\Stream\ViewModels\StreamViewModel.cs" />
-    <Compile Include="Areas\TOS\Controllers\TOSController.cs" />
-    <Compile Include="Areas\TOS\TOSAreaRegistration.cs" />
-    <Compile Include="Areas\TOS\ViewModels\TOSViewModel.cs" />
-    <Compile Include="Areas\Upload\Controllers\UploadController.cs" />
-    <Compile Include="Areas\Upload\Models\FileModel.cs" />
-    <Compile Include="Areas\Upload\Models\Upload.cs" />
-    <Compile Include="Areas\Upload\UploadAreaRegistration.cs" />
-    <Compile Include="Areas\Upload\Uploader.cs" />
-    <Compile Include="Areas\Upload\ViewModels\DeleteViewModel.cs" />
-    <Compile Include="Areas\Upload\ViewModels\DownloadViewModel.cs" />
-    <Compile Include="Areas\Upload\ViewModels\UploadViewModel.cs" />
-    <Compile Include="Areas\Vault\Controllers\VaultController.cs" />
-    <Compile Include="Areas\Vault\Models\PasteVaultItem.cs" />
-    <Compile Include="Areas\Vault\Models\UploadVaultItem.cs" />
-    <Compile Include="Areas\Vault\Models\Vault.cs" />
-    <Compile Include="Areas\Vault\Models\VaultItem.cs" />
-    <Compile Include="Areas\Vault\VaultAreaRegistration.cs" />
-    <Compile Include="Areas\Vault\ViewModels\VaultViewModel.cs" />
-    <Compile Include="Attributes\EntityAttribute.cs" />
-    <Compile Include="Areas\Blog\Controllers\BlogController.cs" />
-    <Compile Include="Controllers\DefaultController.cs" />
-    <Compile Include="Areas\Dev\Controllers\DevController.cs" />
-    <Compile Include="Filters\TrackLink.cs" />
-    <Compile Include="Filters\TrackDownload.cs" />
-    <Compile Include="Filters\TrackPageView.cs" />
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Areas\User\Models\Group.cs" />
-    <Compile Include="Areas\Blog\Models\BlogPost.cs" />
-    <Compile Include="Areas\User\Models\Role.cs" />
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\TeknikEntities.cs" />
-    <Compile Include="Areas\User\Models\User.cs" />
-    <Compile Include="Areas\Blog\Models\Blog.cs" />
-    <Compile Include="Areas\User\ViewModels\LoginViewModel.cs" />
-    <Compile Include="Areas\User\ViewModels\RegisterViewModel.cs" />
-    <Compile Include="Modules\PerformanceMonitorModule.cs" />
-    <Compile Include="SignalR\IRCClient.cs" />
-    <Compile Include="SignalR\ServerUsageTicker.cs" />
-    <Compile Include="Startup.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="App_Start\SubdomainRoute.cs" />
-    <Compile Include="App_Start\SubdomainRouteExtension.cs" />
-    <Compile Include="BaseViewPage.cs" />
+    <PackageReference Include="IdentityServer4" Version="2.2.0" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.6.0" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.1.0" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.1.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0" PrivateAssets="All" />
+    <PackageReference Include="nClam" Version="4.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="QRCoder" Version="1.3.3" />
+    <PackageReference Include="TwoStepsAuthenticator" Version="1.3.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Content Include="App_Data\ipBlacklist.txt" />
-    <Content Include="App_Data\referrerBlacklist.txt" />
-    <Content Include="App_Data\reservedUsernames.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\robots.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Areas\Admin\Scripts\UploadSearch.js" />
-    <Content Include="Areas\Admin\Scripts\UserSearch.js" />
-    <Content Include="Areas\Admin\Scripts\UserInfo.js" />
-    <Content Include="Areas\Blog\Content\Blog.css" />
-    <Content Include="Areas\Blog\Scripts\Blog.js" />
-    <Content Include="Areas\Contact\Scripts\Contact.js" />
-    <Content Include="Areas\Error\Scripts\Error.js" />
-    <Content Include="Areas\FAQ\Content\FAQ.css" />
-    <Content Include="Areas\Help\Content\Help.css" />
-    <Content Include="Areas\Home\Content\Home.css" />
-    <Content Include="Areas\Home\Scripts\Home.js" />
-    <Content Include="Areas\IRC\Content\IRC.css" />
-    <Content Include="Areas\IRC\Scripts\IRC.js" />
-    <Content Include="Areas\Paste\Content\Paste.css" />
-    <Content Include="Areas\Paste\Scripts\Paste.js" />
-    <Content Include="Areas\Podcast\Content\Podcast.css" />
-    <Content Include="Areas\Podcast\Scripts\Podcast.js" />
-    <Content Include="Areas\Stats\Scripts\Stats.js" />
-    <Content Include="Areas\Upload\Content\Upload.css" />
-    <Content Include="Areas\User\Scripts\CheckAuthCode.js" />
-    <Content Include="Areas\User\Scripts\Profile.js" />
-    <Content Include="Areas\User\Scripts\Settings.js" />
-    <Content Include="Areas\User\Scripts\BlogSettings.js" />
-    <Content Include="Areas\User\Scripts\InviteSettings.js" />
-    <Content Include="Areas\User\Scripts\ProfileSettings.js" />
-    <Content Include="Areas\User\Scripts\SecuritySettings.js" />
-    <Content Include="Areas\User\Scripts\UploadSettings.js" />
-    <Content Include="Areas\User\Scripts\ResetPass.js" />
-    <Content Include="Areas\Shortener\Scripts\Shortener.js" />
-    <Content Include="Areas\Upload\Scripts\Download.js" />
-    <Content Include="Areas\Vault\Content\Vault.css" />
-    <Content Include="Areas\Vault\Scripts\Vault.js" />
-    <Content Include="Content\audioplayer.css" />
-    <Content Include="Content\Bootstra.386\bootstrap-theme.css" />
-    <Content Include="Content\Bootstra.386\bootstrap.css" />
-    <Content Include="Content\bootstrap-flat-extras.css" />
-    <Content Include="Content\bootstrap-flat-extras.min.css" />
-    <Content Include="Content\bootstrap-flat.css" />
-    <Content Include="Content\bootstrap-flat.min.css" />
-    <Content Include="Content\bootstrap-switch\bootstrap2\bootstrap-switch.css" />
-    <Content Include="Content\bootstrap-switch\bootstrap2\bootstrap-switch.min.css" />
-    <Content Include="Content\bootstrap-switch\bootstrap3\bootstrap-switch.css" />
-    <Content Include="Content\bootstrap-switch\bootstrap3\bootstrap-switch.min.css" />
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\font-awesome.css" />
-    <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\Highlight\agate.css" />
-    <Content Include="Content\Highlight\androidstudio.css" />
-    <Content Include="Content\Highlight\arduino-light.css" />
-    <Content Include="Content\Highlight\arta.css" />
-    <Content Include="Content\Highlight\ascetic.css" />
-    <Content Include="Content\Highlight\atelier-cave-dark.css" />
-    <Content Include="Content\Highlight\atelier-cave-light.css" />
-    <Content Include="Content\Highlight\atelier-dune-dark.css" />
-    <Content Include="Content\Highlight\atelier-dune-light.css" />
-    <Content Include="Content\Highlight\atelier-estuary-dark.css" />
-    <Content Include="Content\Highlight\atelier-estuary-light.css" />
-    <Content Include="Content\Highlight\atelier-forest-dark.css" />
-    <Content Include="Content\Highlight\atelier-forest-light.css" />
-    <Content Include="Content\Highlight\atelier-heath-dark.css" />
-    <Content Include="Content\Highlight\atelier-heath-light.css" />
-    <Content Include="Content\Highlight\atelier-lakeside-dark.css" />
-    <Content Include="Content\Highlight\atelier-lakeside-light.css" />
-    <Content Include="Content\Highlight\atelier-plateau-dark.css" />
-    <Content Include="Content\Highlight\atelier-plateau-light.css" />
-    <Content Include="Content\Highlight\atelier-savanna-dark.css" />
-    <Content Include="Content\Highlight\atelier-savanna-light.css" />
-    <Content Include="Content\Highlight\atelier-seaside-dark.css" />
-    <Content Include="Content\Highlight\atelier-seaside-light.css" />
-    <Content Include="Content\Highlight\atelier-sulphurpool-dark.css" />
-    <Content Include="Content\Highlight\atelier-sulphurpool-light.css" />
-    <Content Include="Content\Highlight\brown-paper.css" />
-    <Content Include="Content\Highlight\brown-papersq.png" />
-    <Content Include="Content\Highlight\codepen-embed.css" />
-    <Content Include="Content\Highlight\color-brewer.css" />
-    <Content Include="Content\Highlight\dark.css" />
-    <Content Include="Content\Highlight\darkula.css" />
-    <Content Include="Content\Highlight\default.css" />
-    <Content Include="Content\Highlight\docco.css" />
-    <Content Include="Content\Highlight\far.css" />
-    <Content Include="Content\Highlight\foundation.css" />
-    <Content Include="Content\Highlight\github-gist.css" />
-    <Content Include="Content\Highlight\github.css" />
-    <Content Include="Content\Highlight\googlecode.css" />
-    <Content Include="Content\Highlight\grayscale.css" />
-    <Content Include="Content\Highlight\hopscotch.css" />
-    <Content Include="Content\Highlight\hybrid.css" />
-    <Content Include="Content\Highlight\idea.css" />
-    <Content Include="Content\Highlight\ir-black.css" />
-    <Content Include="Content\Highlight\kimbie.dark.css" />
-    <Content Include="Content\Highlight\kimbie.light.css" />
-    <Content Include="Content\Highlight\magula.css" />
-    <Content Include="Content\Highlight\mono-blue.css" />
-    <Content Include="Content\Highlight\monokai-sublime.css" />
-    <Content Include="Content\Highlight\monokai.css" />
-    <Content Include="Content\Highlight\obsidian.css" />
-    <Content Include="Content\Highlight\paraiso-dark.css" />
-    <Content Include="Content\Highlight\paraiso-light.css" />
-    <Content Include="Content\Highlight\pojoaque.css" />
-    <Content Include="Content\Highlight\pojoaque.jpg" />
-    <Content Include="Content\Highlight\railscasts.css" />
-    <Content Include="Content\Highlight\rainbow.css" />
-    <Content Include="Content\Highlight\school-book.css" />
-    <Content Include="Content\Highlight\school-book.png" />
-    <Content Include="Content\Highlight\solarized-dark.css" />
-    <Content Include="Content\Highlight\solarized-light.css" />
-    <Content Include="Content\Highlight\sunburst.css" />
-    <Content Include="Content\Highlight\tomorrow-night-blue.css" />
-    <Content Include="Content\Highlight\tomorrow-night-bright.css" />
-    <Content Include="Content\Highlight\tomorrow-night-eighties.css" />
-    <Content Include="Content\Highlight\tomorrow-night.css" />
-    <Content Include="Content\Highlight\tomorrow.css" />
-    <Content Include="Content\Highlight\vs.css" />
-    <Content Include="Content\Highlight\xcode.css" />
-    <Content Include="Content\Highlight\zenburn.css" />
-    <Content Include="Content\jquery.tocify.css" />
-    <Content Include="docs\MySqlCommand.xml" />
-    <Content Include="docs\MySqlCommandBuilder.xml" />
-    <Content Include="docs\MySqlConnection.xml" />
-    <Content Include="docs\MySqlConnectionStringBuilder.xml" />
-    <Content Include="docs\MySqlDataAdapter.xml" />
-    <Content Include="docs\MySqlDataReader.xml" />
-    <Content Include="docs\MySqlException.xml" />
-    <Content Include="docs\MySqlHelper.xml" />
-    <Content Include="docs\MySqlParameter.xml" />
-    <Content Include="docs\MySqlParameterCollection.xml" />
-    <Content Include="docs\MySqlTransaction.xml" />
-    <Content Include="Fonts\fontawesome-webfont.svg" />
-    <Content Include="Fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Images\redbubble_icon.png" />
-    <Content Include="Migrations\InitializeTransfers.sql" />
-    <Content Include="Migrations\SetCaseSensitivity.sql" />
-    <Content Include="Scripts\audioplayer.min.js" />
-    <Content Include="Scripts\Blob.js" />
-    <Content Include="Scripts\Bootstra.386\bootstrap.js" />
-    <Content Include="Scripts\bootstrap-markdown.js" />
-    <Content Include="Scripts\bootstrap-switch.js" />
-    <Content Include="Scripts\bootstrap-switch.min.js" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\Crypto-js\aes.js" />
-    <Content Include="Areas\Upload\Scripts\EncryptionWorker.js" />
-    <Content Include="Areas\Upload\Scripts\Upload.js" />
-    <Content Include="Content\bootstrap-markdown.min.css" />
-    <Content Include="Content\dropzone.css" />
-    <Content Include="Images\favicon.ico" />
-    <Content Include="Images\logo-black-io.svg" />
-    <Content Include="Images\logo-black.svg" />
-    <Content Include="Images\logo-blue-io.svg" />
-    <Content Include="Images\logo-blue.svg" />
-    <Content Include="Global.asax" />
-    <Content Include="Content\common.css" />
-    <Content Include="Images\Icon.png" />
-    <Content Include="App_Data\ConnectionStrings.config" />
-    <Content Include="Areas\Blog\Views\web.config" />
-    <Content Include="Areas\Blog\Views\Blog\Blog.cshtml" />
-    <Content Include="Areas\Dev\Views\web.config" />
-    <Content Include="Areas\Home\Views\web.config" />
-    <Content Include="Areas\Home\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Dev\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Blog\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Home\Views\Home\Index.cshtml" />
-    <Content Include="Areas\About\Views\web.config" />
-    <Content Include="Areas\About\Views\About\Index.cshtml" />
-    <Content Include="Areas\About\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Privacy\Views\web.config" />
-    <Content Include="Areas\Privacy\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Privacy\Views\Privacy\Index.cshtml" />
-    <Content Include="Areas\Contact\Views\web.config" />
-    <Content Include="Areas\Contact\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Contact\Views\Contact\Index.cshtml" />
-    <Content Include="Areas\User\Views\web.config" />
-    <Content Include="Areas\User\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\User\Views\User\ViewProfile.cshtml" />
-    <Content Include="Areas\Blog\Views\Blog\Posts.cshtml" />
-    <Content Include="Areas\Blog\Views\Blog\Post.cshtml" />
-    <Content Include="Areas\Blog\Views\Blog\ViewPost.cshtml" />
-    <Content Include="Areas\User\Views\User\ViewLogin.cshtml" />
-    <Content Include="Areas\Blog\Views\Blog\Comments.cshtml" />
-    <Content Include="Areas\Blog\Views\Blog\Comment.cshtml" />
-    <Content Include="Areas\Upload\Views\web.config" />
-    <Content Include="Areas\Upload\Views\Upload\Index.cshtml" />
-    <Content Include="Areas\Upload\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\User\Views\User\ViewRegistration.cshtml" />
-    <Content Include="Areas\Error\Views\web.config" />
-    <Content Include="Areas\Error\Views\Error\Http404.cshtml" />
-    <Content Include="Areas\Error\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Error\Views\Error\Exception.cshtml" />
-    <Content Include="Areas\Error\Views\Error\General.cshtml" />
-    <Content Include="Areas\Error\Views\Error\Http500.cshtml" />
-    <Content Include="Areas\Upload\Views\Upload\Download.cshtml" />
-    <Content Include="Areas\Upload\Views\Upload\Delete.cshtml" />
-    <Content Include="Areas\Help\Views\web.config" />
-    <Content Include="Areas\Help\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Index.cshtml" />
-    <Content Include="Areas\Help\Views\Help\API\API.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Git.cshtml" />
-    <Content Include="Areas\Help\Views\Help\IRC.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Mail.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Mumble.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Blog.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Upload.cshtml" />
-    <Content Include="Areas\API\Views\web.config" />
-    <Content Include="Areas\Help\Views\Help\API\v1\Upload.cshtml" />
-    <Content Include="Areas\Paste\Views\web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Areas\Paste\Views\Paste\Index.cshtml" />
-    <Content Include="Areas\Paste\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Paste\Views\Paste\Full.cshtml" />
-    <Content Include="Areas\Paste\Views\Paste\PasswordNeeded.cshtml" />
-    <Content Include="Areas\Error\Views\Error\Http403.cshtml" />
-    <Content Include="Areas\Paste\Views\Paste\Simple.cshtml" />
-    <Content Include="Areas\Help\Views\Help\API\v1\Paste.cshtml" />
-    <Content Include="Areas\Podcast\Views\web.config" />
-    <Content Include="Areas\Podcast\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Podcast\Views\Podcast\Main.cshtml" />
-    <Content Include="Areas\Podcast\Views\Podcast\Podcast.cshtml" />
-    <Content Include="Areas\Podcast\Views\Podcast\Podcasts.cshtml" />
-    <Content Include="Areas\Podcast\Views\Podcast\Comment.cshtml" />
-    <Content Include="Areas\Podcast\Views\Podcast\Comments.cshtml" />
-    <Content Include="Areas\Podcast\Views\Podcast\ViewPodcast.cshtml" />
-    <Content Include="App_Data\Config.json" />
-    <Content Include="Areas\User\Views\User\Settings\Settings.cshtml" />
-    <Content Include="Areas\Vault\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Help\Views\Help\RSS.cshtml" />
-    <Content Include="Areas\Stream\Views\web.config" />
-    <Content Include="Areas\Stream\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Stream\Views\Stream\Index.cshtml" />
-    <Content Include="Areas\Shortener\Views\web.config" />
-    <Content Include="Areas\Shortener\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Shortener\Views\Shortener\Index.cshtml" />
-    <Content Include="Areas\Help\Views\Help\API\v1\Shorten.cshtml" />
-    <Content Include="Areas\TOS\Views\web.config" />
-    <Content Include="Areas\TOS\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\TOS\Views\TOS\Index.cshtml" />
-    <Content Include="Areas\Vault\Views\web.config" />
-    <Content Include="Areas\Vault\Views\Vault\ViewVault.cshtml" />
-    <Content Include="Areas\User\Views\User\ViewRecoveryEmailVerification.cshtml" />
-    <Content Include="Areas\User\Views\User\ResetPasswordVerification.cshtml" />
-    <Content Include="Areas\User\Views\User\ResetPassword.cshtml" />
-    <Content Include="Areas\User\Views\User\TwoFactorCheck.cshtml" />
-    <Content Include="Fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="Fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-theme.min.css.map" />
-    <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Areas\Blog\Views\Blog\NewPost.cshtml" />
-    <Content Include="Areas\Blog\Views\Blog\EditPost.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Markdown.cshtml" />
-    <Content Include="Areas\Help\Views\Help\Tools.cshtml" />
-    <Content Include="Areas\Admin\Views\web.config" />
-    <Content Include="Areas\Admin\Views\Admin\UserSearch.cshtml" />
-    <Content Include="Areas\Admin\Views\Admin\Dashboard.cshtml" />
-    <Content Include="Areas\Admin\Views\Admin\UserResult.cshtml" />
-    <Content Include="Areas\Admin\Views\Admin\UserResults.cshtml" />
-    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
-    <Content Include="App_Data\MachineKey.config" />
-    <Content Include="Areas\Admin\Views\Admin\UserInfo.cshtml" />
-    <Content Include="Areas\Shortener\Views\Shortener\Verify.cshtml" />
-    <Content Include="Fonts\FontAwesome.otf" />
-    <Content Include="Fonts\fontawesome-webfont.woff2" />
-    <Content Include="Fonts\fontawesome-webfont.woff" />
-    <Content Include="Fonts\fontawesome-webfont.ttf" />
-    <Content Include="Fonts\fontawesome-webfont.eot" />
-    <Content Include="Areas\User\Views\User\Settings\AuthToken.cshtml" />
-    <Content Include="Areas\Error\Views\Error\Http401.cshtml" />
-    <Content Include="Areas\Vault\Views\Vault\ModifyVault.cshtml" />
-    <Content Include="Areas\Vault\Views\Vault\ModifyVaultItem.cshtml" />
-    <Content Include="Areas\Vault\Views\Vault\PasteItem.cshtml" />
-    <Content Include="Areas\Vault\Views\Vault\UploadItem.cshtml" />
-    <Content Include="Areas\Stats\Views\web.config" />
-    <Content Include="Areas\Stats\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Stats\Views\Stats\Index.cshtml" />
-    <Content Include="Areas\Stats\Views\Stats\Transactions.cshtml" />
-    <Content Include="Areas\Stats\Views\Stats\Bills.cshtml" />
-    <Content Include="Areas\Stats\Views\Stats\OneTimes.cshtml" />
-    <Content Include="Areas\Stats\Views\Stats\Donations.cshtml" />
-    <Content Include="Areas\Stats\Views\Stats\Takedowns.cshtml" />
-    <Content Include="Areas\FAQ\Views\web.config" />
-    <Content Include="Areas\FAQ\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\FAQ\Views\FAQ\Index.cshtml" />
-    <Content Include="Areas\User\Views\User\GetPremium.cshtml" />
-    <Content Include="Areas\Admin\Views\Admin\UploadSearch.cshtml" />
-    <Content Include="Areas\Admin\Views\Admin\UploadResult.cshtml" />
-    <Content Include="Areas\IRC\Views\web.config" />
-    <Content Include="Areas\IRC\Views\IRC\Client.cshtml" />
-    <Content Include="Areas\IRC\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\User\Views\User\Settings\ProfileSettings.cshtml" />
-    <Content Include="Areas\User\Views\User\Settings\SecuritySettings.cshtml" />
-    <Content Include="Areas\User\Views\User\Settings\InviteSettings.cshtml" />
-    <Content Include="Areas\User\Views\User\Settings\BlogSettings.cshtml" />
-    <Content Include="Areas\User\Views\User\Settings\UploadSettings.cshtml" />
-    <Content Include="Areas\User\Views\User\Settings\SettingsBase.cshtml" />
-    <Content Include="Areas\User\Views\User\Settings\InviteCode.cshtml" />
-    <Content Include="Areas\Abuse\Views\web.config" />
-    <Content Include="Areas\Abuse\Views\Abuse\Index.cshtml" />
-    <Content Include="Areas\Abuse\Views\_ViewStart.cshtml" />
-    <None Include="Properties\PublishProfiles\Teknik Dev.pubxml" />
-    <None Include="Properties\PublishProfiles\Teknik Production.pubxml" />
-    <None Include="Scripts\jquery-2.1.4.intellisense.js" />
-    <Content Include="Scripts\bootbox\bootbox.min.js" />
-    <Content Include="Scripts\bootstrap-select.js" />
-    <Content Include="Scripts\common.js" />
-    <Content Include="Scripts\Crypto-js\enc-base64.js" />
-    <Content Include="Scripts\Crypto-js\enc-utf16.js" />
-    <Content Include="Scripts\Crypto-js\lib-typedarrays.js" />
-    <Content Include="Scripts\Crypto-js\mode-ctr.js" />
-    <Content Include="Scripts\Crypto-js\pad-nopadding.js" />
-    <Content Include="Scripts\Dropzone\dropzone.js" />
-    <Content Include="Scripts\FileSaver.js" />
-    <Content Include="Scripts\FileSize\filesize.min.js" />
-    <Content Include="Scripts\Highcharts\highcharts-3d.js" />
-    <Content Include="Scripts\Highcharts\highcharts-more.js" />
-    <Content Include="Scripts\Highcharts\highcharts.js" />
-    <Content Include="Scripts\Highlight\highlight.pack.js" />
-    <None Include="Scripts\jquery-3.1.1.intellisense.js" />
-    <None Include="Scripts\jquery-3.3.1.intellisense.js" />
-    <Content Include="Scripts\jquery-3.3.1.js" />
-    <Content Include="Scripts\jquery-3.3.1.min.js" />
-    <Content Include="Scripts\jquery-3.3.1.slim.js" />
-    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
-    <Content Include="Scripts\jquery-ui.widgets.js" />
-    <Content Include="Scripts\jquery.blockUI.js" />
-    <Content Include="Scripts\jquery.fileupload.js" />
-    <Content Include="Scripts\jquery.iframe-transport.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.2.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.2.min.js" />
-    <Content Include="Scripts\jquery.tocify.min.js" />
-    <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\MarkdownDeep License.txt" />
-    <Content Include="Scripts\MarkdownDeep Quick Reference.txt" />
-    <Content Include="Scripts\MarkdownDeepLib.min.js" />
-    <Content Include="Images\mdd_ajax_loader.gif" />
-    <Content Include="Images\mdd_gripper.png" />
-    <Content Include="Images\mdd_modal_background.png" />
-    <Content Include="Content\mdd_styles.css" />
-    <Content Include="Images\mdd_toolbar.png" />
-    <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Scripts\ocupload\1.1.2\ocupload.js" />
-    <Content Include="Scripts\PageDown\Markdown.Converter.js" />
-    <Content Include="Scripts\PageDown\Markdown.Editor.js" />
-    <Content Include="Scripts\PageDown\Markdown.Sanitizer.js" />
-    <Content Include="Scripts\respond.js" />
-    <Content Include="Scripts\respond.matchmedia.addListener.js" />
-    <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
-    <Content Include="Scripts\respond.min.js" />
-    <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Views\Web.config" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Areas\User\Views\User\_LoginPartial.cshtml" />
-    <Content Include="Views\Shared\_Navbar.cshtml" />
-    <Content Include="Views\Shared\_Footer.cshtml" />
-    <Content Include="Areas\User\Views\User\Login.cshtml" />
-    <Content Include="Areas\User\Views\User\Register.cshtml" />
-    <Content Include="Areas\Dev\Views\Dev\Index.cshtml" />
-    <Content Include="Areas\User\Views\User\_LoginModalPartial.cshtml" />
-    <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
-    <Content Include="Scripts\jquery-3.3.1.min.map" />
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.1.0-preview1-final" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.1.0-preview1-final" />
   </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Areas\About\Models\" />
-    <Folder Include="Areas\About\Views\Shared\" />
+    <Folder Include="Areas\About\Views\About\" />
     <Folder Include="Areas\Abuse\Models\" />
-    <Folder Include="Areas\Abuse\Views\Shared\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\API\Views\APIv1\" />
     <Folder Include="Areas\API\Views\API\" />
-    <Folder Include="Areas\API\Views\Shared\" />
-    <Folder Include="Areas\Blog\Views\Shared\" />
-    <Folder Include="Areas\Contact\Views\Shared\" />
     <Folder Include="Areas\Dev\Models\" />
-    <Folder Include="Areas\Dev\Views\Shared\" />
     <Folder Include="Areas\Error\Models\" />
-    <Folder Include="Areas\Error\Views\Shared\" />
     <Folder Include="Areas\FAQ\Models\" />
-    <Folder Include="Areas\FAQ\Views\Shared\" />
     <Folder Include="Areas\Help\Models\" />
-    <Folder Include="Areas\Help\Views\Shared\" />
+    <Folder Include="Areas\Home\Controllers\" />
     <Folder Include="Areas\Home\Models\" />
-    <Folder Include="Areas\Home\Views\Shared\" />
-    <Folder Include="Areas\IRC\Models\" />
-    <Folder Include="Areas\IRC\Views\Shared\" />
-    <Folder Include="Areas\Paste\Views\Shared\" />
-    <Folder Include="Areas\Podcast\Views\Shared\" />
+    <Folder Include="Areas\Home\Views\" />
     <Folder Include="Areas\Privacy\Models\" />
-    <Folder Include="Areas\Privacy\Views\Shared\" />
-    <Folder Include="Areas\Shortener\Views\Shared\" />
-    <Folder Include="Areas\Stats\Views\Shared\" />
-    <Folder Include="Areas\Stream\Views\Shared\" />
     <Folder Include="Areas\TOS\Models\" />
-    <Folder Include="Areas\TOS\Views\Shared\" />
-    <Folder Include="Areas\Upload\Views\Shared\" />
-    <Folder Include="Areas\User\Repositories\" />
-    <Folder Include="Areas\User\Views\Shared\" />
-    <Folder Include="Areas\Vault\Views\Shared\" />
+    <Folder Include="Areas\User\Controllers\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Data\Migrations\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Views\Shared\" />
+    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\lib\" />
   </ItemGroup>
+
   <ItemGroup>
-    <Content Include="packages.config">
-      <SubType>Designer</SubType>
+    <ProjectReference Include="..\Configuration\Configuration.csproj" />
+    <ProjectReference Include="..\Logging\Logging.csproj" />
+    <ProjectReference Include="..\MailService\MailService.csproj" />
+    <ProjectReference Include="..\Piwik\Piwik.csproj" />
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="App_Data\Config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="App_Data\ConnectionStrings.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="App_Data\MachineKey.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
-    <COMReference Include="hMailServer">
-      <Guid>{DB241B59-A1B1-4C59-98FC-8D101A2995F2}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
+    <None Update="App_Data\ipBlacklist.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="App_Data\referrerBlacklist.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="App_Data\reservedUsernames.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="App_Data\robots.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Utilities\Configuration\Configuration.csproj">
-      <Project>{f0da1b67-af92-4b4a-8669-7e81645ff996}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Logging\Logging.csproj">
-      <Project>{77e865fd-f08b-4f07-9676-bc2fdcc7244c}</Project>
-      <Name>Logging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Piwik\Piwik.csproj">
-      <Project>{c492c2c6-d45a-498b-84a2-6d4c8bf9de77}</Project>
-      <Name>Piwik</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities\Utilities.csproj">
-      <Project>{f45de6fc-3754-4954-a20a-4277362cc6c1}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <PropertyGroup>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
-  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
-    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
-  </Target>
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
-        <WebProjectProperties>
-          <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>65244</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44300/</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-        </WebProjectProperties>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-  <Import Project="..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitVersionTask.3.6.5\build\dotnet\GitVersionTask.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target> -->
+
 </Project>

@@ -1,8 +1,6 @@
 @model Teknik.Areas.Podcast.ViewModels.MainViewModel
 
-@using Teknik.Utilities
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     // We need to define the action URLs for the script
 
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
@@ -24,8 +22,7 @@
     var deleteCommentURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "DeleteComment" })';
 </script>
 
-@Styles.Render("~/Content/podcast")
-@Scripts.Render("~/bundles/podcast")
+<bundle src="css/podcast.min.css" append-version="true"></bundle>
 
 <div class="container">
     <div class="row">
@@ -51,7 +48,7 @@
     <div class="modal fade" id="newPodcast" tabindex="-1" role="dialog" aria-labelledby="newPodcastLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="##" method="post" id="publishPodcast" enctype="multipart/form-data">
+                <!form class="form" action="##" method="post" id="publishPodcast" enctype="multipart/form-data">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
                         <h4 class="modal-title" id="newPodcastLabel">Create a New Podcast</h4>
@@ -90,14 +87,14 @@
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" id="podcast_submit">Create</button>
                     </div>
-                </form>
+                </!form>
             </div>
         </div>
     </div>
     <div class="modal fade" id="editPodcast" tabindex="-1" role="dialog" aria-labelledby="editPodcastLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="##" method="post" id="editPodcastForm">
+                <!form class="form" action="##" method="post" id="editPodcastForm">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
                         <h4 class="modal-title" id="editPodcastLabel">Edit The Podcast</h4>
@@ -137,17 +134,19 @@
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" id="edit_submit">Save</button>
                     </div>
-                </form>
+                </!form>
             </div>
         </div>
     </div>
     }
+    
+    <bundle src="js/podcast.min.js" append-version="true"></bundle>
 
     @if (!Model.Error)
     {
     <div class="podcast-main"></div>
-    <script nonce="@Context.Items[Constants.NONCE_KEY]">
-        var podcasts = @Model.Config.PodcastConfig.PodcastsToLoad;
+    <script>
+        var podcasts = @Config.PodcastConfig.PodcastsToLoad;
         var startPodcast = 0;
         loadMorePodcasts(startPodcast, podcasts);
         startPodcast = startPodcast + podcasts;

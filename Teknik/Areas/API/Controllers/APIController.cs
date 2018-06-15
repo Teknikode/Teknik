@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 using Teknik.Areas.Upload;
 using Teknik.Controllers;
 using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Attributes;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+using Teknik.Configuration;
+using Teknik.Data;
+using Microsoft.AspNetCore.Mvc;
+using Teknik.Logging;
 
 namespace Teknik.Areas.API.Controllers
 {
     [TeknikAuthorize]
+    [Area("API")]
     public class APIController : DefaultController
     {
+        public APIController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+
         [AllowAnonymous]
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return Redirect(Url.SubRouteUrl("help", "Help.API"));
         }

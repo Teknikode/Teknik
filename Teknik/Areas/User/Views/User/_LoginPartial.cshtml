@@ -1,12 +1,7 @@
-@model Teknik.ViewModels.ViewModelBase
-
-@using Teknik.Utilities
-@using Microsoft.AspNet.Identity
-
-@if (Model.Config.UserConfig.RegistrationEnabled || Model.Config.UserConfig.LoginEnabled)
+@if (Config.UserConfig.RegistrationEnabled || Config.UserConfig.LoginEnabled)
 {
 <div class="nav navbar-nav pull-right">
-    @if (Request.IsAuthenticated)
+    @if (User.Identity.IsAuthenticated)
     {
         <li class="dropdown">
             <a href="#" id="user_menu" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <strong class="caret"></strong></a>
@@ -34,14 +29,14 @@
     }
     else
     {
-        if (Model.Config.UserConfig.RegistrationEnabled)
+        if (Config.UserConfig.RegistrationEnabled)
         {
             <button id="registerButton" data-toggle="modal" data-target="#registerModal" class="btn btn-default navbar-btn hide">Sign Up</button>
             <noscript>
                 <a href="@Url.SubRouteUrl("user", "User.Register")" class="btn btn-default navbar-btn">Sign Up</a>
             </noscript>
         }
-        if (Model.Config.UserConfig.LoginEnabled)
+        if (Config.UserConfig.LoginEnabled)
         {
             <button id="loginButton" data-toggle="modal" data-target="#loginModal" class="btn btn-default navbar-btn hide">Sign In</button>
             <noscript>

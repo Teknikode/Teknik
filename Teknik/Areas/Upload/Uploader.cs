@@ -8,31 +8,32 @@ using Teknik.Models;
 using Teknik.Utilities;
 using System.Text;
 using Teknik.Utilities.Cryptography;
+using Teknik.Data;
 
 namespace Teknik.Areas.Upload
 {
     public static class Uploader
     {
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt)
         {
             return SaveFile(db, config, file, contentType, contentLength, encrypt, string.Empty, null, null, 256, 128);
         }
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string fileExt)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, string fileExt)
         {
             return SaveFile(db, config, file, contentType, contentLength, encrypt, fileExt, null, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string fileExt, string iv)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, string fileExt, string iv)
         {
             return SaveFile(db, config, file, contentType, contentLength, encrypt, fileExt, iv, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string fileExt, string iv, string key)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, string fileExt, string iv, string key)
         {
             return SaveFile(db, config, file, contentType, contentLength, encrypt, fileExt, iv, key, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, System.IO.Stream file, string contentType, int contentLength, bool encrypt, string fileExt, string iv, string key, int keySize, int blockSize)
+        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, string fileExt, string iv, string key, int keySize, int blockSize)
         {
             if (!Directory.Exists(config.UploadConfig.UploadDirectory))
             {
@@ -80,7 +81,7 @@ namespace Teknik.Areas.Upload
             string delKey = StringHelper.RandomString(config.UploadConfig.DeleteKeyLength);
 
             // Now we need to update the database with the new upload information
-            Models.Upload upload = db.Uploads.Create();
+            Models.Upload upload = new Models.Upload();
             upload.DateUploaded = DateTime.Now;
             upload.Url = url;
             upload.FileName = fileName;

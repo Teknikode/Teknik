@@ -1,8 +1,6 @@
 @model Teknik.Areas.Users.ViewModels.RegisterViewModel
 
-@using Teknik.Utilities
-
-@if (Model.Config.UserConfig.RegistrationEnabled)
+@if (Config.UserConfig.RegistrationEnabled)
 {
     <div class="row">
         <div class="col-sm-12 text-center">
@@ -14,7 +12,7 @@
             </div>
         </div>
     </div>
-    <form id="registrationForm" action="@Url.SubRouteUrl("user", "User.Register")" method="post" accept-charset="UTF-8">
+    <!form id="registrationForm" action="@Url.SubRouteUrl("user", "User.Register")" method="post" accept-charset="UTF-8">
         <input name="Register.ReturnUrl" id="registerReturnUrl" type="hidden" value="@Model.ReturnUrl" />
         <div class="form-group">
             <label for="registerUsername">Username</label>
@@ -29,7 +27,7 @@
             <input type="password" class="form-control" id="registerConfirmPassword" value="" placeholder="********" name="Register.ConfirmPassword" data-val-required="The Confirm Password field is required." data-val="true"/>
         </div>
         <div class="form-group">
-            <label for="registerInviteCode">Invite Code@(Model.Config.UserConfig.InviteCodeRequired ? string.Empty : " (Optional)")</label>
+            <label for="registerInviteCode">Invite Code@(Config.UserConfig.InviteCodeRequired ? string.Empty : " (Optional)")</label>
             <input type="text" class="form-control" id="registerInviteCode" value="@Model.InviteCode" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" name="Register.InviteCode"/>
         </div>
         <div class="form-group">
@@ -44,8 +42,8 @@
         </div>
         <p class="text-center">
             <small>
-                Username must meet the following requirements: <var>@Model.Config.UserConfig.UsernameFilterLabel</var><br />
-                and the length must be greater than <b>@Model.Config.UserConfig.MinUsernameLength</b> and less than <b>@Model.Config.UserConfig.MaxUsernameLength</b> characters
+                Username must meet the following requirements: <var>@Config.UserConfig.UsernameFilterLabel</var><br />
+                and the length must be greater than <b>@Config.UserConfig.MinUsernameLength</b> and less than <b>@Config.UserConfig.MaxUsernameLength</b> characters
             </small>
         </p>
         <p class="text-center">
@@ -54,7 +52,7 @@
         <div class="form-group text-center">
             <button class="btn btn-primary" id="registerSubmit" type="submit" name="Register.Submit">Sign Up</button>
         </div>
-    </form>
+    </!form>
 }
 else
 {

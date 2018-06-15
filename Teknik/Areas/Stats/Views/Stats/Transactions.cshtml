@@ -55,6 +55,6 @@
     </div>
 </div>
 
-@Html.Partial("~/Areas/Stats/Views/Stats/Bills.cshtml", Model.Bills)
-@Html.Partial("~/Areas/Stats/Views/Stats/OneTimes.cshtml", Model.OneTimes)
-@Html.Partial("~/Areas/Stats/Views/Stats/Donations.cshtml", Model.Donations)
+@await Html.PartialAsync("~/Areas/Stats/Views/Stats/Bills.cshtml", Model.Bills)
+@await Html.PartialAsync("~/Areas/Stats/Views/Stats/OneTimes.cshtml", Model.OneTimes)
+@await Html.PartialAsync("~/Areas/Stats/Views/Stats/Donations.cshtml", Model.Donations)

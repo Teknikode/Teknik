@@ -1,19 +1,5 @@
 @using System.Diagnostics;
 @using System.Reflection;
-@using Teknik.Utilities;
-
-@{
-    string redbubblePath = "/Images/redbubble_icon.png";
-
-    // If we are using a CDN, let's replace it
-    if (Model.Config.UseCdn)
-    {
-        if (!string.IsNullOrEmpty(Model.Config.CdnHost))
-        {
-            redbubblePath = Model.Config.CdnHost.TrimEnd('/') + redbubblePath;
-        }
-    }
-}
 
 <footer id="footer" class="footer navbar navbar-default">
     <div class="container">
@@ -25,29 +11,41 @@
                             While we provide these services for free, sadly that doesn't make the cost magically go away.  If you think we are doing a great job and would like to say thanks, we would greatly appreciate a small donation.
                         </small>
                     </p>
-                    <form class="form-inline">
+                    <!form class="form-inline">
                         <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MBG93VKQ343P4" role="button" class="btn btn-default btn-sm" title="Paypal Donation">Paypal</a>
                         <a href="https://www.patreon.com/teknik" role="button" class="btn btn-default btn-sm" title="Gratipay">Patreon</a>
                         <a href="http://www.redbubble.com/people/teknikio" role="button" class="btn btn-default btn-sm" title="Teknik Redbubble Marketplace">Redbubble</a>
                         <div class="form-group">
                             <div class="input-group">
                                 <span class="input-group-addon" id="basic-addon1"><i class="fa fa-bitcoin"></i></span>
-                                <input type="text" class="form-control input-sm" name="bitcoin_address_footer" id="bitcoin_address_footer" value="@Model.Config.BitcoinAddress" readonly>
+                                <input type="text" class="form-control input-sm" name="bitcoin_address_footer" id="bitcoin_address_footer" value="@Config.BitcoinAddress" readonly>
                             </div>
                         </div>
-                    </form>
+                    </!form>
                 </div>
             </div>
         </div>
         <br />
         @{
-            Assembly assembly = ViewContext.Controller.GetType().Assembly;
+            Assembly assembly = Assembly.GetEntryAssembly();
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            string fullVersion = fileVersionInfo.ProductVersion;
-            string verNum = fullVersion.Split('+')[0];
-            string commitStr = fullVersion.Split('+')[1];
-            string commitVer = commitStr.Split('.')[0];
-            string commitHash = commitStr.Split('.').Last();
+
+            string verNum = string.Empty;
+            string commitVer = string.Empty;
+            string commitHash = string.Empty;
+
+            if (!string.IsNullOrEmpty(fileVersionInfo.ProductVersion))
+            {
+                string[] fullVersion = fileVersionInfo.ProductVersion.Split('+');
+                if (fullVersion.Count() > 1)
+                {
+                    verNum = fullVersion[0];
+                    string commitStr = fullVersion[1];
+
+                    commitVer = commitStr.Split('.')[0];
+                    commitHash = commitStr.Split('.').Last();
+                }
+            }
         }
         <div class="row">
             <div class="col-sm-5 col-sm-offset-1 text-left text-muted">

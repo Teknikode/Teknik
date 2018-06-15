@@ -1,9 +1,8 @@
 @model Teknik.Areas.Users.ViewModels.ProfileViewModel
 
-@using Teknik.Utilities
 @using Teknik.Utilities.Cryptography
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     var generateDeleteKeyURL = '@Url.SubRouteUrl("u", "Upload.GenerateDeleteKey")';
     var deleteVaultURL = '@Url.SubRouteUrl("v", "Vault.DeleteVault")';
 </script>
@@ -12,7 +11,7 @@
     @if (!Model.Error)
     {
         bool OwnProfile = (Model.Username == User.Identity.Name || User.IsInRole("Admin")) && User.Identity.IsAuthenticated;
-        string gitHost = Model.Config.GitConfig.Host;
+        string gitHost = Config.GitConfig.Host;
         string gitFullUrl = string.Empty;
         if (!string.IsNullOrEmpty(gitHost))
         {
@@ -101,9 +100,9 @@
                     {
                         <li class="list-group-item text-right"><span class="pull-left"><strong>Public Key</strong></span> <a href="#" data-toggle="modal" data-target="#pgpSignature">@pgpFingerprint64.AddStringAtInterval(4, " ")</a></li>
                     }
-                    @if (!string.IsNullOrEmpty(Model.Email) && Model.Config.EmailConfig.Enabled)
+                    @if (!string.IsNullOrEmpty(Model.Email) && Config.EmailConfig.Enabled)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> @(Html.Raw(User.Identity.IsAuthenticated ? $"<a href=\"mailto:{Model.Email}\">{Model.Email}</a>" : $"{Model.Username} at {Model.Config.EmailConfig.Domain}"))</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> @(Html.Raw(User.Identity.IsAuthenticated ? $"<a href=\"mailto:{Model.Email}\">{Model.Email}</a>" : $"{Model.Username} at {Config.EmailConfig.Domain}"))</li>
                     }
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Blog</strong></span> <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = Model.Username })" id="blog_title">@(string.IsNullOrEmpty(Model.BlogSettings.Title) ? string.Format("{0}'s Blog", Model.Username) : Model.BlogSettings.Title)</a></li>
                     @if (!string.IsNullOrEmpty(gitFullUrl))
@@ -219,8 +218,8 @@
                     <div class="tab-pane" id="shortenedUrls" style="overflow-y: auto; max-height: 500px;">
                         @foreach (Teknik.Areas.Shortener.Models.ShortenedUrl url in Model.ShortenedUrls)
                         {
-                            string shortUrl = string.Format("{0}://{1}/{2}", Request.Url.Scheme, Model.Config.ShortenerConfig.ShortenerHost, url.ShortUrl);
-                            if (Model.Config.DevEnvironment)
+                            string shortUrl = string.Format("{0}://{1}/{2}", Context.Request.Scheme, Config.ShortenerConfig.ShortenerHost, url.ShortUrl);
+                            if (Config.DevEnvironment)
                             {
                                 shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = url.ShortUrl });
                             }
@@ -269,7 +268,7 @@
                             </div>
                         }
                     </div>
-                                            }
+                     }
                 </div><!--/tab-content-->
                 }
                 else
@@ -289,4 +288,4 @@
     }
 </div>
 
-@Scripts.Render("~/bundles/profile")
+<bundle src="js/user.profile.min.js" append-version="true"></bundle>

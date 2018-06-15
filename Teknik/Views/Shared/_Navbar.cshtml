@@ -1,18 +1,14 @@
-﻿@model Teknik.ViewModels.ViewModelBase
-
-@Html.Partial("../../Areas/User/Views/User/_LoginModalPartial", Model)
-
-@using Teknik.Utilities
+﻿@await Html.PartialAsync("~/Areas/User/Views/User/_LoginModalPartial.cshtml", Model)
 
 @{ 
     string logoPath = Url.SubRouteUrl("www", "Default.Logo");
 
     // If we are using a CDN, let's replace it
-    if (Model.Config.UseCdn)
+    if (Config.UseCdn)
     {
-        if (!string.IsNullOrEmpty(Model.Config.CdnHost))
+        if (!string.IsNullOrEmpty(Config.CdnHost))
         {
-            logoPath = Model.Config.CdnHost.TrimEnd('/') + Constants.LOGO_PATH.TrimStart('~');
+            logoPath = Config.CdnHost.TrimEnd('/') + Constants.LOGO_PATH.TrimStart('~');
         }
     }
 }
@@ -56,17 +52,17 @@
                             <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")">Shorten Url</a>
                         </li>
                         <li class="@Url.GetActive("vault", "v")">
-                            <a href="@Url.SubRouteUrl("vault", "Vault.Index")">Vaults</a>
+                            <a href="@Url.SubRouteUrl("vault", "Vault.NewVault")">Vaults</a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li class="@Url.GetActive("git")">
-                            <a href="@Model.Config.GitConfig.Host">Git</a>
+                            <a href="@Config.GitConfig.Host">Git</a>
                         </li>
                         <li class="@Url.GetActive("mail")">
                             <a href="@Url.SubRouteUrl("mail", "Mail.Index")" target="_blank">Mail</a>
                         </li>
                         <li class="@Url.GetActive("mumble")">
-                            <a href="mumble://mumble.@(Model.Config.Host):64738/?version=1.2.5" target="_blank">Mumble</a>
+                            <a href="mumble://mumble.@(Config.Host):64738/?version=1.2.5" target="_blank">Mumble</a>
                         </li>
                     </ul>
                 </li>
@@ -77,7 +73,7 @@
                     <a href="@Url.SubRouteUrl("help", "Help.Index")">Help</a>
                 </li>
             </ul>
-            @Html.Partial("../../Areas/User/Views/User/_LoginPartial", Model)
+            @await Html.PartialAsync("~/Areas/User/Views/User/_LoginPartial.cshtml", Model)
         </div>
     </div>
 </div>

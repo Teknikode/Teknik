@@ -1,0 +1,262 @@
+﻿[
+    {
+        "outputFileName": "wwwroot/js/uploadSearch.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootbox/js/bootbox.js",
+            "wwwroot/js/App/Admin/UploadSearch.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/userInfo.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootbox/js/bootbox.js",
+            "wwwroot/js/app/Admin/UserInfo.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/userSearch.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/Admin/UserInfo.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/blog.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootbox/js/bootbox.js",
+            "wwwroot/lib/marked/js/marked.js",
+            "wwwroot/lib/sanitize-html/js/sanitize-html.js",
+            "wwwroot/js/app/Blog/Blog.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/blog.min.css",
+        "inputFiles": [
+            "wwwroot/css/app/Blog/Blog.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/contact.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/Contact/Contact.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/error.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootbox/js/bootbox.js",
+            "wwwroot/js/app/Error/Error.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/faq.min.css",
+        "inputFiles": [
+            "wwwroot/css/app/FAQ/FAQ.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/help.min.css",
+        "inputFiles": [
+            "wwwroot/css/app/Help/Help.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/home.min.css",
+        "inputFiles": [
+            "wwwroot/css/app/Home/Home.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/paste.min.js",
+        "inputFiles": [
+            "wwwroot/lib/highlight/js/highlight.js",
+            "wwwroot/js/app/Paste/Paste.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/paste.min.css",
+        "inputFiles": [
+            "wwwroot/lib/highlight/css/github-gist.css",
+            "wwwroot/css/app/Paste/Paste.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/podcast.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootbox/js/bootbox.js",
+            "wwwroot/lib/jquery/js/jquery.BlockUI.js",
+            "wwwroot/js/app/Podcast/Podcast.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/podcast.min.css",
+        "inputFiles": [
+            "wwwroot/css/app/Podcast/Podcast.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/shortener.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/Shortener/Shortener.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/stats.min.js",
+        "inputFiles": [
+            "wwwroot/lib/highcharts/js/highcharts.js",
+            "wwwroot/lib/filesize/js/filesize.js",
+            "wwwroot/js/app/Stats/Stats.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/download.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/lib/Blob.js",
+            "wwwroot/lib/file-saver/js/FileSaver.js",
+            "wwwroot/js/app/Upload/Download.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/crypto.min.js",
+        "inputFiles": [
+            "wwwroot/lib/crypto-js/js/core.js",
+            "wwwroot/lib/crypto-js/js/cipher-core.js",
+            "wwwroot/lib/crypto-js/js/md5.js",
+            "wwwroot/lib/crypto-js/js/evpkdf.js",
+            "wwwroot/lib/crypto-js/js/aes.js",
+            "wwwroot/lib/crypto-js/js/enc-base64.js",
+            "wwwroot/lib/crypto-js/js/mode-ctr.js",
+            "wwwroot/lib/crypto-js/js/lib-typedarrays.js",
+            "wwwroot/lib/crypto-js/js/pad-nopadding.js"
+        ],
+        "minify": {
+            "enabled": false
+        }
+    },
+    {
+        "outputFileName": "wwwroot/js/cryptoWorker.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/Upload/EncryptionWorker.js"
+        ],
+        "minify": {
+            "enabled": false
+        }
+    },
+    {
+        "outputFileName": "wwwroot/js/upload.min.js",
+        "inputFiles": [
+            "wwwroot/lib/dropzone/js/dropzone.js",
+            "wwwroot/lib/bootstrap/js/bootstrap-switch.js",
+            "wwwroot/lib/bootbox/js/bootbox.js",
+            "wwwroot/js/app/Upload/Upload.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/upload.min.css",
+        "inputFiles": [
+            "wwwroot/lib/dropzone/css/dropzone.css",
+            "wwwroot/lib/bootstrap/css/bootstrap-switch.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/user.checkAuthCode.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/User/CheckAuthCode.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/user.profile.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootbox/js/bootbox.js",
+            "wwwroot/js/app/User/Profile.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/user.reset.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/User/ResetPass.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/user.settings.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootbox/js/bootbox.js",
+            "wwwroot/js/app/User/Settings.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/user.settings.blog.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/User/BlogSettings.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/user.settings.invite.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/User/InviteSettings.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/user.settings.profile.min.js",
+        "inputFiles": [
+            "wwwroot/js/app/User/ProfileSettings.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/user.settings.security.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootstrap/js/bootstrap-switch.js",
+            "wwwroot/js/app/User/SecuritySettings.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/user.settings.security.min.css",
+        "inputFiles": [
+            "wwwroot/lib/bootstrap/css/bootstrap-switch.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/user.settings.upload.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootstrap/js/bootstrap-switch.js",
+            "wwwroot/js/app/User/UploadSettings.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/user.settings.upload.min.css",
+        "inputFiles": [
+            "wwwroot/lib/bootstrap/css/bootstrap-switch.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/vault.min.js",
+        "inputFiles": [
+            "wwwroot/lib/bootbox/js/bootbox.js",
+            "wwwroot/lib/jquery/js/jquery.BlockUI.js",
+            "wwwroot/js/app/Vault/Vault.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/vault.min.css",
+        "inputFiles": [
+            "wwwroot/css/app/Vault/Vault.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/common.min.js",
+        "inputFiles": [
+            "wwwroot/lib/jquery/js/jquery.js",
+            "wwwroot/lib/jquery/js/jquery.validate.js",
+            "wwwroot/lib/bootstrap/js/bootstrap.js",
+            "wwwroot/lib/bootstrap/js/bootstrap-select.js",
+            "wwwroot/js/app/common.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/common.min.css",
+        "inputFiles": [
+            "wwwroot/lib/bootstrap/css/bootstrap.css",
+            "wwwroot/lib/font-awesome/css/font-awesome.css",
+            "wwwroot/css/app/common.css"
+        ]
+    }
+]

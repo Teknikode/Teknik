@@ -9,7 +9,6 @@ namespace Teknik.Areas.Users.Models
 {
     public class SecuritySettings
     {
-        [Key]
         public int UserId { get; set; }
 
         public virtual User User { get; set; }

@@ -1,24 +1,17 @@
 @model Teknik.Areas.Stats.ViewModels.StatsViewModel
 
-@using Teknik.Utilities
-@using Teknik.Areas.Stats.Models
-
-@Scripts.Render("~/bundles/signalr")
-@Scripts.Render("~/signalr/hubs")
-@Scripts.Render("~/bundles/stats")
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     var getVisitorDataURL = '@Url.SubRouteUrl("stats", "Stats.Action", new { action = "GetVisitorData" })';
-    var showWebCPU = @Model.Config.StatsConfig.ShowWebStatus.ToString().ToLower();
-    var showDatabaseCPU = @Model.Config.StatsConfig.ShowDatabaseStatus.ToString().ToLower();
-    var showNetworkUsage = @Model.Config.StatsConfig.ShowNetworkStatus.ToString().ToLower();
-    var showVisitorStats = @Model.Config.PiwikConfig.Enabled.ToString().ToLower();
-    var totalMemory = @Model.Config.StatsConfig.TotalMemory;
+    var showWebCPU = @Config.StatsConfig.ShowWebStatus.ToString().ToLower();
+    var showDatabaseCPU = @Config.StatsConfig.ShowDatabaseStatus.ToString().ToLower();
+    var showNetworkUsage = @Config.StatsConfig.ShowNetworkStatus.ToString().ToLower();
+    var showVisitorStats = @Config.PiwikConfig.Enabled.ToString().ToLower();
+    var totalMemory = @Config.StatsConfig.TotalMemory;
     var tickInterval = totalMemory / 5;
 </script>
 
 <div class="container">
-    @if (Model.Config.StatsConfig.Enabled)
+    @if (Config.StatsConfig.Enabled)
     {
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#realtime-stats" role="tab" data-toggle="tab">Realtime Server Usage</a></li>
@@ -50,7 +43,7 @@
             <div role="tabpanel" class="tab-pane" id="site-stats">
                 <h2 class="text-center"><b>Site Statistics</b></h2>
                 <hr>
-                @if (Model.Config.PiwikConfig.Enabled)
+                @if (Config.PiwikConfig.Enabled)
                 {
                     <div class="row">
                         <div class="col-sm-12">
@@ -86,10 +79,10 @@
 
             </div>
             <div role="tabpanel" class="tab-pane" id="transactions">
-                @Html.Partial("~/Areas/Stats/Views/Stats/Transactions.cshtml", Model.Transactions)
+                @await Html.PartialAsync("~/Areas/Stats/Views/Stats/Transactions.cshtml", Model.Transactions)
             </div>
             <div role="tabpanel" class="tab-pane" id="takedowns">
-                @Html.Partial("~/Areas/Stats/Views/Stats/Takedowns.cshtml", Model.Takedowns)
+                @await Html.PartialAsync("~/Areas/Stats/Views/Stats/Takedowns.cshtml", Model.Takedowns)
             </div>
         </div>
     }
@@ -102,4 +95,6 @@
         </div>
     }
 </div>
+
+<bundle src="js/stats.min.js" append-version="true"></bundle>
 

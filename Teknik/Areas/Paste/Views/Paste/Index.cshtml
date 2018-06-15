@@ -1,10 +1,8 @@
 @model Teknik.Areas.Paste.ViewModels.PasteCreateViewModel
 
-@using Teknik.Utilities
-@using Teknik.Pygments
+@*@using Teknik.Pygments*@
 
-@Styles.Render("~/Content/paste")
-@Scripts.Render("~/bundles/paste")
+<bundle src="css/paste.min.css" append-version="true"></bundle>
 
 <div class="container">
     <div class="row">
@@ -33,12 +31,12 @@
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Syntax</label>
                     <div class="col-sm-4">
                         <select class="form-control" name="Syntax" id="syntax">
-                            <option value="text">Text only</option>
+                            <!option value="text">Text only</!option>
                             @{ 
-                                foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
+                                @*foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
                                 {
                                     <option value="@format.Aliases.FirstOrDefault()">@format.Name</option>
-                                }
+                                }*@
                             }
                         </select>
                     </div>
@@ -50,13 +48,13 @@
                     </div>
                     <div class="col-sm-4" id="unit-div">
                         <select class="form-control" name="ExpireUnit" id="expireunit">
-                            <option value="never">Never</option>
-                            <option value="view">Views</option>
-                            <option value="minute">Minutes</option>
-                            <option value="hour">Hours</option>
-                            <option value="day">Days</option>
-                            <option value="month">Months</option>
-                            <option value="year">Years</option>
+                            <!option value="never">Never</!option>
+                            <!option value="view">Views</!option>
+                            <!option value="minute">Minutes</!option>
+                            <!option value="hour">Hours</!option>
+                            <!option value="day">Days</!option>
+                            <!option value="month">Months</!option>
+                            <!option value="year">Years</!option>
                         </select>
                     </div>
                 </div>
@@ -83,7 +81,9 @@
     </div>
 </div>
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<bundle src="js/paste.min.js" append-version="true"></bundle>
+
+<script>
     $("select[name='ExpireUnit']").change(function () {
         if ($(this).val() == "never") {
             $('#length-div').addClass("hidden");

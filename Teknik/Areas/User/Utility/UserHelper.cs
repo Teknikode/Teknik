@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,7 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Security;
 using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Shortener.Models;
 using Teknik.Areas.Users.Models;
@@ -22,6 +20,12 @@ using Teknik.Utilities.Cryptography;
 using MD5 = Teknik.Utilities.Cryptography.MD5;
 using SHA256 = Teknik.Utilities.Cryptography.SHA256;
 using SHA384 = Teknik.Utilities.Cryptography.SHA384;
+using Teknik.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Teknik.MailService;
 
 namespace Teknik.Areas.Users.Utility
 {
@@ -339,14 +343,12 @@ namespace Teknik.Areas.Users.Utility
         #region User Management
         public static User GetUser(TeknikEntities db, string username)
         {
-            User user = db.Users.Where(b => b.Username == username).FirstOrDefault();
-            if (user != null)
-            {
-                user.UserSettings = db.UserSettings.Find(user.UserId);
-                user.SecuritySettings = db.SecuritySettings.Find(user.UserId);
-                user.BlogSettings = db.BlogSettings.Find(user.UserId);
-                user.UploadSettings = db.UploadSettings.Find(user.UserId);
-            }
+            User user = db.Users
+                .Include(u => u.UserSettings)
+                .Include(u => u.SecuritySettings)
+                .Include(u => u.BlogSettings)
+                .Include(u => u.UploadSettings)
+                .Where(b => b.Username == username).FirstOrDefault();
 
             return user;
         }
@@ -450,7 +452,7 @@ namespace Teknik.Areas.Users.Utility
                     {
                         if (!string.IsNullOrEmpty(role))
                         {
-                            if (user.Groups.Where(g => g.Roles.Where(r => role == r.Name).Any()).Any())
+                            if (user.UserRoles.Where(ur => ur.Role.Name == role).Any())
                             {
                                 // They have the role!
                                 return true;
@@ -520,7 +522,7 @@ namespace Teknik.Areas.Users.Utility
                 db.SaveChanges();
 
                 // Generate blog for the user
-                var newBlog = db.Blogs.Create();
+                var newBlog = new Blog.Models.Blog();
                 newBlog.UserId = user.UserId;
                 db.Blogs.Add(newBlog);
                 db.SaveChanges();
@@ -627,12 +629,12 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Delete post comments
-                List<BlogPostComment> postComments = db.BlogComments.Where(u => u.User.Username == user.Username).ToList();
+                List<BlogPostComment> postComments = db.BlogPostComments.Where(u => u.User.Username == user.Username).ToList();
                 if (postComments.Any())
                 {
                     foreach (BlogPostComment postComment in postComments)
                     {
-                        db.BlogComments.Remove(postComment);
+                        db.BlogPostComments.Remove(postComment);
                     }
                     db.SaveChanges();
                 }
@@ -871,24 +873,27 @@ If you recieved this email and you did not reset your password, you can ignore t
             return string.Format("{0}@{1}", username, config.EmailConfig.Domain);
         }
 
+        public static IMailService CreateMailService(Config config)
+        {
+            return new HMailService(
+                config.EmailConfig.Username,
+                config.EmailConfig.Password,
+                config.EmailConfig.Domain,
+                config.EmailConfig.CounterDatabase.Server,
+                config.EmailConfig.CounterDatabase.Database,
+                config.EmailConfig.CounterDatabase.Username,
+                config.EmailConfig.CounterDatabase.Password,
+                config.EmailConfig.CounterDatabase.Port
+                );
+        }
+
         public static bool UserEmailExists(Config config, string email)
         {
             // If Email Server is enabled
             if (config.EmailConfig.Enabled)
             {
-                // Connect to hmailserver COM
-                var app = new hMailServer.Application();
-                app.Connect();
-                app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
-
-                try
-                {
-                    var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                    var account = domain.Accounts.ItemByAddress[email];
-                    // We didn't error out, so the email exists
-                    return true;
-                }
-                catch { }
+                var svc = CreateMailService(config);
+                return svc.AccountExists(email);
             }
             return false;
         }
@@ -899,19 +904,10 @@ If you recieved this email and you did not reset your password, you can ignore t
 
             if (config.EmailConfig.Enabled)
             {
-                var app = new hMailServer.Application();
-                app.Connect();
-                app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
-
-                try
-                {
-                    var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                    var account = domain.Accounts.ItemByAddress[email];
-                    DateTime lastEmail = (DateTime)account.LastLogonTime;
-                    if (lastActive < lastEmail)
-                        lastActive = lastEmail;
-                }
-                catch { }
+                var svc = CreateMailService(config);
+                var lastEmail = svc.LastActive(email);
+                if (lastActive < lastEmail)
+                    lastActive = lastEmail;
             }
             return lastActive;
         }
@@ -923,19 +919,8 @@ If you recieved this email and you did not reset your password, you can ignore t
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    // Connect to hmailserver COM
-                    var app = new hMailServer.Application();
-                    app.Connect();
-                    app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
-
-                    var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                    var newAccount = domain.Accounts.Add();
-                    newAccount.Address = email;
-                    newAccount.Password = password;
-                    newAccount.Active = true;
-                    newAccount.MaxSize = config.EmailConfig.MaxSize;
-
-                    newAccount.Save();
+                    var svc = CreateMailService(config);
+                    svc.CreateAccount(email, password, config.EmailConfig.MaxSize);
                 }
             }
             catch (Exception ex)
@@ -961,18 +946,13 @@ If you recieved this email and you did not reset your password, you can ignore t
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var app = new hMailServer.Application();
-                    app.Connect();
-                    app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
-                    var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                    var account = domain.Accounts.ItemByAddress[email];
-                    account.Active = active;
-                    account.Save();
+                    var svc = CreateMailService(config);
+                    svc.EditActivity(email, active);
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to edit email account mailbox size.", ex);
+                throw new Exception("Unable to edit email account status.", ex);
             }
         }
 
@@ -983,13 +963,8 @@ If you recieved this email and you did not reset your password, you can ignore t
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var app = new hMailServer.Application();
-                    app.Connect();
-                    app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
-                    var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                    var account = domain.Accounts.ItemByAddress[email];
-                    account.Password = password;
-                    account.Save();
+                    var svc = CreateMailService(config);
+                    svc.EditPassword(email, password);
                 }
             }
             catch (Exception ex)
@@ -1005,13 +980,8 @@ If you recieved this email and you did not reset your password, you can ignore t
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var app = new hMailServer.Application();
-                    app.Connect();
-                    app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
-                    var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                    var account = domain.Accounts.ItemByAddress[email];
-                    account.MaxSize = size;
-                    account.Save();
+                    var svc = CreateMailService(config);
+                    svc.EditMaxSize(email, size);
                 }
             }
             catch (Exception ex)
@@ -1027,11 +997,8 @@ If you recieved this email and you did not reset your password, you can ignore t
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    // We need to check the actual git database
-                    MysqlDatabase mySQL = new MysqlDatabase(config.EmailConfig.CounterDatabase.Server, config.EmailConfig.CounterDatabase.Database, config.EmailConfig.CounterDatabase.Username, config.EmailConfig.CounterDatabase.Password, config.EmailConfig.CounterDatabase.Port);
-                    string sql = @"INSERT INTO mailcounter.counts (qname, lastdate, qlimit, count) VALUES ({1}, NOW(), {0}, 0)
-                                    ON DUPLICATE KEY UPDATE qlimit = {0}";
-                    mySQL.Execute(sql, new object[] { maxPerDay, email });
+                    var svc = CreateMailService(config);
+                    svc.EditMaxEmailsPerDay(email, maxPerDay);
                 }
             }
             catch (Exception ex)
@@ -1047,15 +1014,8 @@ If you recieved this email and you did not reset your password, you can ignore t
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var app = new hMailServer.Application();
-                    app.Connect();
-                    app.Authenticate(config.EmailConfig.Username, config.EmailConfig.Password);
-                    var domain = app.Domains.ItemByName[config.EmailConfig.Domain];
-                    var account = domain.Accounts.ItemByAddress[email];
-                    if (account != null)
-                    {
-                        account.Delete();
-                    }
+                    var svc = CreateMailService(config);
+                    svc.Delete(email);
                 }
             }
             catch (Exception ex)
@@ -1102,7 +1062,7 @@ If you recieved this email and you did not reset your password, you can ignore t
 
                 string email = GetUserEmailAddress(config, username);
                 // We need to check the actual git database
-                MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
+                Utilities.MysqlDatabase mySQL = new Utilities.MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
                 string sql = @"SELECT 
 	                                CASE
 		                                WHEN MAX(gogs.action.created) >= MAX(gogs.user.updated) THEN MAX(gogs.action.created)
@@ -1251,7 +1211,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                     string finalSecret = Convert.ToBase64String(encValue);
 
                     // Create connection to the DB
-                    MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
+                    Utilities.MysqlDatabase mySQL = new Utilities.MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
                     mySQL.MysqlErrorEvent += (sender, s) =>
                     {
                         throw new Exception("Unable to edit git account two factor.  Mysql Exception: " + s);
@@ -1305,7 +1265,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                     }
 
                     // Create connection to the DB
-                    MysqlDatabase mySQL = new MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
+                    Utilities.MysqlDatabase mySQL = new Utilities.MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
 
                     // Get the user's UID
                     string email = GetUserEmailAddress(config, username);
@@ -1350,11 +1310,6 @@ If you recieved this email and you did not reset your password, you can ignore t
                             throw new Exception("Unable to delete git account.  Response Code: " + response.StatusCode);
                         }
                     }
-                    catch (HttpException htex)
-                    {
-                        if (htex.GetHttpCode() != 404)
-                            throw new Exception("Unable to delete git account.  Http Exception: " + htex.Message);
-                    }
                     catch (Exception ex)
                     {
                         // This error signifies the user doesn't exist, so we can continue deleting
@@ -1372,59 +1327,79 @@ If you recieved this email and you did not reset your password, you can ignore t
         }
         #endregion
 
-        public static HttpCookie CreateAuthCookie(string username, bool remember, string domain, bool local)
+        public static ClaimsIdentity CreateClaimsIdentity(TeknikEntities db, string username)
         {
-            DateTime curTime = DateTime.Now;
-            DateTime expireTime = curTime.AddMonths(1);
+            User user = GetUser(db, username);
 
-            Config config = Config.Load();
-            FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
-                1, 
-                username, 
-                curTime,
-                expireTime,
-                remember,
-                username
-            );
+            if (user != null)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Username)
+                };
 
-            string encTicket = FormsAuthentication.Encrypt(ticket);
-            HttpCookie authcookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
-            authcookie.HttpOnly = true;
-            authcookie.Secure = true;
-            if (remember)
-            {
-                authcookie.Expires = expireTime;
-            }
+                // Add their roles
+                foreach (var role in user.UserRoles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role.Role.Name));
+                }
 
-            // Set domain dependent on where it's being ran from
-            if (local) // localhost
-            {
-                authcookie.Domain = null;
+                return new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             }
-            else if (config.DevEnvironment) // dev.example.com
-            {
-                authcookie.Domain = string.Format("dev.{0}", domain);
-            }
-            else // A production instance
-            {
-                authcookie.Domain = string.Format(".{0}", domain);
-            }
-
-            return authcookie;
+            return null;
         }
 
-        public static HttpCookie CreateTrustedDeviceCookie(string username, string domain, bool local)
-        {
-            Config config = Config.Load();
+        //public static HttpCookie CreateAuthCookie(Config config, string username, bool remember, string domain, bool local)
+        //{
+        //    DateTime curTime = DateTime.Now;
+        //    DateTime expireTime = curTime.AddMonths(1);
 
+        //    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
+        //        1, 
+        //        username, 
+        //        curTime,
+        //        expireTime,
+        //        remember,
+        //        username
+        //    );
+
+        //    string encTicket = FormsAuthentication.Encrypt(ticket);
+        //    HttpCookie authcookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
+        //    authcookie.HttpOnly = true;
+        //    authcookie.Secure = true;
+        //    if (remember)
+        //    {
+        //        authcookie.Expires = expireTime;
+        //    }
+
+        //    // Set domain dependent on where it's being ran from
+        //    if (local) // localhost
+        //    {
+        //        authcookie.Domain = null;
+        //    }
+        //    else if (config.DevEnvironment) // dev.example.com
+        //    {
+        //        authcookie.Domain = string.Format("dev.{0}", domain);
+        //    }
+        //    else // A production instance
+        //    {
+        //        authcookie.Domain = string.Format(".{0}", domain);
+        //    }
+
+        //    return authcookie;
+        //}
+
+        public static Tuple<CookieOptions, string> CreateTrustedDeviceCookie(Config config, string username, string domain, bool local)
+        {
             byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
             byte[] key = Guid.NewGuid().ToByteArray();
             string token = Convert.ToBase64String(time.Concat(key).ToArray());
-            HttpCookie trustCookie = new HttpCookie(Constants.TRUSTEDDEVICECOOKIE + "_" + username);
-            trustCookie.Value = token;
-            trustCookie.HttpOnly = true;
-            trustCookie.Secure = true;
-            trustCookie.Expires = DateTime.Now.AddYears(1);
+            var trustCookie = new CookieOptions()
+            {
+                HttpOnly = true,
+                Secure = true,
+                Expires = DateTime.Now.AddYears(1)
+            };
 
             // Set domain dependent on where it's being ran from
             if (local) // localhost
@@ -1440,7 +1415,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                 trustCookie.Domain = string.Format(".{0}", domain);
             }
 
-            return trustCookie;
+            return new Tuple<CookieOptions, string>(trustCookie, token);
         }
     }
 }

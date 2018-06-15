@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-
-namespace Teknik.Areas.API.Models
+﻿namespace Teknik.Areas.API.Models
 {
     public class APIv1PasteModel : APIv1BaseModel
     {
-        [AllowHtml]
         public string code { get; set; }
 
         public string title { get; set; }

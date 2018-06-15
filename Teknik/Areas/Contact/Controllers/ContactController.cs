@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 using System.Net.Mail;
 using Teknik.Controllers;
 using Teknik.Areas.Contact.ViewModels;
@@ -11,18 +10,26 @@ using Teknik.Models;
 using System.Text;
 using Teknik.Filters;
 using Teknik.Attributes;
+using Microsoft.Extensions.Logging;
+using Teknik.Configuration;
+using Teknik.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Teknik.Logging;
 
 namespace Teknik.Areas.Contact.Controllers
 {
     [TeknikAuthorize]
+    [Area("Contact")]
     public class ContactController : DefaultController
     {
-        // GET: Contact/Contact
+        public ContactController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+        
         [TrackPageView]
         [AllowAnonymous]
-        public ActionResult Index()
+        public IActionResult Index()
         {
-            ViewBag.Title = "Contact - " + Config.Title;
+            ViewBag.Title = "Contact - " + _config.Title;
             ViewBag.Description = "Contact Teknik Support";
 
             return View(new ContactViewModel());
@@ -30,39 +37,36 @@ namespace Teknik.Areas.Contact.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Submit(ContactViewModel model)
+        public IActionResult Submit(ContactViewModel model)
         {
             if (ModelState.IsValid)
             {
-                if (Config.ContactConfig.Enabled)
+                if (_config.ContactConfig.Enabled)
                 {
                     try
                     {
-                        using (TeknikEntities db = new TeknikEntities())
-                        {
-                            // Insert the message into the DB
-                            Models.Contact newContact = db.Contact.Create();
-                            newContact.Name = model.Name;
-                            newContact.Email = model.Email;
-                            newContact.Subject = model.Subject;
-                            newContact.Message = model.Message;
-                            newContact.DateAdded = DateTime.Now;
-                            db.Contact.Add(newContact);
-                            db.SaveChanges();
-                        }
+                        // Insert the message into the DB
+                        Models.Contact newContact = new Models.Contact();
+                        newContact.Name = model.Name;
+                        newContact.Email = model.Email;
+                        newContact.Subject = model.Subject;
+                        newContact.Message = model.Message;
+                        newContact.DateAdded = DateTime.Now;
+                        _dbContext.Contact.Add(newContact);
+                        _dbContext.SaveChanges();
 
                         // Let's also email the message to support
                         SmtpClient client = new SmtpClient();
-                        client.Host = Config.ContactConfig.EmailAccount.Host;
-                        client.Port = Config.ContactConfig.EmailAccount.Port;
-                        client.EnableSsl = Config.ContactConfig.EmailAccount.SSL;
+                        client.Host = _config.ContactConfig.EmailAccount.Host;
+                        client.Port = _config.ContactConfig.EmailAccount.Port;
+                        client.EnableSsl = _config.ContactConfig.EmailAccount.SSL;
                         client.DeliveryMethod = SmtpDeliveryMethod.Network;
                         client.UseDefaultCredentials = true;
-                        client.Credentials = new System.Net.NetworkCredential(Config.ContactConfig.EmailAccount.Username, Config.ContactConfig.EmailAccount.Password);
+                        client.Credentials = new System.Net.NetworkCredential(_config.ContactConfig.EmailAccount.Username, _config.ContactConfig.EmailAccount.Password);
                         client.Timeout = 5000;
 
-                        MailMessage mail = new MailMessage(new MailAddress(model.Email, model.Name), new MailAddress(Config.SupportEmail, "Teknik Support"));
-                        mail.Sender = new MailAddress(Config.ContactConfig.EmailAccount.EmailAddress);
+                        MailMessage mail = new MailMessage(new MailAddress(model.Email, model.Name), new MailAddress(_config.SupportEmail, "Teknik Support"));
+                        mail.Sender = new MailAddress(_config.ContactConfig.EmailAccount.EmailAddress);
                         mail.Subject = model.Subject;
                         mail.Body = model.Message;
                         mail.BodyEncoding = UTF8Encoding.UTF8;

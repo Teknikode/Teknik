@@ -1,5 +1,4 @@
-@model Teknik.Areas.Paste.ViewModels.PasteViewModel
-@using Teknik.Utilities
+﻿@model Teknik.Areas.Paste.ViewModels.PasteViewModel
 
 @{
     Layout = "";
@@ -15,19 +14,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="description" content="@Model.Config.Description" />
-    <meta name="author" content="@Model.Config.Author" />
+    <meta name="description" content="@Config.Description" />
+    <meta name="author" content="@Config.Author" />
     <title>@ViewBag.Title</title>
-    <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon" />    
 
-    @Styles.Render("~/Content/paste")
-    @Scripts.Render("~/bundles/common")
-
+    <bundle src="css/paste.min.css" append-version="true"></bundle>
 </head>
 <body data-twttr-rendered="true">
     @Html.Raw(Model.Content)
-    <script nonce="@Context.Items[Constants.NONCE_KEY]">
-        function pageloadStopTimer() { }
+    
+    <bundle src="js/common.min.js" append-version="true"></bundle>
+
+    <script>
+        $(document).ready(function () { pageloadDoTimer(); });
     </script>
 </body>
 </html>

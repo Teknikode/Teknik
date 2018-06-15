@@ -17,7 +17,7 @@ namespace Teknik.Areas.Podcast.Models
 
         public virtual ICollection<PodcastFile> Files { get; set; }
 
-        public List<string> Tags { get; set; }
+        public virtual ICollection<PodcastTag> Tags { get; set; }
 
         public bool Published { get; set; }
 

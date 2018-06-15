@@ -26,7 +26,7 @@ namespace Teknik.Areas.Blog.Models
 
         public string Article { get; set; }
 
-        public List<string> Tags { get; set; }
+        public virtual ICollection<BlogPostTag> Tags { get; set; }
 
         public virtual ICollection<BlogPostComment> Comments { get; set; }
     }

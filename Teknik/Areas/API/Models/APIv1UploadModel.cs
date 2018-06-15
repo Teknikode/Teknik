@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -7,7 +8,7 @@ namespace Teknik.Areas.API.Models
 {
     public class APIv1UploadModel : APIv1BaseModel
     {
-        public HttpPostedFileWrapper file { get; set; }
+        public IFormFile file { get; set; }
 
         public string contentType { get; set; }
 

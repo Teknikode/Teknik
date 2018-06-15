@@ -1,0 +1,54 @@
+{
+    "author": "Uncled1023",
+    "dependencies": {
+        "block-ui": "^2.70.1",
+        "bootbox": "^4.4.0",
+        "bootstrap": "3.3.7",
+        "bootstrap-select": "^1.13.1",
+        "bootstrap-switch": "^3.3.4",
+        "crypto-js": "^3.1.9-1",
+        "dropzone": "^5.4.0",
+        "file-saver": "^1.3.8",
+        "filesize": "^3.6.1",
+        "font-awesome": "^4.7.0",
+        "highcharts": "^6.1.0",
+        "highlight.js": "^9.12.0",
+        "jquery": "^3.3.1",
+        "jquery-validation": "^1.17.0",
+        "marked": "^0.4.0",
+        "sanitize-html": "^1.18.2"
+    },
+    "description": "Teknik Services",
+    "devDependencies": {
+        "del": "^3.0.0",
+        "gulp": "3.9.1",
+        "gulp-concat": "^2.6.1",
+        "gulp-cssmin": "^0.2.0",
+        "gulp-htmlmin": "^3.0.0",
+        "gulp-uglify": "^3.0.0",
+        "merge-stream": "^1.0.1",
+        "rimraf": "^2.6.2"
+    },
+    "keywords": [
+        "Teknik",
+        "Upload",
+        "Privacy",
+        "Media"
+    ],
+    "license": "BSD-3-Clause",
+    "main": "webpack.config.js",
+    "name": "teknik",
+    "repository": {
+        "type": "git",
+        "url": "https://git.teknik.io/Teknikode/TeknikCore"
+    },
+    "scripts": {
+        "pre-publish": "npm install && gulp clean && gulp copy-assets"
+    },
+    "version": "2.1.0",
+    "-vs-binding": {
+        "ProjectOpened": [
+            "pre-publish"
+        ]
+    }
+}

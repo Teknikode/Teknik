@@ -4,12 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@using Teknik.Utilities
 @using Teknik.Areas.Users.ViewModels
 
-@Scripts.Render("~/bundles/user/settings")
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
     var deleteUserURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Delete" })';
 </script>
@@ -25,7 +22,7 @@
                         <div class="panel-heading text-center"><strong>Account Settings</strong></div>
                         <a href="@Url.SubRouteUrl("user", "User.SecuritySettings")" class="list-group-item @(Model.Page == "Security" ? "active" : string.Empty)">Security</a>
                         <a href="@Url.SubRouteUrl("user", "User.ProfileSettings")" class="list-group-item @(Model.Page == "Profile" ? "active" : string.Empty)">Profile</a>
-                        <a href="@Url.SubRouteUrl("user", "User.InviteSettings")" class="list-group-item @(Model.Page == "Invite" ? "active" : string.Empty)">Invite Codes (@(User.Info.OwnedInviteCodes.Where(c => c.Active && c.ClaimedUser == null).Count()))</a>
+                        <a href="@Url.SubRouteUrl("user", "User.InviteSettings")" class="list-group-item @(Model.Page == "Invite" ? "active" : string.Empty)">Invite Codes @*(@(User.Info.OwnedInviteCodes.Where(c => c.Active && c.ClaimedUser == null).Count()))*@</a>
                         <a href="@Url.SubRouteUrl("user", "User.BlogSettings")" class="list-group-item @(Model.Page == "Blog" ? "active" : string.Empty)">Blogging</a>
                         <a href="@Url.SubRouteUrl("user", "User.UploadSettings")" class="list-group-item @(Model.Page == "Upload" ? "active" : string.Empty)">Uploads</a>
                     </ul>
@@ -48,3 +45,5 @@
         </div>
     }
 </div>
+
+<bundle src="js/user.settings.min.js" append-version="true"></bundle>

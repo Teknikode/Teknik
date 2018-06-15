@@ -1,5 +1,5 @@
 @model Teknik.Areas.Vault.ViewModels.ModifyVaultItemViewModel
-@using Teknik.Utilities
+
 @{ 
     bool isTemplate = (Model.isTemplate);
 }
@@ -48,7 +48,7 @@
     </div>
     @if (!isTemplate)
     {
-        <script nonce="@Context.Items[Constants.NONCE_KEY]">
+        <script>
         $(document).ready(function () {
             var itemDiv = $('#vault-item-@Model.index');
 

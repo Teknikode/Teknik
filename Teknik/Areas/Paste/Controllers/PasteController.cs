@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Web;
-using System.Web.Mvc;
-using Teknik.Pygments;
-using Teknik.Areas.Error.Controllers;
 using Teknik.Areas.Paste.ViewModels;
 using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
@@ -16,17 +10,28 @@ using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Attributes;
 using Teknik.Utilities.Cryptography;
+using Microsoft.Extensions.Logging;
+using Teknik.Configuration;
+using Teknik.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Teknik.Logging;
 
 namespace Teknik.Areas.Paste.Controllers
 {
     [TeknikAuthorize]
+    [Area("Paste")]
     public class PasteController : DefaultController
     {
+        public PasteController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+
         [TrackPageView]
         [AllowAnonymous]
-        public ActionResult Index()
+        public IActionResult Index()
         {
-            ViewBag.Title = "Paste - " + Config.Title;
+            ViewBag.Title = "Paste - " + _config.Title;
             ViewBag.Description = "Paste your code or text easily and securely.  Set an expiration, set a password, or leave it open for the world to see.";
             PasteCreateViewModel model = new PasteCreateViewModel();
             return View(model);
@@ -34,25 +39,24 @@ namespace Teknik.Areas.Paste.Controllers
 
         [TrackDownload]
         [AllowAnonymous]
-        public ActionResult ViewPaste(string type, string url, string password)
+        public IActionResult ViewPaste(string type, string url, string password)
         {
-            TeknikEntities db = new TeknikEntities();
-            Models.Paste paste = db.Pastes.Where(p => p.Url == url).FirstOrDefault();
+            Models.Paste paste = _dbContext.Pastes.Where(p => p.Url == url).FirstOrDefault();
             if (paste != null)
             {
-                ViewBag.Title = ((string.IsNullOrEmpty(paste.Title)) ? string.Empty : paste.Title + " - ") + Config.Title + " Paste";
+                ViewBag.Title = ((string.IsNullOrEmpty(paste.Title)) ? string.Empty : paste.Title + " - ") + _config.Title + " Paste";
                 ViewBag.Description = "Paste your code or text easily and securely.  Set an expiration, set a password, or leave it open for the world to see.";
                 // Increment Views
                 paste.Views += 1;
-                db.Entry(paste).State = EntityState.Modified;
-                db.SaveChanges();
+                _dbContext.Entry(paste).State = EntityState.Modified;
+                _dbContext.SaveChanges();
 
                 // Check Expiration
                 if (PasteHelper.CheckExpiration(paste))
                 {
-                    db.Pastes.Remove(paste);
-                    db.SaveChanges();
-                    return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                    _dbContext.Pastes.Remove(paste);
+                    _dbContext.SaveChanges();
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
 
                 PasteViewModel model = new PasteViewModel();
@@ -66,7 +70,7 @@ namespace Teknik.Areas.Paste.Controllers
 
                 if (User.Identity.IsAuthenticated && type.ToLower() == "full")
                 {
-                    Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
+                    Users.Models.User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
                     if (user != null)
                     {
                         model.Vaults = user.Vaults.ToList();
@@ -79,7 +83,7 @@ namespace Teknik.Areas.Paste.Controllers
                     string hash = string.Empty;
                     if (!string.IsNullOrEmpty(password))
                     {
-                        byte[] passBytes = Utilities.Cryptography.SHA384.Hash(paste.Key, password);
+                        byte[] passBytes = SHA384.Hash(paste.Key, password);
                         hash = passBytes.ToHex();
                         // We need to convert old pastes to the new password scheme
                         if (paste.Transfers.ToList().Exists(t => t.Type == TransferTypes.ASCIIPassword))
@@ -87,8 +91,8 @@ namespace Teknik.Areas.Paste.Controllers
                             hash = Encoding.ASCII.GetString(passBytes);
                             // Remove the transfer types
                             paste.Transfers.Clear();
-                            db.Entry(paste).State = EntityState.Modified;
-                            db.SaveChanges();
+                            _dbContext.Entry(paste).State = EntityState.Modified;
+                            _dbContext.SaveChanges();
                         }
                     }
                     if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
@@ -111,13 +115,13 @@ namespace Teknik.Areas.Paste.Controllers
                 if (type.ToLower() == "full" || type.ToLower() == "simple")
                 {
                     // Transform content into HTML
-                    if (!Highlighter.Lexers.ToList().Exists(l => l.Aliases.Contains(model.Syntax)))
-                    {
-                        model.Syntax = "text";
-                    }
-                    Highlighter highlighter = new Highlighter();
+                    //if (!Highlighter.Lexers.ToList().Exists(l => l.Aliases.Contains(model.Syntax)))
+                    //{
+                    //    model.Syntax = "text";
+                    //}
+                    //Highlighter highlighter = new Highlighter();
                     // Add a space in front of the content due to bug with pygment (No idea why yet)
-                    model.Content = highlighter.HighlightToHtml(" " + model.Content, model.Syntax, Config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
+                    model.Content = model.Content;//highlighter.HighlightToHtml(" " + model.Content, model.Syntax, _config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
                 }
 
                 switch (type.ToLower())
@@ -136,56 +140,53 @@ namespace Teknik.Areas.Paste.Controllers
                             Inline = true
                         };
 
-                        Response.AppendHeader("Content-Disposition", cd.ToString());
+                        Response.Headers.Add("Content-Disposition", cd.ToString());
 
                         return File(data, "application/octet-stream");
                     default:
                         return View("~/Areas/Paste/Views/Paste/Full.cshtml", model);
                 }
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Paste([Bind(Include = "Content, Title, Syntax, ExpireLength, ExpireUnit, Password, Hide")]PasteCreateViewModel model)
+        public IActionResult Paste([Bind("Content, Title, Syntax, ExpireLength, ExpireUnit, Password, Hide")]PasteCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
-                if (Config.PasteConfig.Enabled)
+                if (_config.PasteConfig.Enabled)
                 {
                     try
                     {
-                        using (TeknikEntities db = new TeknikEntities())
+                        Models.Paste paste = PasteHelper.CreatePaste(_config, _dbContext, model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password, model.Hide);
+
+                        if (model.ExpireUnit == "view")
                         {
-                            Models.Paste paste = PasteHelper.CreatePaste(db, model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password, model.Hide);
-
-                            if (model.ExpireUnit == "view")
-                            {
-                                paste.Views = -1;
-                            }
-
-                            if (User.Identity.IsAuthenticated)
-                            {
-                                Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
-                                if (user != null)
-                                {
-                                    paste.UserId = user.UserId;
-                                }
-                            }
-
-                            db.Pastes.Add(paste);
-                            db.SaveChanges();
-
-                            return Redirect(Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url }));
+                            paste.Views = -1;
                         }
+
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            Users.Models.User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                            if (user != null)
+                            {
+                                paste.UserId = user.UserId;
+                            }
+                        }
+
+                        _dbContext.Pastes.Add(paste);
+                        _dbContext.SaveChanges();
+
+                        return Redirect(Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url }));
                     }
                     catch (Exception ex)
                     {
                         return Redirect(Url.SubRouteUrl("error", "Error.500", new { exception = ex }));
                     }
                 }
-                Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+                return new StatusCodeResult(StatusCodes.Status403Forbidden);
             }
             return View("~/Areas/Paste/Views/Paste/Index.cshtml", model);
         }

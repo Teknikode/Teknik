@@ -1,8 +1,6 @@
 @model Teknik.Areas.Podcast.ViewModels.PodcastViewModel
-
-@using Teknik.Utilities
     
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     // We need to define the action URLs for the script
 
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
@@ -23,8 +21,8 @@
     var deleteCommentURL = '@Url.SubRouteUrl("podcast", "Podcast.Action", new { action = "DeleteComment" })';
 </script>
 
-@Styles.Render("~/Content/podcast")
-@Scripts.Render("~/bundles/podcast")
+<bundle src="css/podcast.min.css" append-version="true"></bundle>
+<bundle src="js/podcast.min.js" append-version="true"></bundle>
 
 <div class="container">
     @if (!Model.Error)
@@ -34,7 +32,7 @@
             <div class="modal fade" id="editPodcast" tabindex="-1" role="dialog" aria-labelledby="editPodcastLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form class="form" action="##" method="post" id="editPodcastForm">
+                        <!form class="form" action="##" method="post" id="editPodcastForm">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
                                 <h4 class="modal-title" id="editPodcastLabel">Edit Your Post</h4>
@@ -74,13 +72,13 @@
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary" id="edit_submit">Save</button>
                             </div>
-                        </form>
+                        </!form>
                     </div>
                 </div>
             </div>
         }
         <div class="podcast-main" id="@Model.PodcastId">
-            @Html.Partial("Podcast", Model)
+            @await Html.PartialAsync("Podcast", Model)
         </div>
         if (User.Identity.IsAuthenticated)
         {
@@ -93,7 +91,7 @@
             <div class="modal fade" id="newComment" tabindex="-1" role="dialog" aria-labelledby="newCommentLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form class="form" action="##" method="post" id="publishComment">
+                        <!form class="form" action="##" method="post" id="publishComment">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
                                 <h4 class="modal-title" id="newCommentLabel">Add a New Comment</h4>
@@ -111,7 +109,7 @@
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary" id="comment_submit">Publish</button>
                             </div>
-                        </form>
+                        </!form>
                     </div>
                 </div>
             </div>
@@ -119,7 +117,7 @@
             <div class="modal fade" id="editComment" tabindex="-1" role="dialog" aria-labelledby="editCommentLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form class="form" action="##" method="post" id="editCommentForm">
+                        <!form class="form" action="##" method="post" id="editCommentForm">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
                                 <h4 class="modal-title" id="editCommentLabel">Edit Your Comment</h4>
@@ -137,15 +135,15 @@
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary" id="edit_comment_submit">Save</button>
                             </div>
-                        </form>
+                        </!form>
                     </div>
                 </div>
             </div>
         }
         <a name="replies"></a>
         <div class="post-comments" id="@Model.PodcastId"></div>
-        <script nonce="@Context.Items[Constants.NONCE_KEY]">
-            var comments = @Model.Config.PodcastConfig.CommentsToLoad;
+        <script>
+            var comments = @Config.PodcastConfig.CommentsToLoad;
             var startComment = 0;
             loadMoreComments(startComment, comments);
             startComment = startComment + comments;

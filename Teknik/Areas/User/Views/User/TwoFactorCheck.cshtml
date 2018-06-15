@@ -1,12 +1,8 @@
 @model Teknik.Areas.Users.ViewModels.TwoFactorViewModel
 
-@using Teknik.Utilities
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     var confirmAuthCodeURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ConfirmAuthenticatorCode" })';
 </script>
-
-@Scripts.Render("~/bundles/checkAuthCode")
 
 <div class="container">
     <div class="row">
@@ -49,3 +45,5 @@
         </div>
     </div>
 </div>
+
+<bundle src="js/user.checkAuthCode.min.js" append-version="true"></bundle>

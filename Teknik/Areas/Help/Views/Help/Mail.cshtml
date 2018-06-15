@@ -1,7 +1,5 @@
 ﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
 
-@using Teknik.Utilities
-
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="@Url.SubRouteUrl("help", "Help.Index")">Help Index</a></li>
@@ -32,16 +30,16 @@
                     <div class="col-sm-6">
                         <ul class="list-group">
                             <li class="list-group-item text-center">User Information</li>
-                            <li class="list-group-item">Email Address:<div class="pull-right"><b>@string.Format("[username]@{0}", Model.Config.EmailConfig.Domain)</b></div></li>
+                            <li class="list-group-item">Email Address:<div class="pull-right"><b>@string.Format("[username]@{0}", Config.EmailConfig.Domain)</b></div></li>
                             <li class="list-group-item text-center">Server Information</li>
-                            <li class="list-group-item">Incoming Server:<div class="pull-right"><b>@Model.Config.EmailConfig.MailHost</b></div></li>
-                            <li class="list-group-item">Outgoing Server:<div class="pull-right"><b>@Model.Config.EmailConfig.MailHost</b></div></li>
+                            <li class="list-group-item">Incoming Server:<div class="pull-right"><b>@Config.EmailConfig.MailHost</b></div></li>
+                            <li class="list-group-item">Outgoing Server:<div class="pull-right"><b>@Config.EmailConfig.MailHost</b></div></li>
                         </ul>
                     </div>
                     <div class="col-sm-6">
                         <ul class="list-group">
                             <li class="list-group-item text-center">Logon Information</li>
-                            <li class="list-group-item">Username:<div class="pull-right"><b>@string.Format("[username]@{0}", Model.Config.EmailConfig.Domain)</b></div></li>
+                            <li class="list-group-item">Username:<div class="pull-right"><b>@string.Format("[username]@{0}", Config.EmailConfig.Domain)</b></div></li>
                             <li class="list-group-item">Password:<div class="pull-right"><b>[password]</b></div></li>
                             <li class="list-group-item text-center">More Settings</li>
                             <li class="list-group-item">Requires Authentication:<div class="pull-right"><b>Both</b></div></li>
@@ -60,9 +58,9 @@
                     <div class="col-sm-6">
                         <ul class="list-group">
                             <li class="list-group-item text-center">Server Settings</li>
-                            <li class="list-group-item">Server Name:<div class="pull-right"><b>@Model.Config.EmailConfig.MailHost</b></div></li>
+                            <li class="list-group-item">Server Name:<div class="pull-right"><b>@Config.EmailConfig.MailHost</b></div></li>
                             <li class="list-group-item">Port:<div class="pull-right"><b>[IMAP] 143/993 | [POP3] 110/995</b></div></li>
-                            <li class="list-group-item">User Name:<div class="pull-right"><b>@string.Format("[username]@{0}", Model.Config.EmailConfig.Domain)</b></div></li>
+                            <li class="list-group-item">User Name:<div class="pull-right"><b>@string.Format("[username]@{0}", Config.EmailConfig.Domain)</b></div></li>
                             <li class="list-group-item">Connection Security:<div class="pull-right"><b>None/SSL/TLS</b></div></li>
                             <li class="list-group-item">Authentication method:<div class="pull-right"><b>Normal Password</b></div></li>
                         </ul>
@@ -70,9 +68,9 @@
                     <div class="col-sm-6">
                         <ul class="list-group">
                             <li class="list-group-item text-center">Outgoing Server (SMTP)</li>
-                            <li class="list-group-item">Server Name:<div class="pull-right"><b>@Model.Config.EmailConfig.MailHost</b></div></li>
+                            <li class="list-group-item">Server Name:<div class="pull-right"><b>@Config.EmailConfig.MailHost</b></div></li>
                             <li class="list-group-item">Port:<div class="pull-right"><b>25/465/587</b></div></li>
-                            <li class="list-group-item">User Name:<div class="pull-right"><b>@string.Format("[username]@{0}", Model.Config.EmailConfig.Domain)</b></div></li>
+                            <li class="list-group-item">User Name:<div class="pull-right"><b>@string.Format("[username]@{0}", Config.EmailConfig.Domain)</b></div></li>
                             <li class="list-group-item">Connection Security:<div class="pull-right"><b>None/SSL/TLS</b></div></li>
                             <li class="list-group-item">Authentication method:<div class="pull-right"><b>Normal Password</b></div></li>
                         </ul>

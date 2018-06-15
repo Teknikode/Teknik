@@ -1,6 +1,4 @@
-﻿@model Teknik.ViewModels.ViewModelBase
-
-@if (Model.Config.UserConfig.RegistrationEnabled)
+﻿@if (Config.UserConfig.RegistrationEnabled)
 {
 <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -10,14 +8,14 @@
                 <h4 class="modal-title" id="registerModalLabel">Teknik Registration</h4>
             </div>
             <div class="modal-body">
-                @Html.Partial("../../Areas/User/Views/User/Register", new Teknik.Areas.Users.ViewModels.RegisterViewModel())
+                @await Html.PartialAsync("../../Areas/User/Views/User/Register", new Teknik.Areas.Users.ViewModels.RegisterViewModel())
             </div>
         </div>
     </div>
 </div>
 }
 
-@if (Model.Config.UserConfig.LoginEnabled)
+@if (Config.UserConfig.LoginEnabled)
 {
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm">
@@ -27,7 +25,7 @@
                     <h4 class="modal-title" id="loginModalLabel">Teknik Login</h4>
                 </div>
                 <div class="modal-body">
-                    @Html.Partial("../../Areas/User/Views/User/Login", new Teknik.Areas.Users.ViewModels.LoginViewModel())
+                    @await Html.PartialAsync("../../Areas/User/Views/User/Login", new Teknik.Areas.Users.ViewModels.LoginViewModel())
                 </div>
             </div>
         </div>

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 
 namespace Teknik.Filters
 {
@@ -10,7 +11,7 @@ namespace Teknik.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (filterContext.HttpContext.Request.HttpMethod == "OPTIONS")
+            if (filterContext.HttpContext.Request.Method == "OPTIONS")
             {
                 // do nothing let IIS deal with reply!
                 filterContext.Result = new EmptyResult();

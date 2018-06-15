@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Teknik.Areas.Blog.Models;
-using System.Security.Principal;
 using System.Linq;
-using System.Web;
 using Teknik.ViewModels;
 
 namespace Teknik.Areas.Blog.ViewModels
@@ -30,7 +28,7 @@ namespace Teknik.Areas.Blog.ViewModels
 
         public string Article { get; set; }
 
-        public List<string> Tags { get; set; }
+        public List<BlogPostTag> Tags { get; set; }
 
         public List<BlogPostComment> Comments { get; set; }
 
@@ -50,7 +48,7 @@ namespace Teknik.Areas.Blog.ViewModels
             DatePublished = post.DatePublished;
             DateEdited = post.DateEdited;
             Title = post.Title;
-            Tags = post.Tags;
+            Tags = post.Tags.ToList();
             Article = post.Article;
             Comments = post.Comments.ToList();
         }

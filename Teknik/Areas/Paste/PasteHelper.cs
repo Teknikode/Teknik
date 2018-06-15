@@ -7,15 +7,15 @@ using Teknik.Configuration;
 using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Utilities.Cryptography;
+using Teknik.Data;
 
 namespace Teknik.Areas.Paste
 {
     public static class PasteHelper
     {
-        public static Models.Paste CreatePaste(TeknikEntities db, string content, string title = "", string syntax = "text", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
+        public static Models.Paste CreatePaste(Config config, TeknikEntities db, string content, string title = "", string syntax = "text", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
         {
-            Config config = Config.Load();
-            Models.Paste paste = db.Pastes.Create();
+            Models.Paste paste = new Models.Paste();
             paste.DatePosted = DateTime.Now;
             paste.MaxViews = 0;
             paste.Views = 0;

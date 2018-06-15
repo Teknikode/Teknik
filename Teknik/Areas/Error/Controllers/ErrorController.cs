@@ -3,157 +3,145 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
-using System.Web;
-using System.Web.Mvc;
 using Teknik.Areas.Error.ViewModels;
 using Teknik.Controllers;
 using Teknik.Filters;
 using Teknik.Utilities;
-using Teknik.Logging;
 using Teknik.Attributes;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+using Teknik.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Diagnostics;
+using Teknik.Data;
+using Teknik.Logging;
 
 namespace Teknik.Areas.Error.Controllers
 {
     [TeknikAuthorize]
+    [Area("Error")]
     public class ErrorController : DefaultController
     {
-        [AllowAnonymous]
-        public ActionResult Exception(Exception exception)
+        public ErrorController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+
+        public IActionResult HttpError(int statusCode)
         {
-            ViewBag.Title = "Exception - " + Config.Title;
-            ViewBag.Description = "Just a boring 'ol exception. Nothing to see here, move along.";
-
-            if (Response != null)
+            switch (statusCode)
             {
-                Response.StatusCode = 500;
-                Response.TrySkipIisCustomErrors = true;
+                case 401:
+                    return Http401();
+                case 403:
+                    return Http403();
+                case 404:
+                    return Http404();
+                default:
+                    return HttpGeneral(statusCode);
             }
-
-            LogError(LogLevel.Error, "General Exception", exception);
-
-            ErrorViewModel model = new ErrorViewModel();
-            model.Exception = exception;
-
-            return View("~/Areas/Error/Views/Error/Exception.cshtml", model);
         }
-        
-        [AllowAnonymous]
-        public ActionResult General(Exception exception)
+
+        public IActionResult HttpGeneral(int statusCode)
         {
-            ViewBag.Title = "Http Exception - " + Config.Title;
-            ViewBag.Description = "There has been a Http exception.  Run!";
+            ViewBag.Title = statusCode + " - " + _config.Title;
 
-            if (Response != null)
-            {
-                Response.StatusCode = 500;
-                Response.TrySkipIisCustomErrors = true;
-            }
-
-            LogError(LogLevel.Error, "General HTTP Exception", exception);
+            LogError(LogLevel.Error, "HTTP Error Code: " + statusCode);
 
             ErrorViewModel model = new ErrorViewModel();
-            model.Description = exception.Message;
-            model.Exception = exception;
+            model.StatusCode = statusCode;
 
-            return View("~/Areas/Error/Views/Error/General.cshtml", model);
+            return GenerateActionResult(CreateErrorObj("Http", statusCode, "Invalid HTTP Response"), View("~/Areas/Error/Views/Error/HttpGeneral.cshtml", model));
         }
 
         [AllowAnonymous]
-        public ActionResult Http401(Exception exception)
+        public IActionResult Http401()
         {
-            ViewBag.Title = "401 - " + Config.Title;
+            Response.StatusCode = StatusCodes.Status401Unauthorized;
+
+            ViewBag.Title = "401 - " + _config.Title;
             ViewBag.Description = "Unauthorized";
 
-            if (Response != null)
-            {
-                Response.StatusCode = 401;
-                Response.TrySkipIisCustomErrors = true;
-            }
-
-            LogError(LogLevel.Error, "Unauthorized", exception);
+            LogError(LogLevel.Error, "Unauthorized");
 
             ErrorViewModel model = new ErrorViewModel();
-            model.Exception = exception;
+            model.StatusCode = StatusCodes.Status401Unauthorized;
 
-            return View("~/Areas/Error/Views/Error/Http401.cshtml", model);
+            return GenerateActionResult(CreateErrorObj("Http", StatusCodes.Status401Unauthorized, "Unauthorized"), View("~/Areas/Error/Views/Error/Http401.cshtml", model));
         }
 
         [AllowAnonymous]
-        public ActionResult Http403(Exception exception)
+        public IActionResult Http403()
         {
-            ViewBag.Title = "403 - " + Config.Title;
+            Response.StatusCode = StatusCodes.Status403Forbidden;
+
+            ViewBag.Title = "403 - " + _config.Title;
             ViewBag.Description = "Access Denied";
 
-            if (Response != null)
-            {
-                Response.StatusCode = 403;
-                Response.TrySkipIisCustomErrors = true;
-            }
-
-            LogError(LogLevel.Error, "Access Denied", exception);
+            LogError(LogLevel.Error, "Access Denied");
 
             ErrorViewModel model = new ErrorViewModel();
-            model.Exception = exception;
+            model.StatusCode = StatusCodes.Status403Forbidden;
 
-            return View("~/Areas/Error/Views/Error/Http403.cshtml", model);
+            return GenerateActionResult(CreateErrorObj("Http", StatusCodes.Status403Forbidden, "Access Denied"), View("~/Areas/Error/Views/Error/Http403.cshtml", model));
         }
 
         [AllowAnonymous]
-        public ActionResult Http404(Exception exception)
+        public IActionResult Http404()
         {
-            ViewBag.Title = "404 - " + Config.Title;
-            ViewBag.Description = "Uh Oh, can't find it!";
+            Response.StatusCode = StatusCodes.Status404NotFound;
 
-            if (Response != null)
-            {
-                Response.StatusCode = 404;
-                Response.TrySkipIisCustomErrors = true;
-            }
+            ViewBag.Title = "404 - " + _config.Title;
+            ViewBag.Description = "Uh Oh, can't find it!";            
 
-            LogError(LogLevel.Warning, "Page Not Found", exception);
+            LogError(LogLevel.Warning, "Page Not Found");
 
             ErrorViewModel model = new ErrorViewModel();
-            model.Exception = exception;
+            model.StatusCode = StatusCodes.Status404NotFound;
 
-            return View("~/Areas/Error/Views/Error/Http404.cshtml", model);
+            return GenerateActionResult(CreateErrorObj("Http", StatusCodes.Status404NotFound, "Page Not Found"), View("~/Areas/Error/Views/Error/Http404.cshtml", model));
         }
         
         [AllowAnonymous]
-        public ActionResult Http500(Exception exception)
+        public IActionResult Http500(Exception exception)
         {
-            Session["Exception"] = exception;
-
-            ViewBag.Title = "500 - " + Config.Title;
-            ViewBag.Description = "Something Borked";
-
-            if (Response != null)
+            if (HttpContext != null)
             {
-                Response.StatusCode = 500;
-                Response.TrySkipIisCustomErrors = true;
+                var ex = HttpContext.Features.Get<IExceptionHandlerFeature>();
+                if (ex != null)
+                {
+                    exception = ex.Error;
+                }
+                HttpContext.Session.Set("Exception", exception);
             }
+
+            Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+            ViewBag.Title = "500 - " + _config.Title;
+            ViewBag.Description = "Something Borked";
             
             LogError(LogLevel.Error, "Server Error", exception);
 
             ErrorViewModel model = new ErrorViewModel();
+            model.StatusCode = StatusCodes.Status500InternalServerError;
             model.Exception = exception;
 
-            return View("~/Areas/Error/Views/Error/Http500.cshtml", model);
+            return GenerateActionResult(CreateErrorObj("Http", StatusCodes.Status500InternalServerError, exception.Message), View("~/Areas/Error/Views/Error/Http500.cshtml", model));
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult SubmitErrorReport(SubmitReportViewModel model)
+        public IActionResult SubmitErrorReport(SubmitReportViewModel model)
         {
             try
             {
                 string exceptionMsg = model.Exception;
 
                 // Try to grab the actual exception that occured
-                object exceptionObj = Session["Exception"];
-                if (exceptionObj != null)
+                Exception ex = HttpContext.Session.Get<Exception>("Exception");
+                if (ex != null)
                 {
-                    Exception ex = (Exception) exceptionObj;
                     exceptionMsg = string.Format(@"
 Exception: {0}
 
@@ -167,16 +155,16 @@ Stack Trace:
 
                 // Let's also email the message to support
                 SmtpClient client = new SmtpClient();
-                client.Host = Config.ContactConfig.EmailAccount.Host;
-                client.Port = Config.ContactConfig.EmailAccount.Port;
-                client.EnableSsl = Config.ContactConfig.EmailAccount.SSL;
+                client.Host = _config.ContactConfig.EmailAccount.Host;
+                client.Port = _config.ContactConfig.EmailAccount.Port;
+                client.EnableSsl = _config.ContactConfig.EmailAccount.SSL;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.UseDefaultCredentials = true;
-                client.Credentials = new System.Net.NetworkCredential(Config.ContactConfig.EmailAccount.Username, Config.ContactConfig.EmailAccount.Password);
+                client.Credentials = new System.Net.NetworkCredential(_config.ContactConfig.EmailAccount.Username, _config.ContactConfig.EmailAccount.Password);
                 client.Timeout = 5000;
 
-                MailMessage mail = new MailMessage(new MailAddress(Config.NoReplyEmail, Config.NoReplyEmail), new MailAddress(Config.SupportEmail, "Teknik Support"));
-                mail.Sender = new MailAddress(Config.ContactConfig.EmailAccount.EmailAddress);
+                MailMessage mail = new MailMessage(new MailAddress(_config.NoReplyEmail, _config.NoReplyEmail), new MailAddress(_config.SupportEmail, "Teknik Support"));
+                mail.Sender = new MailAddress(_config.ContactConfig.EmailAccount.EmailAddress);
                 mail.Subject = "[Exception] Application Exception Occured";
                 mail.Body = @"
 An exception has occured at: " + model.CurrentUrl + @"
@@ -201,26 +189,30 @@ User Message:
             return Json(new { result = "true" });
         }
 
+        private object CreateErrorObj(string type, int statusCode, string message)
+        {
+            return new { error = new { type = type, status = statusCode, message = message } };
+        }
+
+        private void LogError(LogLevel level, string message)
+        {
+            LogError(level, message, null);
+        }
+
         private void LogError(LogLevel level, string message, Exception exception)
         {
             if (Request != null)
             {
-                if (Request.Url != null)
-                {
-                    message += " | Url: " + Request.Url.AbsoluteUri;
-                }
-
-                if (Request.UrlReferrer != null)
-                {
-                    message += " | Referred Url: " + Request.Url.AbsoluteUri;
-                }
+                message += " | Url: " + Request.GetDisplayUrl();
                 
-                message += " | Method: " + Request.HttpMethod;
+                message += " | Referred Url: " + Request.Headers["Referer"].ToString();
+                
+                message += " | Method: " + Request.Method;
 
-                message += " | User Agent: " + Request.UserAgent;
+                message += " | User Agent: " + Request.Headers["User-Agent"].ToString();
             }
 
-            Logger.WriteEntry(level, message, exception);
+            _logger.Log(level, message, exception);
         }
     }
 }

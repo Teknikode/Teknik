@@ -21,8 +21,12 @@ namespace Teknik.Models
 
         public TransferTypes Type { get; set; }
 
-        public virtual ICollection<User> Users { get; set; }
+        public virtual int? UserId { get; set; }
 
-        public virtual ICollection<Paste> Pastes { get; set; }
+        public virtual User User { get; set; }
+
+        public virtual int? PasteId { get; set; }
+
+        public virtual Paste Paste { get; set; }
     }
 }

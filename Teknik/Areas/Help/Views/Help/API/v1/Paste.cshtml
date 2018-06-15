@@ -1,9 +1,8 @@
 ﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
 
-@using Teknik.Utilities
-@using Teknik.Pygments
+@*@using Teknik.Pygments*@
 
-@Styles.Render("~/Content/help");
+<bundle src="css/help.min.css" append-version="true"></bundle>
 
 <div class="container">
     <ol class="breadcrumb">
@@ -100,10 +99,10 @@
                         <br />
                         This can be one of the following:
                         <select name="format" class="selectpicker">
-                            @foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
+                            @*@foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
                             {
                                 <option value="@format.Aliases.FirstOrDefault()">@format.Aliases.FirstOrDefault()</option>
-                            }
+                            }*@
                         </select>
                     </td>
                 </tr>
@@ -132,7 +131,7 @@
                         <var>1</var>
                     </td>
                     <td>
-                        The length of whatever unit you choose before the paste is deleted.  
+                        The length of whatever unit you choose before the paste is deleted.
                     </td>
                 </tr>
                 <tr>

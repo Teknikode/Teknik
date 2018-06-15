@@ -8,7 +8,7 @@
                 The following information is publicly available.
             </p>
             <ul>
-                <li>Email Address (username@(string.Format("@{0}", Model.Config.Host)))</li>
+                <li>Email Address (username@(string.Format("@{0}", Config.Host)))</li>
                 <li>Published Blog Posts</li>
                 <li>Comments (Blogs and Podcasts)</li>
                 <li>Uploads (Encrypted files will still be served, but the content is secure unless the proper Key is provided client side)</li>
@@ -58,7 +58,7 @@
     <div class="row">
         <div class="col-xs-10">
             @{ 
-                string gitHost = Model.Config.GitConfig.Host;
+                string gitHost = Config.GitConfig.Host;
                 string gitFullUrl = string.Empty;
                 if (!string.IsNullOrEmpty(gitHost))
                 {

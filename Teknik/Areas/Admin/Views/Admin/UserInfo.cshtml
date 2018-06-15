@@ -1,8 +1,6 @@
 @model Teknik.Areas.Admin.ViewModels.UserInfoViewModel
 
-@using Teknik.Utilities
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     // We need to define the action URLs for the script
     var homeUrl = '@Url.SubRouteUrl("admin", "Admin.UserSearch")';
     var deleteUserURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "DeleteAccount" })';
@@ -11,8 +9,6 @@
     var createInviteCode = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "CreateInviteCode" })';
     var username = '@Model.Username';
 </script>
-
-@Scripts.Render("~/bundles/UserInfo")
 
 <div class="container">
     <div class="row">
@@ -33,7 +29,7 @@
                 @{
                     foreach (AccountType value in Enum.GetValues(typeof(AccountType)))
                     {
-                        <option @(value == Model.AccountType ? "selected" : string.Empty)>@value.ToString()</option>
+                        <!option @(value == Model.AccountType ? "selected" : string.Empty)>@value.ToString()</!option>
                     }
                 }
             </select>
@@ -49,7 +45,7 @@
                 @{
                     foreach (AccountStatus value in Enum.GetValues(typeof(AccountStatus)))
                     {
-                        <option @(value == Model.AccountStatus ? "selected" : string.Empty)>@value.ToString()</option>
+                        <!option @(value == Model.AccountStatus ? "selected" : string.Empty)>@value.ToString()</!option>
                     }
                 }
             </select>
@@ -68,3 +64,5 @@
         </div>
     </div>
 </div>
+
+<bundle src="js/userInfo.min.js" append-version="true"></bundle>

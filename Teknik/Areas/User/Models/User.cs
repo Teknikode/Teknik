@@ -1,11 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Teknik.Attributes;
 using Teknik.Models;
 using Teknik.Utilities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Teknik.Areas.Users.Models
 {
@@ -32,7 +32,7 @@ namespace Teknik.Areas.Users.Models
 
         public AccountStatus AccountStatus { get; set; }
 
-        public virtual ICollection<Group> Groups { get; set; }
+        public virtual ICollection<UserRole> UserRoles { get; set; }
         
         public virtual UserSettings UserSettings { get; set; }
 
@@ -63,7 +63,7 @@ namespace Teknik.Areas.Users.Models
             LastSeen = DateTime.Now;
             AccountType = AccountType.Basic;
             AccountStatus = AccountStatus.Active;
-            Groups = new List<Group>();
+            UserRoles = new List<UserRole>();
             TrustedDevices = new List<TrustedDevice>();
             AuthTokens = new List<AuthToken>();
             ClaimedInviteCode = null;

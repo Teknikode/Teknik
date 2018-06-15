@@ -10,7 +10,6 @@ namespace Teknik.Areas.Users.Models
 {
     public class UploadSettings
     {
-        [Key]
         public int UserId { get; set; }
 
         public virtual User User { get; set; }

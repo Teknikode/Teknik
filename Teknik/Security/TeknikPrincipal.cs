@@ -5,6 +5,7 @@ using System.Security.Principal;
 using System.Web;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
+using Teknik.Data;
 using Teknik.Models;
 using Teknik.Utilities;
 
@@ -28,8 +29,8 @@ namespace Teknik.Security
             {
                 if (m_Info == null && Identity != null && Identity.IsAuthenticated)
                 {
-                    TeknikEntities db = new TeknikEntities();
-                    m_Info = UserHelper.GetUser(db, Identity.Name);
+                    //TeknikEntities db = new TeknikEntities();
+                    //m_Info = UserHelper.GetUser(db, Identity.Name);
                 }
                 return m_Info;
             }

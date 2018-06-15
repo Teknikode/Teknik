@@ -2,22 +2,21 @@
 
 @using Teknik.Areas.Blog.Models
 @using Teknik.Areas.Podcast.Models
-@using Teknik.Utilities
 
 @{
-    string logoPath = "/Images/logo-blue.svg";
+    string logoPath = "/images/logo-blue.svg";
 
     // If we are using a CDN, let's replace it
-    if (Model.Config.UseCdn)
+    if (Config.UseCdn)
     {
-        if (!string.IsNullOrEmpty(Model.Config.CdnHost))
+        if (!string.IsNullOrEmpty(Config.CdnHost))
         {
-            logoPath = Model.Config.CdnHost.TrimEnd('/') + logoPath;
+            logoPath = Config.CdnHost.TrimEnd('/') + logoPath;
         }
     }
 }
 
-@Styles.Render("~/Content/home")
+<bundle src="css/home.min.css" append-version="true"></bundle>
 
 <div class="container">
     <div class="row">

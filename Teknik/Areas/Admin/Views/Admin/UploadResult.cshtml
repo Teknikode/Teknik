@@ -1,7 +1,5 @@
 @model Teknik.Areas.Admin.ViewModels.UploadResultViewModel
 
-@using Teknik.Utilities
-
 <div class="panel panel-default">
     <div class="panel-heading text-center">
         <a id="upload-url" href="@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Url })">@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Url })</a>

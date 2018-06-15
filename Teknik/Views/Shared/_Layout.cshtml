@@ -1,8 +1,4 @@
-@model Teknik.ViewModels.ViewModelBase
-
-@using Teknik.Utilities
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <!-- Character Set -->       
@@ -14,7 +10,7 @@
 
         <!-- Website Info -->
         <meta name="description" content="@ViewBag.Description" />
-        <meta name="author" content="@Model.Config.Author" />
+        <meta name="author" content="@Config.Author" />
 
         <!-- Robots -->
         <meta name="robots" content="index,follow,noodp"><!-- All Search Engines -->
@@ -25,7 +21,7 @@
         <meta name="wot-verification" content="e858b91d99b767ad70db" /> 
 
         <!-- Start of page 'load' -->
-        <script nonce="@Context.Items[Constants.NONCE_KEY]">
+        <script>
             var startTime = new Date();
         </script>
 
@@ -35,14 +31,13 @@
         <!-- Favicon -->
         <link href="@Url.SubRouteUrl("www", "Default.Favicon")" rel="shortcut icon" type="image/x-icon" />
         <link href="@Url.SubRouteUrl("www", "Default.Favicon")" rel="apple-touch-icon-precomposed" />
-
-        @Styles.Render("~/Content/Common")
-        @Scripts.Render("~/bundles/common")
-
+        
+        <bundle src="css/common.min.css" append-version="true"></bundle>
+        <bundle src="js/common.min.js" append-version="true"></bundle>
     </head>
     <body data-twttr-rendered="true">
         <div id="wrap">
-            @Html.Partial("_Navbar")
+            @await Html.PartialAsync("_Navbar")
             <div class="container">
                 <div class="row">
                     <div class="col-xs-12 text-center">
@@ -62,17 +57,15 @@
                     </div>
                 </div>
             </noscript>
-
-            <!-- Anti-Forgery Token -->            
+            <!-- Anti-Forgery Token -->
             <!-- used for ajax in AddAntiForgeryToken() -->
-            <form id="__AjaxAntiForgeryForm" action="#" method="post">@Html.AntiForgeryToken()</form>
-
+            <!form id="__AjaxAntiForgeryForm" action="#" method="post">@Html.AntiForgeryToken()</!form>
             @RenderBody()
-        </div> 
-        @Html.Partial("_Footer")
+        </div>
+        @await Html.PartialAsync("_Footer")
 
-        <script nonce="@Context.Items[Constants.NONCE_KEY]">
-            $(document).ready(function () {pageloadDoTimer();});
+        <script>
+            $(document).ready(function () { pageloadDoTimer(); });
         </script>
     </body>
 </html>

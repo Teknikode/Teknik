@@ -1,33 +1,32 @@
 @model Teknik.Areas.Upload.ViewModels.UploadViewModel
 
-@using Teknik.Utilities
 @using Teknik.Areas.Vault.Models
 
 @{
-    long maxUploadSize = Model.Config.UploadConfig.MaxUploadSize;
+    long maxUploadSize = Config.UploadConfig.MaxUploadSize;
     if (User.Identity.IsAuthenticated)
     {
-        maxUploadSize = Model.Config.UploadConfig.MaxUploadSizeBasic;
-        if (User.Info.AccountType == AccountType.Premium)
-        {
-            maxUploadSize = Model.Config.UploadConfig.MaxUploadSizePremium;
-        }
+        maxUploadSize = Config.UploadConfig.MaxUploadSizeBasic;
+        //if (User.Info.AccountType == AccountType.Premium)
+        //{
+        //    maxUploadSize = Config.UploadConfig.MaxUploadSizePremium;
+        //}
     }
 }
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
-    var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
-    var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
+<script>
+    var encScriptSrc = '@Url.FullURL("~/js/cryptoWorker.min.js")';
+    var aesScriptSrc = '@Url.FullURL("~/js/crypto.min.js")';
     var uploadFileURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action = "Upload" })';
     var maxUploadSize = @maxUploadSize;
-    var chunkSize = @Model.Config.UploadConfig.ChunkSize;
-    var keySize = @Model.Config.UploadConfig.KeySize;
-    var blockSize = @Model.Config.UploadConfig.BlockSize;
+    var chunkSize = @Config.UploadConfig.ChunkSize;
+    var keySize = @Config.UploadConfig.KeySize;
+    var blockSize = @Config.UploadConfig.BlockSize;
     var shortenURL = '@Url.SubRouteUrl("shorten", "Shortener.Action", new { action = "ShortenUrl" })';
     var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.NewVaultFromService", new { type = "Upload" })';
 </script>
 
-@Styles.Render("~/Content/upload")
+<bundle src="css/upload.min.css" append-version="true" />
 
 <div class="container">
     <div class="row text-center">
@@ -152,4 +151,4 @@
     </div>
 </div>
 
-@Scripts.Render("~/bundles/upload")
+<bundle src="js/upload.min.js" append-version="true" />
