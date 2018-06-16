@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Teknik.MailService
 {
-    public class HMailService : MailService
+    public class HMailService : IMailService
     {
         private readonly hMailServer.Application _App;
 
@@ -33,7 +33,7 @@ namespace Teknik.MailService
             _App = InitApp();
         }
 
-        public override void CreateAccount(string username, string password, int size)
+        public void CreateAccount(string username, string password, int size)
         {
             var domain = _App.Domains.ItemByName[_Domain];
             var newAccount = domain.Accounts.Add();
@@ -45,7 +45,7 @@ namespace Teknik.MailService
             newAccount.Save();
         }
 
-        public override bool AccountExists(string username)
+        public bool AccountExists(string username)
         {
             try
             {
@@ -57,29 +57,37 @@ namespace Teknik.MailService
             return false;
         }
 
-        public override void Delete(string username)
+        public void DeleteAccount(string username)
         {
-            throw new NotImplementedException();
+            var app = new hMailServer.Application();
+            app.Connect();
+            app.Authenticate(_Username, _Password);
+            var domain = app.Domains.ItemByName[_Domain];
+            var account = domain.Accounts.ItemByAddress[username];
+            if (account != null)
+            {
+                account.Delete();
+            }
         }
 
-        public override void Enable(string username)
+        public void EnableAccount(string username)
         {
             EditActivity(username, true);
         }
 
-        public override void Disable(string username)
+        public void DisableAccount(string username)
         {
             EditActivity(username, false);
         }
 
-        public override void EditActivity(string username, bool active)
+        public void EditActivity(string username, bool active)
         {
             var account = GetAccount(username);
             account.Active = active;
             account.Save();
         }
 
-        public override void EditMaxEmailsPerDay(string username, int maxPerDay)
+        public void EditMaxEmailsPerDay(string username, int maxPerDay)
         {
             //We need to check the actual git database
             MysqlDatabase mySQL = new MysqlDatabase(_CounterServer, _CounterDatabase, _CounterUsername, _CounterPassword, _CounterPort);
@@ -88,21 +96,21 @@ namespace Teknik.MailService
             mySQL.Execute(sql, new object[] { maxPerDay, username });
         }
 
-        public override void EditMaxSize(string username, int size)
+        public void EditMaxSize(string username, int size)
         {
             var account = GetAccount(username);
             account.MaxSize = size;
             account.Save();
         }
 
-        public override void EditPassword(string username, string password)
+        public void EditPassword(string username, string password)
         {
             var account = GetAccount(username);
             account.Password = password;
             account.Save();
         }
 
-        public override DateTime LastActive(string username)
+        public DateTime LastActive(string username)
         {
             var account = GetAccount(username);
             return (DateTime)account.LastLogonTime;

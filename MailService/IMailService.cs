@@ -10,18 +10,16 @@ namespace Teknik.MailService
 
         void CreateAccount(string username, string password, int size);
 
-        void EditActivity(string username, bool active);
-
         void EditPassword(string username, string password);
 
         void EditMaxSize(string username, int size);
 
         void EditMaxEmailsPerDay(string username, int maxPerDay);
 
-        void Enable(string username);
+        void EnableAccount(string username);
 
-        void Disable(string username);
+        void DisableAccount(string username);
 
-        void Delete(string username);
+        void DeleteAccount(string username);
     }
 }

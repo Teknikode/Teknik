@@ -232,6 +232,8 @@
         "inputFiles": [
             "wwwroot/lib/bootbox/js/bootbox.js",
             "wwwroot/lib/jquery/js/jquery.BlockUI.js",
+            "wwwroot/lib/marked/js/marked.js",
+            "wwwroot/lib/sanitize-html/js/sanitize-html.js",
             "wwwroot/js/app/Vault/Vault.js"
         ]
     },

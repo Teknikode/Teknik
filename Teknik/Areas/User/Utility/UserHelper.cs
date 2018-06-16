@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Teknik.MailService;
+using Teknik.GitService;
 
 namespace Teknik.Areas.Users.Utility
 {
@@ -931,15 +932,22 @@ If you recieved this email and you did not reset your password, you can ignore t
 
         public static void EnableUserEmail(Config config, string email)
         {
-            EditUserEmailActivity(config, email, true);
+            try
+            {
+                // If Email Server is enabled
+                if (config.EmailConfig.Enabled)
+                {
+                    var svc = CreateMailService(config);
+                    svc.EnableAccount(email);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to enable email account.", ex);
+            }
         }
 
         public static void DisableUserEmail(Config config, string email)
-        {
-            EditUserEmailActivity(config, email, false);
-        }
-
-        public static void EditUserEmailActivity(Config config, string email, bool active)
         {
             try
             {
@@ -947,12 +955,12 @@ If you recieved this email and you did not reset your password, you can ignore t
                 if (config.EmailConfig.Enabled)
                 {
                     var svc = CreateMailService(config);
-                    svc.EditActivity(email, active);
+                    svc.DisableAccount(email);
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to edit email account status.", ex);
+                throw new Exception("Unable to disable email account.", ex);
             }
         }
 
@@ -1015,7 +1023,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                 if (config.EmailConfig.Enabled)
                 {
                     var svc = CreateMailService(config);
-                    svc.Delete(email);
+                    svc.DeleteAccount(email);
                 }
             }
             catch (Exception ex)
@@ -1026,22 +1034,28 @@ If you recieved this email and you did not reset your password, you can ignore t
         #endregion
 
         #region Git Management
+        public static IGitService CreateGitService(Config config)
+        {
+            return new GiteaService(
+                config.GitConfig.SourceId,
+                config.GitConfig.Host,
+                config.GitConfig.AccessToken,
+                config.GitConfig.Database.Server,
+                config.GitConfig.Database.Database,
+                config.GitConfig.Database.Username,
+                config.GitConfig.Database.Password,
+                config.GitConfig.Database.Port
+                );
+        }
+
         public static bool UserGitExists(Config config, string username)
         {
             if (config.GitConfig.Enabled)
             {
                 try
                 {
-                    Uri baseUri = new Uri(config.GitConfig.Host);
-                    Uri finalUri = new Uri(baseUri, "api/v1/users/" + username + "?token=" + config.GitConfig.AccessToken);
-                    WebRequest request = WebRequest.Create(finalUri);
-                    request.Method = "GET";
-
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        return true;
-                    }
+                    var svc = CreateGitService(config);
+                    return svc.AccountExists(username);
                 }
                 catch { }
             }
@@ -1061,27 +1075,11 @@ If you recieved this email and you did not reset your password, you can ignore t
                 }
 
                 string email = GetUserEmailAddress(config, username);
-                // We need to check the actual git database
-                Utilities.MysqlDatabase mySQL = new Utilities.MysqlDatabase(config.GitConfig.Database.Server, config.GitConfig.Database.Database, config.GitConfig.Database.Username, config.GitConfig.Database.Password, config.GitConfig.Database.Port);
-                string sql = @"SELECT 
-	                                CASE
-		                                WHEN MAX(gogs.action.created) >= MAX(gogs.user.updated) THEN MAX(gogs.action.created)
-		                                WHEN MAX(gogs.user.updated) >= MAX(gogs.action.created) THEN MAX(gogs.user.updated)
-		                                ELSE MAX(gogs.user.updated)
-	                                END AS LastUpdate
-                                FROM gogs.user
-                                LEFT JOIN gogs.action ON gogs.user.id = gogs.action.act_user_id
-                                WHERE gogs.user.login_name = {0}";
-                var results = mySQL.Query(sql, new object[] { email });
 
-                if (results != null && results.Any())
-                {
-                    var result = results.First();
-                    DateTime tmpLast = lastActive;
-                    DateTime.TryParse(result["LastUpdate"].ToString(), out tmpLast);
-                    if (lastActive < tmpLast)
-                        lastActive = tmpLast;
-                }
+                var svc = CreateGitService(config);
+                DateTime tmpLast = svc.LastActive(email);
+                if (lastActive < tmpLast)
+                    lastActive = tmpLast;
             }
             return lastActive;
         }
@@ -1094,16 +1092,9 @@ If you recieved this email and you did not reset your password, you can ignore t
                 if (config.GitConfig.Enabled)
                 {
                     string email = GetUserEmailAddress(config, username);
-                    // Add gogs user
-                    using (var client = new WebClient())
-                    {
-                        var obj = new { source_id = config.GitConfig.SourceId, username = username, email = email, login_name = email, password = password };
-                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                        client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                        Uri baseUri = new Uri(config.GitConfig.Host);
-                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users?token=" + config.GitConfig.AccessToken);
-                        string result = client.UploadString(finalUri, "POST", json);
-                    }
+
+                    var svc = CreateGitService(config);
+                    svc.CreateAccount(username, email, password);
                 }
             }
             catch (Exception ex)
@@ -1126,15 +1117,9 @@ If you recieved this email and you did not reset your password, you can ignore t
                     }
 
                     string email = GetUserEmailAddress(config, username);
-                    using (var client = new WebClient())
-                    {
-                        var obj = new {source_id = config.GitConfig.SourceId, email = email, login_name = email, password = password};
-                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                        client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                        Uri baseUri = new Uri(config.GitConfig.Host);
-                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + username + "?token=" + config.GitConfig.AccessToken);
-                        string result = client.UploadString(finalUri, "PATCH", json);
-                    }
+
+                    var svc = CreateGitService(config);
+                    svc.EditPassword(username, email, password);
                 }
             }
             catch (Exception ex)
@@ -1144,16 +1129,6 @@ If you recieved this email and you did not reset your password, you can ignore t
         }
 
         public static void EnableUserGit(Config config, string username)
-        {
-            EditUserGitActivity(config, username, true);
-        }
-
-        public static void DisableUserGit(Config config, string username)
-        {
-            EditUserGitActivity(config, username, false);
-        }
-
-        public static void EditUserGitActivity(Config config, string username, bool active)
         {
             try
             {
@@ -1167,20 +1142,62 @@ If you recieved this email and you did not reset your password, you can ignore t
                     }
 
                     string email = GetUserEmailAddress(config, username);
-                    using (var client = new WebClient())
-                    {
-                        var obj = new { active = active, email = email };
-                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                        client.Headers[HttpRequestHeader.ContentType] = "application/json";
-                        Uri baseUri = new Uri(config.GitConfig.Host);
-                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + username + "?token=" + config.GitConfig.AccessToken);
-                        string result = client.UploadString(finalUri, "PATCH", json);
-                    }
+
+                    var svc = CreateGitService(config);
+                    svc.EnableAccount(username, email);
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to edit git account password.", ex);
+                throw new Exception("Unable to enable git account.", ex);
+            }
+        }
+
+        public static void DisableUserGit(Config config, string username)
+        {
+            try
+            {
+                // If Git is enabled
+                if (config.GitConfig.Enabled)
+                {
+                    // Git user exists?
+                    if (!UserGitExists(config, username))
+                    {
+                        throw new Exception($"Git User '{username}' does not exist.");
+                    }
+
+                    string email = GetUserEmailAddress(config, username);
+
+                    var svc = CreateGitService(config);
+                    svc.EnableAccount(username, email);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to disable git account.", ex);
+            }
+        }
+
+        public static void DeleteUserGit(Config config, string username)
+        {
+            try
+            {
+                // If Git is enabled
+                if (config.GitConfig.Enabled)
+                {
+                    // Git user exists?
+                    if (!UserGitExists(config, username))
+                    {
+                        throw new Exception($"Git User '{username}' does not exist.");
+                    }
+
+                    var svc = CreateGitService(config);
+                    svc.DeleteAccount(username);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to delete git account.", ex);
             }
         }
 
@@ -1283,48 +1300,6 @@ If you recieved this email and you did not reset your password, you can ignore t
                 throw new Exception("Unable to delete git account two factor.", ex);
             }
         }
-
-        public static void DeleteUserGit(Config config, string username)
-        {
-            try
-            {
-                // If Git is enabled
-                if (config.GitConfig.Enabled)
-                {
-                    // Git user exists?
-                    if (!UserGitExists(config, username))
-                    {
-                        throw new Exception($"Git User '{username}' does not exist.");
-                    }
-
-                    try
-                    {
-                        Uri baseUri = new Uri(config.GitConfig.Host);
-                        Uri finalUri = new Uri(baseUri, "api/v1/admin/users/" + username + "?token=" + config.GitConfig.AccessToken);
-                        WebRequest request = WebRequest.Create(finalUri);
-                        request.Method = "DELETE";
-
-                        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                        if (response.StatusCode != HttpStatusCode.NotFound && response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
-                        {
-                            throw new Exception("Unable to delete git account.  Response Code: " + response.StatusCode);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // This error signifies the user doesn't exist, so we can continue deleting
-                        if (ex.Message != "The remote server returned an error: (404) Not Found.")
-                        {
-                            throw new Exception("Unable to delete git account.  Exception: " + ex.Message);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unable to delete git account.", ex);
-            }
-        }
         #endregion
 
         public static ClaimsIdentity CreateClaimsIdentity(TeknikEntities db, string username)
@@ -1348,46 +1323,6 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
             return null;
         }
-
-        //public static HttpCookie CreateAuthCookie(Config config, string username, bool remember, string domain, bool local)
-        //{
-        //    DateTime curTime = DateTime.Now;
-        //    DateTime expireTime = curTime.AddMonths(1);
-
-        //    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
-        //        1, 
-        //        username, 
-        //        curTime,
-        //        expireTime,
-        //        remember,
-        //        username
-        //    );
-
-        //    string encTicket = FormsAuthentication.Encrypt(ticket);
-        //    HttpCookie authcookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
-        //    authcookie.HttpOnly = true;
-        //    authcookie.Secure = true;
-        //    if (remember)
-        //    {
-        //        authcookie.Expires = expireTime;
-        //    }
-
-        //    // Set domain dependent on where it's being ran from
-        //    if (local) // localhost
-        //    {
-        //        authcookie.Domain = null;
-        //    }
-        //    else if (config.DevEnvironment) // dev.example.com
-        //    {
-        //        authcookie.Domain = string.Format("dev.{0}", domain);
-        //    }
-        //    else // A production instance
-        //    {
-        //        authcookie.Domain = string.Format(".{0}", domain);
-        //    }
-
-        //    return authcookie;
-        //}
 
         public static Tuple<CookieOptions, string> CreateTrustedDeviceCookie(Config config, string username, string domain, bool local)
         {

@@ -76,6 +76,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Configuration\Configuration.csproj" />
+    <ProjectReference Include="..\GitService\GitService.csproj" />
     <ProjectReference Include="..\Logging\Logging.csproj" />
     <ProjectReference Include="..\MailService\MailService.csproj" />
     <ProjectReference Include="..\Piwik\Piwik.csproj" />

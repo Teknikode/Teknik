@@ -1,12 +1,18 @@
 $(document).ready(function () {
-    //$("textarea.mdd_editor").MarkdownDeep({
-    //    help_location: helpURL,
-    //    disableTabHandling: false,
-    //    resizebar: false,
-    //    SafeMode: true,
-    //    ExtraMode: true,
-    //    MarkdownInHtml: true
-    //});
+    // Initial Load
+    var oldVal = $('textarea.mdd_editor').val();
+    $('.mdd_preview').html(marked(sanitizeHtml(oldVal)));
+
+    $('textarea.mdd_editor').on('change keyup paste', function () {
+        var currentVal = $(this).val();
+        if (currentVal == oldVal) {
+            return; //check to prevent multiple simultaneous triggers
+        }
+
+        oldVal = currentVal;
+
+        $('.mdd_preview').html(marked(sanitizeHtml(oldVal)));
+    });
 
     $('.hideContent').each(function () {
         if ($(this).find('pre').height() > 400) {
