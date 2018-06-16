@@ -24,10 +24,11 @@
         "gulp": "3.9.1",
         "gulp-concat": "^2.6.1",
         "gulp-cssmin": "^0.2.0",
-        "gulp-htmlmin": "^3.0.0",
         "gulp-uglify": "^3.0.0",
         "merge-stream": "^1.0.1",
-        "rimraf": "^2.6.2"
+        "pump": "^3.0.0",
+        "rimraf": "^2.6.2",
+        "uglify-es": "^3.3.9"
     },
     "keywords": [
         "Teknik",
@@ -43,7 +44,7 @@
         "url": "https://git.teknik.io/Teknikode/TeknikCore"
     },
     "scripts": {
-        "pre-publish": "npm install && gulp clean && gulp copy-assets"
+        "pre-publish": "npm install && gulp clean && gulp copy-assets && gulp watch"
     },
     "version": "2.1.0",
     "-vs-binding": {

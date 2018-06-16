@@ -127,19 +127,13 @@
             "wwwroot/lib/crypto-js/js/mode-ctr.js",
             "wwwroot/lib/crypto-js/js/lib-typedarrays.js",
             "wwwroot/lib/crypto-js/js/pad-nopadding.js"
-        ],
-        "minify": {
-            "enabled": false
-        }
+        ]
     },
     {
         "outputFileName": "wwwroot/js/cryptoWorker.min.js",
         "inputFiles": [
             "wwwroot/js/app/Upload/EncryptionWorker.js"
-        ],
-        "minify": {
-            "enabled": false
-        }
+        ]
     },
     {
         "outputFileName": "wwwroot/js/upload.min.js",

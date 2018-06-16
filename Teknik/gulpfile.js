@@ -1,14 +1,17 @@
-﻿/// <binding BeforeBuild='copy-assets' Clean='clean' />
+﻿/// <binding ProjectOpened='watch' />
 "use strict";
 
 var gulp = require('gulp');
 var rimraf = require("rimraf");
 var concat = require("gulp-concat");
 var cssmin = require("gulp-cssmin");
-var htmlmin = require("gulp-htmlmin");
-var uglify = require("gulp-uglify");
 var merge = require('merge-stream');
 var del = require("del");
+
+var uglifyes = require('uglify-es');
+var composer = require('gulp-uglify/composer');
+var uglify = composer(uglifyes, console);
+
 var bundleconfig = require("./bundleconfig.json");
 
 var regex = {
@@ -76,3 +79,56 @@ gulp.task('copy-assets', function () {
         }
     }
 });
+
+gulp.task("load-bundle", function () {
+    bundleconfig = require("./bundleconfig.json");
+});
+
+gulp.task("min", ["min:js", "min:css"]);
+
+gulp.task("min:js", function () {
+    var tasks = getBundles(".js").map(function (bundle) {
+        return gulp.src(bundle.inputFiles, { base: "." })
+            .pipe(concat(bundle.outputFileName))
+            .pipe(uglify())
+            .pipe(gulp.dest("."));
+    });
+    return merge(tasks);
+});
+
+gulp.task("min:css", function () {
+    var tasks = getBundles(".css").map(function (bundle) {
+        return gulp.src(bundle.inputFiles, { base: "." })
+            .pipe(concat(bundle.outputFileName))
+            .pipe(cssmin())
+            .pipe(gulp.dest("."));
+    });
+    return merge(tasks);
+});
+
+gulp.task("watch", function () {
+    // Watch Source Files
+    assets.forEach(function (src) {
+        for (var key in src) {
+            gulp.watch(key, ["copy-assets"]);
+        }
+    });
+
+    // Watch Bundle File Itself
+    gulp.watch('./bundleconfig.json', ["load-bundle", "min"]);
+
+    // Watch Bundles
+    getBundles(".js").forEach(function (bundle) {
+        gulp.watch(bundle.inputFiles, ["min:js"]);
+    });
+
+    getBundles(".css").forEach(function (bundle) {
+        gulp.watch(bundle.inputFiles, ["min:css"]);
+    });
+});
+
+function getBundles(extension) {
+    return bundleconfig.filter(function (bundle) {
+        return new RegExp(`${extension}$`).test(bundle.outputFileName);
+    });
+}
