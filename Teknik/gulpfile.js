@@ -67,7 +67,7 @@ var assets = [
 ];
 
 gulp.task("clean", function (cb) {
-    return rimraf("wwwroot/*", cb);
+    return rimraf("./wwwroot/*", cb);
 });
 
 gulp.task('copy-assets', function () {
@@ -75,7 +75,7 @@ gulp.task('copy-assets', function () {
     var streams = [];
     for (var asset in assets) {
         for (var item in assets[asset]) {
-            streams.push(gulp.src(item).pipe(gulp.dest('wwwroot/' + assets[asset][item])));
+            streams.push(gulp.src(item).pipe(gulp.dest('./wwwroot/' + assets[asset][item])));
         }
     }
 });

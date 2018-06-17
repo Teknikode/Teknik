@@ -15,7 +15,7 @@ namespace Teknik.TagHelpers
     [HtmlTargetElement("bundle")]
     public class BundleTagHelper : TagHelper
     {
-        private const string VirtualFolder = "wwwroot/";
+        private const string VirtualFolder = "./wwwroot/";
         private const string ConfigPath = "bundleconfig.json";
 
         private readonly IHostingEnvironment _env;
