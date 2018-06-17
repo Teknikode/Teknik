@@ -58,8 +58,9 @@ namespace Teknik.Controllers
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
         public IActionResult Favicon([FromServices] IHostingEnvironment env)
         {
-            //string imageFile = FileHelper.MapPath(env, Constants.FAVICON_PATH);
-            return File(Constants.FAVICON_PATH, "image/x-icon");
+            string imageFile = FileHelper.MapPath(env, Constants.FAVICON_PATH);
+            FileStream fs = new FileStream(imageFile, FileMode.Open, FileAccess.Read);
+            return File(fs, "image/x-icon");
         }
 
         // Get the Logo
@@ -68,8 +69,9 @@ namespace Teknik.Controllers
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
         public IActionResult Logo([FromServices] IHostingEnvironment env)
         {
-            //string imageFile = FileHelper.MapPath(env, Constants.LOGO_PATH);
-            return File(Constants.LOGO_PATH, "image/svg+xml");
+            string imageFile = FileHelper.MapPath(env, Constants.LOGO_PATH);
+            FileStream fs = new FileStream(imageFile, FileMode.Open, FileAccess.Read);
+            return File(fs, "image/svg+xml");
         }
 
         // Get the Robots.txt
