@@ -16,13 +16,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		global.json = global.json
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piwik", "Piwik\Piwik.csproj", "{F8823907-092C-4055-9F8E-D6756793C24A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MailService", "MailService\MailService.csproj", "{03636C30-DA61-4307-8934-2FCC3BAC3255}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitService", "GitService\GitService.csproj", "{014879B1-DDD5-4F8C-9597-6D7960912CF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitService", "GitService\GitService.csproj", "{014879B1-DDD5-4F8C-9597-6D7960912CF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
