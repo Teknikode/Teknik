@@ -134,7 +134,7 @@ namespace Teknik.GitService
                         Connection.Open();
                         Connected = true;
                     }
-                    catch (MySqlException ex)
+                    catch (MySqlException)
                     {
                         Connected = false;
                     }

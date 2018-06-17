@@ -15,8 +15,6 @@ namespace Teknik.Filters
 {
     public class TrackLink : ActionFilterAttribute
     {
-        private readonly Config _config;
-
         public TrackLink()
         {
             //_config = config;

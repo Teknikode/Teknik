@@ -85,7 +85,7 @@ namespace Teknik.Piwik
                     //}
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 
             }

@@ -15,8 +15,6 @@ namespace Teknik.Filters
 {
     public class TrackPageView : ActionFilterAttribute
     {
-        private readonly Config _config;
-
         public TrackPageView()
         {
         }

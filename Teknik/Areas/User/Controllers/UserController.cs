@@ -742,7 +742,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete()
+        public async Task<IActionResult> Delete()
         {
             if (ModelState.IsValid)
             {
@@ -753,7 +753,7 @@ namespace Teknik.Areas.Users.Controllers
                     {
                         UserHelper.DeleteAccount(_dbContext, _config, user);
                         // Sign Out
-                        Logout();
+                        await Logout();
                         return Json(new { result = true });
                     }
                 }

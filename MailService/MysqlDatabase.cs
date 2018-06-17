@@ -134,7 +134,7 @@ namespace Teknik.MailService
                         Connection.Open();
                         Connected = true;
                     }
-                    catch (MySqlException ex)
+                    catch (MySqlException)
                     {
                         Connected = false;
                     }

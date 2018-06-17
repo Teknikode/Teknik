@@ -154,7 +154,7 @@ namespace Teknik.Logging
 
                 client.Send(mail);
             }
-            catch (Exception ex) { /* don't handle something in the handler */
+            catch (Exception) { /* don't handle something in the handler */
             }
         }
     }

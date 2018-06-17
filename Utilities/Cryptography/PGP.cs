@@ -29,7 +29,7 @@ namespace Teknik.Utilities.Cryptography
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 isValid = false;
             }

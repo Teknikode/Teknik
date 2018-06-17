@@ -87,7 +87,7 @@ namespace Teknik.Areas.Admin.Controllers
                         model.LastSeen = UserHelper.GetLastAccountActivity(_dbContext, _config, user);
                         models.Add(model);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         // Skip this result
                     }

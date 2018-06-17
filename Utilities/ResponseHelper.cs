@@ -46,7 +46,7 @@ namespace Teknik.Utilities
                 }
                 while (processedBytes > 0 && bytesRemaining > 0);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Don't worry about it.  Just leave
                 await response.Body.FlushAsync();

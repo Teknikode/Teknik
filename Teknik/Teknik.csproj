@@ -45,7 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.1.0-preview1-final" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.1.0-preview1-final" />
   </ItemGroup>
 
@@ -70,8 +69,7 @@
     <Folder Include="Data\Migrations\" />
     <Folder Include="Migrations\" />
     <Folder Include="Views\Shared\" />
-    <Folder Include="wwwroot\images\" />
-    <Folder Include="wwwroot\lib\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>

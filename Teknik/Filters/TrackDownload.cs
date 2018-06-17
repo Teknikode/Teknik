@@ -15,8 +15,6 @@ namespace Teknik.Filters
 {
     public class TrackDownload : ActionFilterAttribute
     {
-        private readonly Config _config;
-
         public TrackDownload()
         {
             //_config = config;

@@ -2,5 +2,5 @@
 
 @foreach (var podcast in Model)
 {
-    @Html.Partial("Podcast", podcast)
+    @await Html.PartialAsync("Podcast", podcast)
 }

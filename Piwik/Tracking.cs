@@ -45,7 +45,7 @@ namespace Teknik.Piwik
                     //tracker.doTrackPageView(string.Format("{0}/{1}", sub, title));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

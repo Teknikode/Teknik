@@ -22,7 +22,7 @@ namespace Teknik.Security
             }
         }
 
-        private User m_Info;
+        private User m_Info = null;
         public User Info
         {
             get
