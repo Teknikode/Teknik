@@ -1,0 +1,4 @@
+﻿{
+    "version": "{{git_ver}}",
+    "hash": "{{git_hash}}"
+}

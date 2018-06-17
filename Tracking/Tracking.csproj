@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyName>Teknik.Piwik</AssemblyName>
-    <RootNamespace>Teknik.Piwik</RootNamespace>
+    <AssemblyName>Teknik.Tracking</AssemblyName>
+    <RootNamespace>Teknik.Tracking</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

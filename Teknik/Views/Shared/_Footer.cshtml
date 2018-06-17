@@ -1,5 +1,6 @@
 @using System.Diagnostics;
 @using System.Reflection;
+@using Newtonsoft;
 
 <footer id="footer" class="footer navbar navbar-default">
     <div class="container">
@@ -26,27 +27,6 @@
             </div>
         </div>
         <br />
-        @{
-            Assembly assembly = Assembly.GetEntryAssembly();
-            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-
-            string verNum = string.Empty;
-            string commitVer = string.Empty;
-            string commitHash = string.Empty;
-
-            if (!string.IsNullOrEmpty(fileVersionInfo.ProductVersion))
-            {
-                string[] fullVersion = fileVersionInfo.ProductVersion.Split('+');
-                if (fullVersion.Count() > 1)
-                {
-                    verNum = fullVersion[0];
-                    string commitStr = fullVersion[1];
-
-                    commitVer = commitStr.Split('.')[0];
-                    commitHash = commitStr.Split('.').Last();
-                }
-            }
-        }
         <div class="row">
             <div class="col-sm-5 col-sm-offset-1 text-left text-muted">
                 &copy; Teknik 2013-2018 | <a href="@Url.SubRouteUrl("faq", "FAQ.Index")">FAQ</a> | <a href="@Url.SubRouteUrl("privacy", "Privacy.Index")">Privacy</a> | <a href="@Url.SubRouteUrl("tos", "TOS.Index")">TOS</a> | <a href="@Url.SubRouteUrl("abuse", "Abuse.Index")">Abuse</a> | <a href="@Url.SubRouteUrl("stats", "Stats.Index")">Statistics</a>
@@ -59,7 +39,7 @@
         </div>
         <div class="row">
             <div class="col-sm-10 col-sm-offset-1 text-center text-muted">
-                Version: @string.Format("{0}.{1}", verNum, commitVer) - Hash: <a href="http://git.teknik.io/Teknikode/Teknik/src/@commitHash">@commitHash.Truncate(10)</a>
+                <version source="http://git.teknik.io/Teknikode/Teknik/src/"></version>
             </div>
         </div>
     </div>

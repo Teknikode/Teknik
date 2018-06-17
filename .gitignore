@@ -264,3 +264,4 @@ __pycache__/
 /Teknik/App_Data/Config.json
 /Teknik/appsettings.Production.json
 /Teknik/appsettings.Development.json
+/Teknik/App_Data/version.json

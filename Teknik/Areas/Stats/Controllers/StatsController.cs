@@ -12,7 +12,7 @@ using Teknik.Controllers;
 using Teknik.Data;
 using Teknik.Filters;
 using Teknik.Logging;
-using Teknik.Piwik;
+using Teknik.Tracking;
 using Teknik.Utilities;
 
 namespace Teknik.Areas.Stats.Controllers
@@ -179,7 +179,7 @@ namespace Teknik.Areas.Stats.Controllers
 
                 return Json(new { result = new { uniqueVisitors = uniqueData.ToArray(), totalVisitors = totalData.ToArray() } });
             }
-            return Json(new { error = new { message = "Piwik not configured" } });
+            return Json(new { error = new { message = "Tracking not configured" } });
         }
     }
 }

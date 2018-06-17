@@ -7,6 +7,7 @@ namespace Teknik.Utilities
         public const string LOGO_PATH = "images/logo-black.svg";
         public const string FAVICON_PATH = "images/favicon.ico";
         public const string ROBOTS_PATH = "~/App_Data/robots.txt";
+
         public const string LOG_FILE_NAME_PREFIX = "Teknik";
         public const string LOG_FILE_EXT = ".log";
 

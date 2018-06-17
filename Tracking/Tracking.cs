@@ -3,7 +3,7 @@ using System.Web;
 using Teknik.Configuration;
 using Teknik.Utilities;
 
-namespace Teknik.Piwik
+namespace Teknik.Tracking
 {
     public static class Tracking
     {

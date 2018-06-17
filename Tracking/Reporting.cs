@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Teknik.Configuration;
 
-namespace Teknik.Piwik
+namespace Teknik.Tracking
 {
     public static class Reporting
     {

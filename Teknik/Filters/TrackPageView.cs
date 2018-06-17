@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Teknik.Configuration;
 using Teknik.Utilities;
-using Teknik.Piwik;
+using Teknik.Tracking;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;

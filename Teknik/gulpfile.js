@@ -7,6 +7,9 @@ var concat = require("gulp-concat");
 var cssmin = require("gulp-cssmin");
 var merge = require('merge-stream');
 var del = require("del");
+var replace = require("gulp-replace");
+var rename = require("gulp-rename");
+var git = require("git-rev-sync");
 
 var uglifyes = require('uglify-es');
 var composer = require('gulp-uglify/composer');
@@ -71,7 +74,6 @@ gulp.task("clean", function (cb) {
 });
 
 gulp.task('copy-assets', function () {
-
     var streams = [];
     for (var asset in assets) {
         for (var item in assets[asset]) {
@@ -104,6 +106,14 @@ gulp.task("min:css", function () {
             .pipe(gulp.dest("."));
     });
     return merge(tasks);
+});
+
+gulp.task("update-version", function () {
+    return gulp.src('./App_Data/version.template.json')
+        .pipe(replace('{{git_ver}}', git.tag()))
+        .pipe(replace('{{git_hash}}', git.long()))
+        .pipe(rename('version.json'))
+        .pipe(gulp.dest('./App_Data'));
 });
 
 gulp.task("watch", function () {

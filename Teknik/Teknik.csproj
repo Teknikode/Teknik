@@ -77,7 +77,7 @@
     <ProjectReference Include="..\GitService\GitService.csproj" />
     <ProjectReference Include="..\Logging\Logging.csproj" />
     <ProjectReference Include="..\MailService\MailService.csproj" />
-    <ProjectReference Include="..\Piwik\Piwik.csproj" />
+    <ProjectReference Include="..\Tracking\Tracking.csproj" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 
@@ -107,5 +107,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>
