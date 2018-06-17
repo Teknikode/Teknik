@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
       <AssemblyName>Teknik.MailService</AssemblyName>
       <RootNamespace>Teknik.MailService</RootNamespace>
+      <RuntimeIdentifiers>win-x86;win-x64;linux-x64;linux-arm;osx-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>

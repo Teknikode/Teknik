@@ -7,6 +7,7 @@
     <AssemblyName>Teknik</AssemblyName>
     <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <RuntimeIdentifiers>win-x86;win-x64;linux-x64;linux-arm;osx-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>

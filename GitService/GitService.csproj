@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Teknik.GitService</AssemblyName>
     <RootNamespace>Teknik.GitService</RootNamespace>
+    <RuntimeIdentifiers>win-x86;win-x64;linux-x64;linux-arm;osx-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
