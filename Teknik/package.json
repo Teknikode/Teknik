@@ -44,7 +44,9 @@
         "url": "https://git.teknik.io/Teknikode/TeknikCore"
     },
     "scripts": {
-        "pre-publish": "npm install && gulp clean && gulp copy-assets && gulp watch"
+        "pre-publish": "npm install && gulp clean && gulp copy-assets && gulp watch",
+        "build": "npm install && gulp clean && gulp copy-assets && gulp min",
+        "gulp": "gulp"
     },
     "version": "2.1.0",
     "-vs-binding": {
