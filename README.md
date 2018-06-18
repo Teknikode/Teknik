@@ -30,7 +30,7 @@ In order to run Teknik on your server, you'll need:
 
 ## Installation
  * Set up Asp.Net Core to work with your system of choice - [Instructions](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-2.1&tabs=aspnetcore2x) 
- * Download the latest release for your system - [Releases](https://git.teknik.io/Teknikode/Teknik/releases)
+ * Download the latest release of Teknik for your system - [Releases](https://git.teknik.io/Teknikode/Teknik/releases)
  * Copy the files to your local web root directory.
  * Create a `ConnectionStrings.config` file in the `App_Data` directory and fill it with the following template and put in your SQL server connection details.
 
@@ -57,7 +57,7 @@ mkdir src
 cd ./src
 git clone https://git.teknik.io/Teknikode/Teknik
 ```
-
+* Set up .Net Core SDK for you system of choice - [Instructions](https://www.microsoft.com/net/download/all)
 * Install Node.js (Includes npm).
 * Run the npm build script `npm run build`.
   * This will install, move, bundle, and minify all the client side assets (JavaScript, CSS, Fonts, and Images).
