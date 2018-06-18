@@ -61,7 +61,7 @@ git clone https://git.teknik.io/Teknikode/Teknik
 * Install Node.js (Includes npm).
 * Run the npm build script `npm run build`.
   * This will install, move, bundle, and minify all the client side assets (JavaScript, CSS, Fonts, and Images).
-  * To see exactly what happens or to modify the bui;d. look at the `gulpfile.js` file.
+  * To see exactly what happens or to modify the build. look at the `gulpfile.js` file.
 * Run dotnet publish from the root directory of the repo to build and package the app into the release publish directory (for example: ./Teknik/bin/Release/netcoreapp2.1/publish).
 
 ```
