@@ -134,7 +134,7 @@ namespace Teknik
             });
 
             // Use Exception Handling
-            app.UseErrorHandler();
+            app.UseErrorHandler(config);
 
             if (env.IsDevelopment())
             {

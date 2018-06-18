@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -23,10 +25,12 @@ namespace Teknik.Middleware
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly IRouter _router;
 
-        public ErrorHandlerMiddleware(RequestDelegate next)
+        public ErrorHandlerMiddleware(RequestDelegate next, IRouter router)
         {
             _next = next;
+            _router = router;
         }
 
         public async Task Invoke(HttpContext httpContext, ILogger<Logger> logger, Config config, TeknikEntities dbContext)
@@ -66,6 +70,7 @@ namespace Teknik.Middleware
                 RouteData routeData = new RouteData();
                 routeData.DataTokens.Add("area", "Error");
                 routeData.Values.Add("controller", "Error");
+                routeData.Routers.Add(_router);
 
                 var context = new ControllerContext();
                 context.HttpContext = httpContext;
@@ -90,9 +95,15 @@ namespace Teknik.Middleware
     // Extension method used to add the middleware to the HTTP request pipeline.
     public static class SetupErrorHandlerMiddlewareExtensions
     {
-        public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder builder, Config config)
         {
-            return builder.UseMiddleware<ErrorHandlerMiddleware>();
+            var routes = new RouteBuilder(builder)
+            {
+                DefaultHandler = builder.ApplicationServices.GetRequiredService<MvcRouteHandler>(),
+            };
+            routes.BuildRoutes(config);
+
+            return builder.UseMiddleware<ErrorHandlerMiddleware>(routes.Build());
         }
     }
 }
