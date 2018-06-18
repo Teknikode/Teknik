@@ -11,4 +11,10 @@
     <ProjectReference Include="..\Configuration\Configuration.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Piwik.Tracker.NetStandard1.4">
+      <HintPath>lib\Piwik.Tracker.NetStandard1.4.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -8,232 +8,232 @@ $(document).ready(function () {
     $('#donations-section').collapse('hide');
     $('#takedowns-section').collapse('hide');
 
-    /* ----------------------------------------
-                CPU Usage                      
-    -----------------------------------------*/
-    cpuUsageChart = new Highcharts.chart({
-        chart: {
-            useUTC: false,
-            renderTo: 'cpu-usage-chart',
-            type: 'line',
-            marginRight: 10
-        },
-        title: {
-            text: 'CPU Usage'
-        },
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 150
-        },
-        yAxis: {
-            title: {
-                text: 'Percentage'
-            },
-            max: 100,
-            min: 0,
-            labels: {
-                format: '{value}%'
-            },
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-        tooltip: {
-            shared: true,
-            crosshairs: true,
-            pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y:.2f}%</b><br/>'
-        },
-        plotOptions: {
-            line: {
-                marker: {
-                    enabled: false,
-                    symbol: 'circle',
-                    radius: 2,
-                    states: {
-                        hover: {
-                            enabled: true
-                        }
-                    }
-                }
-            }
-        },
-        credits: {
-            enabled: false
-        },
-        series: [
-            {
-                name: 'Total',
-                data: []
-            }
-        ]
-    });
+    ///* ----------------------------------------
+    //            CPU Usage                      
+    //-----------------------------------------*/
+    //cpuUsageChart = new Highcharts.chart({
+    //    chart: {
+    //        useUTC: false,
+    //        renderTo: 'cpu-usage-chart',
+    //        type: 'line',
+    //        marginRight: 10
+    //    },
+    //    title: {
+    //        text: 'CPU Usage'
+    //    },
+    //    xAxis: {
+    //        type: 'datetime',
+    //        tickPixelInterval: 150
+    //    },
+    //    yAxis: {
+    //        title: {
+    //            text: 'Percentage'
+    //        },
+    //        max: 100,
+    //        min: 0,
+    //        labels: {
+    //            format: '{value}%'
+    //        },
+    //        plotLines: [{
+    //            value: 0,
+    //            width: 1,
+    //            color: '#808080'
+    //        }]
+    //    },
+    //    tooltip: {
+    //        shared: true,
+    //        crosshairs: true,
+    //        pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y:.2f}%</b><br/>'
+    //    },
+    //    plotOptions: {
+    //        line: {
+    //            marker: {
+    //                enabled: false,
+    //                symbol: 'circle',
+    //                radius: 2,
+    //                states: {
+    //                    hover: {
+    //                        enabled: true
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    },
+    //    credits: {
+    //        enabled: false
+    //    },
+    //    series: [
+    //        {
+    //            name: 'Total',
+    //            data: []
+    //        }
+    //    ]
+    //});
 
-    /* ----------------------------------------
-                Memory usage                      
-    -----------------------------------------*/
-    memUsageChart = new Highcharts.chart({
-        chart: {
-            useUTC: false,
-            renderTo: 'mem-usage-chart',
-            type: 'line',
-            marginRight: 10
-        },
-        title: {
-            text: 'Memory Usage'
-        },
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 150
-        },
-        yAxis: {
-            title: {
-                text: 'Memory'
-            },
-            min: 0,
-            max: totalMemory,
-            tickInterval: tickInterval,
-            labels: {
-                formatter: function () {
-                    return filesize(this.value);
-                }
-            },
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-        tooltip: {
-            shared: true,
-            crosshairs: true,
-            pointFormatter: function () {
-                var yVal = filesize(this.y);
+    ///* ----------------------------------------
+    //            Memory usage                      
+    //-----------------------------------------*/
+    //memUsageChart = new Highcharts.chart({
+    //    chart: {
+    //        useUTC: false,
+    //        renderTo: 'mem-usage-chart',
+    //        type: 'line',
+    //        marginRight: 10
+    //    },
+    //    title: {
+    //        text: 'Memory Usage'
+    //    },
+    //    xAxis: {
+    //        type: 'datetime',
+    //        tickPixelInterval: 150
+    //    },
+    //    yAxis: {
+    //        title: {
+    //            text: 'Memory'
+    //        },
+    //        min: 0,
+    //        max: totalMemory,
+    //        tickInterval: tickInterval,
+    //        labels: {
+    //            formatter: function () {
+    //                return filesize(this.value);
+    //            }
+    //        },
+    //        plotLines: [{
+    //            value: 0,
+    //            width: 1,
+    //            color: '#808080'
+    //        }]
+    //    },
+    //    tooltip: {
+    //        shared: true,
+    //        crosshairs: true,
+    //        pointFormatter: function () {
+    //            var yVal = filesize(this.y);
 
-                return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + yVal + '</b><br/>';
-            }
-        },
-        plotOptions: {
-            line: {
-                marker: {
-                    enabled: false,
-                    symbol: 'circle',
-                    radius: 2,
-                    states: {
-                        hover: {
-                            enabled: true
-                        }
-                    }
-                }
-            }
-        },
-        credits: {
-            enabled: false
-        },
-        series: [
-            {
-                name: 'Total',
-                data: []
-            },
-            {
-                name: 'Website',
-                data: []
-            },
-            {
-                name: 'Database',
-                data: []
-            }
-        ]
-    });
+    //            return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + yVal + '</b><br/>';
+    //        }
+    //    },
+    //    plotOptions: {
+    //        line: {
+    //            marker: {
+    //                enabled: false,
+    //                symbol: 'circle',
+    //                radius: 2,
+    //                states: {
+    //                    hover: {
+    //                        enabled: true
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    },
+    //    credits: {
+    //        enabled: false
+    //    },
+    //    series: [
+    //        {
+    //            name: 'Total',
+    //            data: []
+    //        },
+    //        {
+    //            name: 'Website',
+    //            data: []
+    //        },
+    //        {
+    //            name: 'Database',
+    //            data: []
+    //        }
+    //    ]
+    //});
 
-    /* ----------------------------------------
-                Network Usage                      
-    -----------------------------------------*/
-    networkUsageChart = new Highcharts.chart({
-        chart: {
-            useUTC: false,
-            renderTo: 'network-usage-chart',
-            marginRight: 10
-        },
-        title: {
-            text: 'Network Usage'
-        },
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 150
-        },
-        yAxis: {
-            title: {
-                text: 'Speed'
-            },
-            min: 0,
-            labels: {
-                formatter: function () {
-                    return getReadableBandwidthString(this.value);
-                }
-            },
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-        tooltip: {
-            shared: true,
-            crosshairs: true,
-            pointFormatter: function () {
-                var yVal = getReadableBandwidthString(this.y);
+    ///* ----------------------------------------
+    //            Network Usage                      
+    //-----------------------------------------*/
+    //networkUsageChart = new Highcharts.chart({
+    //    chart: {
+    //        useUTC: false,
+    //        renderTo: 'network-usage-chart',
+    //        marginRight: 10
+    //    },
+    //    title: {
+    //        text: 'Network Usage'
+    //    },
+    //    xAxis: {
+    //        type: 'datetime',
+    //        tickPixelInterval: 150
+    //    },
+    //    yAxis: {
+    //        title: {
+    //            text: 'Speed'
+    //        },
+    //        min: 0,
+    //        labels: {
+    //            formatter: function () {
+    //                return getReadableBandwidthString(this.value);
+    //            }
+    //        },
+    //        plotLines: [{
+    //            value: 0,
+    //            width: 1,
+    //            color: '#808080'
+    //        }]
+    //    },
+    //    tooltip: {
+    //        shared: true,
+    //        crosshairs: true,
+    //        pointFormatter: function () {
+    //            var yVal = getReadableBandwidthString(this.y);
 
-                return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + yVal + '</b><br/>';
-            }
-        },
-        plotOptions: {
-            area: {
-                marker: {
-                    enabled: false,
-                    symbol: 'circle',
-                    radius: 2,
-                    states: {
-                        hover: {
-                            enabled: true
-                        }
-                    }
-                }
-            },
-            line: {
-                marker: {
-                    enabled: false,
-                    symbol: 'circle',
-                    radius: 2,
-                    states: {
-                        hover: {
-                            enabled: true
-                        }
-                    }
-                }
-            }
-        },
-        credits: {
-            enabled: false
-        },
-        series: [
-            {
-                type: 'line',
-                name: 'Sent',
-                dashStyle: 'Dash',
-                color: '#7cb5ec',
-                data: []
-            },
-            {
-                type: 'area',
-                name: 'Received',
-                color: '#7cb5ec',
-                fillOpacity: 0.3,
-                data: []
-            }
-        ]
-    });
+    //            return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series.name + ': <b>' + yVal + '</b><br/>';
+    //        }
+    //    },
+    //    plotOptions: {
+    //        area: {
+    //            marker: {
+    //                enabled: false,
+    //                symbol: 'circle',
+    //                radius: 2,
+    //                states: {
+    //                    hover: {
+    //                        enabled: true
+    //                    }
+    //                }
+    //            }
+    //        },
+    //        line: {
+    //            marker: {
+    //                enabled: false,
+    //                symbol: 'circle',
+    //                radius: 2,
+    //                states: {
+    //                    hover: {
+    //                        enabled: true
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    },
+    //    credits: {
+    //        enabled: false
+    //    },
+    //    series: [
+    //        {
+    //            type: 'line',
+    //            name: 'Sent',
+    //            dashStyle: 'Dash',
+    //            color: '#7cb5ec',
+    //            data: []
+    //        },
+    //        {
+    //            type: 'area',
+    //            name: 'Received',
+    //            color: '#7cb5ec',
+    //            fillOpacity: 0.3,
+    //            data: []
+    //        }
+    //    ]
+    //});
 
     /* ----------------------------------------
                 Visitor History                      
@@ -321,10 +321,10 @@ $(document).ready(function () {
         });
 
     // Resize the chart when viewing the tab (initial width is wrong due to chart being hidden)
-    $('a[href="#realtime-stats"]').on('shown.bs.tab',
-        function(e) {
-            cpuUsageChart.setSize($('#cpu-usage-chart').width(), $('#cpu-usage-chart').height());
-            memUsageChart.setSize($('#mem-usage-chart').width(), $('#mem-usage-chart').height());
-            networkUsageChart.setSize($('#network-usage-chart').width(), $('#network-usage-chart').height());
-        });
+    //$('a[href="#realtime-stats"]').on('shown.bs.tab',
+    //    function(e) {
+    //        cpuUsageChart.setSize($('#cpu-usage-chart').width(), $('#cpu-usage-chart').height());
+    //        memUsageChart.setSize($('#mem-usage-chart').width(), $('#mem-usage-chart').height());
+    //        networkUsageChart.setSize($('#network-usage-chart').width(), $('#network-usage-chart').height());
+    //    });
 });

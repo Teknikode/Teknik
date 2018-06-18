@@ -44,7 +44,7 @@ namespace Teknik.Areas.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [TrackPageView]
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> UploadAsync(APIv1UploadModel model)
         {
             try
@@ -197,7 +197,7 @@ namespace Teknik.Areas.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [TrackPageView]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Paste(APIv1PasteModel model)
         {
             try
@@ -242,7 +242,7 @@ namespace Teknik.Areas.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [TrackPageView]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Shorten(APIv1ShortenModel model)
         {
             try

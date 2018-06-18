@@ -15,9 +15,11 @@ namespace Teknik.Filters
 {
     public class TrackLink : ActionFilterAttribute
     {
-        public TrackLink()
+        private readonly Config _config;
+
+        public TrackLink(Config config)
         {
-            //_config = config;
+            _config = config;
         }
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -26,22 +28,22 @@ namespace Teknik.Filters
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            //HttpRequest request = filterContext.HttpContext.Request;
+            HttpRequest request = filterContext.HttpContext.Request;
 
-            //string doNotTrack = request.Headers["DNT"];
-            //if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
-            //{
-            //    string userAgent = request.Headers["User-Agent"].ToString();
+            string doNotTrack = request.Headers["DNT"];
+            if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
+            {
+                string userAgent = request.Headers["User-Agent"].ToString();
 
-            //    string clientIp = request.ClientIPFromRequest(true);
+                string clientIp = request.ClientIPFromRequest(true);
 
-            //    string urlReferrer = request.Headers["Referer"].ToString();
+                string urlReferrer = request.Headers["Referer"].ToString();
 
-            //    string url = UriHelper.GetEncodedUrl(request);
+                string url = UriHelper.GetEncodedUrl(request);
 
-            //    // Fire and forget.  Don't need to wait for it.
-            //    Tracking.TrackLink(_config, userAgent, clientIp, url, urlReferrer);
-            //}
+                // Fire and forget.  Don't need to wait for it.
+                Tracking.Tracking.TrackLink(filterContext.HttpContext, _config, userAgent, clientIp, url, urlReferrer);
+            }
         }
     }
 }

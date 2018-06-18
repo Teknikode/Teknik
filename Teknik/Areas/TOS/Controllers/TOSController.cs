@@ -17,7 +17,7 @@ namespace Teknik.Areas.TOS.Controllers
     {
         public TOSController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
-        [TrackPageView]
+        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Index()
         {

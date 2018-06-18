@@ -23,7 +23,7 @@ namespace Teknik.Areas.Stats.Controllers
     {
         public StatsController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
-        [TrackPageView]
+        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Index()
         {

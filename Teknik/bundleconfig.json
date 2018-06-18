@@ -22,7 +22,7 @@
     {
         "outputFileName": "./wwwroot/js/blog.min.js",
         "inputFiles": [
-            "././wwwroot/lib/bootbox/js/bootbox.js",
+            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/lib/marked/js/marked.js",
             "./wwwroot/lib/sanitize-html/js/sanitize-html.js",
             "./wwwroot/js/app/Blog/Blog.js"

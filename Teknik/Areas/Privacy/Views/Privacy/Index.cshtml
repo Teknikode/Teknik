@@ -52,7 +52,7 @@
             <p>
                 We use <a href="http://piwik.org/">Piwik</a> to track user interaction with the site.  We keep it hosted on the server locally, so no analytic data is leaving the server.  This will store the first 2 bytes of your IP Address (e.g. 192.168.xxx.xxx) as an identifier.  If you do not want to be tracked, enable Do Not Track in your browser (Recommended), or by unchecking below.
             </p>
-            <iframe style="border: 0; height: 200px; width: 600px;" src="https://stats.teknik.io/index.php?module=CoreAdminHome&action=optOut&language=en"></iframe>
+            <iframe style="border: 0; height: 200px; width: 600px;" src="@(Config.PiwikConfig.API)index.php?module=CoreAdminHome&action=optOut&language=en"></iframe>
         </div>
     </div>
     <div class="row">

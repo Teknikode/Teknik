@@ -32,7 +32,7 @@ namespace Teknik.Areas.Upload.Controllers
         public UploadController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [HttpGet]
-        [TrackPageView]
+        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Index()
         {
@@ -142,7 +142,7 @@ namespace Teknik.Areas.Upload.Controllers
 
         // User did not supply key
         [HttpGet]
-        [TrackDownload]
+        [ServiceFilter(typeof(TrackDownload))]
         [AllowAnonymous]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
         public IActionResult Download(string file)

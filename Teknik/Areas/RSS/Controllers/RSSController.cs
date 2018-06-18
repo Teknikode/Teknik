@@ -31,7 +31,7 @@ namespace Teknik.Areas.RSS.Controllers
     {
         public RSSController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
-        [TrackDownload]
+        [ServiceFilter(typeof(TrackDownload))]
         [AllowAnonymous]
         public async Task Index()
         {
@@ -49,7 +49,7 @@ namespace Teknik.Areas.RSS.Controllers
             }
         }
 
-        [TrackDownload]
+        [ServiceFilter(typeof(TrackDownload))]
         [AllowAnonymous]
         public async Task Blog(string username)
         {
@@ -155,7 +155,7 @@ namespace Teknik.Areas.RSS.Controllers
             }
         }
 
-        [TrackDownload]
+        [ServiceFilter(typeof(TrackDownload))]
         [AllowAnonymous]
         public async Task Podcast()
         {

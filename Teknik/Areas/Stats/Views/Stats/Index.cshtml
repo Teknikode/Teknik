@@ -14,42 +14,22 @@
     @if (Config.StatsConfig.Enabled)
     {
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#realtime-stats" role="tab" data-toggle="tab">Realtime Server Usage</a></li>
             <li role="presentation"><a href="#site-stats" role="tab" data-toggle="tab">Site Statistics</a></li>
             <li role="presentation"><a href="#transactions" role="tab" data-toggle="tab">Transactions</a></li>
             <li role="presentation"><a href="#takedowns" role="tab" data-toggle="tab">Takedowns</a></li>
         </ul>
 
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="realtime-stats">
-                <h2 class="text-center"><b>Realtime Server Usage</b></h2>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div id="cpu-usage-chart"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div id="mem-usage-chart"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div id="network-usage-chart"></div>
-                    </div>
-                </div>
-            </div>
             <div role="tabpanel" class="tab-pane" id="site-stats">
                 <h2 class="text-center"><b>Site Statistics</b></h2>
                 <hr>
                 @if (Config.PiwikConfig.Enabled)
                 {
-                    <div class="row">
+                    @*<div class="row">
                         <div class="col-sm-12">
                             <div id="visitor-chart"></div>
                         </div>
-                    </div>
+                    </div>*@
                 }
                 <div class="row">
                     <div class="col-sm-3 text-center">

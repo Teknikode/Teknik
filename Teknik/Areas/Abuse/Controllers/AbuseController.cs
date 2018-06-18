@@ -21,7 +21,7 @@ namespace Teknik.Areas.Abuse.Controllers
     {
         public AbuseController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
-        [TrackPageView]
+        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Index()
         {

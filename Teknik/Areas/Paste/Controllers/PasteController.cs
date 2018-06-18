@@ -27,7 +27,7 @@ namespace Teknik.Areas.Paste.Controllers
     {
         public PasteController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
-        [TrackPageView]
+        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Index()
         {
@@ -37,7 +37,7 @@ namespace Teknik.Areas.Paste.Controllers
             return View(model);
         }
 
-        [TrackDownload]
+        [ServiceFilter(typeof(TrackDownload))]
         [AllowAnonymous]
         public IActionResult ViewPaste(string type, string url, string password)
         {
