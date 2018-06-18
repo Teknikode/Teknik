@@ -30,8 +30,7 @@ namespace Teknik.Areas.RSS.Controllers
     public class RSSController : DefaultController
     {
         public RSSController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
-
-        [ServiceFilter(typeof(TrackDownload))]
+        
         [AllowAnonymous]
         public async Task Index()
         {
@@ -48,8 +47,7 @@ namespace Teknik.Areas.RSS.Controllers
                 await xmlWriter.FlushAsync();
             }
         }
-
-        [ServiceFilter(typeof(TrackDownload))]
+        
         [AllowAnonymous]
         public async Task Blog(string username)
         {
@@ -154,8 +152,7 @@ namespace Teknik.Areas.RSS.Controllers
 
             }
         }
-
-        [ServiceFilter(typeof(TrackDownload))]
+        
         [AllowAnonymous]
         public async Task Podcast()
         {

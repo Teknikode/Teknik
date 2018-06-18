@@ -16,8 +16,7 @@ namespace Teknik.Areas.FAQ.Controllers
     public class FAQController : DefaultController
     {
         public FAQController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Index()
         {

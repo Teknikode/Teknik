@@ -16,8 +16,7 @@ namespace Teknik.Areas.Dev.Controllers
     public class DevController : DefaultController
     {
         public DevController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Index()
         {

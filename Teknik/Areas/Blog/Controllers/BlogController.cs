@@ -29,7 +29,6 @@ namespace Teknik.Areas.Blog.Controllers
     {
         public BlogController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
-        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Blog(string username)
         {
@@ -119,7 +118,6 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         #region Posts
-        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Post(string username, int id)
         {

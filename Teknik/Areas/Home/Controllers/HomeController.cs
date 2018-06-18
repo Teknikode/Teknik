@@ -21,8 +21,7 @@ namespace Teknik.Areas.Home.Controllers
     public class HomeController : DefaultController
     {
         public HomeController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Index()
         {

@@ -63,9 +63,9 @@ namespace Teknik
             services.AddScoped<Config, Config>(opt => Config.Load(dataDir));
 
             // Add Tracking Filter scopes
-            services.AddScoped<TrackDownload>();
-            services.AddScoped<TrackLink>();
-            services.AddScoped<TrackPageView>();
+            //services.AddScoped<TrackDownload>();
+            //services.AddScoped<TrackLink>();
+            //services.AddScoped<TrackPageView>();
 
             // Create the Database Context
             services.AddDbContext<TeknikEntities>(options => options

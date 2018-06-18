@@ -35,8 +35,7 @@ namespace Teknik.Areas.Users.Controllers
 
         private static readonly UsedCodesManager usedCodesManager = new UsedCodesManager();
         private const string _AuthSessionKey = "AuthenticatedUser";
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult GetPremium()
         {
@@ -48,7 +47,6 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         // GET: Profile/Profile
-        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult ViewProfile(string username)
         {
@@ -106,14 +104,12 @@ namespace Teknik.Areas.Users.Controllers
             }
             return View(model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         public IActionResult Settings()
         {
             return Redirect(Url.SubRouteUrl("user", "User.SecuritySettings"));
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         public IActionResult ProfileSettings()
         {
             string username = User.Identity.Name;
@@ -139,8 +135,7 @@ namespace Teknik.Areas.Users.Controllers
 
             return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         public IActionResult SecuritySettings()
         {
             string username = User.Identity.Name;
@@ -181,8 +176,7 @@ namespace Teknik.Areas.Users.Controllers
 
             return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         public IActionResult InviteSettings()
         {
             string username = User.Identity.Name;
@@ -229,8 +223,7 @@ namespace Teknik.Areas.Users.Controllers
 
             return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         public IActionResult BlogSettings()
         {
             string username = User.Identity.Name;
@@ -255,8 +248,7 @@ namespace Teknik.Areas.Users.Controllers
 
             return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         public IActionResult UploadSettings()
         {
             string username = User.Identity.Name;
@@ -282,7 +274,6 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult ViewRawPGP(string username)
         {
@@ -301,7 +292,6 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Login(string ReturnUrl)
         {
@@ -412,7 +402,6 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Register(string inviteCode, string ReturnUrl)
         {

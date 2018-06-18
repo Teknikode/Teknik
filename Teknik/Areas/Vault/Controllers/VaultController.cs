@@ -28,8 +28,7 @@ namespace Teknik.Areas.Vault.Controllers
     public class VaultController : DefaultController
     {
         public VaultController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult ViewVault(string id)
         {
@@ -107,7 +106,6 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult NewVault()
         {
@@ -118,7 +116,6 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult NewVaultFromService(string type, string items)
         {
@@ -156,7 +153,6 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult EditVault(string url, string type, string items)
         {
             ViewBag.Title = "Edit Vault";

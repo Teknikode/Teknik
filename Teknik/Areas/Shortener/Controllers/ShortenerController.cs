@@ -21,8 +21,7 @@ namespace Teknik.Areas.Shortener.Controllers
     public class ShortenerController : DefaultController
     {
         public ShortenerController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Index()
         {
@@ -30,8 +29,7 @@ namespace Teknik.Areas.Shortener.Controllers
             ShortenViewModel model = new ShortenViewModel();
             return View(model);
         }
-
-        [ServiceFilter(typeof(TrackLink))]
+        
         [AllowAnonymous]
         public IActionResult RedirectToUrl(string url)
         {

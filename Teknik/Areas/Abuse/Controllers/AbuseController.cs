@@ -20,8 +20,7 @@ namespace Teknik.Areas.Abuse.Controllers
     public class AbuseController : DefaultController
     {
         public AbuseController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Index()
         {

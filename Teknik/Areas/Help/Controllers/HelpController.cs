@@ -17,7 +17,6 @@ namespace Teknik.Areas.Help.Controllers
     {
         public HelpController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
-        [ServiceFilter(typeof(TrackPageView))]
         [AllowAnonymous]
         public IActionResult Index()
         {
@@ -25,8 +24,7 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View(model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult API(string version, string service)
         {
@@ -43,8 +41,7 @@ namespace Teknik.Areas.Help.Controllers
             }
             return RedirectToRoute("Error.Http404");
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Blog()
         {
@@ -52,8 +49,7 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Blog.cshtml", model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Git()
         {
@@ -61,8 +57,7 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Git.cshtml", model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult IRC()
         {
@@ -70,8 +65,7 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/IRC.cshtml", model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Mail()
         {
@@ -79,8 +73,7 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Mail.cshtml", model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Markdown()
         {
@@ -88,8 +81,7 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Markdown.cshtml", model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Mumble()
         {
@@ -97,8 +89,7 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Mumble.cshtml", model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult RSS()
         {
@@ -106,8 +97,7 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/RSS.cshtml", model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Tools()
         {
@@ -115,8 +105,7 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Tools.cshtml", model);
         }
-
-        [ServiceFilter(typeof(TrackPageView))]
+        
         [AllowAnonymous]
         public IActionResult Upload()
         {
