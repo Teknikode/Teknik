@@ -1,6 +1,6 @@
 # Teknik Web Services
 
-[![Build Status](https://uncled1023.visualstudio.com/_apis/public/build/definitions/47815734-d274-4bfd-8945-d58f2261b421/1/badge)](https://uncled1023.visualstudio.com/Teknik/_build/index?definitionId=1)
+[![Build Status](https://uncled1023.visualstudio.com/_apis/public/build/definitions/47815734-d274-4bfd-8945-d58f2261b421/4/badge)](https://uncled1023.visualstudio.com/Teknik/_build/index?definitionId=4)
 
 Teknik is a suite of services with attractive and functional interfaces.
 
