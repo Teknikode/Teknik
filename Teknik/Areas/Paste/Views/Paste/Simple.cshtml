@@ -1,13 +1,31 @@
 ﻿@model Teknik.Areas.Paste.ViewModels.PasteViewModel
 
-@{
-    Layout = "";
-    string syntax = string.Empty;
-    if (Model.Syntax != "auto-detect")
+@{ 
+    Layout = null;
+    string format = Model.Syntax;
+    string formatName = "Text";
+    bool useFormat = true;
+    bool autoDetect = false;
+
+    if (string.IsNullOrEmpty(format))
     {
-        syntax = Model.Syntax;
+        useFormat = false;
+    }
+    else if (format == "auto-detect")
+    {
+        formatName = "Auto Detect";
+        autoDetect = true;
+    }
+    else if (!HighlightHelper.Languages.ContainsKey(format))
+    {
+        useFormat = false;
+    }
+    else
+    {
+        formatName = HighlightHelper.Languages[format];
     }
 }
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,10 +39,19 @@
 
     <bundle src="css/paste.min.css" append-version="true"></bundle>
 </head>
-<body data-twttr-rendered="true">
-    @Html.Raw(Model.Content)
+<body data-twttr-rendered="true">    
+    <script>
+        var format = '@format';
+        var useFormat = @(useFormat.ToString().ToLower());
+        var autoDetect = @(autoDetect.ToString().ToLower());
+        var highlightWorkerSrc = '@Url.FullURL("~/js/highlight.worker.min.js")';
+        var highlightSrc = '@Url.FullURL("~/js/highlight.min.js")';
+    </script>
+
+    <pre><code id="code">@Html.Raw(Model.Content)</code></pre>
     
     <bundle src="js/common.min.js" append-version="true"></bundle>
+    <bundle src="js/paste.view.min.js" append-version="true"></bundle>
 
     <script>
         $(document).ready(function () { pageloadDoTimer(); });

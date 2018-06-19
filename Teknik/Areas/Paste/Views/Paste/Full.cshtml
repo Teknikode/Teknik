@@ -4,14 +4,44 @@
 
 <bundle src="css/paste.min.css" append-version="true"></bundle>
 
+@{ 
+    string format = Model.Syntax;
+    string formatName = "Text";
+    bool useFormat = true;
+    bool autoDetect = false;
+
+    if (string.IsNullOrEmpty(format))
+    {
+        useFormat = false;
+    }
+    else if (format == "auto-detect")
+    {
+        formatName = "Auto Detect";
+        autoDetect = true;
+    }
+    else if (!HighlightHelper.Languages.ContainsKey(format))
+    {
+        useFormat = false;
+    }
+    else
+    {
+        formatName = HighlightHelper.Languages[format];
+    }
+}
+
 <script>
+    var format = '@format';
+    var useFormat = @(useFormat.ToString().ToLower());
+    var autoDetect = @(autoDetect.ToString().ToLower());
     var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.NewVaultFromService", new { type = "Paste" })';
+    var highlightWorkerSrc = '@Url.FullURL("~/js/highlight.worker.min.js")';
+    var highlightSrc = '@Url.FullURL("~/js/highlight.min.js")';
 </script>
 
 <div class="container">
     <div class="row text-center">
         <div class="col-sm-12 text-center">
-            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Posted on <time datetime="@Model.DatePosted.ToString("s")">@Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage">@Model.Syntax</b></small></h2>
+            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Posted on <time datetime="@Model.DatePosted.ToString("s")">@Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage">@(formatName)</b></small></h2>
         </div>
     </div>
     <hr />
@@ -37,8 +67,10 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-sm-12">@Html.Raw(Model.Content)</div>
+        <div class="col-sm-12">
+            <pre><code id="code">@Html.Raw(Model.Content)</code></pre>
+        </div>
     </div>
 </div>
 
-<bundle src="js/paste.min.js" append-version="true"></bundle>
+<bundle src="js/paste.view.min.js" append-version="true"></bundle>

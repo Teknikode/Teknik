@@ -66,9 +66,20 @@
         ]
     },
     {
+        "outputFileName": "./wwwroot/js/highlight.min.js",
+        "inputFiles": [
+            "./wwwroot/js/app/lib/highlight.pack.js"
+        ]
+    },
+    {
+        "outputFileName": "./wwwroot/js/highlight.worker.min.js",
+        "inputFiles": [
+            "./wwwroot/js/app/Paste/highlight.worker.js"
+        ]
+    },
+    {
         "outputFileName": "./wwwroot/js/paste.min.js",
         "inputFiles": [
-            "./wwwroot/lib/highlight/js/highlight.js",
             "./wwwroot/js/app/Paste/Paste.js"
         ]
     },
@@ -77,6 +88,12 @@
         "inputFiles": [
             "./wwwroot/lib/highlight/css/github-gist.css",
             "./wwwroot/css/app/Paste/Paste.css"
+        ]
+    },
+    {
+        "outputFileName": "./wwwroot/js/paste.view.min.js",
+        "inputFiles": [
+            "./wwwroot/js/app/Paste/ViewPaste.js"
         ]
     },
     {

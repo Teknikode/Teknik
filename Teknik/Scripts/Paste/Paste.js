@@ -1,26 +1,16 @@
 ﻿$(document).ready(function () {
     $('#content').focus();
 
-    linkCreateVault($('#create-vault'));
-
-    $('#add-to-vault-menu').find('.add-to-vault').each(function () {
-        linkAddToVault($(this));
+    $("select[name='ExpireUnit']").change(function () {
+        if ($(this).val() == "never") {
+            $('#length-div').addClass("hidden");
+            $('#unit-div').removeClass("col-sm-2");
+            $('#unit-div').addClass("col-sm-4");
+        }
+        else {
+            $('#length-div').removeClass("hidden");
+            $('#unit-div').removeClass("col-sm-4");
+            $('#unit-div').addClass("col-sm-2");
+        }
     });
 });
-
-function linkCreateVault(element) {
-    element.click(function () {
-        var pasteUrl = $(this).data('paste-url');
-        var pasteTitle = $(this).data('paste-title');
-        window.open(addParamsToUrl(createVaultURL, { items: encodeURIComponent(pasteUrl + ':' + pasteTitle) }), '_blank');
-    });
-}
-
-function linkAddToVault(element) {
-    element.click(function () {
-        var addToVaultURL = $(this).data('add-to-vault-url');
-        var pasteUrl = $(this).data('paste-url');
-        var pasteTitle = $(this).data('paste-title');
-        window.open(addParamsToUrl(addToVaultURL, { items: encodeURIComponent(pasteUrl + ':' + pasteTitle) }), '_blank');
-    });
-}

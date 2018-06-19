@@ -57,9 +57,7 @@ namespace Teknik.Middleware
             }
 
             // Do nothing if a response body has already been provided or not 404 response
-            if (httpContext.Response.HasStarted
-                || httpContext.Response.ContentLength.HasValue
-                || !string.IsNullOrEmpty(httpContext.Response.ContentType))
+            if (httpContext.Response.HasStarted)
             {
                 return;
             }

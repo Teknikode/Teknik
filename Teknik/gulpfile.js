@@ -34,7 +34,6 @@ var assets = [
     { './node_modules/file-saver/FileSaver.js': 'lib/file-saver/js' },
     { './node_modules/filesize/lib/filesize.js': 'lib/filesize/js' },
     { './node_modules/highcharts/js/highcharts.js': 'lib/highcharts/js' },
-    { './node_modules/highlight.js/lib/highlight.js': 'lib/highlight/js' },
     { './node_modules/jquery/dist/jquery.js': 'lib/jquery/js' },
     { './node_modules/block-ui/jquery.BlockUI.js': 'lib/jquery/js' },
     { './node_modules/jquery-validation/dist/jquery.validate.js': 'lib/jquery/js' },
@@ -52,7 +51,7 @@ var assets = [
     { './node_modules/dropzone/dist/dropzone.css': 'lib/dropzone/css' },
     { './node_modules/font-awesome/css/font-awesome.css': 'lib/font-awesome/css' },
     { './node_modules/highcharts/css/highcharts.css': 'lib/highcharts/css' },
-    { './node_modules/highlight.js/styles/github-gist.css': 'lib/highlight/css' },
+    { './node_modules/highlight.js/styles/*': 'lib/highlight/css' },
 
     // App CSS Files
     { './Content/**/*': 'css/app' },

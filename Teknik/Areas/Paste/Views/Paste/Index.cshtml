@@ -1,7 +1,5 @@
 @model Teknik.Areas.Paste.ViewModels.PasteCreateViewModel
 
-@*@using Teknik.Pygments*@
-
 <bundle src="css/paste.min.css" append-version="true"></bundle>
 
 <div class="container">
@@ -12,7 +10,7 @@
     </div>
     <div class="row">
         <div class="col-sm-12">
-            <form class="form-horizontal" name="editor" method="post" action="@Url.SubRouteUrl("paste", "Paste.Action", new { action = "Paste" })">
+            <!form class="form-horizontal" name="editor" method="post" action="@Url.SubRouteUrl("paste", "Paste.Action", new { action = "Paste" })">
                 <div class="form-group">
                     <div class="col-sm-10 col-sm-offset-1">
                         <textarea class="form-control" name="Content" id="content" rows="20"></textarea>
@@ -31,13 +29,14 @@
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Syntax</label>
                     <div class="col-sm-4">
                         <select class="form-control" name="Syntax" id="syntax">
-                            <!option value="text">Text only</!option>
-                            @{ 
-                                @*foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
-                                {
-                                    <option value="@format.Aliases.FirstOrDefault()">@format.Name</option>
-                                }*@
+                            <!option value="auto-detect">Auto Detect</!option>
+                            <!option value="">Text</!option>
+
+                            @foreach (var format in HighlightHelper.Languages.GroupBy(l => l.Value).ToList())
+                            {
+                                <!option value="@(format?.FirstOrDefault().Key)">@(format?.Key)</!option>
                             }
+
                         </select>
                     </div>
                 </div>
@@ -73,7 +72,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </!form>
         </div>
     </div>
     <div class="text-center">
@@ -82,18 +81,3 @@
 </div>
 
 <bundle src="js/paste.min.js" append-version="true"></bundle>
-
-<script>
-    $("select[name='ExpireUnit']").change(function () {
-        if ($(this).val() == "never") {
-            $('#length-div').addClass("hidden");
-            $('#unit-div').removeClass("col-sm-2");
-            $('#unit-div').addClass("col-sm-4");
-        }
-        else {
-            $('#length-div').removeClass("hidden");
-            $('#unit-div').removeClass("col-sm-4");
-            $('#unit-div').addClass("col-sm-2");
-        }
-    });
-</script>
