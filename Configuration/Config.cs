@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Teknik.Utilities.Cryptography;
@@ -33,6 +34,7 @@ namespace Teknik.Configuration
         private string              _CdnHost;
         private string              _IPBlacklistFile;
         private string              _ReferrerBlacklistFile;
+        private List<string>        _PublicKeys;
         private UserConfig          _UserConfig;
         private ContactConfig       _ContactConfig;
         private EmailConfig         _EmailConfig;
@@ -67,6 +69,8 @@ namespace Teknik.Configuration
         public string       CdnHost                 { get { return _CdnHost; }              set { _CdnHost = value; } }
         public string       IPBlacklistFile         { get { return _IPBlacklistFile;}       set { _IPBlacklistFile = value; }}
         public string       ReferrerBlacklistFile   { get { return _ReferrerBlacklistFile;} set { _ReferrerBlacklistFile = value; }}
+
+        public List<string> PublicKeys              { get { return _PublicKeys; }           set { _PublicKeys = value; } }
 
         // User Configuration
         public UserConfig           UserConfig          { get { return _UserConfig; }           set { _UserConfig = value; } }
@@ -143,6 +147,7 @@ namespace Teknik.Configuration
             CdnHost                 = string.Empty;
             IPBlacklistFile         = string.Empty;
             ReferrerBlacklistFile   = string.Empty;
+            PublicKeys              = new List<string>();
             UserConfig              = new UserConfig();
             EmailConfig             = new EmailConfig();
             ContactConfig           = new ContactConfig();

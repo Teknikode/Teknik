@@ -55,6 +55,7 @@ namespace Teknik.Middleware
             }
 
             httpContext.Response.Headers.Append("Access-Control-Allow-Origin", origin);
+            httpContext.Response.Headers.Append("Vary", "Origin");
 
             return _next(httpContext);
         }

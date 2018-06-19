@@ -144,7 +144,7 @@ namespace Teknik
             }
             else
             {
-                app.UseHsts();
+                //app.UseHsts();
             }
 
             // Performance Monitor the entire request
@@ -154,6 +154,7 @@ namespace Teknik
             app.UseBlacklist();
             app.UseCORS();
             app.UseCSP();
+            app.UseSecurityHeaders();
 
             // Cache Responses
             app.UseResponseCaching();

@@ -138,8 +138,7 @@ namespace Teknik.Areas.Upload.Controllers
                 return Json(new { error = new { message = "Exception while uploading file: " + ex.GetFullMessage(true) } });
             }
         }
-
-        // User did not supply key
+        
         [HttpGet]
         [AllowAnonymous]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
@@ -301,6 +300,9 @@ namespace Teknik.Areas.Upload.Controllers
                             }
                             #endregion
 
+                            // Set Last Modified
+                            Response.GetTypedHeaders().LastModified = dateUploaded;
+
                             // We accept ranges
                             Response.Headers.Add("Accept-Ranges", "0-" + contentLength);
 
@@ -309,6 +311,9 @@ namespace Teknik.Areas.Upload.Controllers
 
                             // Notify the client the content length we'll be outputting 
                             Response.Headers.Add("Content-Length", length.ToString());
+
+                            // Set the content type of this response
+                            Response.Headers.Add("Content-Type", contentType);
 
                             // Create content disposition
                             var cd = new System.Net.Mime.ContentDisposition
@@ -333,12 +338,12 @@ namespace Teknik.Areas.Upload.Controllers
                                     byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                                     byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
-                                    return new BufferedFileStreamResult(contentType, (response) => ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)length, _config.UploadConfig.ChunkSize), false);
+                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)length, _config.UploadConfig.ChunkSize), false);
                                 }
                                 else // Otherwise just send it
                                 {
                                     // Send the file
-                                    return new BufferedFileStreamResult(contentType, (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)length, _config.UploadConfig.ChunkSize), false);
+                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, fs, (int)length, _config.UploadConfig.ChunkSize), false);
                                 }
                             }
                             catch (Exception ex)
@@ -375,6 +380,9 @@ namespace Teknik.Areas.Upload.Controllers
                             FileName = upload.Url,
                             Inline = true
                         };
+
+                        // Set the content type of this response
+                        Response.Headers.Add("Content-Type", upload.ContentType);
 
                         Response.Headers.Add("Content-Disposition", cd.ToString());
 
