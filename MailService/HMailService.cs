@@ -8,6 +8,7 @@ namespace Teknik.MailService
     {
         private readonly hMailServer.Application _App;
 
+        private string _Host { get; set; }
         private string _Username { get; set; }
         private string _Password { get; set; }
         private string _Domain { get; set; }
@@ -18,8 +19,9 @@ namespace Teknik.MailService
         private string _CounterPassword { get; set; }
         private int _CounterPort { get; set; }
 
-        public HMailService(string username, string password, string domain, string counterServer, string counterDatabase, string counterUsername, string counterPassword, int counterPort)
+        public HMailService(string host, string username, string password, string domain, string counterServer, string counterDatabase, string counterUsername, string counterPassword, int counterPort)
         {
+            _Host = host;
             _Username = username;
             _Password = password;
             _Domain = domain;
@@ -59,11 +61,7 @@ namespace Teknik.MailService
 
         public void DeleteAccount(string username)
         {
-            var app = new hMailServer.Application();
-            app.Connect();
-            app.Authenticate(_Username, _Password);
-            var domain = app.Domains.ItemByName[_Domain];
-            var account = domain.Accounts.ItemByAddress[username];
+            var account = GetAccount(username);
             if (account != null)
             {
                 account.Delete();

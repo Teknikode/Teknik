@@ -877,6 +877,7 @@ If you recieved this email and you did not reset your password, you can ignore t
         public static IMailService CreateMailService(Config config)
         {
             return new HMailService(
+                config.EmailConfig.MailHost,
                 config.EmailConfig.Username,
                 config.EmailConfig.Password,
                 config.EmailConfig.Domain,
