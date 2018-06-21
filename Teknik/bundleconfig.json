@@ -251,6 +251,7 @@
     {
         "outputFileName": "./wwwroot/css/vault.min.css",
         "inputFiles": [
+            "./wwwroot/lib/highlight/css/github-gist.css",
             "./wwwroot/css/app/Vault/Vault.css"
         ]
     },

@@ -12,7 +12,7 @@
         worker.onmessage = function (event) {
             code.innerHTML = event.data.value;
             if (autoDetect) {
-                $('#syntaxLanguage').html('Auto-Detect (' + event.data.language + ')');
+                $('#syntaxLanguage').html('Auto Detect (' + event.data.language + ')');
             }
         }
         worker.postMessage({
