@@ -56,7 +56,7 @@ namespace Teknik.Controllers
         // Get the Favicon
         [HttpGet]
         [AllowAnonymous]
-        [ResponseCache(Duration = 60 * 60 * 24, Location = ResponseCacheLocation.Any)]
+        [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
         public IActionResult Favicon([FromServices] IHostingEnvironment env)
         {
             string imageFile = FileHelper.MapPath(env, Constants.FAVICON_PATH);
@@ -67,7 +67,7 @@ namespace Teknik.Controllers
         // Get the Logo
         [HttpGet]
         [AllowAnonymous]
-        [ResponseCache(Duration = 60 * 60 * 24, Location = ResponseCacheLocation.Any)]
+        [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
         public IActionResult Logo([FromServices] IHostingEnvironment env)
         {
             string imageFile = FileHelper.MapPath(env, Constants.LOGO_PATH);
