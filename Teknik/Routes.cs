@@ -400,21 +400,21 @@ namespace Teknik
               name: "Paste.Simple",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "paste", "p" },
-              template: "Simple/{url}",
+              template: "Simple/{url}/{password?}",
               defaults: new { area = "Paste", controller = "Paste", action = "ViewPaste", type = "Simple" }
             );
             routes.MapSubdomainRoute(
               name: "Paste.Raw",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "paste", "p" },
-              template: "Raw/{url}",
+              template: "Raw/{url}/{password?}",
               defaults: new { area = "Paste", controller = "Paste", action = "ViewPaste", type = "Raw" }
             );
             routes.MapSubdomainRoute(
               name: "Paste.Download",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "paste", "p" },
-              template: "Download/{url}",
+              template: "Download/{url}/{password?}",
               defaults: new { area = "Paste", controller = "Paste", action = "ViewPaste", type = "Download" }
             );
             routes.MapSubdomainRoute(
@@ -428,7 +428,7 @@ namespace Teknik
               name: "Paste.View",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "paste", "p" },
-              template: "{url}",
+              template: "{url}/{password?}",
               defaults: new { area = "Paste", controller = "Paste", action = "ViewPaste", type = "Full" }
             );
         }

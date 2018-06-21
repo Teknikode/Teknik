@@ -98,6 +98,13 @@ namespace Teknik.Areas.Paste.Controllers
                         PasswordViewModel passModel = new PasswordViewModel();
                         passModel.Url = url;
                         passModel.Type = type;
+
+                        if (!string.IsNullOrEmpty(password) && hash != paste.HashedPassword)
+                        {
+                            passModel.Error = true;
+                            passModel.ErrorMessage = "Invalid Password";
+                        }
+
                         // Redirect them to the password request page
                         return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
                     }
@@ -108,18 +115,6 @@ namespace Teknik.Areas.Paste.Controllers
                     byte[] keyBytes = AesCounterManaged.CreateKey(password, ivBytes, paste.KeySize);
                     data = AesCounterManaged.Decrypt(data, keyBytes, ivBytes);
                     model.Content = Encoding.Unicode.GetString(data);
-                }
-
-                if (type.ToLower() == "full" || type.ToLower() == "simple")
-                {
-                    // Transform content into HTML
-                    //if (!Highlighter.Lexers.ToList().Exists(l => l.Aliases.Contains(model.Syntax)))
-                    //{
-                    //    model.Syntax = "text";
-                    //}
-                    //Highlighter highlighter = new Highlighter();
-                    // Add a space in front of the content due to bug with pygment (No idea why yet)
-                    model.Content = model.Content;//highlighter.HighlightToHtml(" " + model.Content, model.Syntax, _config.PasteConfig.SyntaxVisualStyle, generateInlineStyles: true, fragment: true);
                 }
 
                 switch (type.ToLower())
@@ -134,7 +129,7 @@ namespace Teknik.Areas.Paste.Controllers
                         //Create File
                         var cd = new System.Net.Mime.ContentDisposition
                         {
-                            FileName = url,
+                            FileName = url + ".txt",
                             Inline = true
                         };
 

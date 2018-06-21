@@ -48,7 +48,7 @@
         var highlightSrc = '@Url.FullURL("~/js/highlight.min.js")';
     </script>
 
-    <pre><code id="code">@Html.Raw(Model.Content)</code></pre>
+    <pre><code id="code">@Model.Content</code></pre>
     
     <bundle src="js/common.min.js" append-version="true"></bundle>
     <bundle src="js/paste.view.min.js" append-version="true"></bundle>

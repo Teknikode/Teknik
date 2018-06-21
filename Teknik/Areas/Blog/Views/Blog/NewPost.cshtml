@@ -25,21 +25,23 @@
     <!form class="form" action="@Url.SubRouteUrl("blog", "Blog.Action", new { action = "CreatePost" })" method="post" id="newPost">
         <input name="BlogID" id="blogID" type="hidden" value="@Model.BlogId" />
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-10 col-sm-offset-1">
                 <label for="title"><h4>Title</h4></label>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-5 col-sm-offset-1">
                 <input class="form-control" name="Title" id="title" placeholder="generic click bait" title="enter a title for your post." type="text" />
             </div>
-            <div class="col-sm-1 col-sm-offset-1 pull-right">
-                <button type="submit" class="btn btn-primary" id="submit">Create Post</button>
+            <div class="col-sm-5">
+                <button type="submit" class="btn btn-primary pull-right" id="submit">Create Post</button>
+            </div>
+            <div class="col-sm-1">
             </div>
         </div>
         <br />
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-10 col-sm-offset-1">
                 <div class="panel panel-default">
                     <div class="panel-heading">Article</div>
                     <div class="panel-body">
@@ -48,7 +50,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
+        </div>
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
                 <div class="panel panel-default">
                     <div class="panel-heading">Preview</div>
                     <div class="panel-body">

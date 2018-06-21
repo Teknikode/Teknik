@@ -54,7 +54,7 @@
                 }
                 else
                 {
-                    <pre><code id="code_@(Model.Paste.PasteId)">@Html.Raw(Model.Paste.Content)</code></pre>
+                    <pre><code id="code_@(Model.Paste.PasteId)">@Model.Paste.Content</code></pre>
                 }
             </div>
             <div class="show-more" id="show-more-bottom-@Model.VaultItemId">
