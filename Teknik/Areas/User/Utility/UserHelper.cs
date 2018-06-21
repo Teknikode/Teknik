@@ -1334,7 +1334,7 @@ If you recieved this email and you did not reset your password, you can ignore t
             {
                 HttpOnly = true,
                 Secure = true,
-                Expires = DateTime.Now.AddYears(1)
+                Expires = DateTime.Now.AddDays(30)
             };
 
             // Set domain dependent on where it's being ran from

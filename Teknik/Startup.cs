@@ -87,6 +87,8 @@ namespace Teknik
                 {
                     options.Cookie.Domain = null;
                     options.Cookie.Name = "TeknikAuth";
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
                     options.LoginPath = "/User/User/Login";
                     options.LogoutPath = "/User/User/Logout";
                     options.EventsType = typeof(TeknikCookieAuthenticationEvents);
@@ -110,7 +112,12 @@ namespace Teknik
             services.AddSession();
 
             // Set the anti-forgery cookie name
-            services.AddAntiforgery(options => options.Cookie.Name = "TeknikAntiForgery");
+            services.AddAntiforgery(options =>
+            {
+                options.Cookie.Name = "TeknikAntiForgery";
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+            });
 
             // Core MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -138,7 +145,9 @@ namespace Teknik
                 Cookie = new CookieBuilder()
                 {
                     Domain = null,
-                    Name = "TeknikSession"
+                    Name = "TeknikSession",
+                    SecurePolicy = CookieSecurePolicy.Always,
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict
                 }
             });
 
