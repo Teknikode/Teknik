@@ -384,53 +384,57 @@ function uploadComplete(fileID, key, encrypt, token, evt) {
     // Cancel out cancel token
     token.callback = null;
 
-    var obj = JSON.parse(evt.target.responseText);
-    if (obj.result != null) {
-        var itemDiv = $('#upload-panel-' + fileID);
-        if (itemDiv) {
-            var name = obj.result.name;
-            var fullName = obj.result.url;
-            if (encrypt) {
-                fullName = fullName + '#' + key;
+    try {
+        var obj = JSON.parse(evt.target.responseText);
+        if (obj.result != null) {
+            var itemDiv = $('#upload-panel-' + fileID);
+            if (itemDiv) {
+                var name = obj.result.name;
+                var fullName = obj.result.url;
+                if (encrypt) {
+                    fullName = fullName + '#' + key;
+                }
+                var contentType = obj.result.contentType;
+                var contentLength = obj.result.contentLength;
+                var deleteUrl = obj.result.deleteUrl;
+
+                // Set progress bar
+                setProgress(fileID, 100, 'progress-bar-success', '', 'Complete');
+
+                // Set the panel to success
+                itemDiv.find('.panel').addClass('panel-success');
+
+                // Add the upload details
+                itemDiv.find('#upload-url').val(name);
+                itemDiv.find('#upload-link').attr('href', fullName);
+                itemDiv.find('#upload-link').text(fullName);
+                itemDiv.find('#upload-contentType').html(contentType);
+                itemDiv.find('#upload-contentLength').html(contentLength);
+
+                // Setup the buttons
+                linkUploadDelete(itemDiv.find('#delete-link'), deleteUrl);
+                linkShortenUrl(itemDiv.find('#shortenUrl'), fileID, fullName);
+
+                // Hide the progress bar
+                itemDiv.find('#upload-progress-panel').hide();
+
+                // Show the details
+                itemDiv.find('#upload-link-panel').show();
+
+                // Allow actions for all uploads
+                $('#upload-action-buttons').show();
             }
-            var contentType = obj.result.contentType;
-            var contentLength = obj.result.contentLength;
-            var deleteUrl = obj.result.deleteUrl;
-
-            // Set progress bar
-            setProgress(fileID, 100, 'progress-bar-success', '', 'Complete');
-
-            // Set the panel to success
-            itemDiv.find('.panel').addClass('panel-success');
-
-            // Add the upload details
-            itemDiv.find('#upload-url').val(name);
-            itemDiv.find('#upload-link').attr('href', fullName);
-            itemDiv.find('#upload-link').text(fullName);
-            itemDiv.find('#upload-contentType').html(contentType);
-            itemDiv.find('#upload-contentLength').html(contentLength);
-
-            // Setup the buttons
-            linkUploadDelete(itemDiv.find('#delete-link'), deleteUrl);
-            linkShortenUrl(itemDiv.find('#shortenUrl'), fileID, fullName);
-
-            // Hide the progress bar
-            itemDiv.find('#upload-progress-panel').hide();
-
-            // Show the details
-            itemDiv.find('#upload-link-panel').show();
-
-            // Allow actions for all uploads
-            $('#upload-action-buttons').show();
+        }
+        else {
+            var errorMessage = 'Unable to Upload File';
+            if (obj.error != null) {
+                errorMessage = obj.error.message;
+            }
+            setProgress(fileID, 100, 'progress-bar-danger', '', errorMessage);
         }
     }
-    else
-    {
-        var errorMessage = 'Unable to Upload File';
-        if (obj.error != null) {
-            errorMessage = obj.error.message;
-        }
-        setProgress(fileID, 100, 'progress-bar-danger', '', errorMessage);
+    catch {
+        setProgress(fileID, 100, 'progress-bar-danger', '', 'Unable to Upload File');
     }
 }
 

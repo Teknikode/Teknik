@@ -28,6 +28,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Teknik.Security;
 using Teknik.Attributes;
 using Teknik.Filters;
+using Microsoft.Net.Http.Headers;
 
 namespace Teknik
 {
@@ -77,7 +78,7 @@ namespace Teknik
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
             });
 
             // Setup Authentication Service
@@ -85,7 +86,7 @@ namespace Teknik
                 .AddCookie(options => 
                 {
                     options.Cookie.Domain = null;
-                    options.Cookie.Name = "TeknikAuthCore";
+                    options.Cookie.Name = "TeknikAuth";
                     options.LoginPath = "/User/User/Login";
                     options.LogoutPath = "/User/User/Logout";
                     options.EventsType = typeof(TeknikCookieAuthenticationEvents);
@@ -100,13 +101,16 @@ namespace Teknik
 
             services.AddHttpsRedirection(options =>
             {
-                options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+                options.RedirectStatusCode = StatusCodes.Status301MovedPermanently;
             });
 
             // Sessions
             services.AddResponseCaching();
             services.AddMemoryCache();
             services.AddSession();
+
+            // Set the anti-forgery cookie name
+            services.AddAntiforgery(options => options.Cookie.Name = "TeknikAntiForgery");
 
             // Core MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -147,10 +151,6 @@ namespace Teknik
                 //app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
-            else
-            {
-                //app.UseHsts();
-            }
 
             // Performance Monitor the entire request
             app.UsePerformanceMonitor();
@@ -164,12 +164,26 @@ namespace Teknik
             // Cache Responses
             app.UseResponseCaching();
 
+            // Force a HTTPS redirection (301)
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+
+            // Setup static files anc cache them client side
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    const int durationInSeconds = 60 * 60 * 24;
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public,max-age=" + durationInSeconds;
+                }
+            });
+
+            // Enable Cookie Policy
             app.UseCookiePolicy();
 
+            // Authorize all the things!
             app.UseAuthentication();
 
+            // And finally, let's use MVC
             app.UseMvc(routes =>
             {
                 routes.BuildRoutes(config);

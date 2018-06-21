@@ -46,13 +46,8 @@
             <ul>
                 <li><var>TeknikAuth</var> - Stores the authentication ticket for a login session.</li>
                 <li><var>TeknikTrustedDevice_&lt;username&gt;</var> - Used for determining if the browser has been trusted by the 2-Factor Auth system.</li>
-                <li><var>__RequestVerificationToken</var> - Validation Token sent with every request to the server for Anti-Forgery purposes.</li>
+                <li><var>TeknikAntiForgery</var> - Validation Token sent with every request to the server for Anti-Forgery purposes.</li>
             </ul>
-            <h2>Analytics</h2>
-            <p>
-                We use <a href="http://piwik.org/">Piwik</a> to track user interaction with the site.  We keep it hosted on the server locally, so no analytic data is leaving the server.  This will store the first 2 bytes of your IP Address (e.g. 192.168.xxx.xxx) as an identifier.  If you do not want to be tracked, enable Do Not Track in your browser (Recommended), or by unchecking below.
-            </p>
-            <iframe style="border: 0; height: 200px; width: 600px;" src="@(Config.PiwikConfig.API)index.php?module=CoreAdminHome&action=optOut&language=en"></iframe>
         </div>
     </div>
     <div class="row">
@@ -67,7 +62,7 @@
                     gitFullUrl = gitUrl.ToString();
                 }
             }
-            <p><i>Last Modified February 15, 2017 - <a href="@gitFullUrl">View History</a></i></p>
+            <p><i>Last Modified June 20th, 2018 - <a href="@gitFullUrl">View History</a></i></p>
         </div>
     </div>
 </div>

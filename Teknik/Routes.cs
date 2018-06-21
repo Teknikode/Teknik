@@ -49,7 +49,7 @@ namespace Teknik
               name: "Default.Logo",
               domains: new List<string>() { config.Host, config.ShortenerConfig.ShortenerHost },
               subDomains: new List<string>() { "*" },
-              template: "Logo",
+              template: "logo.svg",
               defaults: new { area = "Default", controller = "Default", action = "Logo" }
             );
             routes.MapSubdomainRoute(
@@ -64,7 +64,7 @@ namespace Teknik
               domains: new List<string>() { config.Host, config.ShortenerConfig.ShortenerHost },
               subDomains: new List<string>() { "*" },
               template: "{url}",
-              defaults: new { area = "Default", controller = "Default", action = "NotFound" },
+              defaults: new { area = "Error", controller = "Error", action = "Http404" },
               constraints: new { url = "{*url}" }
             );
         }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -55,7 +56,7 @@ namespace Teknik.Controllers
         // Get the Favicon
         [HttpGet]
         [AllowAnonymous]
-        [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        [ResponseCache(Duration = 60 * 60 * 24, Location = ResponseCacheLocation.Any)]
         public IActionResult Favicon([FromServices] IHostingEnvironment env)
         {
             string imageFile = FileHelper.MapPath(env, Constants.FAVICON_PATH);
@@ -66,7 +67,7 @@ namespace Teknik.Controllers
         // Get the Logo
         [HttpGet]
         [AllowAnonymous]
-        [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        [ResponseCache(Duration = 60 * 60 * 24, Location = ResponseCacheLocation.Any)]
         public IActionResult Logo([FromServices] IHostingEnvironment env)
         {
             string imageFile = FileHelper.MapPath(env, Constants.LOGO_PATH);
