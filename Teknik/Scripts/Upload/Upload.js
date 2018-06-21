@@ -433,8 +433,8 @@ function uploadComplete(fileID, key, encrypt, token, evt) {
             setProgress(fileID, 100, 'progress-bar-danger', '', errorMessage);
         }
     }
-    catch {
-        setProgress(fileID, 100, 'progress-bar-danger', '', 'Unable to Upload File');
+    catch(err) {
+        setProgress(fileID, 100, 'progress-bar-danger', '', 'Unable to Upload File: ' + parseErrorMessage(err));
     }
 }
 
