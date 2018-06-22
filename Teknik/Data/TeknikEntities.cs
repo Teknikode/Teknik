@@ -176,6 +176,9 @@ namespace Teknik.Data
             modelBuilder.Entity<TransferType>().HasOne(t => t.User).WithMany(u => u.Transfers);
             modelBuilder.Entity<TransferType>().HasOne(t => t.Paste).WithMany(p => p.Transfers);
 
+            // Transactions
+            modelBuilder.Entity<Transaction>().Property(t => t.Amount).HasColumnType("decimal(19, 5)");
+
             // Users
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<UserRole>().ToTable("UserRoles");
@@ -218,20 +221,17 @@ namespace Teknik.Data
             modelBuilder.Entity<TransferType>().ToTable("TransferTypes");
 
             // Custom Attributes
-            //foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            //{
-            //    foreach (var property in entityType.GetProperties())
-            //    {
-            //        var columnName = property.SqlServer().ColumnName;
-            //        if (columnName.Length > 30)
-            //        {
-            //            throw new InvalidOperationException("Column name is greater than 30 characters - " + columnName);
-            //        }
-            //    }
-            //}
-            //modelBuilder.Conventions.Add(new AttributeToColumnAnnotationConvention<CaseSensitiveAttribute, bool>(
-            //                            "CaseSensitive",
-            //                            (property, attributes) => attributes.Single().IsEnabled));
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    var attributes = property?.PropertyInfo?.GetCustomAttributes(typeof(CaseSensitiveAttribute), false);
+                    if (attributes != null && attributes.Any())
+                    {
+                        property.SetAnnotation("CaseSensitive", true);
+                    }
+                }
+            }
 
             base.OnModelCreating(modelBuilder);
         }
