@@ -2,40 +2,20 @@
 
 @using Teknik.Areas.Vault.Models
 
-<bundle src="css/paste.min.css" append-version="true"></bundle>
-
 @{ 
     string format = Model.Syntax;
     string formatName = "Text";
-    bool useFormat = true;
-    bool autoDetect = false;
 
-    if (string.IsNullOrEmpty(format))
-    {
-        useFormat = false;
-    }
-    else if (format == "auto-detect")
-    {
-        formatName = "Auto Detect";
-        autoDetect = true;
-    }
-    else if (!HighlightHelper.Languages.ContainsKey(format))
-    {
-        useFormat = false;
-    }
-    else
+    if (HighlightHelper.Languages.ContainsKey(format))
     {
         formatName = HighlightHelper.Languages[format];
     }
 }
 
+<bundle src="css/paste.view.min.css" append-version="true"></bundle>
+
 <script>
-    var format = '@format';
-    var useFormat = @(useFormat.ToString().ToLower());
-    var autoDetect = @(autoDetect.ToString().ToLower());
     var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.NewVaultFromService", new { type = "Paste" })';
-    var highlightWorkerSrc = '@Url.FullURL("~/js/highlight.worker.min.js")';
-    var highlightSrc = '@Url.FullURL("~/js/highlight.min.js")';
 </script>
 
 <div class="container">
@@ -68,7 +48,7 @@
     <br />
     <div class="row">
         <div class="col-sm-12">
-            <pre><code id="code">@Model.Content</code></pre>
+            <pre class="line-numbers"><code class="language-@(format)">@Model.Content</code></pre>
         </div>
     </div>
 </div>

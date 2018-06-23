@@ -29,7 +29,6 @@
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Syntax</label>
                     <div class="col-sm-4">
                         <select class="form-control" name="Syntax" id="syntax">
-                            <!option value="auto-detect">Auto Detect</!option>
                             <!option value="">Text</!option>
 
                             @foreach (var format in HighlightHelper.Languages.GroupBy(l => l.Value).ToList())

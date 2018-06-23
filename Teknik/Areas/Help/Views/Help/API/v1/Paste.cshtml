@@ -99,10 +99,10 @@
                         <br />
                         This can be one of the following:
                         <select name="format" class="selectpicker">
-                            @*@foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
+                            @foreach (var format in HighlightHelper.Languages)
                             {
-                                <option value="@format.Aliases.FirstOrDefault()">@format.Aliases.FirstOrDefault()</option>
-                            }*@
+                                <option value="@(format.Key)">@(format.Key)</option>
+                            }
                         </select>
                     </td>
                 </tr>

@@ -3,23 +3,8 @@
 @{
     string format = Model.Paste.Syntax;
     string formatName = "Text";
-    bool useFormat = true;
-    bool autoDetect = false;
 
-    if (string.IsNullOrEmpty(format))
-    {
-        useFormat = false;
-    }
-    else if (format == "auto-detect")
-    {
-        formatName = "Auto Detect";
-        autoDetect = true;
-    }
-    else if (!HighlightHelper.Languages.ContainsKey(format))
-    {
-        useFormat = false;
-    }
-    else
+    if (HighlightHelper.Languages.ContainsKey(format))
     {
         formatName = HighlightHelper.Languages[format];
     }
@@ -54,7 +39,7 @@
                 }
                 else
                 {
-                    <pre><code id="code_@(Model.Paste.PasteId)">@Model.Paste.Content</code></pre>
+                    <pre class="line-numbers"><code class="language-@(format)">@Model.Paste.Content</code></pre>
                 }
             </div>
             <div class="show-more" id="show-more-bottom-@Model.VaultItemId">
@@ -69,25 +54,3 @@
         </div>
     }
 </div>
-
-@if (useFormat)
-{
-    <script>
-        var code = document.querySelector('#code_@(Model.Paste.PasteId)');
-        var worker = new Worker(GenerateBlobURL('@Url.FullURL("~/js/highlight.worker.min.js")'));
-        var scriptBlob = GenerateBlobURL('@Url.FullURL("~/js/highlight.min.js")');
-        worker.onmessage = function (event) {
-            code.innerHTML = event.data.value;
-            @if (autoDetect)
-            {
-                @:$('#syntaxLanguage_@(Model.Paste.PasteId)').html('Auto Detect (' + event.data.language + ')');
-            }
-        }
-        worker.postMessage({
-            content: code.textContent,
-            script: scriptBlob,
-            format: '@(format)',
-            autoDetect: @(autoDetect.ToString().ToLower())
-        });
-    </script>
-}

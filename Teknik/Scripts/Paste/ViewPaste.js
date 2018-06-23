@@ -4,24 +4,6 @@
     $('#add-to-vault-menu').find('.add-to-vault').each(function () {
         linkAddToVault($(this));
     });
-
-    if (useFormat) {
-        var code = document.querySelector('#code');
-        var worker = new Worker(GenerateBlobURL(highlightWorkerSrc));
-        var scriptBlob = GenerateBlobURL(highlightSrc);
-        worker.onmessage = function (event) {
-            code.innerHTML = event.data.value;
-            if (autoDetect) {
-                $('#syntaxLanguage').html('Auto Detect (' + event.data.language + ')');
-            }
-        }
-        worker.postMessage({
-            content: code.textContent,
-            script: scriptBlob,
-            format: format,
-            autoDetect: autoDetect
-        });
-    }
 });
 
 function linkCreateVault(element) {
