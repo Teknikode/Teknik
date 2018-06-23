@@ -78,18 +78,6 @@
         ]
     },
     {
-        "outputFileName": "./wwwroot/js/prism.min.js",
-        "inputFiles": [
-            "./wwwroot/js/app/lib/Prism/prism.js"
-        ]
-    },
-    {
-        "outputFileName": "./wwwroot/js/prism.worker.min.js",
-        "inputFiles": [
-            "./wwwroot/js/app/Paste/prism.worker.js"
-        ]
-    },
-    {
         "outputFileName": "./wwwroot/js/paste.min.js",
         "inputFiles": [
             "./wwwroot/js/app/Paste/Paste.js"
@@ -105,6 +93,8 @@
         "outputFileName": "./wwwroot/js/paste.view.min.js",
         "inputFiles": [
             "./wwwroot/js/app/lib/Prism/prism.js",
+            "./wwwroot/js/app/lib/Prism/prism-line-numbers.js",
+            "./wwwroot/js/app/lib/Prism/prism-line-highlight.js",
             "./wwwroot/js/app/Paste/ViewPaste.js"
         ]
     },
@@ -112,6 +102,7 @@
         "outputFileName": "./wwwroot/css/paste.view.min.css",
         "inputFiles": [
             "./wwwroot/css/app/lib/Prism/prism-line-numbers.css",
+            "./wwwroot/css/app/lib/Prism/prism-line-highlight.css",
             "./wwwroot/css/app/lib/Prism/prism-vs.css"
         ]
     },
@@ -265,6 +256,8 @@
             "./wwwroot/lib/marked/js/marked.js",
             "./wwwroot/lib/sanitize-html/js/sanitize-html.js",
             "./wwwroot/js/app/lib/Prism/prism.js",
+            "./wwwroot/js/app/lib/Prism/prism-line-numbers.js",
+            "./wwwroot/js/app/lib/Prism/prism-line-highlight.js",
             "./wwwroot/js/app/Vault/Vault.js"
         ]
     },
@@ -272,6 +265,7 @@
         "outputFileName": "./wwwroot/css/vault.min.css",
         "inputFiles": [
             "./wwwroot/css/app/lib/Prism/prism-line-numbers.css",
+            "./wwwroot/css/app/lib/Prism/prism-line-highlight.css",
             "./wwwroot/css/app/lib/Prism/prism-vs.css",
             "./wwwroot/css/app/Vault/Vault.css"
         ]
