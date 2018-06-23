@@ -4,7 +4,7 @@
     string format = Model.Paste.Syntax;
     string formatName = "Text";
 
-    if (HighlightHelper.Languages.ContainsKey(format))
+    if (!string.IsNullOrEmpty(format) && HighlightHelper.Languages.ContainsKey(format))
     {
         formatName = HighlightHelper.Languages[format];
     }
@@ -39,7 +39,7 @@
                 }
                 else
                 {
-                    <pre class="line-numbers"><code class="language-@(format)">@Model.Paste.Content</code></pre>
+                    <pre class="line-numbers" id="code-@(Model.VaultItemId)"><code class="language-@(format)">@Model.Paste.Content</code></pre>
                 }
             </div>
             <div class="show-more" id="show-more-bottom-@Model.VaultItemId">

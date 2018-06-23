@@ -4,7 +4,8 @@
     Layout = null;
     string format = Model.Syntax;
     string formatName = "Text";
-    if (HighlightHelper.Languages.ContainsKey(format))
+
+    if (!string.IsNullOrEmpty(format) && HighlightHelper.Languages.ContainsKey(format))
     {
         formatName = HighlightHelper.Languages[format];
     }
@@ -26,7 +27,7 @@
 </head>
 <body data-twttr-rendered="true">
 
-    <pre class="line-numbers"><code class="language-@(format)">@Model.Content</code></pre>
+    <pre class="line-numbers" id="code" style="border: none;"><code class="language-@(format)">@Model.Content</code></pre>
     
     <bundle src="js/common.min.js" append-version="true"></bundle>
     <bundle src="js/paste.view.min.js" append-version="true"></bundle>

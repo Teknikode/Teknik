@@ -6,7 +6,7 @@
     string format = Model.Syntax;
     string formatName = "Text";
 
-    if (HighlightHelper.Languages.ContainsKey(format))
+    if (!string.IsNullOrEmpty(format) && HighlightHelper.Languages.ContainsKey(format))
     {
         formatName = HighlightHelper.Languages[format];
     }
@@ -48,7 +48,7 @@
     <br />
     <div class="row">
         <div class="col-sm-12">
-            <pre class="line-numbers"><code class="language-@(format)">@Model.Content</code></pre>
+            <pre class="line-numbers" id="code"><code class="language-@(format)">@Model.Content</code></pre>
         </div>
     </div>
 </div>

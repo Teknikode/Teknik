@@ -118,7 +118,7 @@ function applyHash() {
 
 	highlightLines(pre, range, 'temporary ');
 
-	document.querySelector('.temporary.line-highlight').scrollIntoView();
+    document.querySelector('.temporary.line-highlight').scrollIntoView();
 }
 
 var fakeTimer = 0; // Hack to limit the number of times applyHash() runs
