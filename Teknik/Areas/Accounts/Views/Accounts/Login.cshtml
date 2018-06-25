@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Users.ViewModels.LoginViewModel
+﻿@model Teknik.Areas.Accounts.ViewModels.LoginViewModel
 
 @if (Config.UserConfig.LoginEnabled)
 {
@@ -12,7 +12,7 @@
             </div>
         </div>
     </div>
-    <!form id="loginForm" action="@Url.SubRouteUrl("user", "User.Login")" method="post" accept-charset="UTF-8">
+    <!form id="loginForm" action="@Url.SubRouteUrl("accounts", "Accounts.Login")" method="post" accept-charset="UTF-8">
         <input name="Login.ReturnUrl" id="loginReturnUrl" type="hidden" value="@Model.ReturnUrl" />
         <div class="form-group">
             <input type="text" class="form-control" id="loginUsername" value="" placeholder="Username" name="Login.Username" data-val-required="The Username field is required." data-val="true" />

@@ -15,6 +15,7 @@ namespace Teknik
             routes.BuildDefaultRoutes(config);
             routes.BuildAboutRoutes(config);
             routes.BuildAbuseRoutes(config);
+            routes.BuildAccountsRoutes(config);
             routes.BuildAdminRoutes(config);
             routes.BuildAPIRoutes(config);
             routes.BuildBlogRoutes(config);
@@ -88,6 +89,38 @@ namespace Teknik
               subDomains: new List<string>() { "abuse" },
               template: "",
               defaults: new { area = "Abuse", controller = "Abuse", action = "Index" }
+            );
+        }
+
+        public static void BuildAccountsRoutes(this IRouteBuilder routes, Config config)
+        {
+            routes.MapSubdomainRoute(
+              name: "Accounts.Login",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "accounts" },
+              template: "Login",
+              defaults: new { area = "Accounts", controller = "Accounts", action = "Login" }
+            );
+            routes.MapSubdomainRoute(
+              name: "Accounts.Logout",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "accounts" },
+              template: "Logout",
+              defaults: new { area = "Accounts", controller = "Accounts", action = "Logout" }
+            );
+            routes.MapSubdomainRoute(
+              name: "Accounts.CheckAuthenticatorCode",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "accounts" },
+              template: "CheckAuthCode",
+              defaults: new { area = "Accounts", controller = "Accounts", action = "ConfirmTwoFactorAuth" }
+            );
+            routes.MapSubdomainRoute(
+              name: "Accounts.Action",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "accounts" },
+              template: "Action/{action}",
+              defaults: new { area = "Accounts", controller = "Accounts", action = "Index" }
             );
         }
 
@@ -611,20 +644,6 @@ namespace Teknik
               defaults: new { area = "User", controller = "User", action = "GetPremium" }
             );
             routes.MapSubdomainRoute(
-              name: "User.Login",
-              domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
-              template: "Login",
-              defaults: new { area = "User", controller = "User", action = "Login" }
-            );
-            routes.MapSubdomainRoute(
-              name: "User.Logout",
-              domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
-              template: "Logout",
-              defaults: new { area = "User", controller = "User", action = "Logout" }
-            );
-            routes.MapSubdomainRoute(
               name: "User.Register",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "user" },
@@ -693,13 +712,6 @@ namespace Teknik
               subDomains: new List<string>() { "user" },
               template: "VerifyEmail/{code}",
               defaults: new { area = "User", controller = "User", action = "VerifyRecoveryEmail" }
-            );
-            routes.MapSubdomainRoute(
-              name: "User.CheckAuthenticatorCode",
-              domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
-              template: "CheckAuthCode",
-              defaults: new { area = "User", controller = "User", action = "ConfirmTwoFactorAuth" }
             );
             routes.MapSubdomainRoute(
               name: "User.ViewProfile",

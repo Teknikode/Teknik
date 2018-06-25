@@ -19,6 +19,7 @@ namespace Teknik.Data
     {
         // Users
         public DbSet<User> Users { get; set; }
+        public DbSet<LoginInfo> UserLogins { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<TrustedDevice> TrustedDevices { get; set; }
@@ -90,6 +91,7 @@ namespace Teknik.Data
             modelBuilder.Entity<User>().HasMany(u => u.OwnedInviteCodes).WithOne(i => i.Owner);
             modelBuilder.Entity<User>().HasMany(u => u.Transfers).WithOne(i => i.User);
             modelBuilder.Entity<User>().HasOne(u => u.ClaimedInviteCode).WithOne(i => i.ClaimedUser);
+            modelBuilder.Entity<User>().HasMany(u => u.Logins).WithOne(r => r.User);
             modelBuilder.Entity<User>().HasMany(u => u.UserRoles).WithOne(r => r.User);
             modelBuilder.Entity<User>().HasOne(u => u.ClaimedInviteCode).WithOne(t => t.ClaimedUser); // Legacy???
             modelBuilder.Entity<User>().HasMany(u => u.OwnedInviteCodes).WithOne(t => t.Owner); // Legacy???
@@ -181,6 +183,7 @@ namespace Teknik.Data
 
             // Users
             modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<LoginInfo>().ToTable("UserLogins");
             modelBuilder.Entity<UserRole>().ToTable("UserRoles");
             modelBuilder.Entity<Role>().ToTable("Roles");
             modelBuilder.Entity<TrustedDevice>().ToTable("TrustedDevices");

@@ -22,7 +22,7 @@
                     </li>
                 }
                 <li>
-                    <a href="@Url.SubRouteUrl("user", "User.Logout")">Sign Out</a>
+                    <a href="@Url.SubRouteUrl("accounts", "Accounts.Logout")">Sign Out</a>
                 </li>
             </ul>
         </li>
@@ -40,7 +40,7 @@
         {
             <button id="loginButton" data-toggle="modal" data-target="#loginModal" class="btn btn-default navbar-btn hide">Sign In</button>
             <noscript>
-                <a href="@Url.SubRouteUrl("user", "User.Login")" class="btn btn-default navbar-btn">Sign In</a>
+                <a href="@Url.SubRouteUrl("accounts", "Accounts.Login")" class="btn btn-default navbar-btn">Sign In</a>
             </noscript>
         }
     }

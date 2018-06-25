@@ -24,7 +24,6 @@ using Teknik.Utilities;
 
 namespace Teknik.Controllers
 {
-    [AllowAnonymous]
     [CORSActionFilter]
     [Area("Default")]
     public class DefaultController : Controller

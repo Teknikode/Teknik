@@ -8,7 +8,7 @@ using Teknik.Areas.Users.Utility;
 using Teknik.Configuration;
 using Teknik.Data;
 
-namespace Teknik.Areas.Accounts
+namespace Teknik.Security
 {
     public class ResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {

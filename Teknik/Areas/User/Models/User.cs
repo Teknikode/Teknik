@@ -12,11 +12,16 @@ namespace Teknik.Areas.Users.Models
     public class User
     {
         public int UserId { get; set; }
-        
+
         public string Username { get; set; }
+
+        [NotMapped]
+        public string Password { get; set; }
 
         [CaseSensitive]
         public string HashedPassword { get; set; }
+
+        public virtual ICollection<LoginInfo> Logins { get; set; }
 
         public virtual ICollection<TransferType> Transfers { get; set; }
 
@@ -57,7 +62,9 @@ namespace Teknik.Areas.Users.Models
         public User()
         {
             Username = string.Empty;
+            Password = string.Empty;
             HashedPassword = string.Empty;
+            Logins = new List<LoginInfo>();
             Transfers = new List<TransferType>();
             JoinDate = DateTime.Now;
             LastSeen = DateTime.Now;

@@ -1,7 +1,7 @@
-@model Teknik.Areas.Users.ViewModels.TwoFactorViewModel
+@model Teknik.Areas.Accounts.ViewModels.TwoFactorViewModel
 
 <script>
-    var confirmAuthCodeURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ConfirmAuthenticatorCode" })';
+    var confirmAuthCodeURL = '@Url.SubRouteUrl("accounts", "Accounts.Action", new { action = "ConfirmAuthenticatorCode" })';
 </script>
 
 <div class="container">
@@ -46,4 +46,4 @@
     </div>
 </div>
 
-<bundle src="js/user.checkAuthCode.min.js" append-version="true"></bundle>
+<bundle src="js/accounts.checkAuthCode.min.js" append-version="true"></bundle>

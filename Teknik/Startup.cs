@@ -29,6 +29,7 @@ using Teknik.Security;
 using Teknik.Attributes;
 using Teknik.Filters;
 using Microsoft.Net.Http.Headers;
+using Teknik.Areas.Users.Models;
 
 namespace Teknik
 {
@@ -81,19 +82,72 @@ namespace Teknik
                 options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
             });
 
-            // Setup Authentication Service
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => 
+            // Add Identity User
+            services.AddIdentity<User, Role>()
+                .AddUserStore<UserStore>()
+                .AddRoleStore<RoleStore>()
+                .AddDefaultTokenProviders();
+
+            services.AddTransient<IUserStore<User>, UserStore>();
+            services.AddTransient<IRoleStore<Role>, RoleStore>();
+            services.AddTransient<IPasswordHasher<User>, PasswordHasher>();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.Name = "TeknikAuth";
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+                options.Cookie.Expiration = TimeSpan.FromDays(30);
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+            });
+
+            // Identity Server
+            services.AddIdentityServer(options => 
+            {
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+                
+                if (Environment.IsDevelopment())
                 {
-                    options.Cookie.Domain = null;
-                    options.Cookie.Name = "TeknikAuth";
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-                    options.LoginPath = "/User/User/Login";
-                    options.LogoutPath = "/User/User/Logout";
-                    options.EventsType = typeof(TeknikCookieAuthenticationEvents);
+                    options.UserInteraction.LoginUrl = new PathString("/Login?sub=user");
+                    options.UserInteraction.ConsentUrl = new PathString("/Consent?sub=user");
+                }
+                else
+                {
+                    options.UserInteraction.LoginUrl = new PathString("/User/User/Login");
+                    options.UserInteraction.ConsentUrl = new PathString("/User/User/Consent");
+                }
+
+                // Setup Auth Cookies
+                options.Authentication.CheckSessionCookieName = "TeknikAuth";
+            })
+                .AddDeveloperSigningCredential()
+                .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>()
+                .AddInMemoryPersistedGrants()
+                .AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())
+                .AddInMemoryApiResources(IdentityServerConfig.GetApiResources())
+                .AddInMemoryClients(IdentityServerConfig.GetClients())
+                .AddAspNetIdentity<User>();
+
+            // Setup Authentication Service
+            services.AddAuthentication()
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = "http://localhost:5000";
+                    options.RequireHttpsMetadata = false;
+
+                    options.ApiName = "api";
+                })
+                .AddIdentityServerAuthentication("token", options =>
+                {
+                    options.Authority = "http://localhost:5000";
+                    options.ApiName = "api";
+
+                    options.EnableCaching = true;
+                    options.CacheDuration = TimeSpan.FromMinutes(10);
                 });
-            services.AddScoped<TeknikCookieAuthenticationEvents>();
 
             // Compression Response
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
@@ -121,9 +175,6 @@ namespace Teknik
 
             // Core MVC
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            //services.AddIdentityServer()
-            //    .AddResourceOwnerValidator<ResourceOwnerPasswordValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -189,7 +240,7 @@ namespace Teknik
             app.UseCookiePolicy();
 
             // Authorize all the things!
-            app.UseAuthentication();
+            app.UseIdentityServer();
 
             // And finally, let's use MVC
             app.UseMvc(routes =>

@@ -30,6 +30,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.API.Controllers
 {
+    [Authorize]
     [TeknikAuthorize(AuthType.Basic)]
     [Area("APIv1")]
     public class APIv1Controller : DefaultController
@@ -40,6 +41,12 @@ namespace Teknik.Areas.API.Controllers
         public IActionResult Index()
         {
             return Redirect(Url.SubRouteUrl("help", "Help.API"));
+        }
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return new JsonResult(from c in User.Claims select new { c.Type, c.Value });
         }
 
         [HttpPost]
