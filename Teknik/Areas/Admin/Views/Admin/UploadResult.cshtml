@@ -8,14 +8,23 @@
     </div>
     <div class="panel-body">
         <div class="col-sm-2 text-center">
+            <label for="type">Username</label>
+            <p id="type">
+            @if (!string.IsNullOrEmpty(Model.Username))
+            { 
+                @:<a href="@Url.SubRouteUrl("admin", "Admin.UserInfo", new { username = Model.Username })">@Model.Username</a>
+            }
+            </p>
+        </div>
+        <div class="col-sm-2 text-center">
             <label for="size">Size</label>
             <p id="size">@StringHelper.GetBytesReadable(Model.ContentLength)</p>
         </div>
-        <div class="col-sm-3 text-center">
+        <div class="col-sm-2 text-center">
             <label for="type">Type</label>
             <p id="type">@Model.ContentType</p>
         </div>
-        <div class="col-sm-3 text-center">
+        <div class="col-sm-2 text-center">
             <label for="dateUploaded">Date Uploaded</label>
             <p id="dateUploaded"><time datetime="@Model.DateUploaded.ToString("s")">@Model.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
         </div>

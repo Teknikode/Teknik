@@ -105,6 +105,7 @@ namespace Teknik.Areas.Admin.Controllers
                 model.DateUploaded = foundUpload.DateUploaded;
                 model.Downloads = foundUpload.Downloads;
                 model.DeleteKey = foundUpload.DeleteKey;
+                model.Username = foundUpload.User?.Username;
 
                 return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UploadResult.cshtml", model).RenderToString() } });
             }
