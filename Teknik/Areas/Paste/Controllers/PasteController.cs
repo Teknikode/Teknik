@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -23,7 +23,6 @@ namespace Teknik.Areas.Paste.Controllers
     public class PasteController : DefaultController
     {
         [TrackPageView]
-        [AllowAnonymous]
         public ActionResult Index()
         {
             ViewBag.Title = "Paste - " + Config.Title;
@@ -147,7 +146,6 @@ namespace Teknik.Areas.Paste.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public ActionResult Paste([Bind(Include = "Content, Title, Syntax, ExpireLength, ExpireUnit, Password, Hide")]PasteCreateViewModel model)
         {
             if (ModelState.IsValid)

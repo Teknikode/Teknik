@@ -33,7 +33,6 @@ namespace Teknik.Areas.API.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [TrackPageView]
         public ActionResult Upload(APIv1UploadModel model)
         {
@@ -184,7 +183,6 @@ namespace Teknik.Areas.API.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [TrackPageView]
         public ActionResult Paste(APIv1PasteModel model)
         {
@@ -232,7 +230,6 @@ namespace Teknik.Areas.API.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [TrackPageView]
         public ActionResult Shorten(APIv1ShortenModel model)
         {

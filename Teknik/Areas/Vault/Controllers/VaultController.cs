@@ -103,7 +103,6 @@ namespace Teknik.Areas.Vault.Controllers
 
         [HttpGet]
         [TrackPageView]
-        [AllowAnonymous]
         public ActionResult NewVault()
         {
             ViewBag.Title = "Create Vault";
@@ -114,7 +113,6 @@ namespace Teknik.Areas.Vault.Controllers
 
         [HttpGet]
         [TrackPageView]
-        [AllowAnonymous]
         public ActionResult NewVaultFromService(string type, string items)
         {
             ViewBag.Title = "Create Vault";
@@ -239,7 +237,6 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult CreateVault(ModifyVaultViewModel model)
         {
@@ -415,7 +412,6 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult ValidateItem(string type, string url)
         {

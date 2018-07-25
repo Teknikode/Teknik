@@ -18,7 +18,6 @@ namespace Teknik.Areas.Shortener.Controllers
     public class ShortenerController : DefaultController
     {
         [TrackPageView]
-        [AllowAnonymous]
         public ActionResult Index()
         {
             ViewBag.Title = "Url Shortener - " + Config.Title;
@@ -45,7 +44,6 @@ namespace Teknik.Areas.Shortener.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public ActionResult ShortenUrl(string url)
         {
             if (url.IsValidUrl())

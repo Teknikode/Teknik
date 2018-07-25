@@ -30,7 +30,6 @@ namespace Teknik.Areas.Upload.Controllers
         // GET: Upload/Upload
         [HttpGet]
         [TrackPageView]
-        [AllowAnonymous]
         public ActionResult Index()
         {
             ViewBag.Title = "Teknik Upload - End to End Encryption";
@@ -53,7 +52,6 @@ namespace Teknik.Areas.Upload.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public ActionResult Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, HttpPostedFileWrapper data)
         {
             try
