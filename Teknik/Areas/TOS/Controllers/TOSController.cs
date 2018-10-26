@@ -11,7 +11,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.TOS.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("TOS")]
     public class TOSController : DefaultController
     {

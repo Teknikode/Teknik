@@ -22,10 +22,10 @@
         string pgpFingerprint = pgpFingerprint = string.Empty;
         string pgpFingerprint64 = string.Empty;
 
-        if (!string.IsNullOrEmpty(Model.SecuritySettings.PGPSignature))
+        if (!string.IsNullOrEmpty(Model.IdentityUserInfo.PGPPublicKey))
         {
-            pgpFingerprint = PGP.GetFingerprint(Model.SecuritySettings.PGPSignature);
-            pgpFingerprint64 = PGP.GetFingerprint64(Model.SecuritySettings.PGPSignature);
+            pgpFingerprint = PGP.GetFingerprint(Model.IdentityUserInfo.PGPPublicKey);
+            pgpFingerprint64 = PGP.GetFingerprint64(Model.IdentityUserInfo.PGPPublicKey);
         }
 
         <div class="row text-center">
@@ -72,7 +72,7 @@
                         <br />
                         <div class="row">
                             <div class="col-sm-12">
-                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" readonly>@Model.SecuritySettings.PGPSignature</textarea>
+                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" readonly>@Model.IdentityUserInfo.PGPPublicKey</textarea>
                             </div>
                         </div>
                     </div>
@@ -83,18 +83,18 @@
             <!-- Left Info Box -->
             <div class="col-sm-3"><!--left col-->
                 <ul class="list-group">
-                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.LastSeen.ToString("s")">@Model.JoinDate.ToString("MMMM dd, yyyy")</time></li>
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.IdentityUserInfo.CreationDate?.ToString("s")">@Model.IdentityUserInfo.CreationDate?.ToString("MMMM dd, yyyy")</time></li>
                     @if (OwnProfile)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("s")">@Model.LastSeen.ToString("dd/MM/yyyy hh:mm tt")</time></li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.IdentityUserInfo.LastSeen?.ToString("s")">@Model.IdentityUserInfo.LastSeen?.ToString("dd/MM/yyyy hh:mm tt")</time></li>
                     }
                     @if (OwnProfile)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Type</strong></span> @Model.AccountType</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Type</strong></span> @Model.IdentityUserInfo.AccountType</li>
                     }
                     @if (User.IsInRole("Admin"))
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Status</strong></span> @Model.AccountStatus</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Status</strong></span> @Model.IdentityUserInfo.AccountStatus</li>
                     }
                     @if (!string.IsNullOrEmpty(pgpFingerprint))
                     {

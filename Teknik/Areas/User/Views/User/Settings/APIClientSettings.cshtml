@@ -1,0 +1,45 @@
+﻿@model Teknik.Areas.Users.ViewModels.APIClientSettingsViewModel
+
+@using Teknik.Areas.Users.ViewModels
+
+@{
+    Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
+}
+
+<script>
+    var clearTrustedDevicesURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ClearTrustedDevices" })';
+    var generateTokenURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "GenerateToken" })';
+    var revokeAllTokensURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "RevokeAllTokens" })';
+    var editTokenNameURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditTokenName" })';
+    var deleteTokenURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "DeleteToken" })';
+</script>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h2>API Clients</h2>
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <br />
+        <label for="authTokens"><h4>API Clients</h4></label><span class="pull-right"><button type="button" class="btn btn-default" id="create_client">Create Client</button> <button type="button" class="btn btn-danger" id="revoke_all_clients">Revoke All</button></span>
+        <div id="authTokens" style="overflow-y: auto; max-height: 400px;">
+            <ul class="list-group" id="apiClientList">
+                @if (Model.AuthTokens.Any())
+                {
+                    foreach (AuthTokenViewModel token in Model.AuthTokens)
+                    {
+                        @await Html.PartialAsync("Settings/AuthToken", token)
+                    }
+                }
+                else
+                {
+                    <li class="list-group-item text-center" id="noAuthTokens">No Authentication Tokens</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<bundle src="js/user.settings.accessTokenSettings.min.js" append-version="true"></bundle>

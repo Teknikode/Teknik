@@ -23,7 +23,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.Blog.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Blog")]
     public class BlogController : DefaultController
     {

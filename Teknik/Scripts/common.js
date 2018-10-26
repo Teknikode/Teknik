@@ -4,51 +4,6 @@ $(document).ready(function () {
     // Opt-in for tooltips
     $('[data-toggle="tooltip"]').tooltip();
 
-    $('#loginButton').removeClass('hide');
-
-    $('#loginModal').on('shown.bs.modal', function (e) {
-        $("#loginStatus").css('display', 'none', 'important');
-        $("#loginStatus").html('');
-        $('#loginUsername').focus();
-    });
-
-    $("#loginSubmit").click(function () {
-        // Reset login status messages
-        $("#loginStatus").css('display', 'none', 'important');
-        $("#loginStatus").html('');
-
-        // Disable the login button
-        disableButton('#loginSubmit', 'Signing In...');
-
-        var form = $('#loginForm');
-        $.ajax({
-            type: "POST",
-            url: form.attr('action'),
-            data: form.serialize(),
-            headers: {'X-Requested-With': 'XMLHttpRequest'},
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function (html) {
-                if (html.result) {
-                    window.location = html.result;
-                }
-                else {
-                    $("#loginStatus").css('display', 'inline', 'important');
-                    $("#loginStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
-                }
-
-                // Re-enable the login button
-                enableButton('#loginSubmit', 'Sign In');
-            },
-            error: function (response) {
-                $("#loginStatus").css('display', 'inline', 'important');
-                $("#loginStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseJSON) + '</div>');
-            }
-        });
-        return false;
-    });
-
     $('#registerButton').removeClass('hide');
 
     $('#registerModal').on('shown.bs.modal', function (e) {
@@ -70,7 +25,7 @@ $(document).ready(function () {
             type: "POST",
             url: form.attr('action'),
             data: form.serialize(),
-            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
             xhrFields: {
                 withCredentials: true
             },
@@ -82,14 +37,13 @@ $(document).ready(function () {
                     $("#registerStatus").css('display', 'inline', 'important');
                     $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
-
-                // Re-enable the register button
-                enableButton('#registerSubmit', 'Sign Up');
             },
             error: function (response) {
                 $("#registerStatus").css('display', 'inline', 'important');
-                $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseJSON) + '</div>');
+                $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
             }
+        }).always(function () {
+            enableButton('#registerSubmit', 'Sign Up');
         });
         return false;
     });

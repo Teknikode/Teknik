@@ -223,16 +223,15 @@
         ]
     },
     {
-        "outputFileName": "./wwwroot/js/user.settings.security.min.js",
+        "outputFileName": "./wwwroot/js/user.settings.account.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootstrap/js/bootstrap-switch.js",
-            "./wwwroot/js/app/User/SecuritySettings.js"
+            "./wwwroot/js/app/User/AccountSettings.js"
         ]
     },
     {
-        "outputFileName": "./wwwroot/css/user.settings.security.min.css",
+        "outputFileName": "./wwwroot/js/user.settings.security.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootstrap/css/bootstrap-switch.css"
+            "./wwwroot/js/app/User/SecuritySettings.js"
         ]
     },
     {

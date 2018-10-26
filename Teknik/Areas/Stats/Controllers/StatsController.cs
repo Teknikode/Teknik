@@ -17,7 +17,7 @@ using Teknik.Utilities;
 
 namespace Teknik.Areas.Stats.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Stats")]
     public class StatsController : DefaultController
     {

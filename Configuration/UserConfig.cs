@@ -13,6 +13,7 @@ namespace Teknik.Configuration
         public decimal PremiumAccountPrice { get; set; }
         public string PaymentType { get; set; } 
         public bool InviteCodeRequired { get; set; }
+        public IdentityServerConfig IdentityServerConfig { get; set; }
 
         public UserConfig()
         {
@@ -27,6 +28,7 @@ namespace Teknik.Configuration
             PremiumAccountPrice = 0;
             PaymentType = "Donation";
             InviteCodeRequired = false;
+            IdentityServerConfig = new IdentityServerConfig();
         }
     }
 }

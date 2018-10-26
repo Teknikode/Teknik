@@ -26,9 +26,6 @@ namespace Teknik.Areas.Users.ViewModels
         [Display(Name = "Recovery Email")]
         [DataType(DataType.EmailAddress)]
         public string RecoveryEmail { get; set; }
-        
-        [Display(Name = "Public PGP Key")]
-        public string PublicKey { get; set; }
 
         public string ReturnUrl { get; set; }
     }

@@ -1,7 +1,4 @@
 $(document).ready(function () {
-    $("[name='update_security_two_factor']").bootstrapSwitch();
-    $("[name='update_security_allow_trusted']").bootstrapSwitch();
-
     $('#ResendVerification').click(function () {
         $.ajax({
             type: "POST",
@@ -16,6 +13,120 @@ $(document).ready(function () {
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
+            },
+            error: function (response) {
+                $("#top_msg").css('display', 'inline', 'important');
+                $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
+            }
+        });
+    });
+
+    $('#disable_2fa_button').click(function () {
+        bootbox.confirm({
+            message: "Are you sure you want to disable Two-Factor Authentication?  This will also invalidate all current recovery codes.",
+            buttons: {
+                confirm: {
+                    className: 'btn-danger',
+                    label: 'Disable'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    disableButton('#disable_2fa_button', 'Disabling...');
+                    $.ajax({
+                        type: "POST",
+                        url: disable2FAURL,
+                        data: AddAntiForgeryToken({}),
+                        success: function (response) {
+                            if (response.result) {
+                                window.location.reload(true);
+                            }
+                            else {
+                                enableButton('#disable_2fa_button', 'Disable');
+                                $("#top_msg").css('display', 'inline', 'important');
+                                $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
+                            }
+                        },
+                        error: function (response) {
+                            $("#top_msg").css('display', 'inline', 'important');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
+                        }
+                    }).always(function () {
+                        enableButton('#disable_2fa_button', 'Disable');
+                    });
+                }
+            }
+        });
+    });
+
+    $('#enable_2fa_button').click(function () {
+        disableButton('#enable_2fa_button', 'Generating Key...');
+        $.ajax({
+            type: "POST",
+            url: generate2FAURL,
+            data: AddAntiForgeryToken({}),
+            success: function (response) {
+                if (response.result) {
+                    $('#authQRCode').attr('src', response.qrUrl);
+                    $('#authSetupSecretKey').html(response.key);
+
+                    $('#authenticatorSetup').modal('show');
+                }
+                else {
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
+                }
+            },
+            error: function (response) {
+                $("#top_msg").css('display', 'inline', 'important');
+                $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
+            }
+        }).always(function () {
+            enableButton('#enable_2fa_button', 'Enable');
+        });
+    });
+
+    $('#resetRecoveryCodes').click(function () {
+        bootbox.confirm({
+            message: "Are you sure you want to reset your recovery codes?  This will invalidate all current recovery codes.",
+            buttons: {
+                confirm: {
+                    className: 'btn-danger',
+                    label: 'Reset'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    $.ajax({
+                        type: "POST",
+                        url: resetRecoveryCodesURL,
+                        data: AddAntiForgeryToken({}),
+                        success: function (response) {
+                            if (response.result) {
+                                var dialog = bootbox.dialog({
+                                    closeButton: false,
+                                    buttons: {
+                                        close: {
+                                            label: 'Close',
+                                            className: 'btn-primary'
+                                        }
+                                    },
+                                    title: "Recovery Codes",
+                                    message: '<div class="alert alert-warning">Make sure to copy your recovery codes. You won\'t be able to see them again!</div><div class="text-center">' + response.recoveryCodes.join('<br />') + '</div>'
+                                });
+                            }
+                            else {
+                                enableButton('#disable_2fa_button', 'Disable');
+                                $("#top_msg").css('display', 'inline', 'important');
+                                $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
+                            }
+                        },
+                        error: function (response) {
+                            $("#top_msg").css('display', 'inline', 'important');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
+                        }
+                    });
+                }
             }
         });
     });
@@ -27,10 +138,13 @@ $(document).ready(function () {
     $('#authenticatorSetup').on('hide.bs.modal', function (e) {
         $("#authSetupStatus").css('display', 'none', 'important');
         $("#authSetupStatus").html('');
+        $('#authQRCode').attr('src', '');
+        $('#authSetupSecretKey').html('');
         $('#auth_setup_code').val('');
     });
 
     $('#auth_setup_verify').click(function () {
+        disableButton('#auth_setup_verify', 'Verifying...');
         setCode = $("#auth_setup_code").val();
         $.ajax({
             type: "POST",
@@ -40,112 +154,34 @@ $(document).ready(function () {
             }),
             success: function (response) {
                 if (response.result) {
-                    $("#authSetupStatus").css('display', 'inline', 'important');
-                    $("#authSetupStatus").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Success!</div>');
+                    $('#authenticatorSetup').modal('hide');
+                    var dialog = bootbox.dialog({
+                        closeButton: false,
+                        buttons: {
+                            close: {
+                                label: 'Close',
+                                className: 'btn-primary',
+                                callback: function () {
+                                    window.location.reload(true);
+                                }
+                            }
+                        },
+                        title: "Recovery Codes",
+                        message: '<div class="alert alert-warning">Make sure to copy your recovery codes. You won\'t be able to see them again!</div><div class="text-center">' + response.recoveryCodes.join('<br />') + '</div>'
+                    });
                 }
                 else {
                     $("#authSetupStatus").css('display', 'inline', 'important');
                     $("#authSetupStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
+            },
+            error: function (response) {
+                $("#authSetupStatus").css('display', 'inline', 'important');
+                $("#authSetupStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
             }
-        });
-    });
-
-    $('#ClearDevices').click(function () {
-        $.ajax({
-            type: "POST",
-            url: clearTrustedDevicesURL,
-            data: AddAntiForgeryToken({}),
-            success: function (response) {
-                if (response.result) {
-                    $('#ClearDevices').html('Clear Trusted Devices (0)');
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Successfully Cleared Trusted Devices</div>');
-                }
-                else {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
-                }
-            }
-        });
-    });
-
-    $('#generate_token').click(function () {
-        bootbox.prompt("Specify a name for this Auth Token", function (result) {
-            if (result) {
-                $.ajax({
-                    type: "POST",
-                    url: generateTokenURL,
-                    data: AddAntiForgeryToken({ name: result }),
-                    success: function (response) {
-                        if (response.result) {
-                            var dialog = bootbox.dialog({
-                                closeButton: false,
-                                buttons: {
-                                    close: {
-                                        label: 'Close',
-                                        className: 'btn-primary',
-                                        callback: function () {
-                                            if ($('#noAuthTokens')) {
-                                                $('#noAuthTokens').remove();
-                                            }
-                                            var item = $(response.result.html);
-
-                                            var deleteBtn = item.find('.deleteAuthToken');
-                                            var editBtn = item.find('.editAuthToken');
-
-                                            deleteBtn.click(function () {
-                                                var authTokenId = $(this).attr("data-authid");
-                                                deleteAuthToken(authTokenId);
-                                            });
-
-                                            editBtn.click(function () {
-                                                var authTokenId = $(this).attr("data-authid");
-                                                editAuthToken(authTokenId);
-                                            });
-
-                                            $('#authTokenList').append(item);
-                                        }
-                                    }
-                                },
-                                title: "Authentication Token",
-                                message: '<label for="authToken">Make sure to copy your new personal access token now.<br />You won\'t be able to see it again!</label><input type="text" class="form-control" id="authToken" value="' + response.result.token + '">',
-                            });
-
-                            dialog.init(function () {
-                                dialog.find('#authToken').click(function () {
-                                    $(this).select();
-                                });
-                            });
-                        }
-                        else {
-                            $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
-                        }
-                    }
-                });
-            }
-        });
-    });
-
-    $('#revoke_all_tokens').click(function () {
-        bootbox.confirm("Are you sure you want to revoke all your auth tokens?<br /><br />This is <b>irreversable</b> and all applications using a token will stop working.", function (result) {
-            if (result) {
-                $.ajax({
-                    type: "POST",
-                    url: revokeAllTokensURL,
-                    data: AddAntiForgeryToken({}),
-                    success: function (response) {
-                        if (response.result) {
-                            $('#authTokenList').html('<li class="list-group-item text-center" id="noAuthTokens">No Authentication Tokens</li>');
-                        }
-                        else {
-                            $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
-                        }
-                    }
-                });
-            }
+        }).always(function () {
+            enableButton('#auth_setup_verify', 'Verify');
+            $('#auth_setup_code').val('');
         });
     });
 
@@ -153,27 +189,16 @@ $(document).ready(function () {
         // Start Updating Animation
         disableButton('#update_submit', 'Saving...');
 
-        current_password = $("#update_password_current").val();
-        password = $("#update_password").val();
-        password_confirm = $("#update_password_confirm").val();
         update_pgp_public_key = $("#update_pgp_public_key").val();
-        update_security_allow_trusted = $("#update_security_allow_trusted").is(":checked");
-        update_security_two_factor = $("#update_security_two_factor").is(":checked");
         recovery = $("#update_recovery_email").val();
         $.ajax({
             type: "POST",
             url: editURL,
             data: AddAntiForgeryToken({
-                CurrentPassword: current_password,
-                NewPassword: password,
-                NewPasswordConfirm: password_confirm,
                 PgpPublicKey: update_pgp_public_key,
-                AllowTrustedDevices: update_security_allow_trusted,
-                TwoFactorEnabled: update_security_two_factor,
                 RecoveryEmail: recovery
             }),
             success: function (response) {
-                enableButton('#update_submit', 'Save');
                 if (response.result) {
                     if (response.result.checkAuth)
                     {
@@ -192,111 +217,14 @@ $(document).ready(function () {
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
+            },
+            error: function (response) {
+                $("#top_msg").css('display', 'inline', 'important');
+                $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
             }
+        }).always(function () {
+            enableButton('#update_submit', 'Save');
         });
         return false;
-    });
-
-    $("#reset_pass_send_submit").click(function () {
-        var form = $('#reset_pass_send');
-        username = $("#reset_username").val();
-        $.ajax({
-            type: "POST",
-            url: form.attr('action'),
-            data: AddAntiForgeryToken({
-                username: username
-            }),
-            success: function (response) {
-                if (response.result) {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>The Password Reset Link has been sent to your recovery email.</div>');
-                }
-                else {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
-                }
-            }
-        });
-        return false;
-    });
-
-    $("#setNewPass_submit").click(function () {
-        var form = $('#setNewPass');
-        password = $("#setNewPass_Password").val();
-        confirmPassword = $("#setNewPass_ConfirmPassword").val();
-        $.ajax({
-            type: "POST",
-            url: form.attr('action'),
-            data: AddAntiForgeryToken({
-                Password: password,
-                PasswordConfirm: confirmPassword
-            }),
-            success: function (response) {
-                if (response.result) {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Password has successfully been reset.</div>');
-                }
-                else {
-                    $("#top_msg").css('display', 'inline', 'important');
-                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
-                }
-            }
-        });
-        return false;
-    });
-
-    $(".deleteAuthToken").click(function() {
-        var authTokenId = $(this).attr("data-authid");
-        deleteAuthToken(authTokenId);
-    });
-
-    $(".editAuthToken").click(function () {
-        var authTokenId = $(this).attr("data-authid");
-        editAuthToken(authTokenId);
     });
 });
-
-function editAuthToken(authTokenId) {
-    bootbox.prompt("Specify a new name for this Auth Token", function (result) {
-        if (result) {
-            $.ajax({
-                type: "POST",
-                url: editTokenNameURL,
-                data: AddAntiForgeryToken({ tokenId: authTokenId, name: result }),
-                success: function (response) {
-                    if (response.result) {
-                        $('#authTokenName_' + authTokenId).html(response.result.name);
-                    }
-                    else {
-                        $("#top_msg").css('display', 'inline', 'important');
-                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
-                    }
-                }
-            });
-        }
-    });
-}
-
-function deleteAuthToken(authTokenId) {
-    bootbox.confirm("Are you sure you want to revoke this auth token?<br /><br />This is <b>irreversable</b> and all applications using this token will stop working.", function (result) {
-        if (result) {
-            $.ajax({
-                type: "POST",
-                url: deleteTokenURL,
-                data: AddAntiForgeryToken({ tokenId: authTokenId }),
-                success: function (response) {
-                    if (response.result) {
-                        $('#authToken_' + authTokenId).remove();
-                        if ($('#authTokenList li').length <= 0) {                            
-                            $('#authTokenList').html('<li class="list-group-item text-center" id="noAuthTokens">No Authentication Tokens</li>');
-                        }
-                    }
-                    else {
-                        $("#top_msg").css('display', 'inline', 'important');
-                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
-                    }
-                }
-            });
-        }
-    });
-}

@@ -5,6 +5,7 @@
     <AssemblyName>Teknik.Logging</AssemblyName>
     <RootNamespace>Teknik.Logging</RootNamespace>
     <RuntimeIdentifiers>win-x86;win-x64;linux-x64;linux-arm;osx-x64</RuntimeIdentifiers>
+    <Configurations>Debug;Release;Test</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

@@ -23,7 +23,7 @@ using Teknik.Utilities;
 
 namespace Teknik.Areas.Vault.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Vault")]
     public class VaultController : DefaultController
     {

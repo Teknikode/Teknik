@@ -19,7 +19,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.Contact.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Contact")]
     public class ContactController : DefaultController
     {

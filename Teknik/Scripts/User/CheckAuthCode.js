@@ -33,6 +33,10 @@ $(document).ready(function () {
                     $("#authCheckStatus").css('display', 'inline', 'important');
                     $("#authCheckStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                 }
+            },
+            error: function (response) {
+                $("#authCheckStatus").css('display', 'inline', 'important');
+                $("#authCheckStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
             }
         });
         return false;

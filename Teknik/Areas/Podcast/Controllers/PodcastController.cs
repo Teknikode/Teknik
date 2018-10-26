@@ -22,7 +22,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.Podcast.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Podcast")]
     public class PodcastController : DefaultController
     {
@@ -535,6 +535,7 @@ namespace Teknik.Areas.Podcast.Controllers
         }
         #endregion
 
+        [DisableRequestSizeLimit]
         public async Task<List<PodcastFile>> SaveFilesAsync(IFormFileCollection files, int episode)
         {
             List<PodcastFile> podFiles = new List<PodcastFile>();

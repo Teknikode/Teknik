@@ -16,7 +16,7 @@ using Teknik.Utilities;
 
 namespace Teknik.Areas.Shortener.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Shortener")]
     public class ShortenerController : DefaultController
     {

@@ -5,16 +5,17 @@
     <AssemblyName>Teknik.Utilities</AssemblyName>
     <RootNamespace>Teknik.Utilities</RootNamespace>
     <RuntimeIdentifiers>win-x86;win-x64;linux-x64;linux-arm;osx-x64</RuntimeIdentifiers>
+    <Configurations>Debug;Release;Test</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlSanitizer" Version="4.0.185" />
-    <PackageReference Include="Markdig" Version="0.15.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0" />
-    <PackageReference Include="Mime-Detective" Version="0.0.6-beta3" />
-    <PackageReference Include="MySql.Data" Version="8.0.11" />
+    <PackageReference Include="HtmlSanitizer" Version="4.0.187" />
+    <PackageReference Include="Markdig" Version="0.15.4" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.5" />
+    <PackageReference Include="Mime-Detective" Version="0.0.6-beta4" />
+    <PackageReference Include="MySql.Data" Version="8.0.12" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.8.2" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.3.37" />
   </ItemGroup>
 
 </Project>

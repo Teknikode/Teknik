@@ -21,7 +21,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.Error.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Error")]
     public class ErrorController : DefaultController
     {
@@ -105,15 +105,20 @@ namespace Teknik.Areas.Error.Controllers
         [AllowAnonymous]
         public IActionResult Http500(Exception exception)
         {
-            if (HttpContext != null)
+            try
             {
-                var ex = HttpContext.Features.Get<IExceptionHandlerFeature>();
-                if (ex != null)
+                if (HttpContext != null)
                 {
-                    exception = ex.Error;
+                    var ex = HttpContext.Features.Get<IExceptionHandlerFeature>();
+                    if (ex != null)
+                    {
+                        exception = ex.Error;
+                    }
+                    HttpContext.Session.Set("Exception", exception);
                 }
-                HttpContext.Session.Set("Exception", exception);
             }
+            catch
+            { }
 
             Response.StatusCode = StatusCodes.Status500InternalServerError;
 

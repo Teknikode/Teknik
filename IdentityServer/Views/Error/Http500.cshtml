@@ -1,0 +1,48 @@
+@model Teknik.IdentityServer.ViewModels.ErrorViewModel
+
+<script>
+    var submitErrorReportURL = '@Url.RouteUrl("Error.Action", new { action = "SubmitErrorReport" })';
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template text-center">
+                <h1>Whoops!</h1>
+                <h2>500 Server Error</h2>
+                <div class="error-details">
+                    <p>Sorry, a server error occured.  Please contact an Administrator about this error.</p>
+                    <div class="error-actions">
+                        @if (Model != null && Model.Exception != null)
+                        {
+                            <div class="btn btn-primary btn-lg" id="submitErrorReport">
+                                <span class="fa fa-bug"></span>
+                                Submit Bug Report
+                            </div>
+                        }
+                    </div>
+                    @if (Model != null && Model.Exception != null)
+                    {
+                        <br />
+                        <div class="show-more" id="view-details">
+                            <button role="button" class="btn btn-default btn-sm view-details-button" data-toggle="collapse" data-target="#errorMsg">Show Details</button>
+                        </div>
+                        <div class="text-left collapse" id="errorMsg">
+                            <br />
+                            <p>
+                                <b>Exception:</b> @Model.Exception.GetFullMessage(true)
+                                <br/>
+                                <b>Source:</b> @Model.Exception.Source
+                            </p>
+                            <div style="overflow: scroll">
+                                <pre>@Model.Exception.StackTrace</pre>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<bundle src="error.min.js" append-version="true"></bundle>

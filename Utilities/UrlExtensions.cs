@@ -73,7 +73,7 @@ namespace Teknik.Utilities
             {
                 rightUrl = url.RouteUrl(new UrlRouteContext() { RouteName = routeName, Values = routeValues });
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
 
             }

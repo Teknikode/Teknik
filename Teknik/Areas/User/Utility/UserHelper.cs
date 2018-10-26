@@ -27,6 +27,11 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Teknik.MailService;
 using Teknik.GitService;
+using IdentityModel.Client;
+using System.Net.Http;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Teknik.Areas.Users.Utility
 {
@@ -75,12 +80,13 @@ namespace Teknik.Areas.Users.Utility
             return isValid;
         }
 
-        public static bool UsernameAvailable(TeknikEntities db, Config config, string username)
+        public static async Task<bool> UsernameAvailable(TeknikEntities db, Config config, string username)
         {
             bool isAvailable = true;
 
             isAvailable &= ValidUsername(config, username);
             isAvailable &= !UsernameReserved(config, username);
+            isAvailable &= !await IdentityHelper.UserExists(config, username);
             isAvailable &= !UserExists(db, username);
             isAvailable &= !UserEmailExists(config, GetUserEmailAddress(config, username));
             isAvailable &= !UserGitExists(config, username);
@@ -88,29 +94,35 @@ namespace Teknik.Areas.Users.Utility
             return isAvailable;
         }
 
-        public static DateTime GetLastAccountActivity(TeknikEntities db, Config config, User user)
+        public static async Task<DateTime> GetLastAccountActivity(TeknikEntities db, Config config, string username)
+        {
+            var userInfo = await IdentityHelper.GetIdentityUserInfo(config, username);
+            return GetLastAccountActivity(db, config, username, userInfo);
+        }
+
+        public static DateTime GetLastAccountActivity(TeknikEntities db, Config config, string username, IdentityUserInfo userInfo)
         {
             try
             {
                 DateTime lastActive = new DateTime(1900, 1, 1);
 
-                if (UserEmailExists(config, GetUserEmailAddress(config, user.Username)))
+                if (UserEmailExists(config, GetUserEmailAddress(config, username)))
                 {
-                    DateTime emailLastActive = UserEmailLastActive(config, GetUserEmailAddress(config, user.Username));
+                    DateTime emailLastActive = UserEmailLastActive(config, GetUserEmailAddress(config, username));
                     if (lastActive < emailLastActive)
                         lastActive = emailLastActive;
                 }
 
-                if (UserGitExists(config, user.Username))
+                if (UserGitExists(config, username))
                 {
-                    DateTime gitLastActive = UserGitLastActive(config, user.Username);
+                    DateTime gitLastActive = UserGitLastActive(config, username);
                     if (lastActive < gitLastActive)
                         lastActive = gitLastActive;
                 }
 
-                if (UserExists(db, user.Username))
+                if (userInfo.LastSeen.HasValue)
                 {
-                    DateTime userLastActive = UserLastActive(db, config, user);
+                    DateTime userLastActive = userInfo.LastSeen.Value;
                     if (lastActive < userLastActive)
                         lastActive = userLastActive;
                 }
@@ -123,76 +135,33 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static string GeneratePassword(Config config, User user, string password)
+        public static async Task CreateAccount(TeknikEntities db, Config config, IUrlHelper url, string username, string password, string recoveryEmail, string inviteCode)
         {
             try
             {
-                string username = user.Username.ToLower();
-                if (user.Transfers.ToList().Exists(t => t.Type == TransferTypes.CaseSensitivePassword))
+                var result = await IdentityHelper.CreateUser(config, username, password, recoveryEmail);
+                if (result.Success)
                 {
-                    username = user.Username;
-                }
-                byte[] hashBytes = SHA384.Hash(username, password);
-                string hash = hashBytes.ToHex();
+                    // Create an Email Account
+                    CreateUserEmail(config, GetUserEmailAddress(config, username), password);
 
-                if (user.Transfers.ToList().Exists(t => t.Type == TransferTypes.ASCIIPassword))
-                {
-                    hash = Encoding.ASCII.GetString(hashBytes);
-                }
+                    // Create a Git Account
+                    CreateUserGit(config, username, password);
 
-                if (user.Transfers.ToList().Exists(t => t.Type == TransferTypes.Sha256Password))
-                {
-                    hash = SHA256.Hash(password, config.Salt1, config.Salt2);
-                }
+                    // Add User
+                    User newUser = CreateUser(db, config, username, inviteCode);
 
-                return hash;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unable to generate password.", ex);
-            }
-        }
-
-        public static string GenerateAuthToken(TeknikEntities db, string username)
-        {
-            try
-            {
-                bool validToken = false;
-                string token = string.Empty;
-                while (!validToken)
-                {
-                    username = username.ToLower();
-                    byte[] hashBytes = SHA384.Hash(username, StringHelper.RandomString(24));
-                    token = hashBytes.ToHex();
-
-                    // Make sure it isn't a duplicate
-                    string hashedToken = SHA256.Hash(token);
-                    if (!db.AuthTokens.Where(t => t.HashedToken == hashedToken).Any())
+                    // If they have a recovery email, let's send a verification
+                    if (!string.IsNullOrEmpty(recoveryEmail))
                     {
-                        validToken = true;
+                        var token = await IdentityHelper.UpdateRecoveryEmail(config, username, recoveryEmail);
+                        string resetUrl = url.SubRouteUrl("user", "User.ResetPassword", new { Username = username });
+                        string verifyUrl = url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = WebUtility.UrlEncode(token) });
+                        SendRecoveryEmailVerification(config, username, recoveryEmail, resetUrl, verifyUrl);
                     }
+                    return;
                 }
-
-                return token;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unable to generate user auth token.", ex);
-            }
-        }
-
-        public static void AddAccount(TeknikEntities db, Config config, User user, string password)
-        {
-            try
-            {
-                // Create an Email Account
-                AddUserEmail(config, GetUserEmailAddress(config, user.Username), password);
-
-                // Create a Git Account
-                AddUserGit(config, user.Username, password);
-
-                // Add User
-                AddUser(db, config, user, password);
+                throw new Exception("Error creating account: " + result.Message);
             }
             catch (Exception ex)
             {
@@ -202,36 +171,10 @@ namespace Teknik.Areas.Users.Utility
 
         public static void EditAccount(TeknikEntities db, Config config, User user)
         {
-            EditAccount(db, config, user, false, string.Empty);
-        }
-
-        public static void EditAccount(TeknikEntities db, Config config, User user, bool changePass, string password)
-        {
             try
             {
-                // Changing Password?
-                if (changePass)
-                {
-                    // Make sure they have a git and email account before resetting their password
-                    string email = GetUserEmailAddress(config, user.Username);
-                    if (config.EmailConfig.Enabled && !UserEmailExists(config, email))
-                    {
-                        AddUserEmail(config, email, password);
-                    }
-
-                    if (config.GitConfig.Enabled && !UserGitExists(config, user.Username))
-                    {
-                        AddUserGit(config, user.Username, password);
-                    }
-
-                    // Change email password
-                    EditUserEmailPassword(config, GetUserEmailAddress(config, user.Username), password);
-
-                    // Update Git password
-                    EditUserGitPassword(config, user.Username, password);
-                }
                 // Update User
-                EditUser(db, config, user, changePass, password);
+                EditUser(db, config, user);
             }
             catch (Exception ex)
             {
@@ -239,39 +182,95 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static void EditAccountType(TeknikEntities db, Config config, string username, AccountType type)
+        public static async Task ChangeAccountPassword(TeknikEntities db, Config config, string username, string currentPassword, string newPassword)
+        {
+            IdentityResult result = await IdentityHelper.UpdatePassword(config, username, currentPassword, newPassword);
+            if (result.Success)
+            {
+                ChangeServicePasswords(db, config, username, newPassword);
+            }
+            else
+            {
+                throw new Exception(result.Message);
+            }
+        }
+
+        public static async Task ResetAccountPassword(TeknikEntities db, Config config, string username, string token, string newPassword)
+        {
+            IdentityResult result = await IdentityHelper.ResetPassword(config, username, token, newPassword);
+            if (result.Success)
+            {
+                ChangeServicePasswords(db, config, username, newPassword);
+            }
+            else
+            {
+                throw new Exception(result.Message);
+            }
+        }
+
+        public static void ChangeServicePasswords(TeknikEntities db, Config config, string username, string newPassword)
+        {
+            try
+            {
+                // Make sure they have a git and email account before resetting their password
+                string email = GetUserEmailAddress(config, username);
+                if (config.EmailConfig.Enabled && !UserEmailExists(config, email))
+                {
+                    CreateUserEmail(config, email, newPassword);
+                }
+
+                if (config.GitConfig.Enabled && !UserGitExists(config, username))
+                {
+                    CreateUserGit(config, username, newPassword);
+                }
+
+                // Change email password
+                EditUserEmailPassword(config, GetUserEmailAddress(config, username), newPassword);
+
+                // Update Git password
+                EditUserGitPassword(config, username, newPassword);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to change service password.", ex);
+            }
+        }
+
+        public static async Task EditAccountType(TeknikEntities db, Config config, string username, AccountType type)
         {
             try
             {
                 if (!UserExists(db, username))
                     throw new Exception($"The user provided does not exist: {username}");
 
-                // Get the user to edit
-                User user = GetUser(db, username);
+                var result = await IdentityHelper.UpdateAccountType(config, username, type);
 
-                string email = GetUserEmailAddress(config, username);
-
-                // Edit the user type
-                user.AccountType = type;
-                EditUser(db, config, user);
-
-                // Add/Remove account type features depending on the type
-                switch (type)
+                if (result.Success)
                 {
-                    case AccountType.Basic:
-                        // Set the email size to 1GB
-                        EditUserEmailMaxSize(config, email, config.EmailConfig.MaxSize);
 
-                        // Set the email max/day to 100
-                        EditUserEmailMaxEmailsPerDay(config, email, 100);
-                        break;
-                    case AccountType.Premium:
-                        // Set the email size to 5GB
-                        EditUserEmailMaxSize(config, email, 5000);
+                    string email = GetUserEmailAddress(config, username);
+                    // Add/Remove account type features depending on the type
+                    switch (type)
+                    {
+                        case AccountType.Basic:
+                            // Set the email size to 1GB
+                            EditUserEmailMaxSize(config, email, config.EmailConfig.MaxSize);
 
-                        // Set the email max/day to infinite (-1)
-                        EditUserEmailMaxEmailsPerDay(config, email, -1);
-                        break;
+                            // Set the email max/day to 100
+                            EditUserEmailMaxEmailsPerDay(config, email, 100);
+                            break;
+                        case AccountType.Premium:
+                            // Set the email size to 5GB
+                            EditUserEmailMaxSize(config, email, 5000);
+
+                            // Set the email max/day to infinite (-1)
+                            EditUserEmailMaxEmailsPerDay(config, email, -1);
+                            break;
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Unable to edit the account type [{type}] for {username}: " + result.Message);
                 }
             }
             catch (Exception ex)
@@ -280,37 +279,39 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static void EditAccountStatus(TeknikEntities db, Config config, string username, AccountStatus status)
+        public static async Task EditAccountStatus(TeknikEntities db, Config config, string username, AccountStatus status)
         {
             try
             {
                 if (!UserExists(db, username))
                     throw new Exception($"The user provided does not exist: {username}");
 
-                // Get the user to edit
-                User user = GetUser(db, username);
+                var result = await IdentityHelper.UpdateAccountStatus(config, username, status);
 
-                string email = GetUserEmailAddress(config, username);
-
-                // Edit the user type
-                user.AccountStatus = status;
-                EditUser(db, config, user);
-
-                // Add/Remove account type features depending on the type
-                switch (status)
+                if (result.Success)
                 {
-                    case AccountStatus.Active:
-                        // Enable Email
-                        EnableUserEmail(config, email);
-                        // Enable Git
-                        EnableUserGit(config, username);
-                        break;
-                    case AccountStatus.Banned:
-                        // Disable Email
-                        DisableUserEmail(config, email);
-                        // Disable Git
-                        DisableUserGit(config, username);
-                        break;
+                    string email = GetUserEmailAddress(config, username);
+
+                    // Add/Remove account type features depending on the type
+                    switch (status)
+                    {
+                        case AccountStatus.Active:
+                            // Enable Email
+                            EnableUserEmail(config, email);
+                            // Enable Git
+                            EnableUserGit(config, username);
+                            break;
+                        case AccountStatus.Banned:
+                            // Disable Email
+                            DisableUserEmail(config, email);
+                            // Disable Git
+                            DisableUserGit(config, username);
+                            break;
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Unable to edit the account status [{status}] for {username}: " + result.Message);
                 }
             }
             catch (Exception ex)
@@ -319,20 +320,32 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static void DeleteAccount(TeknikEntities db, Config config, User user)
+        public static async Task DeleteAccount(TeknikEntities db, Config config, User user)
         {
             try
             {
-                // Delete Email Account
-                if (UserEmailExists(config, GetUserEmailAddress(config, user.Username)))
-                    DeleteUserEmail(config, GetUserEmailAddress(config, user.Username));
+                string username = user.Username;
 
-                // Delete Git Account
-                if (UserGitExists(config, user.Username))
-                    DeleteUserGit(config, user.Username);
+                // Delete identity account
+                var result = await IdentityHelper.DeleteUser(config, username);
 
-                // Delete User Account
-                DeleteUser(db, config, user);
+                if (result)
+                {
+                    // Delete User Account
+                    DeleteUser(db, config, user);
+
+                    // Delete Email Account
+                    if (UserEmailExists(config, GetUserEmailAddress(config, username)))
+                        DeleteUserEmail(config, GetUserEmailAddress(config, username));
+
+                    // Delete Git Account
+                    if (UserGitExists(config, username))
+                        DeleteUserGit(config, username);
+                }
+                else
+                {
+                    throw new Exception("Unable to delete identity account.");
+                }
             }
             catch (Exception ex)
             {
@@ -346,22 +359,11 @@ namespace Teknik.Areas.Users.Utility
         {
             User user = db.Users
                 .Include(u => u.UserSettings)
-                .Include(u => u.SecuritySettings)
                 .Include(u => u.BlogSettings)
                 .Include(u => u.UploadSettings)
                 .Where(b => b.Username == username).FirstOrDefault();
 
             return user;
-        }
-
-        public static User GetUserFromToken(TeknikEntities db, string username, string token)
-        {
-            if (token != null && !string.IsNullOrEmpty(username))
-            {
-                string hashedToken = SHA256.Hash(token);
-                return db.Users.FirstOrDefault(u => u.AuthTokens.Select(a => a.HashedToken).Contains(hashedToken) && u.Username == username);
-            }
-            return null;
         }
 
         public static bool UserExists(TeknikEntities db, string username)
@@ -375,55 +377,11 @@ namespace Teknik.Areas.Users.Utility
             return false;
         }
 
-        public static DateTime UserLastActive(TeknikEntities db, Config config, User user)
+        public static async Task<bool> UserPasswordCorrect(Config config, string username, string password)
         {
             try
             {
-                DateTime lastActive = new DateTime(1900, 1, 1);
-
-                if (lastActive < user.LastSeen)
-                    lastActive = user.LastSeen;
-
-                return lastActive;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unable to determine last user activity.", ex);
-            }
-        }
-
-        public static void UpdateTokenLastUsed(TeknikEntities db, string username, string token, DateTime lastUsed)
-        {
-            User foundUser = GetUser(db, username);
-            if (foundUser != null)
-            {
-                // Update the user's last seen date
-                if (foundUser.LastSeen < lastUsed)
-                {
-                    foundUser.LastSeen = lastUsed;
-                    db.Entry(foundUser).State = EntityState.Modified;
-                }
-
-                string hashedToken = SHA256.Hash(token);
-                List<AuthToken> tokens = foundUser.AuthTokens.Where(t => t.HashedToken == hashedToken).ToList();
-                if (tokens != null)
-                {
-                    foreach (AuthToken foundToken in tokens)
-                    {
-                        foundToken.LastDateUsed = lastUsed;
-                        db.Entry(foundToken).State = EntityState.Modified;
-                    }
-                }
-                db.SaveChanges();
-            }
-        }
-
-        public static bool UserPasswordCorrect(TeknikEntities db, Config config, User user, string password)
-        {
-            try
-            {
-                string hash = GeneratePassword(config, user, password);
-                return db.Users.Any(b => b.Username == user.Username && b.HashedPassword == hash);
+                return await IdentityHelper.CheckPassword(config, username, password);
             }
             catch (Exception ex)
             {
@@ -431,102 +389,37 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static bool UserTokenCorrect(TeknikEntities db, string username, string token)
-        {
-            User foundUser = GetUserFromToken(db, username, token);
-            if (foundUser != null)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool UserHasRoles(User user, params string[] roles)
-        {
-            bool hasRole = true;
-            if (user != null)
-            {
-                // Check if they have the role specified
-                if (roles.Any())
-                {
-                    foreach (string role in roles)
-                    {
-                        if (!string.IsNullOrEmpty(role))
-                        {
-                            if (user.UserRoles.Where(ur => ur.Role.Name == role).Any())
-                            {
-                                // They have the role!
-                                return true;
-                            }
-                            else
-                            {
-                                // They don't have this role, so let's reset the hasRole
-                                hasRole = false;
-                            }
-                        }
-                        else
-                        {
-                            // Only set this if we haven't failed once already
-                            hasRole &= true;
-                        }
-                    }
-                }
-                else
-                {
-                    // No roles to check, so they pass!
-                    return true;
-                }
-            }
-            else
-            {
-                hasRole = false;
-            }
-            return hasRole;
-        }
-
-        public static void TransferUser(TeknikEntities db, Config config, User user, string password)
+        public static User CreateUser(TeknikEntities db, Config config, string username, string inviteCode)
         {
             try
             {
-                List<TransferType> transfers = user.Transfers.ToList();
-                for (int i = 0; i < transfers.Count; i++)
-                {
-                    TransferType transfer = transfers[i];
-                    switch (transfer.Type)
-                    {
-                        case TransferTypes.Sha256Password:
-                        case TransferTypes.CaseSensitivePassword:
-                        case TransferTypes.ASCIIPassword:
-                            user.HashedPassword = SHA384.Hash(user.Username.ToLower(), password).ToHex();
-                            break;
-                        default:
-                            break;
-                    }
-                    user.Transfers.Remove(transfer);
-                }
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unable to transfer user info.", ex);
-            }
-        }
+                User newUser = new User();
+                newUser.Username = username;
+                newUser.UserSettings = new UserSettings();
+                newUser.BlogSettings = new BlogSettings();
+                newUser.UploadSettings = new UploadSettings();
 
-        public static void AddUser(TeknikEntities db, Config config, User user, string password)
-        {
-            try
-            {
+                // if they provided an invite code, let's assign them to it
+                if (!string.IsNullOrEmpty(inviteCode))
+                {
+                    InviteCode code = db.InviteCodes.Where(c => c.Code == inviteCode).FirstOrDefault();
+                    db.Entry(code).State = EntityState.Modified;
+
+                    newUser.ClaimedInviteCode = code;
+                }
+
                 // Add User
-                user.HashedPassword = GeneratePassword(config, user, password);
-                db.Users.Add(user);
-                db.SaveChanges();
+                db.Users.Add(newUser);
 
                 // Generate blog for the user
                 var newBlog = new Blog.Models.Blog();
-                newBlog.UserId = user.UserId;
+                newBlog.User = newUser;
                 db.Blogs.Add(newBlog);
+
+                // Save the changes
                 db.SaveChanges();
+
+                return newUser;
             }
             catch (Exception ex)
             {
@@ -536,30 +429,8 @@ namespace Teknik.Areas.Users.Utility
 
         public static void EditUser(TeknikEntities db, Config config, User user)
         {
-            EditUser(db, config, user, false, string.Empty);
-        }
-
-        public static void EditUser(TeknikEntities db, Config config, User user, bool changePass, string password)
-        {
             try
             {
-                // Changing Password?
-                if (changePass)
-                {
-                    // Update User password
-                    user.HashedPassword = SHA384.Hash(user.Username.ToLower(), password).ToHex();
-
-                    // Remove any password transfer items for the account
-                    for (int i = 0; i < user.Transfers.Count; i++)
-                    {
-                        TransferType type = user.Transfers.ToList()[i];
-                        if (type.Type == TransferTypes.ASCIIPassword || type.Type == TransferTypes.CaseSensitivePassword || type.Type == TransferTypes.Sha256Password)
-                        {
-                            user.Transfers.Remove(type);
-                            i--;
-                        }
-                    }
-                }
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
             }
@@ -651,28 +522,6 @@ namespace Teknik.Areas.Users.Utility
                     db.SaveChanges();
                 }
 
-                // Delete Recovery Email Verifications
-                List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Where(r => r.User.Username == user.Username).ToList();
-                if (verCodes.Any())
-                {
-                    foreach (RecoveryEmailVerification verCode in verCodes)
-                    {
-                        db.RecoveryEmailVerifications.Remove(verCode);
-                    }
-                    db.SaveChanges();
-                }
-
-                // Delete Password Reset Verifications 
-                List<ResetPasswordVerification> verPass = db.ResetPasswordVerifications.Where(r => r.User.Username == user.Username).ToList();
-                if (verPass.Any())
-                {
-                    foreach (ResetPasswordVerification ver in verPass)
-                    {
-                        db.ResetPasswordVerifications.Remove(ver);
-                    }
-                    db.SaveChanges();
-                }
-
                 // Delete Owned Invite Codes
                 List<InviteCode> ownedCodes = db.InviteCodes.Where(i => i.Owner.Username == user.Username).ToList();
                 if (ownedCodes.Any())
@@ -696,15 +545,15 @@ namespace Teknik.Areas.Users.Utility
                 }
 
                 // Delete Auth Tokens
-                List<AuthToken> authTokens = db.AuthTokens.Where(t => t.User.UserId == user.UserId).ToList();
-                if (authTokens.Any())
-                {
-                    foreach (AuthToken authToken in authTokens)
-                    {
-                        db.AuthTokens.Remove(authToken);
-                    }
-                    db.SaveChanges();
-                }
+                //List<AuthToken> authTokens = db.AuthTokens.Where(t => t.User.UserId == user.UserId).ToList();
+                //if (authTokens.Any())
+                //{
+                //    foreach (AuthToken authToken in authTokens)
+                //    {
+                //        db.AuthTokens.Remove(authToken);
+                //    }
+                //    db.SaveChanges();
+                //}
 
                 // Delete User
                 db.Users.Remove(user);
@@ -714,30 +563,6 @@ namespace Teknik.Areas.Users.Utility
             {
                 throw new Exception(string.Format("Unable to delete user {0}.", user.Username), ex);
             }
-        }
-
-        public static string CreateRecoveryEmailVerification(TeknikEntities db, Config config, User user)
-        {
-            // Check to see if there already is a verification code for the user
-            List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Where(r => r.User.Username == user.Username).ToList();
-            if (verCodes != null && verCodes.Any())
-            {
-                foreach (RecoveryEmailVerification verCode in verCodes)
-                {
-                    db.RecoveryEmailVerifications.Remove(verCode);
-                }
-            }
-
-            // Create a new verification code and add it
-            string verifyCode = StringHelper.RandomString(24);
-            RecoveryEmailVerification ver = new RecoveryEmailVerification();
-            ver.UserId = user.UserId;
-            ver.Code = verifyCode;
-            ver.DateCreated = DateTime.Now;
-            db.RecoveryEmailVerifications.Add(ver);
-            db.SaveChanges();
-
-            return verifyCode;
         }
 
         public static void SendRecoveryEmailVerification(Config config, string username, string email, string resetUrl, string verifyUrl)
@@ -768,55 +593,6 @@ If you recieved this email and you did not sign up for an account, please email 
             client.Send(mail);
         }
 
-        public static bool VerifyRecoveryEmail(TeknikEntities db, Config config, string username, string code)
-        {
-            User user = GetUser(db, username);
-            RecoveryEmailVerification verCode = db.RecoveryEmailVerifications.Where(r => r.User.Username == username && r.Code == code).FirstOrDefault();
-            if (verCode != null)
-            {
-                // We have a match, so clear out the verifications for that user
-                List<RecoveryEmailVerification> verCodes = db.RecoveryEmailVerifications.Where(r => r.User.Username == username).ToList();
-                if (verCodes != null && verCodes.Any())
-                {
-                    foreach (RecoveryEmailVerification ver in verCodes)
-                    {
-                        db.RecoveryEmailVerifications.Remove(ver);
-                    }
-                }
-                // Update the user
-                user.SecuritySettings.RecoveryVerified = true;
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
-
-                return true;
-            }
-            return false;
-        }
-
-        public static string CreateResetPasswordVerification(TeknikEntities db, Config config, User user)
-        {
-            // Check to see if there already is a verification code for the user
-            List<ResetPasswordVerification> verCodes = db.ResetPasswordVerifications.Where(r => r.User.Username == user.Username).ToList();
-            if (verCodes != null && verCodes.Any())
-            {
-                foreach (ResetPasswordVerification verCode in verCodes)
-                {
-                    db.ResetPasswordVerifications.Remove(verCode);
-                }
-            }
-
-            // Create a new verification code and add it
-            string verifyCode = StringHelper.RandomString(24);
-            ResetPasswordVerification ver = new ResetPasswordVerification();
-            ver.UserId = user.UserId;
-            ver.Code = verifyCode;
-            ver.DateCreated = DateTime.Now;
-            db.ResetPasswordVerifications.Add(ver);
-            db.SaveChanges();
-
-            return verifyCode;
-        }
-
         public static void SendResetPasswordVerification(Config config, string username, string email, string resetUrl)
         {
             SmtpClient client = new SmtpClient();
@@ -843,28 +619,6 @@ If you recieved this email and you did not reset your password, you can ignore t
             mail.DeliveryNotificationOptions = DeliveryNotificationOptions.Never;
 
             client.Send(mail);
-        }
-
-        public static bool VerifyResetPassword(TeknikEntities db, Config config, string username, string code)
-        {
-            User user = GetUser(db, username);
-            ResetPasswordVerification verCode = db.ResetPasswordVerifications.Where(r => r.User.Username == username && r.Code == code).FirstOrDefault();
-            if (verCode != null)
-            {
-                // We have a match, so clear out the verifications for that user
-                List<ResetPasswordVerification> verCodes = db.ResetPasswordVerifications.Where(r => r.User.Username == username).ToList();
-                if (verCodes != null && verCodes.Any())
-                {
-                    foreach (ResetPasswordVerification ver in verCodes)
-                    {
-                        db.ResetPasswordVerifications.Remove(ver);
-                    }
-                }
-                db.SaveChanges();
-
-                return true;
-            }
-            return false;
         }
         #endregion
 
@@ -914,7 +668,7 @@ If you recieved this email and you did not reset your password, you can ignore t
             return lastActive;
         }
 
-        public static void AddUserEmail(Config config, string email, string password)
+        public static void CreateUserEmail(Config config, string email, string password)
         {
             try
             {
@@ -1085,7 +839,7 @@ If you recieved this email and you did not reset your password, you can ignore t
             return lastActive;
         }
 
-        public static void AddUserGit(Config config, string username, string password)
+        public static void CreateUserGit(Config config, string username, string password)
         {
             try
             {
@@ -1302,56 +1056,5 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
         #endregion
-
-        public static ClaimsIdentity CreateClaimsIdentity(TeknikEntities db, string username)
-        {
-            User user = GetUser(db, username);
-
-            if (user != null)
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Username)
-                };
-
-                // Add their roles
-                foreach (var role in user.UserRoles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role.Role.Name));
-                }
-
-                return new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            }
-            return null;
-        }
-
-        public static Tuple<CookieOptions, string> CreateTrustedDeviceCookie(Config config, string username, string domain, bool local)
-        {
-            byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
-            byte[] key = Guid.NewGuid().ToByteArray();
-            string token = Convert.ToBase64String(time.Concat(key).ToArray());
-            var trustCookie = new CookieOptions()
-            {
-                HttpOnly = true,
-                Secure = true,
-                Expires = DateTime.Now.AddDays(30)
-            };
-
-            // Set domain dependent on where it's being ran from
-            if (local) // localhost
-            {
-                trustCookie.Domain = null;
-            }
-            else if (config.DevEnvironment) // dev.example.com
-            {
-                trustCookie.Domain = string.Format("dev.{0}", domain);
-            }
-            else // A production instance
-            {
-                trustCookie.Domain = string.Format(".{0}", domain);
-            }
-
-            return new Tuple<CookieOptions, string>(trustCookie, token);
-        }
     }
 }

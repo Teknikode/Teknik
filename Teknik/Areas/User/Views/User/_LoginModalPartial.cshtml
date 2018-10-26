@@ -14,20 +14,3 @@
     </div>
 </div>
 }
-
-@if (Config.UserConfig.LoginEnabled)
-{
-    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header modal-header-default">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="loginModalLabel">Teknik Login</h4>
-                </div>
-                <div class="modal-body">
-                    @await Html.PartialAsync("../../Areas/Accounts/Views/Accounts/Login", new Teknik.Areas.Accounts.ViewModels.LoginViewModel())
-                </div>
-            </div>
-        </div>
-    </div>
-}

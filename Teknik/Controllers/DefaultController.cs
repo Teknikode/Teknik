@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using Teknik.Areas.Error.Controllers;
@@ -19,7 +20,6 @@ using Teknik.Configuration;
 using Teknik.Data;
 using Teknik.Filters;
 using Teknik.Logging;
-using Teknik.Security;
 using Teknik.Utilities;
 
 namespace Teknik.Controllers
@@ -106,8 +106,9 @@ namespace Teknik.Controllers
 
             using (var writer = new StringWriter())
             {
+                string path = (new Uri(Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath;
                 ViewEngineResult viewResult =
-                    viewEngine.FindView(ControllerContext, viewName, false);
+                    viewEngine.GetView(path, viewName, false);
 
                 ViewContext viewContext = new ViewContext(
                     ControllerContext,

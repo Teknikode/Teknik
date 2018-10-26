@@ -10,16 +10,7 @@ namespace Teknik.Areas.Users.Models
 {
     public class UploadSettings
     {
-        public int UserId { get; set; }
-
-        public virtual User User { get; set; }
-
-        public virtual SecuritySettings SecuritySettings { get; set; }
-
-        public virtual BlogSettings BlogSettings { get; set; }
-
-        public virtual UserSettings UserSettings { get; set; }
-
+        [Column("Encrypt")]
         public bool Encrypt { get; set; }
 
         public UploadSettings()

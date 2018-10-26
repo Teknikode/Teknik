@@ -17,53 +17,59 @@ using Teknik.Models;
 using Teknik.Utilities;
 using Teknik.ViewModels;
 using Teknik.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Teknik.Areas.Admin.Controllers
 {
-    [TeknikAuthorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [Area("Admin")]
     public class AdminController : DefaultController
     {
         public AdminController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base (logger, config, dbContext) { }
 
         [HttpGet]
-        public ActionResult Dashboard()
+        public IActionResult Dashboard()
         {
             DashboardViewModel model = new DashboardViewModel();
             return View(model);
         }
 
         [HttpGet]
-        public ActionResult UserSearch()
+        public IActionResult UserSearch()
         {
             UserSearchViewModel model = new UserSearchViewModel();
             return View(model);
         }
 
         [HttpGet]
-        public ActionResult UserInfo(string username)
+        public async Task<IActionResult> UserInfo(string username)
         {
             if (UserHelper.UserExists(_dbContext, username))
             {
                 User user = UserHelper.GetUser(_dbContext, username);
                 UserInfoViewModel model = new UserInfoViewModel();
                 model.Username = user.Username;
-                model.AccountType = user.AccountType;
-                model.AccountStatus = user.AccountStatus;
+
+                // Get Identity User Info
+                var info = await IdentityHelper.GetIdentityUserInfo(_config, username);
+                if (info.AccountType.HasValue)
+                    model.AccountType = info.AccountType.Value;
+                if (info.AccountStatus.HasValue)
+                    model.AccountStatus = info.AccountStatus.Value;
                 return View(model);
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
         }
 
         [HttpGet]
-        public ActionResult UploadSearch()
+        public IActionResult UploadSearch()
         {
             UploadSearchViewModel model = new UploadSearchViewModel();
             return View(model);
         }
 
         [HttpPost]
-        public async Task<ActionResult> GetUserSearchResults(string query, [FromServices] ICompositeViewEngine viewEngine)
+        public async Task<IActionResult> GetUserSearchResults(string query, [FromServices] ICompositeViewEngine viewEngine)
         {
             List<UserResultViewModel> models = new List<UserResultViewModel>();
 
@@ -80,8 +86,11 @@ namespace Teknik.Areas.Admin.Controllers
                         {
                             model.Email = string.Format("{0}@{1}", user.Username, _config.EmailConfig.Domain);
                         }
-                        model.JoinDate = user.JoinDate;
-                        model.LastSeen = UserHelper.GetLastAccountActivity(_dbContext, _config, user);
+                        var info = await IdentityHelper.GetIdentityUserInfo(_config, user.Username);
+                        if (info.CreationDate.HasValue)
+                            model.JoinDate = info.CreationDate.Value;
+
+                        model.LastSeen = await UserHelper.GetLastAccountActivity(_dbContext, _config, user.Username);
                         models.Add(model);
                     }
                     catch (Exception)
@@ -97,7 +106,7 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> GetUploadSearchResults(string url, [FromServices] ICompositeViewEngine viewEngine)
+        public async Task<IActionResult> GetUploadSearchResults(string url, [FromServices] ICompositeViewEngine viewEngine)
         {
             Upload.Models.Upload foundUpload = _dbContext.Uploads.Where(u => u.Url == url).FirstOrDefault();
             if (foundUpload != null)
@@ -120,12 +129,12 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditUserAccountType(string username, AccountType accountType)
+        public async Task<IActionResult> EditUserAccountType(string username, AccountType accountType)
         {
             if (UserHelper.UserExists(_dbContext, username))
             {
                 // Edit the user's account type
-                UserHelper.EditAccountType(_dbContext, _config, username, accountType);
+                await UserHelper.EditAccountType(_dbContext, _config, username, accountType);
                 return Json(new { result = new { success = true } });
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
@@ -133,12 +142,12 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditUserAccountStatus(string username, AccountStatus accountStatus)
+        public async Task<IActionResult> EditUserAccountStatus(string username, AccountStatus accountStatus)
         {
             if (UserHelper.UserExists(_dbContext, username))
             {
                 // Edit the user's account type
-                UserHelper.EditAccountStatus(_dbContext, _config, username, accountStatus);
+                await UserHelper.EditAccountStatus(_dbContext, _config, username, accountStatus);
                 return Json(new { result = new { success = true } });
             }
             return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
@@ -146,7 +155,7 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateInviteCode(string username)
+        public IActionResult CreateInviteCode(string username)
         {
             if (UserHelper.UserExists(_dbContext, username))
             {
@@ -165,14 +174,14 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteAccount(string username)
+        public async Task<IActionResult> DeleteAccount(string username)
         {
             try
             {
                 User user = UserHelper.GetUser(_dbContext, username);
                 if (user != null)
                 {
-                    UserHelper.DeleteAccount(_dbContext, _config, user);
+                    await UserHelper.DeleteAccount(_dbContext, _config, user);
                     return Json(new { result = true });
                 }
             }

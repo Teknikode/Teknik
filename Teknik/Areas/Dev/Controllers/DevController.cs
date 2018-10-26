@@ -11,7 +11,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.Dev.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Dev")]
     public class DevController : DefaultController
     {

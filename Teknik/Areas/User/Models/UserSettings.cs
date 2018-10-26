@@ -10,20 +10,13 @@ namespace Teknik.Areas.Users.Models
 {
     public class UserSettings
     {
-        public int UserId { get; set; }
-
-        public virtual User User { get; set; }
-
-        public virtual SecuritySettings SecuritySettings { get; set; }
-
-        public virtual BlogSettings BlogSettings { get; set; }
-
-        public virtual UploadSettings UploadSettings { get; set; }
-
+        [Column("About")]
         public string About { get; set; }
 
+        [Column("Website")]
         public string Website { get; set; }
 
+        [Column("Quote")]
         public string Quote { get; set; }
 
         public UserSettings()

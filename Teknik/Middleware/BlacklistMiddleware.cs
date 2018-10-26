@@ -9,7 +9,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Teknik.Areas.Error.Controllers;
 using Teknik.Configuration;
 
 namespace Teknik.Middleware

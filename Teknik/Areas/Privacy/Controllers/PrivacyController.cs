@@ -11,7 +11,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.Privacy.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Privacy")]
     public class PrivacyController : DefaultController
     {

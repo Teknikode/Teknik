@@ -11,7 +11,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.FAQ.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("FAQ")]
     public class FAQController : DefaultController
     {

@@ -50,7 +50,5 @@ namespace Teknik.Areas.Paste.Models
         public int MaxViews { get; set; }
 
         public int Views { get; set; }
-
-        public virtual ICollection<TransferType> Transfers { get; set; }
     }
 }

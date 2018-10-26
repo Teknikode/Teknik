@@ -16,7 +16,7 @@ using System;
 
 namespace Teknik.Areas.Home.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Home")]
     public class HomeController : DefaultController
     {

@@ -11,7 +11,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.Help.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Help")]
     public class HelpController : DefaultController
     {

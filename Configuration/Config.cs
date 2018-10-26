@@ -19,38 +19,38 @@ namespace Teknik.Configuration
         private ReaderWriterLockSlim _ConfigFileRWLock;
         private JsonSerializerSettings _JsonSettings;
 
-        private bool                _DevEnvironment;
-        private bool                _Migrate;
-        private bool                _UseCdn;
-        private string              _Title;
-        private string              _Description;
-        private string              _Author;
-        private string              _Host;
-        private string              _SupportEmail;
-        private string              _NoReplyEmail;
-        private string              _BitcoinAddress;
-        private string              _Salt1;
-        private string              _Salt2;
-        private string              _CdnHost;
-        private string              _IPBlacklistFile;
-        private string              _ReferrerBlacklistFile;
-        private List<string>        _PublicKeys;
-        private UserConfig          _UserConfig;
-        private ContactConfig       _ContactConfig;
-        private EmailConfig         _EmailConfig;
-        private GitConfig           _GitConfig;
-        private UploadConfig        _UploadConfig;
-        private PasteConfig         _PasteConfig;
-        private BlogConfig          _BlogConfig;
-        private ApiConfig           _ApiConfig;
-        private PodcastConfig       _PodcastConfig;
-        private StreamConfig        _StreamConfig;
-        private ShortenerConfig     _ShortenerConfig;
-        private VaultConfig         _VaultConfig;
-        private StatsConfig         _StatsConfig;
-        private LoggingConfig       _LoggingConfig;
-        private PiwikConfig         _PiwikConfig;
-        private IRCConfig           _IRCConfig;
+        private bool                    _DevEnvironment;
+        private bool                    _Migrate;
+        private bool                    _UseCdn;
+        private string                  _Title;
+        private string                  _Description;
+        private string                  _Author;
+        private string                  _Host;
+        private string                  _SupportEmail;
+        private string                  _NoReplyEmail;
+        private string                  _BitcoinAddress;
+        private string                  _Salt1;
+        private string                  _Salt2;
+        private string                  _CdnHost;
+        private string                  _IPBlacklistFile;
+        private string                  _ReferrerBlacklistFile;
+        private List<string>            _PublicKeys;
+        private UserConfig              _UserConfig;
+        private ContactConfig           _ContactConfig;
+        private EmailConfig             _EmailConfig;
+        private GitConfig               _GitConfig;
+        private UploadConfig            _UploadConfig;
+        private PasteConfig             _PasteConfig;
+        private BlogConfig              _BlogConfig;
+        private ApiConfig               _ApiConfig;
+        private PodcastConfig           _PodcastConfig;
+        private StreamConfig            _StreamConfig;
+        private ShortenerConfig         _ShortenerConfig;
+        private VaultConfig             _VaultConfig;
+        private StatsConfig             _StatsConfig;
+        private LoggingConfig           _LoggingConfig;
+        private PiwikConfig             _PiwikConfig;
+        private IRCConfig               _IRCConfig;
 
         public bool         DevEnvironment          { get { return _DevEnvironment; }       set { _DevEnvironment = value; } }
         public bool         Migrate                 { get { return _Migrate; }              set { _Migrate = value; } }
@@ -73,52 +73,52 @@ namespace Teknik.Configuration
         public List<string> PublicKeys              { get { return _PublicKeys; }           set { _PublicKeys = value; } }
 
         // User Configuration
-        public UserConfig           UserConfig          { get { return _UserConfig; }           set { _UserConfig = value; } }
+        public UserConfig           UserConfig              { get { return _UserConfig; }           set { _UserConfig = value; } }
 
         // Contact Configuration
-        public ContactConfig        ContactConfig       { get { return _ContactConfig; }        set { _ContactConfig = value; } }
+        public ContactConfig        ContactConfig           { get { return _ContactConfig; }        set { _ContactConfig = value; } }
 
         // Mail Server Configuration
-        public EmailConfig          EmailConfig         { get { return _EmailConfig; }          set { _EmailConfig = value; } }
+        public EmailConfig          EmailConfig             { get { return _EmailConfig; }          set { _EmailConfig = value; } }
 
         // Git Service Configuration
-        public GitConfig            GitConfig           { get { return _GitConfig; }            set { _GitConfig = value; } }
+        public GitConfig            GitConfig               { get { return _GitConfig; }            set { _GitConfig = value; } }
 
         // Blog Configuration
-        public BlogConfig           BlogConfig          { get { return _BlogConfig; }           set { _BlogConfig = value; } }
+        public BlogConfig           BlogConfig              { get { return _BlogConfig; }           set { _BlogConfig = value; } }
 
         // Upload Configuration
-        public UploadConfig         UploadConfig        { get { return _UploadConfig; }         set { _UploadConfig = value; } }
+        public UploadConfig         UploadConfig            { get { return _UploadConfig; }         set { _UploadConfig = value; } }
 
         // Paste Configuration
-        public PasteConfig          PasteConfig         { get { return _PasteConfig; }          set { _PasteConfig = value; } }
+        public PasteConfig          PasteConfig             { get { return _PasteConfig; }          set { _PasteConfig = value; } }
 
         // API Configuration
-        public ApiConfig            ApiConfig           { get { return _ApiConfig; }            set { _ApiConfig = value; } }
+        public ApiConfig            ApiConfig               { get { return _ApiConfig; }            set { _ApiConfig = value; } }
 
         // Podcast Configuration
-        public PodcastConfig        PodcastConfig       { get { return _PodcastConfig; }        set { _PodcastConfig = value; } }
+        public PodcastConfig        PodcastConfig           { get { return _PodcastConfig; }        set { _PodcastConfig = value; } }
 
         // Stream Configuration
-        public StreamConfig         StreamConfig        { get { return _StreamConfig; }         set { _StreamConfig = value; } }
+        public StreamConfig         StreamConfig            { get { return _StreamConfig; }         set { _StreamConfig = value; } }
 
         // Shortener Configuration
-        public ShortenerConfig      ShortenerConfig     { get { return _ShortenerConfig; }      set { _ShortenerConfig = value; } }
+        public ShortenerConfig      ShortenerConfig         { get { return _ShortenerConfig; }      set { _ShortenerConfig = value; } }
 
         // Vault Configuration
-        public VaultConfig          VaultConfig         { get { return _VaultConfig; }          set { _VaultConfig = value; } }
+        public VaultConfig          VaultConfig             { get { return _VaultConfig; }          set { _VaultConfig = value; } }
 
         // Status Configuration
-        public StatsConfig          StatsConfig         { get { return _StatsConfig; }          set { _StatsConfig = value; } }
+        public StatsConfig          StatsConfig             { get { return _StatsConfig; }          set { _StatsConfig = value; } }
 
         // Logging Configuration
-        public LoggingConfig        LoggingConfig       { get { return _LoggingConfig; }        set { _LoggingConfig = value; } }
+        public LoggingConfig        LoggingConfig           { get { return _LoggingConfig; }        set { _LoggingConfig = value; } }
 
         // Piwik Configuration
-        public PiwikConfig          PiwikConfig         { get { return _PiwikConfig; }          set { _PiwikConfig = value; } }
+        public PiwikConfig          PiwikConfig             { get { return _PiwikConfig; }          set { _PiwikConfig = value; } }
 
         // Piwik Configuration
-        public IRCConfig            IRCConfig           { get { return _IRCConfig; }            set { _IRCConfig = value; } }
+        public IRCConfig            IRCConfig               { get { return _IRCConfig; }            set { _IRCConfig = value; } }
 
         public Config()
         {

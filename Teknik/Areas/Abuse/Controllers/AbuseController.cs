@@ -15,7 +15,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.Abuse.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Abuse")]
     public class AbuseController : DefaultController
     {

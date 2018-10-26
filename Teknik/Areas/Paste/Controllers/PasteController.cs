@@ -21,7 +21,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.Paste.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Paste")]
     public class PasteController : DefaultController
     {
@@ -84,14 +84,14 @@ namespace Teknik.Areas.Paste.Controllers
                         byte[] passBytes = SHA384.Hash(paste.Key, password);
                         hash = passBytes.ToHex();
                         // We need to convert old pastes to the new password scheme
-                        if (paste.Transfers.ToList().Exists(t => t.Type == TransferTypes.ASCIIPassword))
-                        {
-                            hash = Encoding.ASCII.GetString(passBytes);
-                            // Remove the transfer types
-                            paste.Transfers.Clear();
-                            _dbContext.Entry(paste).State = EntityState.Modified;
-                            _dbContext.SaveChanges();
-                        }
+                        //if (paste.Transfers.ToList().Exists(t => t.Type == TransferTypes.ASCIIPassword))
+                        //{
+                        //    hash = Encoding.ASCII.GetString(passBytes);
+                        //    // Remove the transfer types
+                        //    paste.Transfers.Clear();
+                        //    _dbContext.Entry(paste).State = EntityState.Modified;
+                        //    _dbContext.SaveChanges();
+                        //}
                     }
                     if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
                     {
@@ -145,6 +145,7 @@ namespace Teknik.Areas.Paste.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [DisableRequestSizeLimit]
         public IActionResult Paste([Bind("Content, Title, Syntax, ExpireLength, ExpireUnit, Password, Hide")]PasteCreateViewModel model)
         {
             if (ModelState.IsValid)

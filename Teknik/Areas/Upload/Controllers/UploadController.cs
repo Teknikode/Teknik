@@ -25,7 +25,7 @@ using Teknik.Areas.Users.Models;
 
 namespace Teknik.Areas.Upload.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
     [Area("Upload")]
     public class UploadController : DefaultController
     {
@@ -53,6 +53,7 @@ namespace Teknik.Areas.Upload.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, IFormFile file)
         {
             try
@@ -64,10 +65,10 @@ namespace Teknik.Areas.Upload.Controllers
                     {
                         maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
                         User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                        if (user.AccountType == AccountType.Premium)
-                        {
-                            maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
-                        }
+                        //if (user.AccountType == AccountType.Premium)
+                        //{
+                        //    maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
+                        //}
                     }
                     if (file.Length <= maxUploadSize)
                     {
@@ -170,12 +171,12 @@ namespace Teknik.Areas.Upload.Controllers
                     contentType = uploads.ContentType;
                     contentLength = uploads.ContentLength;
                     dateUploaded = uploads.DateUploaded;
-                    if (User.Identity.IsAuthenticated)
-                    {
-                        User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                        premiumAccount = user.AccountType == AccountType.Premium;
-                    }
-                    premiumAccount |= (uploads.User != null && uploads.User.AccountType == AccountType.Premium);
+                    //if (User.Identity.IsAuthenticated)
+                    //{
+                    //    User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                    //    premiumAccount = user.AccountType == AccountType.Premium;
+                    //}
+                    //premiumAccount |= (uploads.User != null && uploads.User.AccountType == AccountType.Premium);
                 }
                 else
                 {

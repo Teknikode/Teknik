@@ -26,6 +26,10 @@ $(document).ready(function () {
                                 $("#top_msg").css('display', 'inline', 'important');
                                 $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                             }
+                        },
+                        error: function (response) {
+                            $("#top_msg").css('display', 'inline', 'important');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
                         }
                     });
                 }
@@ -53,6 +57,10 @@ $(document).ready(function () {
                             $("#top_msg").css('display', 'inline', 'important');
                             $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
+                    },
+                    error: function (response) {
+                        $("#top_msg").css('display', 'inline', 'important');
+                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
                     }
                 });
             }
