@@ -26,8 +26,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MailService", "MailService\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitService", "GitService\GitService.csproj", "{014879B1-DDD5-4F8C-9597-6D7960912CF0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "IdentityServer\IdentityServer.csproj", "{5A7625F7-A162-430D-8725-318E2CFA8BDD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,12 +75,6 @@ Global
 		{014879B1-DDD5-4F8C-9597-6D7960912CF0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{014879B1-DDD5-4F8C-9597-6D7960912CF0}.Test|Any CPU.ActiveCfg = Release|Any CPU
 		{014879B1-DDD5-4F8C-9597-6D7960912CF0}.Test|Any CPU.Build.0 = Release|Any CPU
-		{5A7625F7-A162-430D-8725-318E2CFA8BDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A7625F7-A162-430D-8725-318E2CFA8BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A7625F7-A162-430D-8725-318E2CFA8BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A7625F7-A162-430D-8725-318E2CFA8BDD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A7625F7-A162-430D-8725-318E2CFA8BDD}.Test|Any CPU.ActiveCfg = Test|Any CPU
-		{5A7625F7-A162-430D-8725-318E2CFA8BDD}.Test|Any CPU.Build.0 = Test|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
