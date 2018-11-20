@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Teknik.Areas.Help.ViewModels;
@@ -39,7 +40,7 @@ namespace Teknik.Areas.Help.Controllers
                 ViewBag.Title = service + " API " + version + " Help - " + _config.Title;
                 return View("~/Areas/Help/Views/Help/API/" + version + "/" + service + ".cshtml", model);
             }
-            return RedirectToRoute("Error.Http404");
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
         
         [AllowAnonymous]

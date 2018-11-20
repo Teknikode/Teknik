@@ -340,7 +340,7 @@ namespace Teknik.Areas.Users.Controllers
                 return View("/Areas/User/Views/User/Settings/ProfileSettings.cshtml", model);
             }
 
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
         public IActionResult AccountSettings()
@@ -361,7 +361,7 @@ namespace Teknik.Areas.Users.Controllers
                 return View("/Areas/User/Views/User/Settings/AccountSettings.cshtml", model);
             }
 
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
         public async Task<IActionResult> SecuritySettings()
@@ -403,7 +403,7 @@ namespace Teknik.Areas.Users.Controllers
                 return View("/Areas/User/Views/User/Settings/SecuritySettings.cshtml", model);
             }
 
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
         public IActionResult AccessTokenSettings()
@@ -435,7 +435,7 @@ namespace Teknik.Areas.Users.Controllers
                 return View("/Areas/User/Views/User/Settings/AccessTokenSettings.cshtml", model);
             }
 
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
         public IActionResult InviteSettings()
@@ -480,7 +480,7 @@ namespace Teknik.Areas.Users.Controllers
                 return View("/Areas/User/Views/User/Settings/InviteSettings.cshtml", model);
             }
 
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
         
         public IActionResult BlogSettings()
@@ -503,7 +503,7 @@ namespace Teknik.Areas.Users.Controllers
                 return View("/Areas/User/Views/User/Settings/BlogSettings.cshtml", model);
             }
 
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
         
         public IActionResult UploadSettings()
@@ -525,7 +525,7 @@ namespace Teknik.Areas.Users.Controllers
                 return View("/Areas/User/Views/User/Settings/UploadSettings.cshtml", model);
             }
 
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
         [HttpGet]
@@ -540,7 +540,7 @@ namespace Teknik.Areas.Users.Controllers
             {
                 return Content(userClaims.PGPPublicKey, "text/plain");
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]

@@ -18,6 +18,7 @@ using Teknik.Utilities;
 using Teknik.ViewModels;
 using Teknik.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace Teknik.Areas.Admin.Controllers
 {
@@ -58,7 +59,7 @@ namespace Teknik.Areas.Admin.Controllers
                     model.AccountStatus = info.AccountStatus.Value;
                 return View(model);
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpGet]
@@ -137,7 +138,7 @@ namespace Teknik.Areas.Admin.Controllers
                 await UserHelper.EditAccountType(_dbContext, _config, username, accountType);
                 return Json(new { result = new { success = true } });
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]
@@ -150,7 +151,7 @@ namespace Teknik.Areas.Admin.Controllers
                 await UserHelper.EditAccountStatus(_dbContext, _config, username, accountStatus);
                 return Json(new { result = new { success = true } });
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]
@@ -169,7 +170,7 @@ namespace Teknik.Areas.Admin.Controllers
 
                 return Json(new { result = new { code = inviteCode.Code } });
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]

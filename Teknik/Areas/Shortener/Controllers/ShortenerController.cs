@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -41,7 +42,7 @@ namespace Teknik.Areas.Shortener.Controllers
                 _dbContext.SaveChanges();
                 return Redirect(shortUrl.OriginalUrl);
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]

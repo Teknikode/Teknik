@@ -27,6 +27,7 @@ namespace Teknik.Areas.Error.Controllers
     {
         public ErrorController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
+        [AllowAnonymous]
         public IActionResult HttpError(int statusCode)
         {
             switch (statusCode)
@@ -42,6 +43,7 @@ namespace Teknik.Areas.Error.Controllers
             }
         }
 
+        [AllowAnonymous]
         public IActionResult HttpGeneral(int statusCode)
         {
             ViewBag.Title = statusCode + " - " + _config.Title;

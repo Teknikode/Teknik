@@ -143,7 +143,7 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
-        public IActionResult Download(string file)
+        public async Task<IActionResult> Download(string file)
         {
             if (_config.UploadConfig.DownloadEnabled)
             {
@@ -171,16 +171,20 @@ namespace Teknik.Areas.Upload.Controllers
                     contentType = uploads.ContentType;
                     contentLength = uploads.ContentLength;
                     dateUploaded = uploads.DateUploaded;
-                    //if (User.Identity.IsAuthenticated)
-                    //{
-                    //    User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                    //    premiumAccount = user.AccountType == AccountType.Premium;
-                    //}
-                    //premiumAccount |= (uploads.User != null && uploads.User.AccountType == AccountType.Premium);
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
+                        premiumAccount = userInfo.AccountType == AccountType.Premium;
+                    }
+                    if (!premiumAccount && uploads.User != null)
+                    {
+                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, uploads.User.Username);
+                        premiumAccount = userInfo.AccountType == AccountType.Premium;
+                    }
                 }
                 else
                 {
-                    return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
 
                 // We don't have the key, so we need to decrypt it client side
@@ -353,10 +357,10 @@ namespace Teknik.Areas.Upload.Controllers
                             }
                         }
                     }
-                    return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
         [HttpPost]
@@ -440,7 +444,7 @@ namespace Teknik.Areas.Upload.Controllers
                 }
                 return View(model);
             }
-            return RedirectToRoute("Error.Http404");
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]
