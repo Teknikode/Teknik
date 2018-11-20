@@ -200,20 +200,7 @@ namespace Teknik
                         RoleClaimType = JwtClaimTypes.Role
                     };
 
-                    options.Events.OnMessageReceived = ctx =>
-                    {
-                        if (!string.IsNullOrEmpty(ctx.ProtocolMessage.Error))
-                        {
-                            // We need to throw an actual error (not the one they do)
-                            switch (ctx.ProtocolMessage.Error)
-                            {
-                                case "access_denied":
-                                    ctx.Response.StatusCode = 403;
-                                    break;
-                            }
-                        }
-                        return Task.CompletedTask;
-                    };
+                    options.Events.OnRemoteFailure = HandleOnRemoteFailure;
                 });
 
             services.AddAuthorization(options =>
@@ -315,5 +302,13 @@ namespace Teknik
                 routes.BuildRoutes(config);
             });
         }
+
+        private async Task HandleOnRemoteFailure(RemoteFailureContext context)
+        {
+            if (context.Failure.Message.Contains("access_denied"))
+                context.Response.StatusCode = 403;
+            context.HandleResponse();
+        }
+
     }
 }
