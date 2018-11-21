@@ -24,6 +24,9 @@ namespace Teknik.Areas.Paste.Models
         [CaseSensitive]
         public string Url { get; set; }
 
+        [CaseSensitive]
+        public string FileName { get; set; }
+
         public string Content { get; set; }
 
         public string Title { get; set; }
@@ -44,6 +47,9 @@ namespace Teknik.Areas.Paste.Models
         public string IV { get; set; }
 
         public int BlockSize { get; set; }
+
+        [CaseSensitive]
+        public string DeleteKey { get; set; }
 
         public bool Hide { get; set; }
 

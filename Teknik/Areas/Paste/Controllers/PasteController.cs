@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Teknik.Logging;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Teknik.Areas.Paste.Controllers
 {
@@ -37,7 +39,7 @@ namespace Teknik.Areas.Paste.Controllers
         }
         
         [AllowAnonymous]
-        public IActionResult ViewPaste(string type, string url, string password)
+        public async Task<IActionResult> ViewPaste(string type, string url, string password)
         {
             Models.Paste paste = _dbContext.Pastes.Where(p => p.Url == url).FirstOrDefault();
             if (paste != null)
@@ -59,12 +61,9 @@ namespace Teknik.Areas.Paste.Controllers
 
                 PasteViewModel model = new PasteViewModel();
                 model.Url = url;
-                model.Content = paste.Content;
                 model.Title = paste.Title;
                 model.Syntax = paste.Syntax;
                 model.DatePosted = paste.DatePosted;
-
-                byte[] data = Encoding.UTF8.GetBytes(paste.Content);
 
                 if (User.Identity.IsAuthenticated && type.ToLower() == "full")
                 {
@@ -75,23 +74,17 @@ namespace Teknik.Areas.Paste.Controllers
                     }
                 }
 
+                byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
+                byte[] keyBytes = AesCounterManaged.CreateKey(paste.Key, ivBytes, paste.KeySize);
+
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
                 {
                     string hash = string.Empty;
                     if (!string.IsNullOrEmpty(password))
                     {
-                        byte[] passBytes = SHA384.Hash(paste.Key, password);
-                        hash = passBytes.ToHex();
-                        // We need to convert old pastes to the new password scheme
-                        //if (paste.Transfers.ToList().Exists(t => t.Type == TransferTypes.ASCIIPassword))
-                        //{
-                        //    hash = Encoding.ASCII.GetString(passBytes);
-                        //    // Remove the transfer types
-                        //    paste.Transfers.Clear();
-                        //    _dbContext.Entry(paste).State = EntityState.Modified;
-                        //    _dbContext.SaveChanges();
-                        //}
+                        hash = PasteHelper.HashPassword(paste.Key, password);
+                        keyBytes = AesCounterManaged.CreateKey(password, ivBytes, paste.KeySize);
                     }
                     if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
                     {
@@ -108,13 +101,16 @@ namespace Teknik.Areas.Paste.Controllers
                         // Redirect them to the password request page
                         return View("~/Areas/Paste/Views/Paste/PasswordNeeded.cshtml", passModel);
                     }
+                }
 
-                    data = Convert.FromBase64String(paste.Content);
-                    // Now we decrypt the content
-                    byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
-                    byte[] keyBytes = AesCounterManaged.CreateKey(password, ivBytes, paste.KeySize);
-                    data = AesCounterManaged.Decrypt(data, keyBytes, ivBytes);
-                    model.Content = Encoding.Unicode.GetString(data);
+                // Read in the file
+                string subDir = paste.FileName[0].ToString();
+                string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.FileName);
+                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (AesCounterStream cs = new AesCounterStream(fs, false, keyBytes, ivBytes))
+                using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
+                {
+                    model.Content = await sr.ReadToEndAsync();
                 }
 
                 switch (type.ToLower())
@@ -135,7 +131,8 @@ namespace Teknik.Areas.Paste.Controllers
 
                         Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                        return File(data, "application/octet-stream");
+                        FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        return new BufferedFileStreamResult("application/octet-stream", async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)fs.Length, _config.PasteConfig.ChunkSize), false);
                     default:
                         return View("~/Areas/Paste/Views/Paste/Full.cshtml", model);
                 }

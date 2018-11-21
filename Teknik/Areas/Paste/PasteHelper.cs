@@ -8,6 +8,7 @@ using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Utilities.Cryptography;
 using Teknik.Data;
+using System.IO;
 
 namespace Teknik.Areas.Paste
 {
@@ -55,30 +56,49 @@ namespace Teknik.Areas.Paste
                     break;
             }
 
-            // Set the hashed password if one is provided and encrypt stuff
-            if (!string.IsNullOrEmpty(password))
+            if (!Directory.Exists(config.PasteConfig.PasteDirectory))
             {
-                string key = StringHelper.RandomString(config.PasteConfig.KeySize / 8);
-                string iv = StringHelper.RandomString(config.PasteConfig.BlockSize / 16);
-                paste.HashedPassword = SHA384.Hash(key, password).ToHex();
-
-                // Encrypt Content
-                byte[] data = Encoding.Unicode.GetBytes(content);
-                byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
-                byte[] keyBytes = AesCounterManaged.CreateKey(password, ivBytes, config.PasteConfig.KeySize);
-                byte[] encData = AesCounterManaged.Encrypt(data, keyBytes, ivBytes);
-                content = Convert.ToBase64String(encData);
-
-                paste.Key = key;
-                paste.KeySize = config.PasteConfig.KeySize;
-                paste.IV = iv;
-                paste.BlockSize = config.PasteConfig.BlockSize;
+                Directory.CreateDirectory(config.PasteConfig.PasteDirectory);
             }
 
-            paste.Content = content;
+            // Generate a unique file name that does not currently exist
+            string filePath = FileHelper.GenerateRandomFileName(config.PasteConfig.PasteDirectory, config.PasteConfig.FileExtension, 10);
+            string fileName = Path.GetFileName(filePath);
+
+            string key = GenerateKey(config.PasteConfig.KeySize);
+            string iv = GenerateIV(config.PasteConfig.BlockSize);
+
+            byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
+            byte[] keyBytes = AesCounterManaged.CreateKey(key, ivBytes, config.PasteConfig.KeySize);
+
+            // Set the hashed password if one is provided and modify the key
+            if (!string.IsNullOrEmpty(password))
+            {
+                paste.HashedPassword = HashPassword(key, password);
+                keyBytes = AesCounterManaged.CreateKey(password, ivBytes, config.PasteConfig.KeySize);
+            }
+
+            // Encrypt Content
+            byte[] data = Encoding.Unicode.GetBytes(content);
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                AesCounterManaged.EncryptToFile(filePath, ms, config.PasteConfig.ChunkSize, keyBytes, ivBytes);
+            }
+
+            // Generate a deletion key
+            string delKey = StringHelper.RandomString(config.PasteConfig.DeleteKeyLength);
+
+            paste.Key = key;
+            paste.KeySize = config.PasteConfig.KeySize;
+            paste.IV = iv;
+            paste.BlockSize = config.PasteConfig.BlockSize;
+
+            paste.FileName = fileName;
+            //paste.Content = content;
             paste.Title = title;
             paste.Syntax = syntax;
             paste.Hide = hide;
+            paste.DeleteKey = delKey;
 
             return paste;
         }
@@ -91,6 +111,21 @@ namespace Teknik.Areas.Paste
                 return true;
 
             return false;
+        }
+
+        public static string GenerateKey(int keySize)
+        {
+            return StringHelper.RandomString(keySize / 8);
+        }
+
+        public static string GenerateIV(int ivSize)
+        {
+            return StringHelper.RandomString(ivSize / 16);
+        }
+
+        public static string HashPassword(string key, string password)
+        {
+            return SHA384.Hash(key, password).ToHex();
         }
     }
 }

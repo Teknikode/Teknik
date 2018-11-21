@@ -42,6 +42,10 @@ namespace Teknik.Areas.Upload.Models
         [CaseSensitive]
         public string DeleteKey { get; set; }
 
+        public DateTime? ExpireDate { get; set; }
+
+        public int MaxDownloads { get; set; }
+
         public int Downloads { get; set; }
     }
 }

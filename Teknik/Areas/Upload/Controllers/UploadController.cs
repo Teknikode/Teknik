@@ -64,11 +64,14 @@ namespace Teknik.Areas.Upload.Controllers
                     if (User.Identity.IsAuthenticated)
                     {
                         maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
-                        User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                        //if (user.AccountType == AccountType.Premium)
-                        //{
-                        //    maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
-                        //}
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
+                            if (userInfo.AccountType == AccountType.Premium)
+                            {
+                                maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
+                            }
+                        }
                     }
                     if (file.Length <= maxUploadSize)
                     {
