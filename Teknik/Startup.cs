@@ -237,6 +237,9 @@ namespace Teknik
             // Create and Migrate the database
             dbContext.Database.Migrate();
 
+            // Run the overall migration calls
+            TeknikMigration.RunMigration();
+
             // Initiate Logging
             loggerFactory.AddLogger(config);
 

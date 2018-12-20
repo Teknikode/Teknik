@@ -37,11 +37,6 @@ namespace Teknik.Controllers
         protected readonly Config _config;
         protected readonly TeknikEntities _dbContext;
 
-        //protected virtual new TeknikPrincipal User
-        //{
-        //    get { return HttpContext.User as TeknikPrincipal; }
-        //}
-
         public DefaultController(ILogger<Logger> logger, Config config, TeknikEntities dbContext)
         {
             _logger = logger;
