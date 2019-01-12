@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IdentityServer4;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Entities;
+using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +17,7 @@ using Teknik.Configuration;
 using Teknik.IdentityServer.Models;
 using Teknik.IdentityServer.Models.Manage;
 using Teknik.Logging;
+using Teknik.Utilities;
 
 namespace Teknik.IdentityServer.Controllers
 {
@@ -398,6 +405,115 @@ namespace Teknik.IdentityServer.Controllers
             }
 
             return new JsonResult(new { success = false, message = "User does not exist." });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetClient(string username, string clientId, [FromServices] IClientStore clientStore, [FromServices] ConfigurationDbContext configContext)
+        {
+            if (string.IsNullOrEmpty(username))
+                return new JsonResult(new { success = false, message = "Username is required" });
+
+            if (string.IsNullOrEmpty(clientId))
+                return new JsonResult(new { success = false, message = "Client Id is required" });
+
+            var client = configContext.Clients.FirstOrDefault(c => 
+                                    c.ClientId == clientId && 
+                                    c.Properties.Exists(p => 
+                                        p.Key == "username" && 
+                                        p.Value.ToLower() == username.ToLower())
+                                    );
+            if (client != null)
+            {
+                var foundClient = await clientStore.FindClientByIdAsync(client.ClientId);
+                return new JsonResult(new { success = true, data = foundClient });
+            }
+
+            return new JsonResult(new { success = false, message = "Client does not exist." });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetClients(string username, [FromServices] IClientStore clientStore, [FromServices] ConfigurationDbContext configContext)
+        {
+            if (string.IsNullOrEmpty(username))
+                return new JsonResult(new { success = false, message = "Username is required" });
+
+            var foundClientIds = configContext.Clients.Where(c =>
+                                    c.Properties.Exists(p =>
+                                        p.Key == "username" &&
+                                        p.Value.ToLower() == username.ToLower())
+                                    ).Select(c => c.ClientId);
+            var clients = new List<IdentityServer4.Models.Client>();
+            foreach (var clientId in foundClientIds)
+            {
+                var foundClient = await clientStore.FindClientByIdAsync(clientId);
+                if (foundClient != null)
+                    clients.Add(foundClient);
+            }
+
+            return new JsonResult(new { success = true, data = clients });
+        }
+
+        [HttpPost]
+        public IActionResult CreateClient(CreateClientModel model, [FromServices] ConfigurationDbContext configContext)
+        {
+            var clientId = StringHelper.RandomString(20, "abcdefghjkmnpqrstuvwxyz1234567890");
+            var clientSecret = StringHelper.RandomString(40, "abcdefghjkmnpqrstuvwxyz1234567890");
+
+            var client = new IdentityServer4.Models.Client
+            {
+                Properties = new Dictionary<string, string>()
+                {
+                    { "username", model.Username }
+                },
+                ClientId = clientId,
+                ClientName = model.Name,
+                AllowedGrantTypes = new List<string>()
+                {
+                    GrantType.AuthorizationCode,
+                    GrantType.ClientCredentials
+                },
+
+                ClientSecrets =
+                    {
+                        new IdentityServer4.Models.Secret(clientSecret.Sha256())
+                    },
+
+                RequireConsent = true,
+
+                RedirectUris =
+                {
+                    model.RedirectURI
+                },
+
+                PostLogoutRedirectUris =
+                {
+                    model.PostLogoutRedirectURI
+                },
+
+                AllowedScopes = model.AllowedScopes,
+
+                AllowOfflineAccess = true
+            };
+
+            configContext.Clients.Add(client.ToEntity());
+            configContext.SaveChanges();
+
+            return new JsonResult(new { success = true, data = new { id = clientId, secret = clientSecret } });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteClient(DeleteClientModel model, [FromServices] IClientStore clientStore, [FromServices] ConfigurationDbContext configContext)
+        {
+            var foundClient = await clientStore.FindClientByIdAsync(model.ClientId);
+            if (foundClient != null)
+            {
+                configContext.Clients.Remove(foundClient.ToEntity());
+                configContext.SaveChanges();
+
+                return new JsonResult(new { success = true });
+            }
+
+            return new JsonResult(new { success = false, message = "Client does not exist." });
         }
 
         private string FormatKey(string unformattedKey)

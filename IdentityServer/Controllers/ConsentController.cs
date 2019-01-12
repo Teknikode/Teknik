@@ -2,6 +2,7 @@
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 using Teknik.Configuration;
 using Teknik.IdentityServer.Models;
@@ -42,7 +43,7 @@ namespace Teknik.IdentityServer.Controllers
                 return View("Index", vm);
             }
 
-            return View("Error");
+            throw new ApplicationException($"Unable to load consent view model.");
         }
 
         /// <summary>
@@ -69,7 +70,7 @@ namespace Teknik.IdentityServer.Controllers
                 return View("Index", result.ViewModel);
             }
 
-            return View("Error");
+            throw new ApplicationException($"Unable to load consent view model.");
         }
     }
 }

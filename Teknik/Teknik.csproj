@@ -69,6 +69,7 @@
     <Folder Include="Areas\TOS\Models\" />
     <Folder Include="Areas\User\Controllers\" />
     <Folder Include="Controllers\" />
+    <Folder Include="Data\Migrations\" />
     <Folder Include="Views\Shared\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -94,6 +95,9 @@
     <Content Update="App_Data\MachineKey.config">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Areas\User\Views\User\Settings\ClientView.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
 

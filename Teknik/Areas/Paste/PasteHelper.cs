@@ -68,22 +68,13 @@ namespace Teknik.Areas.Paste
             string key = GenerateKey(config.PasteConfig.KeySize);
             string iv = GenerateIV(config.PasteConfig.BlockSize);
 
-            byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
-            byte[] keyBytes = AesCounterManaged.CreateKey(key, ivBytes, config.PasteConfig.KeySize);
-
-            // Set the hashed password if one is provided and modify the key
             if (!string.IsNullOrEmpty(password))
             {
                 paste.HashedPassword = HashPassword(key, password);
-                keyBytes = AesCounterManaged.CreateKey(password, ivBytes, config.PasteConfig.KeySize);
             }
 
-            // Encrypt Content
-            byte[] data = Encoding.Unicode.GetBytes(content);
-            using (MemoryStream ms = new MemoryStream(data))
-            {
-                AesCounterManaged.EncryptToFile(filePath, ms, config.PasteConfig.ChunkSize, keyBytes, ivBytes);
-            }
+            // Encrypt the contents to the file
+            EncryptContents(content, filePath, password, key, iv, config.PasteConfig.KeySize, config.PasteConfig.ChunkSize);
 
             // Generate a deletion key
             string delKey = StringHelper.RandomString(config.PasteConfig.DeleteKeyLength);
@@ -126,6 +117,25 @@ namespace Teknik.Areas.Paste
         public static string HashPassword(string key, string password)
         {
             return SHA384.Hash(key, password).ToHex();
+        }
+
+        public static void EncryptContents(string content, string filePath, string password, string key, string iv, int keySize, int chunkSize)
+        {
+            byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
+            byte[] keyBytes = AesCounterManaged.CreateKey(key, ivBytes, keySize);
+
+            // Set the hashed password if one is provided and modify the key
+            if (!string.IsNullOrEmpty(password))
+            {
+                keyBytes = AesCounterManaged.CreateKey(password, ivBytes, keySize);
+            }
+
+            // Encrypt Content
+            byte[] data = Encoding.Unicode.GetBytes(content);
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                AesCounterManaged.EncryptToFile(filePath, ms, chunkSize, keyBytes, ivBytes);
+            }
         }
     }
 }

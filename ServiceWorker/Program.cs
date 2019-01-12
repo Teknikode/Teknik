@@ -17,7 +17,7 @@ using Teknik.Data;
 using Teknik.Utilities;
 using Teknik.Utilities.Cryptography;
 
-namespace ServiceWorker
+namespace Teknik.ServiceWorker
 {
     public class Program
     {
@@ -56,6 +56,13 @@ namespace ServiceWorker
                             if (options.ScanUploads && config.UploadConfig.VirusScanEnable)
                             {
                                 ScanUploads(config, db);
+                            }
+
+                            // Runs the migration
+                            if (options.Migrate)
+                            {
+                                // Run the overall migration calls
+                                TeknikMigration.RunMigration(db, config);
                             }
                         }
 

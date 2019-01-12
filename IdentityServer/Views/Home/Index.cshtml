@@ -27,6 +27,13 @@
                     where you can find metadata and links to all the endpoints, key material, etc.
                 </p>
             </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+            <div class="col-md-10 col-md-offset-1">
+                <a class="btn btn-default" href="@Url.Action("Index", "Grants")">View Granted Clients</a>
+                <a class="btn btn-default" href="@Url.Action("Logout", "Account")">Logout</a>
+            </div>
+            }
         </div>
     </div>
 </div>

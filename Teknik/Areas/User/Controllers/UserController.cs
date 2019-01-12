@@ -35,6 +35,7 @@ using IdentityModel;
 using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
+using IdentityServer4.Models;
 
 namespace Teknik.Areas.Users.Controllers
 {
@@ -406,22 +407,23 @@ namespace Teknik.Areas.Users.Controllers
             return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
-        public IActionResult AccessTokenSettings()
+        public async Task<IActionResult> DeveloperSettings()
         {
             string username = User.Identity.Name;
             User user = UserHelper.GetUser(_dbContext, username);
 
             if (user != null)
             {
-                ViewBag.Title = "Access Token Settings - " + _config.Title;
-                ViewBag.Description = "Your " + _config.Title + " Access Token Settings";
+                ViewBag.Title = "Developer Settings - " + _config.Title;
+                ViewBag.Description = "Your " + _config.Title + " Developer Settings";
 
-                APIClientSettingsViewModel model = new APIClientSettingsViewModel();
-                model.Page = "AccessTokens";
+                DeveloperSettingsViewModel model = new DeveloperSettingsViewModel();
+                model.Page = "Developer";
                 model.UserID = user.UserId;
                 model.Username = user.Username;
 
                 model.AuthTokens = new List<AuthTokenViewModel>();
+                model.Clients = new List<ClientViewModel>();
                 //foreach (AuthToken token in user.AuthTokens)
                 //{
                 //    AuthTokenViewModel tokenModel = new AuthTokenViewModel();
@@ -432,7 +434,20 @@ namespace Teknik.Areas.Users.Controllers
                 //    model.AuthTokens.Add(tokenModel);
                 //}
 
-                return View("/Areas/User/Views/User/Settings/AccessTokenSettings.cshtml", model);
+                Client[] clients = await IdentityHelper.GetClients(_config, username);
+                foreach (Client client in clients)
+                {
+                    model.Clients.Add(new ClientViewModel()
+                    {
+                        Id = client.ClientId,
+                        Name = client.ClientName,
+                        RedirectURI = string.Join(',', client.RedirectUris),
+                        PostLogoutRedirectURI = string.Join(',', client.PostLogoutRedirectUris),
+                        AllowedScopes = client.AllowedScopes
+                    });
+                }
+
+                return View("/Areas/User/Views/User/Settings/DeveloperSettings.cshtml", model);
             }
 
             return new StatusCodeResult(StatusCodes.Status403Forbidden);
@@ -1204,6 +1219,58 @@ namespace Teknik.Areas.Users.Controllers
                     return Json(new { error = "Authentication Token does not exist" });
                 }
                 return Json(new { error = "User does not exist" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateClient(string name, string redirectUri, string logoutUri, [FromServices] ICompositeViewEngine viewEngine)
+        {
+            try
+            {
+                // Validate the code with the identity server
+                var result = await IdentityHelper.CreateClient(_config, User.Identity.Name, name, redirectUri, logoutUri, "openid", "teknik-api.read", "teknik-api.write");
+
+                if (result.Success)
+                {
+                    var client = (JObject)result.Data;
+
+                    ClientViewModel model = new ClientViewModel();
+                    model.Id = client["id"].ToString();
+                    model.Name = name;
+                    model.RedirectURI = redirectUri;
+                    model.PostLogoutRedirectURI = logoutUri;
+
+                    string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/User/Views/User/Settings/ClientView.cshtml", model);
+
+                    return Json(new { result = true, clientId = client["id"], secret = client["secret"], html = renderedView });
+                }
+                return Json(new { error = result.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteClient(string clientId)
+        {
+            try
+            {
+                // Validate the code with the identity server
+                var result = await IdentityHelper.DeleteClient(_config, clientId);
+
+                if (result.Success)
+                {
+                    return Json(new { result = true });
+                }
+                return Json(new { error = result.Message });
             }
             catch (Exception ex)
             {

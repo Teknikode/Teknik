@@ -14,14 +14,18 @@
                 <!--left col-->
                 <div class="panel panel-default">
                     <ul class="list-group">
-                        <div class="panel-heading text-center"><strong>Settings</strong></div>
+                        <div class="panel-heading text-center"><strong>Personal Settings</strong></div>
                         <a href="@Url.SubRouteUrl("user", "User.ProfileSettings")" class="list-group-item @(Model.Page == "Profile" ? "active" : string.Empty)">Profile</a>
                         <a href="@Url.SubRouteUrl("user", "User.AccountSettings")" class="list-group-item @(Model.Page == "Account" ? "active" : string.Empty)">Account</a>
                         <a href="@Url.SubRouteUrl("user", "User.SecuritySettings")" class="list-group-item @(Model.Page == "Security" ? "active" : string.Empty)">Security</a>
                         <a href="@Url.SubRouteUrl("user", "User.InviteSettings")" class="list-group-item @(Model.Page == "Invite" ? "active" : string.Empty)">Invite Codes</a>
                         <a href="@Url.SubRouteUrl("user", "User.BlogSettings")" class="list-group-item @(Model.Page == "Blog" ? "active" : string.Empty)">Blogging</a>
                         <a href="@Url.SubRouteUrl("user", "User.UploadSettings")" class="list-group-item @(Model.Page == "Upload" ? "active" : string.Empty)">Uploads</a>
-                        <a href="@Url.SubRouteUrl("user", "User.APIClientSettings")" class="list-group-item @(Model.Page == "APIClients" ? "active" : string.Empty)">API Clients</a>
+                    </ul>
+                </div>
+                <div class="panel panel-default">
+                    <ul class="list-group">
+                        <a href="@Url.SubRouteUrl("user", "User.DeveloperSettings")" class="list-group-item @(Model.Page == "Developer" ? "active" : string.Empty)">Developer Settings</a>
                     </ul>
                 </div>
             </div><!--/col-2-->

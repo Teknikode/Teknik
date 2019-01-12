@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ServiceWorker
+namespace Teknik.ServiceWorker
 {
     public class ArgumentOptions
     {
@@ -15,6 +15,9 @@ namespace ServiceWorker
 
         [Option('s', "scan", Default = false, Required = false, HelpText = "Scan all uploads for viruses")]
         public bool ScanUploads { get; set; }
+
+        [Option('m', "migrate", Default = false, Required = false, HelpText = "Migrate everything")]
+        public bool Migrate { get; set; }
 
         // Omitting long name, default --verbose
         [Option(HelpText = "Prints all messages to standard output.")]

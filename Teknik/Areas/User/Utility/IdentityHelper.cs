@@ -1,4 +1,5 @@
 ﻿using IdentityModel.Client;
+using IdentityServer4.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -323,6 +324,58 @@ namespace Teknik.Areas.Users.Utility
                 return ((JArray)response.Data).ToObject<string[]>();
             }
             throw new Exception(response.Message);
+        }
+
+        public static async Task<Client> GetClient(Config config, string username, string clientId)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/GetClient?username={username}&clientId={clientId}");
+
+            var result = await Get(config, manageUrl);
+            if (result.Success)
+            {
+                return (Client)result.Data;
+            }
+            throw new Exception(result.Message);
+        }
+
+        public static async Task<Client[]> GetClients(Config config, string username)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/GetClients?username={username}");
+
+            var result = await Get(config, manageUrl);
+            if (result.Success)
+            {
+                return ((JArray)result.Data).ToObject<Client[]>();
+            }
+            throw new Exception(result.Message);
+        }
+
+        public static async Task<IdentityResult> CreateClient(Config config, string username, string name, string redirectURI, string postLogoutRedirectURI, params string[] allowedScopes)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/CreateClient");
+
+            var response = await Post(config, manageUrl,
+                new
+                {
+                    username = username,
+                    name = name,
+                    redirectURI = redirectURI,
+                    postLogoutRedirectURI = postLogoutRedirectURI,
+                    allowedScopes = allowedScopes
+                });
+            return response;
+        }
+
+        public static async Task<IdentityResult> DeleteClient(Config config, string clientId)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/DeleteClient");
+
+            var response = await Post(config, manageUrl,
+                new
+                {
+                    clientId = clientId
+                });
+            return response;
         }
     }
 }

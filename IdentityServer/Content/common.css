@@ -17,6 +17,12 @@ label {
   position: relative;
   top: -10px;
 }
+
+.abc-checkbox label {
+    display: inline-block !important;
+    padding-left: 10px !important;
+}
+
 .logged-out iframe {
   display: none;
   width: 0;

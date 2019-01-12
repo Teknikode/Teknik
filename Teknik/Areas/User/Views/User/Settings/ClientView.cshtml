@@ -1,0 +1,25 @@
+@model Teknik.Areas.Users.ViewModels.ClientViewModel
+
+<li class="list-group-item" id="client_@Model.Id">
+    <div class="btn-group btn-group-sm pull-right" role="group" aria-label="...">
+        <button type="button" class="btn btn-danger text-danger deleteClient" id="deleteClient_@Model.Id" data-clientId="@Model.Id">Delete</button>
+    </div>
+    <h3 class="list-group-item-heading" id="clientName_@Model.Name">@Model.Name</h3>
+    <div class="list-group-item-text">
+        <div class="row">
+            <div class="col-sm-4">
+                <strong>Client Id</strong>: @Model.Id
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-4"><strong>Redirect Url</strong></div>
+                    <div class="col-sm-8">@Model.RedirectURI</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4"><strong>Logout Url</strong></div>
+                    <div class="col-sm-8">@Model.PostLogoutRedirectURI</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</li>

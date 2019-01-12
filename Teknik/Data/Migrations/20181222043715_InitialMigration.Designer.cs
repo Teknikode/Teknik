@@ -10,14 +10,14 @@ using Teknik.Data;
 namespace Teknik.Data.Migrations
 {
     [DbContext(typeof(TeknikEntities))]
-    [Migration("20180624191511_UserLoginInfo")]
-    partial class UserLoginInfo
+    [Migration("20181222043715_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
+                .HasAnnotation("ProductVersion", "2.2.0-preview3-35497")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -142,7 +142,13 @@ namespace Teknik.Data.Migrations
 
                     b.Property<DateTime>("DatePosted");
 
+                    b.Property<string>("DeleteKey")
+                        .HasAnnotation("CaseSensitive", true);
+
                     b.Property<DateTime?>("ExpireDate");
+
+                    b.Property<string>("FileName")
+                        .HasAnnotation("CaseSensitive", true);
 
                     b.Property<string>("HashedPassword")
                         .HasAnnotation("CaseSensitive", true);
@@ -357,6 +363,8 @@ namespace Teknik.Data.Migrations
 
                     b.Property<int>("Downloads");
 
+                    b.Property<DateTime?>("ExpireDate");
+
                     b.Property<string>("FileName")
                         .HasAnnotation("CaseSensitive", true);
 
@@ -367,6 +375,8 @@ namespace Teknik.Data.Migrations
                         .HasAnnotation("CaseSensitive", true);
 
                     b.Property<int>("KeySize");
+
+                    b.Property<int>("MaxDownloads");
 
                     b.Property<int?>("Takedown_TakedownId");
 
@@ -382,43 +392,6 @@ namespace Teknik.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Uploads");
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.AuthToken", b =>
-                {
-                    b.Property<int>("AuthTokenId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("HashedToken")
-                        .HasAnnotation("CaseSensitive", true);
-
-                    b.Property<DateTime?>("LastDateUsed");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("AuthTokenId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AuthTokens");
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.BlogSettings", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Title");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Teknik.Areas.Users.Models.InviteCode", b =>
@@ -468,174 +441,13 @@ namespace Teknik.Data.Migrations
                     b.ToTable("UserLogins");
                 });
 
-            modelBuilder.Entity("Teknik.Areas.Users.Models.RecoveryEmailVerification", b =>
-                {
-                    b.Property<int>("RecoveryEmailVerificationId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Code")
-                        .HasAnnotation("CaseSensitive", true);
-
-                    b.Property<DateTime>("DateCreated");
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("RecoveryEmailVerificationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RecoveryEmailVerifications");
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.ResetPasswordVerification", b =>
-                {
-                    b.Property<int>("ResetPasswordVerificationId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Code")
-                        .HasAnnotation("CaseSensitive", true);
-
-                    b.Property<DateTime>("DateCreated");
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("ResetPasswordVerificationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ResetPasswordVerifications");
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.Role", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("RoleId");
-
-                    b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.SecuritySettings", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("AllowTrustedDevices");
-
-                    b.Property<string>("PGPSignature");
-
-                    b.Property<string>("RecoveryEmail");
-
-                    b.Property<bool>("RecoveryVerified");
-
-                    b.Property<bool>("TwoFactorEnabled");
-
-                    b.Property<string>("TwoFactorKey")
-                        .HasAnnotation("CaseSensitive", true);
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.TrustedDevice", b =>
-                {
-                    b.Property<int>("TrustedDeviceId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("DateSeen");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("Token")
-                        .HasAnnotation("CaseSensitive", true);
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("TrustedDeviceId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TrustedDevices");
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.UploadSettings", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Encrypt");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Users");
-                });
-
             modelBuilder.Entity("Teknik.Areas.Users.Models.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AccountStatus");
-
-                    b.Property<int>("AccountType");
-
-                    b.Property<string>("HashedPassword")
-                        .HasAnnotation("CaseSensitive", true);
-
-                    b.Property<DateTime>("JoinDate");
-
-                    b.Property<DateTime>("LastSeen");
-
                     b.Property<string>("Username");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.UserRole", b =>
-                {
-                    b.Property<int>("UserRoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("RoleId");
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("UserRoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserRoles");
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.UserSettings", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("About");
-
-                    b.Property<string>("Quote");
-
-                    b.Property<string>("Website");
 
                     b.HasKey("UserId");
 
@@ -695,27 +507,6 @@ namespace Teknik.Data.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("VaultItem");
                 });
 
-            modelBuilder.Entity("Teknik.Models.TransferType", b =>
-                {
-                    b.Property<int>("TransferTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("PasteId");
-
-                    b.Property<int>("Type");
-
-                    b.Property<int?>("UserId");
-
-                    b.HasKey("TransferTypeId");
-
-                    b.HasIndex("PasteId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TransferTypes");
-                });
-
             modelBuilder.Entity("Teknik.Areas.Vault.Models.PasteVaultItem", b =>
                 {
                     b.HasBaseType("Teknik.Areas.Vault.Models.VaultItem");
@@ -723,8 +514,6 @@ namespace Teknik.Data.Migrations
                     b.Property<int>("PasteId");
 
                     b.HasIndex("PasteId");
-
-                    b.ToTable("PasteVaultItem");
 
                     b.HasDiscriminator().HasValue("PasteVaultItem");
                 });
@@ -736,8 +525,6 @@ namespace Teknik.Data.Migrations
                     b.Property<int>("UploadId");
 
                     b.HasIndex("UploadId");
-
-                    b.ToTable("UploadVaultItem");
 
                     b.HasDiscriminator().HasValue("UploadVaultItem");
                 });
@@ -832,22 +619,6 @@ namespace Teknik.Data.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("Teknik.Areas.Users.Models.AuthToken", b =>
-                {
-                    b.HasOne("Teknik.Areas.Users.Models.User", "User")
-                        .WithMany("AuthTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.BlogSettings", b =>
-                {
-                    b.HasOne("Teknik.Areas.Users.Models.UploadSettings", "UploadSettings")
-                        .WithOne("BlogSettings")
-                        .HasForeignKey("Teknik.Areas.Users.Models.BlogSettings", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Teknik.Areas.Users.Models.InviteCode", b =>
                 {
                     b.HasOne("Teknik.Areas.Users.Models.User", "ClaimedUser")
@@ -867,95 +638,73 @@ namespace Teknik.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Teknik.Areas.Users.Models.RecoveryEmailVerification", b =>
-                {
-                    b.HasOne("Teknik.Areas.Users.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.ResetPasswordVerification", b =>
-                {
-                    b.HasOne("Teknik.Areas.Users.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.SecuritySettings", b =>
-                {
-                    b.HasOne("Teknik.Areas.Users.Models.BlogSettings", "BlogSettings")
-                        .WithOne("SecuritySettings")
-                        .HasForeignKey("Teknik.Areas.Users.Models.SecuritySettings", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Teknik.Areas.Users.Models.UploadSettings", "UploadSettings")
-                        .WithOne("SecuritySettings")
-                        .HasForeignKey("Teknik.Areas.Users.Models.SecuritySettings", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Teknik.Areas.Users.Models.TrustedDevice", b =>
-                {
-                    b.HasOne("Teknik.Areas.Users.Models.User", "User")
-                        .WithMany("TrustedDevices")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Teknik.Areas.Users.Models.User", b =>
                 {
-                    b.HasOne("Teknik.Areas.Users.Models.BlogSettings", "BlogSettings")
-                        .WithOne("User")
-                        .HasForeignKey("Teknik.Areas.Users.Models.User", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.OwnsOne("Teknik.Areas.Users.Models.BlogSettings", "BlogSettings", b1 =>
+                        {
+                            b1.Property<int>("UserId")
+                                .ValueGeneratedOnAdd()
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.HasOne("Teknik.Areas.Users.Models.SecuritySettings", "SecuritySettings")
-                        .WithOne("User")
-                        .HasForeignKey("Teknik.Areas.Users.Models.User", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                            b1.Property<string>("Description")
+                                .HasColumnName("Description");
 
-                    b.HasOne("Teknik.Areas.Users.Models.UploadSettings", "UploadSettings")
-                        .WithOne("User")
-                        .HasForeignKey("Teknik.Areas.Users.Models.User", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                            b1.Property<string>("Title")
+                                .HasColumnName("Title");
 
-                    b.HasOne("Teknik.Areas.Users.Models.UserSettings", "UserSettings")
-                        .WithOne("User")
-                        .HasForeignKey("Teknik.Areas.Users.Models.User", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
+                            b1.HasKey("UserId");
 
-            modelBuilder.Entity("Teknik.Areas.Users.Models.UserRole", b =>
-                {
-                    b.HasOne("Teknik.Areas.Users.Models.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                            b1.ToTable("Users");
 
-                    b.HasOne("Teknik.Areas.Users.Models.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
+                            b1.HasOne("Teknik.Areas.Users.Models.User")
+                                .WithOne("BlogSettings")
+                                .HasForeignKey("Teknik.Areas.Users.Models.BlogSettings", "UserId")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
 
-            modelBuilder.Entity("Teknik.Areas.Users.Models.UserSettings", b =>
-                {
-                    b.HasOne("Teknik.Areas.Users.Models.BlogSettings", "BlogSettings")
-                        .WithOne("UserSettings")
-                        .HasForeignKey("Teknik.Areas.Users.Models.UserSettings", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.OwnsOne("Teknik.Areas.Users.Models.UploadSettings", "UploadSettings", b1 =>
+                        {
+                            b1.Property<int>("UserId")
+                                .ValueGeneratedOnAdd()
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.HasOne("Teknik.Areas.Users.Models.SecuritySettings", "SecuritySettings")
-                        .WithOne("UserSettings")
-                        .HasForeignKey("Teknik.Areas.Users.Models.UserSettings", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                            b1.Property<bool>("Encrypt")
+                                .HasColumnName("Encrypt");
 
-                    b.HasOne("Teknik.Areas.Users.Models.UploadSettings", "UploadSettings")
-                        .WithOne("UserSettings")
-                        .HasForeignKey("Teknik.Areas.Users.Models.UserSettings", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("Users");
+
+                            b1.HasOne("Teknik.Areas.Users.Models.User")
+                                .WithOne("UploadSettings")
+                                .HasForeignKey("Teknik.Areas.Users.Models.UploadSettings", "UserId")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
+
+                    b.OwnsOne("Teknik.Areas.Users.Models.UserSettings", "UserSettings", b1 =>
+                        {
+                            b1.Property<int>("UserId")
+                                .ValueGeneratedOnAdd()
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("About")
+                                .HasColumnName("About");
+
+                            b1.Property<string>("Quote")
+                                .HasColumnName("Quote");
+
+                            b1.Property<string>("Website")
+                                .HasColumnName("Website");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("Users");
+
+                            b1.HasOne("Teknik.Areas.Users.Models.User")
+                                .WithOne("UserSettings")
+                                .HasForeignKey("Teknik.Areas.Users.Models.UserSettings", "UserId")
+                                .OnDelete(DeleteBehavior.Cascade);
+                        });
                 });
 
             modelBuilder.Entity("Teknik.Areas.Vault.Models.Vault", b =>
@@ -971,17 +720,6 @@ namespace Teknik.Data.Migrations
                         .WithMany("VaultItems")
                         .HasForeignKey("VaultId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Teknik.Models.TransferType", b =>
-                {
-                    b.HasOne("Teknik.Areas.Paste.Models.Paste", "Paste")
-                        .WithMany("Transfers")
-                        .HasForeignKey("PasteId");
-
-                    b.HasOne("Teknik.Areas.Users.Models.User", "User")
-                        .WithMany("Transfers")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Teknik.Areas.Vault.Models.PasteVaultItem", b =>

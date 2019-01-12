@@ -139,6 +139,7 @@
         "inputFiles": [
             "./wwwroot/js/app/lib/Blob.js",
             "./wwwroot/lib/file-saver/js/FileSaver.js",
+            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/Upload/Download.js"
         ]
     },
@@ -232,6 +233,12 @@
         "outputFileName": "./wwwroot/js/user.settings.security.min.js",
         "inputFiles": [
             "./wwwroot/js/app/User/SecuritySettings.js"
+        ]
+    },
+    {
+        "outputFileName": "./wwwroot/js/user.settings.developer.min.js",
+        "inputFiles": [
+            "./wwwroot/js/app/User/DeveloperSettings.js"
         ]
     },
     {

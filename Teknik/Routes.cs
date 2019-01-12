@@ -660,11 +660,11 @@ namespace Teknik
               defaults: new { area = "User", controller = "User", action = "ProfileSettings" }
             );
             routes.MapSubdomainRoute(
-              name: "User.AccessTokenSettings",
+              name: "User.DeveloperSettings",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "user" },
-              template: "Settings/AccessTokens",
-              defaults: new { area = "User", controller = "User", action = "AccessTokenSettings" }
+              template: "Settings/Developer",
+              defaults: new { area = "User", controller = "User", action = "DeveloperSettings" }
             );
             routes.MapSubdomainRoute(
               name: "User.InviteSettings",
