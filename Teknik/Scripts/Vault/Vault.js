@@ -196,7 +196,7 @@ $(document).ready(function () {
                 $.ajax({
                     type: "POST",
                     url: deleteVaultURL,
-                    data: { url: vaultUrl },
+                    data: { id: vaultUrl },
                     headers: { 'X-Requested-With': 'XMLHttpRequest' },
                     xhrFields: {
                         withCredentials: true

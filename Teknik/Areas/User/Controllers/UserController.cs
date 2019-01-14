@@ -314,7 +314,45 @@ namespace Teknik.Areas.Users.Controllers
             }
             return View(model);
         }
-        
+
+        public IActionResult ViewServiceData()
+        {
+            string username = User.Identity.Name;
+
+            ViewServiceDataViewModel model = new ViewServiceDataViewModel();
+            ViewBag.Title = "User Does Not Exist - " + _config.Title;
+            ViewBag.Description = "The User does not exist";
+
+            try
+            {
+                User user = UserHelper.GetUser(_dbContext, username);
+
+                if (user != null)
+                {
+                    ViewBag.Title = "Service Data - " + _config.Title;
+                    ViewBag.Description = "Viewing all of your service data";
+                    
+                    model.Uploads = _dbContext.Uploads.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DateUploaded).ToList();
+
+                    model.Pastes = _dbContext.Pastes.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DatePosted).ToList();
+
+                    model.ShortenedUrls = _dbContext.ShortenedUrls.Where(s => s.UserId == user.UserId).OrderByDescending(s => s.DateAdded).ToList();
+
+                    model.Vaults = _dbContext.Vaults.Where(v => v.UserId == user.UserId).OrderByDescending(v => v.DateCreated).ToList();
+
+                    return View(model);
+                }
+                model.Error = true;
+                model.ErrorMessage = "The user does not exist";
+            }
+            catch (Exception ex)
+            {
+                model.Error = true;
+                model.ErrorMessage = ex.GetFullMessage(true);
+            }
+            return View(model);
+        }
+
         public IActionResult Settings()
         {
             return Redirect(Url.SubRouteUrl("user", "User.ProfileSettings"));

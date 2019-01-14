@@ -181,5 +181,31 @@ namespace Teknik.Areas.Paste.Controllers
             }
             return View("~/Areas/Paste/Views/Paste/Index.cshtml", model);
         }
+
+        [HttpPost]
+        public IActionResult Delete(string id)
+        {
+            Models.Paste foundPaste = _dbContext.Pastes.Where(p => p.Url == id).FirstOrDefault();
+            if (foundPaste != null)
+            {
+                if (foundPaste.User.Username == User.Identity.Name)
+                {
+                    string filePath = foundPaste.FileName;
+                    // Delete from the DB
+                    _dbContext.Pastes.Remove(foundPaste);
+                    _dbContext.SaveChanges();
+
+                    // Delete the File
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    return Json(new { result = true });
+                }
+                return Json(new { error = new { message = "You do not have permission to edit this Paste" } });
+            }
+            return Json(new { error = new { message = "This Paste does not exist" } });
+        }
     }
 }

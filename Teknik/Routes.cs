@@ -418,6 +418,13 @@ namespace Teknik
               defaults: new { area = "Paste", controller = "Paste", action = "ViewPaste", type = "Download" }
             );
             routes.MapSubdomainRoute(
+              name: "Paste.Delete",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "paste", "p" },
+              template: "Delete",
+              defaults: new { area = "Paste", controller = "Paste", action = "Delete" }
+            );
+            routes.MapSubdomainRoute(
               name: "Paste.Action",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "paste", "p" },
@@ -511,6 +518,13 @@ namespace Teknik
               defaults: new { area = "Shortener", controller = "Shortener", action = "Index" }
             );
             routes.MapSubdomainRoute(
+              name: "Shortener.Delete",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "shorten", "s" },
+              template: "Delete",
+              defaults: new { area = "Shortener", controller = "Shortener", action = "Delete" }
+            );
+            routes.MapSubdomainRoute(
               name: "Shortener.Action",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "shorten", "s" },
@@ -579,6 +593,13 @@ namespace Teknik
               defaults: new { area = "Upload", controller = "Upload", action = "GenerateDeleteKey" }
             );
             routes.MapSubdomainRoute(
+              name: "Upload.Delete",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "upload", "u" },
+              template: "Delete",
+              defaults: new { area = "Upload", controller = "Upload", action = "Delete" }
+            );
+            routes.MapSubdomainRoute(
               name: "Upload.Download",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "upload", "u" },
@@ -586,11 +607,11 @@ namespace Teknik
               defaults: new { area = "Upload", controller = "Upload", action = "Download" }
             );
             routes.MapSubdomainRoute(
-              name: "Upload.Delete",
+              name: "Upload.DeleteByKey",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "upload", "u" },
               template: "{file}/{key}",
-              defaults: new { area = "Upload", controller = "Upload", action = "Delete" }
+              defaults: new { area = "Upload", controller = "Upload", action = "DeleteByKey" }
             );
             routes.MapSubdomainRoute(
               name: "Upload.Action",
@@ -709,6 +730,13 @@ namespace Teknik
               defaults: new { area = "User", controller = "User", action = "VerifyRecoveryEmail" }
             );
             routes.MapSubdomainRoute(
+              name: "User.ViewServiceData",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "user" },
+              template: "ServiceData",
+              defaults: new { area = "User", controller = "User", action = "ViewServiceData" }
+            );
+            routes.MapSubdomainRoute(
               name: "User.ViewProfile",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "user" },
@@ -762,11 +790,11 @@ namespace Teknik
               defaults: new { area = "Vault", controller = "Vault", action = "EditVault" }
             );
             routes.MapSubdomainRoute(
-              name: "Vault.DeleteVault",
+              name: "Vault.Delete",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "vault", "v" },
               template: "Delete",
-              defaults: new { area = "Vault", controller = "Vault", action = "DeleteVault" }
+              defaults: new { area = "Vault", controller = "Vault", action = "Delete" }
             );
             routes.MapSubdomainRoute(
               name: "Vault.ViewVault",

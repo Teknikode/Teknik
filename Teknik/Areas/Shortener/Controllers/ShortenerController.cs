@@ -76,6 +76,24 @@ namespace Teknik.Areas.Shortener.Controllers
             return Json(new { error = "Must be a valid Url" });
         }
 
+        [HttpPost]
+        public IActionResult Delete(string id)
+        {
+            ShortenedUrl shortenedUrl = _dbContext.ShortenedUrls.Where(s => s.ShortUrl == id).FirstOrDefault();
+            if (shortenedUrl != null)
+            {
+                if (shortenedUrl.User.Username == User.Identity.Name)
+                {
+                    _dbContext.ShortenedUrls.Remove(shortenedUrl);
+                    _dbContext.SaveChanges();
+
+                    return Json(new { result = true });
+                }
+                return Json(new { error = new { message = "You do not have permission to edit this Shortened URL" } });
+            }
+            return Json(new { error = new { message = "This Shortened URL does not exist" } });
+        }
+
         [AllowAnonymous]
         public IActionResult Verify()
         {

@@ -193,6 +193,13 @@
         ]
     },
     {
+        "outputFileName": "./wwwroot/js/user.serviceData.min.js",
+        "inputFiles": [
+            "./wwwroot/lib/bootbox/js/bootbox.js",
+            "./wwwroot/js/app/User/ViewServiceData.js"
+        ]
+    },
+    {
         "outputFileName": "./wwwroot/js/user.reset.min.js",
         "inputFiles": [
             "./wwwroot/js/app/User/ResetPass.js"

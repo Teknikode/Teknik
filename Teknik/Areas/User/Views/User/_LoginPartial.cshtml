@@ -13,6 +13,9 @@
                     <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })">View Blog</a>
                 </li>
                 <li>
+                    <a href="@Url.SubRouteUrl("user", "User.ViewServiceData")">Service Data</a>
+                </li>
+                <li>
                     <a href="@Url.SubRouteUrl("user", "User.Settings")">Settings</a>
                 </li>
                 @if (User.IsInRole("Admin"))

@@ -125,7 +125,7 @@ namespace Teknik.Areas.Upload.Controllers
                                         _dbContext.SaveChanges();
                                     }
                                 }
-                                return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), contentType = upload.ContentType, contentLength = StringHelper.GetBytesReadable(upload.ContentLength), deleteUrl = Url.SubRouteUrl("u", "Upload.Delete", new { file = upload.Url, key = upload.DeleteKey }) } });
+                                return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), contentType = upload.ContentType, contentLength = StringHelper.GetBytesReadable(upload.ContentLength), deleteUrl = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = upload.Url, key = upload.DeleteKey }) } });
                             }
                         }
                         return Json(new { error = new { message = "Unable to upload file" } });
@@ -419,7 +419,7 @@ namespace Teknik.Areas.Upload.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Delete(string file, string key)
+        public IActionResult DeleteByKey(string file, string key)
         {
             ViewBag.Title = "File Delete - " + file + " - " + _config.Title;
             Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
@@ -462,11 +462,37 @@ namespace Teknik.Areas.Upload.Controllers
                     upload.DeleteKey = delKey;
                     _dbContext.Entry(upload).State = EntityState.Modified;
                     _dbContext.SaveChanges();
-                    return Json(new { result = new { url = Url.SubRouteUrl("u", "Upload.Delete", new { file = file, key = delKey }) } });
+                    return Json(new { result = new { url = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = file, key = delKey }) } });
                 }
                 return Json(new { error = new { message = "You do not own this upload" } });
             }
             return Json(new { error = new { message = "Invalid URL" } });
+        }
+
+        [HttpPost]
+        public IActionResult Delete(string id)
+        {
+            Models.Upload foundUpload = _dbContext.Uploads.Where(u => u.Url == id).FirstOrDefault();
+            if (foundUpload != null)
+            {
+                if (foundUpload.User.Username == User.Identity.Name)
+                {
+                    string filePath = foundUpload.FileName;
+                    // Delete from the DB
+                    _dbContext.Uploads.Remove(foundUpload);
+                    _dbContext.SaveChanges();
+
+                    // Delete the File
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    return Json(new { result = true });
+                }
+                return Json(new { error = new { message = "You do not have permission to edit this Paste" } });
+            }
+            return Json(new { error = new { message = "This Paste does not exist" } });
         }
     }
 }
