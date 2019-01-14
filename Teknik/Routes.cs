@@ -533,7 +533,7 @@ namespace Teknik
             );
             routes.MapSubdomainRoute(
               name: "Shortener.View",
-              domains: new List<string>() { config.ShortenerConfig.ShortenerHost },
+              domains: new List<string>() { config.ShortenerConfig.ShortenerHost, config.Host },
               subDomains: new List<string>() { string.Empty, "shortened" },
               template: "{url}",
               defaults: new { area = "Shortener", controller = "Shortener", action = "RedirectToUrl" }
