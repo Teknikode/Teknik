@@ -24,7 +24,7 @@
         }
 
         <div class="row text-center">
-            <div class="col-sm-3"><h1>@Model.Username</h1></div>
+            <div class="col-sm-4 @(string.IsNullOrEmpty(Model.UserSettings.About) ? "col-sm-offset-4" : "")"><h1>@Model.Username</h1></div>
         </div>
         if (User.IsInRole("Admin"))
         {
@@ -76,7 +76,7 @@
         </div>
         <div class="row">
             <!-- Left Info Box -->
-            <div class="col-sm-3"><!--left col-->
+            <div class="col-sm-4 @(string.IsNullOrEmpty(Model.UserSettings.About) ? "col-sm-offset-4" : "")"><!--left col-->
                 <ul class="list-group">
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.IdentityUserInfo.CreationDate?.ToString("s")">@Model.IdentityUserInfo.CreationDate?.ToString("MMMM dd, yyyy")</time></li>
                     @if (OwnProfile)
@@ -120,17 +120,20 @@
                 </div>
                 }
             </div><!--/col-3-->
+            @if (!string.IsNullOrEmpty(Model.UserSettings.About))
+            {
             <!-- Right Content Area -->
-            <div class="col-sm-9">
+            <div class="col-sm-8">
                 @if (OwnProfile)
                 {
-                        <div class="col-sm-12" id="markdown_body">@Html.Markdown(@Model.UserSettings.About)</div>
+                        <div class="col-sm-12" id="markdown_body">@Html.Markdown(Model.UserSettings.About)</div>
                 }
                 else
                 {
-                    @Html.Markdown(@Model.UserSettings.About)
+                    @Html.Markdown(Model.UserSettings.About)
                 }
             </div><!--/col-9-->
+            }
         </div><!--/row-->
     }
     else
