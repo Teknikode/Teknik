@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Users.Models
 {
@@ -13,9 +14,17 @@ namespace Teknik.Areas.Users.Models
         [Column("Encrypt")]
         public bool Encrypt { get; set; }
 
+        [Column("ExpirationLength")]
+        public int ExpirationLength { get; set; }
+
+        [Column("ExpirationUnit")]
+        public ExpirationUnit ExpirationUnit { get; set; }
+
         public UploadSettings()
         {
             Encrypt = false;
+            ExpirationLength = 1;
+            ExpirationUnit = ExpirationUnit.Never;
         }
     }
 }

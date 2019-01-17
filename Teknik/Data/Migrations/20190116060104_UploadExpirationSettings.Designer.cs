@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Teknik.Data;
 
 namespace Teknik.Data.Migrations
 {
     [DbContext(typeof(TeknikEntities))]
-    partial class TeknikEntitiesModelSnapshot : ModelSnapshot
+    [Migration("20190116060104_UploadExpirationSettings")]
+    partial class UploadExpirationSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -669,11 +671,11 @@ namespace Teknik.Data.Migrations
                             b1.Property<bool>("Encrypt")
                                 .HasColumnName("Encrypt");
 
-                            b1.Property<int>("ExpirationLength")
-                                .HasColumnName("ExpirationLength");
+                            b1.Property<int>("ExpireLength")
+                                .HasColumnName("ExpireLength");
 
-                            b1.Property<int>("ExpirationUnit")
-                                .HasColumnName("ExpirationUnit");
+                            b1.Property<int>("ExpireUnit")
+                                .HasColumnName("ExpireUnit");
 
                             b1.HasKey("UserId");
 

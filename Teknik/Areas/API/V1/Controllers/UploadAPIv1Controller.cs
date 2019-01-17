@@ -41,11 +41,14 @@ namespace Teknik.Areas.API.V1.Controllers
                         if (User.Identity.IsAuthenticated)
                         {
                             maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
-                            User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                            //if (user.AccountType == AccountType.Premium)
-                            //{
-                            //    maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
-                            //}
+                            if (User.Identity.IsAuthenticated)
+                            {
+                                IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
+                                if (userInfo.AccountType == AccountType.Premium)
+                                {
+                                    maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
+                                }
+                            }
                         }
                         if (model.file.Length <= maxUploadSize)
                         {
@@ -110,7 +113,7 @@ namespace Teknik.Areas.API.V1.Controllers
                                 model.blockSize = _config.UploadConfig.BlockSize;
 
                             // Save the file data
-                            Upload.Models.Upload upload = Uploader.SaveFile(_dbContext, _config, model.file.OpenReadStream(), model.contentType, contentLength, model.encrypt, fileExt, model.iv, model.key, model.keySize, model.blockSize);
+                            Upload.Models.Upload upload = UploadHelper.SaveFile(_dbContext, _config, model.file.OpenReadStream(), model.contentType, contentLength, model.encrypt, model.expirationUnit, model.expirationLength, fileExt, model.iv, model.key, model.keySize, model.blockSize);
 
                             if (upload != null)
                             {

@@ -22,6 +22,26 @@
                 </label>
             </div>
         </div>
+        <div class="col-sm-6">
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <h4 class="text-center">Expiration</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 hidden" id="length-div">
+                    <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
+                </div>
+                <div class="col-sm-12" id="unit-div">
+                    <select class="form-control" name="expireunit" id="expireunit">
+                        @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+                        {
+                            <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="form-group col-sm-10">

@@ -574,6 +574,8 @@ namespace Teknik.Areas.Users.Controllers
                 model.UserID = user.UserId;
                 model.Username = user.Username;
                 model.Encrypt = user.UploadSettings.Encrypt;
+                model.ExpirationLength = user.UploadSettings.ExpirationLength;
+                model.ExpirationUnit = user.UploadSettings.ExpirationUnit;
 
                 return View("/Areas/User/Views/User/Settings/UploadSettings.cshtml", model);
             }
@@ -732,6 +734,8 @@ namespace Teknik.Areas.Users.Controllers
                     {
                         // Profile Info
                         user.UploadSettings.Encrypt = settings.Encrypt;
+                        user.UploadSettings.ExpirationUnit = settings.ExpirationUnit;
+                        user.UploadSettings.ExpirationLength = settings.ExpirationLength;
 
                         UserHelper.EditAccount(_dbContext, _config, user);
                         return Json(new { result = true });

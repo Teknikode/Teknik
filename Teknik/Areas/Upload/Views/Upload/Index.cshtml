@@ -30,7 +30,7 @@
 
 <div class="container">
     <div class="row text-center">
-        <div class="col-sm-8 col-sm-offset-2">
+        <div class="col-sm-10 col-sm-offset-1">
             <div class="row text-center">
                 <div class="well well-lg text-center" id="uploadButton" style="cursor: pointer">
                     <div class="row">
@@ -51,13 +51,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-2">
-            <div class="row">
-                <div class="col-sm-12">
-                    <label for="encrypt">Encrypt in Browser</label>
-                    <input type="checkbox" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
-                </div>
-            </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#uploadSettings"><i class="fa fa-gear"></i></button>
         </div>
     </div>
     <div class="row" id="upload-action-buttons" style="display: none">
@@ -97,6 +92,49 @@
     </div>
 </div>
 
+<div class="modal fade" id="uploadSettings" tabindex="-1" role="dialog" aria-labelledby="uploadSettingsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <h4 class="text-center">Encrypt in Browser</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <input type="checkbox" class="center-block" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <h4 class="text-center">Expiration</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 hidden" id="length-div">
+                                <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
+                            </div>
+                            <div class="col-sm-12" id="unit-div">
+                                <select class="form-control" name="expireunit" id="expireunit">
+                                    @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+                                    {
+                                        <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
+</div>
+
 <div id="templates" style="display: none">
     <div class="row" id="upload-template">
         <div class="col-sm-12">
@@ -113,13 +151,15 @@
                     <div class="row" id="upload-link-panel">
                         <input type="hidden" id="upload-url" />
                         <div class="col-sm-8">
-                            <dl class="dl-horizontal">
+                            <dl class="dl-horizontal" style="margin-bottom: 0;">
                                 <dt>Url</dt>
                                 <dd><a href="#" id="upload-link" target="_blank" class="alert-link"></a></dd>
                                 <dt>Content-Type</dt>
                                 <dd id="upload-contentType"></dd>
                                 <dt>File Size</dt>
                                 <dd id="upload-contentLength"></dd>
+                                <dt>Expiration</dt>
+                                <dd id="upload-expiration"></dd>
                             </dl>
                         </div>
                         <div class="col-sm-4">

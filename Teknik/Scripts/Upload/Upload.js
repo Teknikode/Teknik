@@ -19,7 +19,20 @@ $(document).ready(function () {
     $('#add-to-vault-menu').find('.add-to-vault').each(function () {
         linkAddToVault($(this));
     });
+
+    $('#uploadSettings').on('shown.bs.modal', function (e) {
+        // Initialize the widths
+        setExpireWidth($('#uploadSettings').find("#expireunit").val());
+
+        linkExpireSelect($('#uploadSettings').find("#expireunit"));
+    });
 });
+
+function linkExpireSelect(element) {
+    element.change(function () {
+        setExpireWidth($(this).val());
+    });
+}
 
 function linkUploadDelete(element, deleteUrl) {
     element.click(function () {
@@ -148,6 +161,19 @@ function linkAddToVault(element) {
     });
 }
 
+function setExpireWidth(unit) {
+    if (unit === "Never") {
+        $('#length-div').addClass("hidden");
+        $('#unit-div').removeClass("col-sm-8");
+        $('#unit-div').addClass("col-sm-12");
+    }
+    else {
+        $('#length-div').removeClass("hidden");
+        $('#unit-div').removeClass("col-sm-12");
+        $('#unit-div').addClass("col-sm-8");
+    }
+}
+
 var dropZone = new Dropzone(document.body, {
     url: uploadFileURL, 
     maxFilesize: maxUploadSize, // MB
@@ -216,14 +242,22 @@ function processFile(fileBlob, fileName, contentType, contentSize, fileID, token
         var fileExt = getFileExtension(fileName);
 
         // Get session settings
-        var encrypt = $('#encrypt').is(':checked');
+        var encrypt = $('#uploadSettings').find('#encrypt').is(':checked');
+        var expireUnit = $('#uploadSettings').find("#expireunit").val();
+        var expireLength = $('#uploadSettings').find("#expirelength").val();
 
-        if (encrypt) {
+        var options = {
+            encrypt: encrypt,
+            expirationUnit: expireUnit,
+            expirationLength: expireLength
+        }
+
+        if (options.encrypt) {
             // Encrypt the file and upload it
-            encryptFile(fileBlob, fileName, contentType, fileID, uploadFile, token);
+            encryptFile(fileBlob, fileName, contentType, fileID, uploadFile, options, token);
         } else {
             // pass it along
-            uploadFile(fileBlob, null, null, contentType, fileExt, fileID, encrypt, token);
+            uploadFile(fileBlob, null, null, contentType, fileExt, fileID, options, token);
         }
     }
     else {
@@ -233,11 +267,8 @@ function processFile(fileBlob, fileName, contentType, contentSize, fileID, token
 }
 
 // Function to encrypt a file, overide the file's data attribute with the encrypted value, and then call a callback function if supplied
-function encryptFile(blob, fileName, contentType, ID, callback, token) {
+function encryptFile(blob, fileName, contentType, ID, callback, options, token) {
     var fileExt = getFileExtension(fileName);
-
-    // Get session settings
-    var encrypt = $('#encrypt').is(':checked');
 
     // Start the file reader
     var reader = new FileReader();
@@ -246,8 +277,8 @@ function encryptFile(blob, fileName, contentType, ID, callback, token) {
     reader.onload = (function (callback) {
         return function (e) {
             // Just send straight to server if they don't want to encrypt it
-            if (!encrypt) {
-                callback(e.target.result, null, null, contentType, fileExt, ID, encrypt, token);
+            if (!options.encrypt) {
+                callback(e.target.result, null, null, contentType, fileExt, ID, options, token);
             }
             else {
                 // Set variables for tracking
@@ -276,7 +307,7 @@ function encryptFile(blob, fileName, contentType, ID, callback, token) {
                         case 'finish':
                             if (callback != null) {
                                 // Finish 
-                                callback(e.data.buffer, keyStr, ivStr, contentType, fileExt, ID, encrypt, token);
+                                callback(e.data.buffer, keyStr, ivStr, contentType, fileExt, ID, options, token);
                             }
                             break;
                     }
@@ -333,7 +364,7 @@ function encryptFile(blob, fileName, contentType, ID, callback, token) {
     reader.readAsArrayBuffer(blob);
 }
 
-function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt, token)
+function uploadFile(data, key, iv, filetype, fileExt, fileID, options, token)
 {
     // Set variables for tracking
     var startTime = (new Date()).getTime();
@@ -347,13 +378,13 @@ function uploadFile(data, key, iv, filetype, fileExt, fileID, encrypt, token)
         fd.append('iv', iv);
     fd.append('keySize', keySize);
     fd.append('blockSize', blockSize);
+    fd.append('options', JSON.stringify(options));
     fd.append('file', blob);
-    fd.append('encrypt', !encrypt);
     fd.append('__RequestVerificationToken', $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val());
 
     var xhr = new XMLHttpRequest();
     xhr.upload.addEventListener("progress", uploadProgress.bind(null, fileID, startTime), false);
-    xhr.addEventListener("load", uploadComplete.bind(null, fileID, key, encrypt, token), false);
+    xhr.addEventListener("load", uploadComplete.bind(null, fileID, key, options, token), false);
     xhr.addEventListener("error", uploadFailed.bind(null, fileID, token), false);
     xhr.addEventListener("abort", uploadCanceled.bind(null, fileID, token), false);
 
@@ -380,7 +411,7 @@ function uploadProgress(fileID, startTime, evt) {
     }
 }
 
-function uploadComplete(fileID, key, encrypt, token, evt) {
+function uploadComplete(fileID, key, options, token, evt) {
     // Cancel out cancel token
     token.callback = null;
 
@@ -391,7 +422,7 @@ function uploadComplete(fileID, key, encrypt, token, evt) {
             if (itemDiv) {
                 var name = obj.result.name;
                 var fullName = obj.result.url;
-                if (encrypt) {
+                if (options.encrypt) {
                     fullName = fullName + '#' + key;
                 }
                 var contentType = obj.result.contentType;
@@ -410,6 +441,12 @@ function uploadComplete(fileID, key, encrypt, token, evt) {
                 itemDiv.find('#upload-link').text(fullName);
                 itemDiv.find('#upload-contentType').html(contentType);
                 itemDiv.find('#upload-contentLength').html(contentLength);
+
+                var expirationMessage = options.expirationUnit;
+                if (options.expirationUnit !== "Never") {
+                    expirationMessage = options.expirationLength + ' ' + options.expirationUnit;
+                }
+                itemDiv.find('#upload-expiration').html(expirationMessage);
 
                 // Setup the buttons
                 linkUploadDelete(itemDiv.find('#delete-link'), deleteUrl);

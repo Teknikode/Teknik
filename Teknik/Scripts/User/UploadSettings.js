@@ -1,16 +1,24 @@
 $(document).ready(function () {
     $("[name='update_upload_encrypt']").bootstrapSwitch();
 
+    $("[name='expireunit']").change(function () {
+        setExpireWidth($(this).val());
+    });
+
     $("#update_submit").click(function () {
         // Start Updating Animation
         disableButton('#update_submit', 'Saving...');
         
         upload_encrypt = $("#update_upload_encrypt").is(":checked");
+        upload_expireLength = $("#expirelength").val();
+        upload_expireUnit = $("#expireunit").val();
         $.ajax({
             type: "POST",
             url: editURL,
             data: AddAntiForgeryToken({
-                Encrypt: upload_encrypt
+                Encrypt: upload_encrypt,
+                ExpirationLength: upload_expireLength,
+                ExpirationUnit: upload_expireUnit
             }),
             success: function (response) {
                 if (response.result) {
@@ -31,4 +39,20 @@ $(document).ready(function () {
         });
         return false;
     });
+
+    // Initialize the widths
+    setExpireWidth($("[name='expireunit']").val());
 });
+
+function setExpireWidth(unit) {
+    if (unit === "Never") {
+        $('#length-div').addClass("hidden");
+        $('#unit-div').removeClass("col-sm-8");
+        $('#unit-div').addClass("col-sm-12");
+    }
+    else {
+        $('#length-div').removeClass("hidden");
+        $('#unit-div').removeClass("col-sm-12");
+        $('#unit-div').addClass("col-sm-8");
+    }
+}

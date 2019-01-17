@@ -42,6 +42,8 @@ namespace Teknik.Areas.Upload.Controllers
             if (user != null)
             {
                 model.Encrypt = user.UploadSettings.Encrypt;
+                model.ExpirationLength = user.UploadSettings.ExpirationLength;
+                model.ExpirationUnit = user.UploadSettings.ExpirationUnit;
                 model.Vaults = user.Vaults.ToList();
             }
             else
@@ -54,7 +56,7 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpPost]
         [AllowAnonymous]
         [DisableRequestSizeLimit]
-        public async Task<IActionResult> Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, IFormFile file)
+        public async Task<IActionResult> Upload([FromForm] UploadFileViewModel uploadFile)
         {
             try
             {
@@ -73,15 +75,15 @@ namespace Teknik.Areas.Upload.Controllers
                             }
                         }
                     }
-                    if (file.Length <= maxUploadSize)
+                    if (uploadFile.file.Length <= maxUploadSize)
                     {
                         // convert file to bytes
-                        long contentLength = file.Length;
+                        long contentLength = uploadFile.file.Length;
 
                         // Scan the file to detect a virus
                         if (_config.UploadConfig.VirusScanEnable)
                         {
-                            using (Stream fs = file.OpenReadStream())
+                            using (Stream fs = uploadFile.file.OpenReadStream())
                             {
                                 ClamClient clam = new ClamClient(_config.UploadConfig.ClamServer, _config.UploadConfig.ClamPort);
                                 clam.MaxStreamSize = maxUploadSize;
@@ -102,17 +104,28 @@ namespace Teknik.Areas.Upload.Controllers
                         }
 
                         // Check content type restrictions (Only for encrypting server side
-                        if (encrypt)
+                        if (!uploadFile.options.Encrypt)
                         {
-                            if (_config.UploadConfig.RestrictedContentTypes.Contains(fileType) || _config.UploadConfig.RestrictedExtensions.Contains(fileExt))
+                            if (_config.UploadConfig.RestrictedContentTypes.Contains(uploadFile.fileType) || _config.UploadConfig.RestrictedExtensions.Contains(uploadFile.fileExt))
                             {
                                 return Json(new { error = new { message = "File Type Not Allowed" } });
                             }
                         }
 
-                        using (Stream fs = file.OpenReadStream())
+                        using (Stream fs = uploadFile.file.OpenReadStream())
                         {
-                            Models.Upload upload = Uploader.SaveFile(_dbContext, _config, fs, fileType, contentLength, encrypt, fileExt, iv, null, keySize, blockSize);
+                            Models.Upload upload = UploadHelper.SaveFile(_dbContext, 
+                                _config, 
+                                fs, 
+                                uploadFile.fileType, 
+                                contentLength, 
+                                !uploadFile.options.Encrypt, 
+                                uploadFile.options.ExpirationUnit, 
+                                uploadFile.options.ExpirationLength, 
+                                uploadFile.fileExt, 
+                                uploadFile.iv, null, 
+                                uploadFile.keySize, 
+                                uploadFile.blockSize);
                             if (upload != null)
                             {
                                 if (User.Identity.IsAuthenticated)
@@ -160,28 +173,36 @@ namespace Teknik.Areas.Upload.Controllers
                 bool premiumAccount = false;
                 DateTime dateUploaded = new DateTime();
 
-                Models.Upload uploads = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
-                if (uploads != null)
+                Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
+                if (upload != null)
                 {
-                    uploads.Downloads += 1;
-                    _dbContext.Entry(uploads).State = EntityState.Modified;
+                    // Check Expiration
+                    if (UploadHelper.CheckExpiration(upload))
+                    {
+                        _dbContext.Uploads.Remove(upload);
+                        _dbContext.SaveChanges();
+                        return new StatusCodeResult(StatusCodes.Status404NotFound);
+                    }
+
+                    upload.Downloads += 1;
+                    _dbContext.Entry(upload).State = EntityState.Modified;
                     _dbContext.SaveChanges();
 
-                    fileName = uploads.FileName;
-                    url = uploads.Url;
-                    key = uploads.Key;
-                    iv = uploads.IV;
-                    contentType = uploads.ContentType;
-                    contentLength = uploads.ContentLength;
-                    dateUploaded = uploads.DateUploaded;
+                    fileName = upload.FileName;
+                    url = upload.Url;
+                    key = upload.Key;
+                    iv = upload.IV;
+                    contentType = upload.ContentType;
+                    contentLength = upload.ContentLength;
+                    dateUploaded = upload.DateUploaded;
                     if (User.Identity.IsAuthenticated)
                     {
                         IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
                         premiumAccount = userInfo.AccountType == AccountType.Premium;
                     }
-                    if (!premiumAccount && uploads.User != null)
+                    if (!premiumAccount && upload.User != null)
                     {
-                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, uploads.User.Username);
+                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, upload.User.Username);
                         premiumAccount = userInfo.AccountType == AccountType.Premium;
                     }
                 }
@@ -375,6 +396,14 @@ namespace Teknik.Areas.Upload.Controllers
                 Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
                 if (upload != null)
                 {
+                    // Check Expiration
+                    if (UploadHelper.CheckExpiration(upload))
+                    {
+                        _dbContext.Uploads.Remove(upload);
+                        _dbContext.SaveChanges();
+                        return Json(new { error = new { message = "File Does Not Exist" } });
+                    }
+
                     string subDir = upload.FileName[0].ToString();
                     string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, upload.FileName);
                     if (System.IO.File.Exists(filePath))

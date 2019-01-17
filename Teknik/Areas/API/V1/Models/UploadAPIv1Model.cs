@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.API.V1.Models
 {
@@ -13,6 +14,10 @@ namespace Teknik.Areas.API.V1.Models
         public string contentType { get; set; }
 
         public bool encrypt { get; set; }
+
+        public int expirationLength { get; set; }
+
+        public ExpirationUnit expirationUnit { get; set; }
 
         public bool saveKey { get; set; }
 
@@ -31,6 +36,8 @@ namespace Teknik.Areas.API.V1.Models
             file = null;
             contentType = null;
             encrypt = true;
+            expirationLength = 1;
+            expirationUnit = ExpirationUnit.Never;
             saveKey = true;
             key = null;
             keySize = 0;
