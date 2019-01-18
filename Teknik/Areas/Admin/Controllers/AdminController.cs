@@ -158,19 +158,23 @@ namespace Teknik.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CreateInviteCode(string username)
         {
-            if (UserHelper.UserExists(_dbContext, username))
-            {
-                User user = UserHelper.GetUser(_dbContext, username);
-                InviteCode inviteCode = new InviteCode();
-                inviteCode.Active = true;
-                inviteCode.Code = Guid.NewGuid().ToString();
-                inviteCode.Owner = user;
-                _dbContext.InviteCodes.Add(inviteCode);
-                _dbContext.SaveChanges();
+            InviteCode inviteCode = new InviteCode();
+            inviteCode.Active = true;
+            inviteCode.Code = Guid.NewGuid().ToString();
 
-                return Json(new { result = new { code = inviteCode.Code } });
+            if (!string.IsNullOrEmpty(username))
+            {
+                if (!UserHelper.UserExists(_dbContext, username))
+                {
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
+                }
+                User user = UserHelper.GetUser(_dbContext, username);
+                inviteCode.Owner = user;
             }
-            return new StatusCodeResult(StatusCodes.Status404NotFound);
+            _dbContext.InviteCodes.Add(inviteCode);
+            _dbContext.SaveChanges();
+
+            return Json(new { result = new { code = inviteCode.Code } });
         }
 
         [HttpPost]

@@ -1,5 +1,12 @@
 ﻿[
     {
+        "outputFileName": "./wwwroot/js/admin.min.js",
+        "inputFiles": [
+            "./wwwroot/lib/bootbox/js/bootbox.js",
+            "./wwwroot/js/app/Admin/Admin.js"
+        ]
+    },
+    {
         "outputFileName": "./wwwroot/js/uploadSearch.min.js",
         "inputFiles": [
             "./wwwroot/lib/bootbox/js/bootbox.js",
