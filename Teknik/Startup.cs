@@ -148,6 +148,9 @@ namespace Teknik
 
                     options.ApiName = config.UserConfig.IdentityServerConfig.APIName;
                     options.ApiSecret = config.UserConfig.IdentityServerConfig.APISecret;
+
+                    options.NameClaimType = "username";
+                    options.RoleClaimType = JwtClaimTypes.Role;
                 })
                 .AddCookie(options =>
                 {
