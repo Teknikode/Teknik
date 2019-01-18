@@ -90,7 +90,7 @@ namespace Teknik.IdentityServer.Configuration
                     Name = config.UserConfig.IdentityServerConfig.APIName,
                     DisplayName = "Teknik API",
                     Description = "Teknik API Access for end users",
-                    UserClaims = new List<string> {"role"},
+                    UserClaims = new List<string> {"role", "username"},
                     ApiSecrets = new List<Secret> {new Secret(config.UserConfig.IdentityServerConfig.APISecret.Sha256()) },
                     Scopes = new List<Scope> {
                         new Scope("teknik-api.read", "Teknik API Read Access"),

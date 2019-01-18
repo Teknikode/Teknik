@@ -41,13 +41,10 @@ namespace Teknik.Areas.API.V1.Controllers
                         if (User.Identity.IsAuthenticated)
                         {
                             maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
-                            if (User.Identity.IsAuthenticated)
+                            IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
+                            if (userInfo.AccountType == AccountType.Premium)
                             {
-                                IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
-                                if (userInfo.AccountType == AccountType.Premium)
-                                {
-                                    maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
-                                }
+                                maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
                             }
                         }
                         if (model.file.Length <= maxUploadSize)
