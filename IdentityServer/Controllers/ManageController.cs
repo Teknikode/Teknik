@@ -456,7 +456,13 @@ namespace Teknik.IdentityServer.Controllers
         [HttpPost]
         public IActionResult CreateClient(CreateClientModel model, [FromServices] ConfigurationDbContext configContext)
         {
+            // Generate a unique client ID
             var clientId = StringHelper.RandomString(20, "abcdefghjkmnpqrstuvwxyz1234567890");
+            while (configContext.Clients.Where(c => c.ClientId == clientId).FirstOrDefault() != null)
+            {
+                clientId = StringHelper.RandomString(20, "abcdefghjkmnpqrstuvwxyz1234567890");
+            }
+
             var clientSecret = StringHelper.RandomString(40, "abcdefghjkmnpqrstuvwxyz1234567890");
 
             var client = new IdentityServer4.Models.Client
@@ -502,12 +508,12 @@ namespace Teknik.IdentityServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteClient(DeleteClientModel model, [FromServices] IClientStore clientStore, [FromServices] ConfigurationDbContext configContext)
-        {
-            var foundClient = await clientStore.FindClientByIdAsync(model.ClientId);
+        public IActionResult DeleteClient(DeleteClientModel model, [FromServices] ConfigurationDbContext configContext)
+        {            
+            var foundClient = configContext.Clients.Where(c => c.ClientId == model.ClientId).FirstOrDefault();
             if (foundClient != null)
             {
-                configContext.Clients.Remove(foundClient.ToEntity());
+                configContext.Clients.Remove(foundClient);
                 configContext.SaveChanges();
 
                 return new JsonResult(new { success = true });

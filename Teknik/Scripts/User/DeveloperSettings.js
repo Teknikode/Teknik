@@ -27,7 +27,7 @@
                                                             if ($('#noClients')) {
                                                                 $('#noClients').remove();
                                                             }
-                                                            var item = $(response.result.html);
+                                                            var item = $(response.html);
 
                                                             var deleteBtn = item.find('.deleteClient');
 
@@ -41,7 +41,7 @@
                                                     }
                                                 },
                                                 title: "Client Secret",
-                                                message: '<label for="clientSecret">Make sure to copy your client secret now.<br />You won\'t be able to see it again!</label><input type="text" class="form-control" id="clientSecret" value="' + response.result.secret + '">',
+                                                message: '<label for="clientSecret">Make sure to copy your client secret now.<br />You won\'t be able to see it again!</label><input type="text" class="form-control" id="clientSecret" value="' + response.secret + '">',
                                             });
 
                                             dialog.init(function () {
