@@ -1202,7 +1202,7 @@ namespace Teknik.Areas.Users.Controllers
             try
             {
                 // Validate the code with the identity server
-                var result = await IdentityHelper.CreateClient(_config, User.Identity.Name, name, redirectUri, logoutUri, "openid", "teknik-api.read", "teknik-api.write");
+                var result = await IdentityHelper.CreateClient(_config, User.Identity.Name, name, redirectUri, logoutUri, "openid", "role", "account-info", "security-info", "teknik-api.read", "teknik-api.write");
 
                 if (result.Success)
                 {
