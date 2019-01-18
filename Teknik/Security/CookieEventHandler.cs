@@ -15,26 +15,29 @@ namespace Teknik.Security
     {
         public CookieEventHandler(LogoutSessionManager logoutSessions)
         {
-            LogoutSessions = logoutSessions;
+            _LogoutSessions = logoutSessions;
         }
 
-        public LogoutSessionManager LogoutSessions { get; }
+        private static LogoutSessionManager _LogoutSessions;
 
-        public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
+        public override async Task RedirectToAccessDenied(RedirectContext<CookieAuthenticationOptions> context)
         {
-            if (context.Principal.Identity.IsAuthenticated)
-            {
-                var sub = context.Principal.FindFirst("sub")?.Value;
-                var sid = context.Principal.FindFirst("sid")?.Value;
-
-                if (LogoutSessions.IsLoggedOut(sub, sid))
-                {
-                    context.RejectPrincipal();
-                    await context.HttpContext.SignOutAsync();
-
-                    // todo: if we have a refresh token, it should be revoked here.
-                }
-            }
+            context.Response.StatusCode = 403;
         }
+
+        //public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
+        //{
+        //    if (context.Principal.Identity.IsAuthenticated)
+        //    {
+        //        var sub = context.Principal.FindFirst("sub")?.Value;
+        //        var sid = context.Principal.FindFirst("sid")?.Value;
+
+        //        if (LogoutSessions.IsLoggedOut(sub, sid))
+        //        {
+        //            context.RejectPrincipal();
+        //            await context.HttpContext.SignOutAsync();
+        //        }
+        //    }
+        //}
     }
 }

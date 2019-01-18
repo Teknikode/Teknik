@@ -7,8 +7,7 @@ namespace Teknik.Security
 {
     public class LogoutSessionManager
     {
-        // yes - that needs to be thread-safe, distributed etc (it's a sample)
-        List<Session> _sessions = new List<Session>();
+        private static List<Session> _sessions = new List<Session>();
 
         public void Add(string sub, string sid)
         {
