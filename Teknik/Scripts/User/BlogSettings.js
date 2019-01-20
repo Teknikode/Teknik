@@ -13,7 +13,6 @@ $(document).ready(function () {
                 Description: blog_desc,
             }),
             success: function (response) {
-                enableButton('#update_submit', 'Save');
                 if (response.result) {
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Settings Saved!</div>');

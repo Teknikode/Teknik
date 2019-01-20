@@ -10,8 +10,9 @@ namespace Teknik.Areas.Users.ViewModels
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string RedirectURI { get; set; }
-        public string PostLogoutRedirectURI { get; set; }
+        public string HomepageUrl { get; set; }
+        public string LogoUrl { get; set; }
+        public string CallbackUrl { get; set; }
         public ICollection<string> AllowedScopes { get; set; }
     }
 }

@@ -406,8 +406,9 @@ namespace Teknik.Areas.Users.Controllers
                     {
                         Id = client.ClientId,
                         Name = client.ClientName,
-                        RedirectURI = string.Join(',', client.RedirectUris),
-                        PostLogoutRedirectURI = string.Join(',', client.PostLogoutRedirectUris),
+                        HomepageUrl = client.ClientUri,
+                        LogoUrl = client.LogoUri,
+                        CallbackUrl = string.Join(',', client.RedirectUris),
                         AllowedScopes = client.AllowedScopes
                     });
                 }
@@ -1197,12 +1198,17 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateClient(string name, string redirectUri, string logoutUri, [FromServices] ICompositeViewEngine viewEngine)
+        public async Task<IActionResult> CreateClient(string name, string homepageUrl, string logoUrl, string callbackUrl, [FromServices] ICompositeViewEngine viewEngine)
         {
             try
             {
+                if (string.IsNullOrEmpty(name))
+                    return Json(new { error = "You must enter a client name" });
+                if (string.IsNullOrEmpty(callbackUrl))
+                    return Json(new { error = "You must enter an authorization callback URL" });
+
                 // Validate the code with the identity server
-                var result = await IdentityHelper.CreateClient(_config, User.Identity.Name, name, redirectUri, logoutUri, "openid", "role", "account-info", "security-info", "teknik-api.read", "teknik-api.write");
+                var result = await IdentityHelper.CreateClient(_config, User.Identity.Name, name, homepageUrl, logoUrl, callbackUrl, "openid", "role", "account-info", "security-info", "teknik-api.read", "teknik-api.write");
 
                 if (result.Success)
                 {
@@ -1211,12 +1217,77 @@ namespace Teknik.Areas.Users.Controllers
                     ClientViewModel model = new ClientViewModel();
                     model.Id = client["id"].ToString();
                     model.Name = name;
-                    model.RedirectURI = redirectUri;
-                    model.PostLogoutRedirectURI = logoutUri;
+                    model.HomepageUrl = homepageUrl;
+                    model.LogoUrl = logoUrl;
+                    model.CallbackUrl = callbackUrl;
 
                     string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/User/Views/User/Settings/ClientView.cshtml", model);
 
                     return Json(new { result = true, clientId = client["id"], secret = client["secret"], html = renderedView });
+                }
+                return Json(new { error = result.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.GetFullMessage(true) });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GetClient(string clientId)
+        {
+            Client foundClient = await IdentityHelper.GetClient(_config, User.Identity.Name, clientId);
+            if (foundClient != null)
+            {
+                ClientViewModel model = new ClientViewModel()
+                {
+                    Id = foundClient.ClientId,
+                    Name = foundClient.ClientName,
+                    HomepageUrl = foundClient.ClientUri,
+                    LogoUrl = foundClient.LogoUri,
+                    CallbackUrl = string.Join(',', foundClient.RedirectUris),
+                    AllowedScopes = foundClient.AllowedScopes
+                };
+
+                return Json(new { result = true, client = model });
+            }
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditClient(string clientId, string name, string homepageUrl, string logoUrl, string callbackUrl, [FromServices] ICompositeViewEngine viewEngine)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(name))
+                    return Json(new { error = "You must enter a client name" });
+                if (string.IsNullOrEmpty(callbackUrl))
+                    return Json(new { error = "You must enter an authorization callback URL" });
+
+                Client foundClient = await IdentityHelper.GetClient(_config, User.Identity.Name, clientId);
+
+                if (foundClient == null)
+                    return Json(new { error = "Client does not exist" });
+
+                // Validate the code with the identity server
+                var result = await IdentityHelper.EditClient(_config, User.Identity.Name, clientId, name, homepageUrl, logoUrl, callbackUrl);
+
+                if (result.Success)
+                {
+                    var client = (JObject)result.Data;
+
+                    ClientViewModel model = new ClientViewModel();
+                    model.Id = clientId;
+                    model.Name = name;
+                    model.HomepageUrl = homepageUrl;
+                    model.LogoUrl = logoUrl;
+                    model.CallbackUrl = callbackUrl;
+
+                    string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/User/Views/User/Settings/ClientView.cshtml", model);
+
+                    return Json(new { result = true, clientId = clientId, html = renderedView });
                 }
                 return Json(new { error = result.Message });
             }

@@ -7,45 +7,11 @@
 }
 
 <script>
-    var generateTokenURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "GenerateToken" })';
-    var revokeAllTokensURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "RevokeAllTokens" })';
-    var editTokenNameURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditTokenName" })';
-    var deleteTokenURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "DeleteToken" })';
-
-
     var createClientURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "CreateClient" })';
+    var editClientURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditClient" })';
     var deleteClientURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "DeleteClient" })';
+    var getClientURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "GetClient" })';
 </script>
-
-<!--
-<div class="row">
-    <div class="col-sm-12">
-        <h2>API Clients</h2>
-        <hr />
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <br />
-        <label for="authTokens"><h4>API Clients</h4></label><span class="pull-right"><button type="button" class="btn btn-default" id="create_authToken">Create Auth Token</button> <button type="button" class="btn btn-danger" id="revoke_all_authTokens">Revoke All</button></span>
-        <div id="authTokens" style="overflow-y: auto; max-height: 400px;">
-            <ul class="list-group" id="apiClientList">
-                @if (Model.AuthTokens.Any())
-                {
-                    foreach (AuthTokenViewModel token in Model.AuthTokens)
-                    {
-                        @await Html.PartialAsync("Settings/AuthToken", token)
-                    }
-                }
-                else
-                {
-                    <li class="list-group-item text-center" id="noAuthTokens">No Authentication Tokens</li>
-                }
-            </ul>
-        </div>
-    </div>
-</div>
--->
 
 <div class="row">
     <div class="col-sm-12">
@@ -56,8 +22,8 @@
 <div class="row">
     <div class="col-sm-12">
         <br />
-        <label for="clients"><h4>Clients</h4></label><span class="pull-right"><button type="button" class="btn btn-default" id="create_client">Create Client</button></span>
-        <div id="clients" style="overflow-y: auto; max-height: 400px;">
+        <label for="clients"><h4>Clients</h4></label><span class="pull-right"><button type="button" class="btn btn-default" id="createClient">Create Client</button></span>
+        <div id="clients">
             <ul class="list-group" id="clientList">
                 @if (Model.Clients.Any())
                 {
@@ -71,6 +37,54 @@
                     <li class="list-group-item text-center" id="noClients">No Clients</li>
                 }
             </ul>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="clientModal" tabindex="-1" role="dialog" aria-labelledby="clientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header modal-header-default">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="clientModalLabel">Client Information</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" class="form-control" id="clientId" name="clientId" />
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <div id="clientStatus">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="clientName">Application Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="clientName" name="clientName" data-val-required="The Client Name field is required." data-val="true" />
+                </div>
+                <div class="form-group">
+                    <label for="clientCallbackUrl">Homepage URL</label>
+                    <input type="text" class="form-control" id="clientHomepageUrl" name="clientHomepageUrl" />
+                </div>
+                <div class="form-group">
+                    <label for="clientLogoUrl">Logo URL</label>
+                    <input type="text" class="form-control" id="clientLogoUrl" name="clientLogoUrl" />
+                </div>
+                <p>
+                    <small>
+                        The logo will be rendered at a max size of 100x100.
+                    </small>
+                </p>
+                <div class="form-group">
+                    <label for="clientCallbackUrl">Authorization callback URL <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="clientCallbackUrl" name="clientCallbackUrl" data-val-required="The Authorization callback URL field is required." data-val="true" />
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary pull-right hidden clientSubmit" id="clientCreateSubmit" type="submit" name="clientCreateSubmit">Create Client</button>
+                        <button class="btn btn-primary pull-right hidden clientSubmit" id="clientEditSubmit" type="submit" name="clientEditSubmit">Save Client</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -15,7 +15,6 @@
                 NewPasswordConfirm: password_confirm
             }),
             success: function (response) {
-                enableButton('#change_password_submit', 'Change Password');
                 if (response.result) {
                     $("#top_msg").css('display', 'inline', 'important');
                     $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Password has successfully been changed.</div>');
@@ -36,6 +35,8 @@
     });
 
     $('#delete_account').click(function () {
+        disableButton('#delete_account', 'Deleting Account...');
+
         bootbox.confirm("Are you sure you want to delete your account?", function (result) {
             if (result) {
                 $.ajax({
@@ -55,7 +56,11 @@
                         $("#top_msg").css('display', 'inline', 'important');
                         $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
                     }
-                });
+                }).always(function () {
+                    enableButton('#delete_account', 'Delete Account');
+                });;
+            } else {
+                enableButton('#delete_account', 'Delete Account');
             }
         });
     });

@@ -15,23 +15,23 @@
     <!form id="registrationForm" action="@Url.SubRouteUrl("user", "User.Register")" method="post" accept-charset="UTF-8">
         <input name="Register.ReturnUrl" id="registerReturnUrl" type="hidden" value="@Model.ReturnUrl" />
         <div class="form-group">
-            <label for="registerUsername">Username</label>
+            <label for="registerUsername">Username <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="registerUsername" value="" placeholder="Bob" name="Register.Username" data-val-required="The Username field is required." data-val="true"/>
         </div>
         <div class="form-group">
-            <label for="registerPassword">Password</label>
+            <label for="registerPassword">Password <span class="text-danger">*</span></label>
             <input type="password" class="form-control" id="registerPassword" value="" placeholder="********" name="Register.Password" data-val-required="The Password field is required." data-val="true"/>
         </div>
         <div class="form-group">
-            <label for="registerConfirmPassword">Confirm Password</label>
+            <label for="registerConfirmPassword">Confirm Password <span class="text-danger">*</span></label>
             <input type="password" class="form-control" id="registerConfirmPassword" value="" placeholder="********" name="Register.ConfirmPassword" data-val-required="The Confirm Password field is required." data-val="true"/>
         </div>
         <div class="form-group">
-            <label for="registerInviteCode">Invite Code@(Config.UserConfig.InviteCodeRequired ? string.Empty : " (Optional)")</label>
+            <label for="registerInviteCode">Invite Code@(Config.UserConfig.InviteCodeRequired ? " <span class=\"text-danger\">*</span>" : string.Empty)</label>
             <input type="text" class="form-control" id="registerInviteCode" value="@Model.InviteCode" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" name="Register.InviteCode"/>
         </div>
         <div class="form-group">
-            <label for="registerRecoveryEmail">Recovery Email (Optional)</label>
+            <label for="registerRecoveryEmail">Recovery Email</label>
             <input type="text" class="form-control" id="registerRecoveryEmail" value="" placeholder="user@example.com" name="Register.RecoveryEmail"/>
         </div>
         <p class="text-center">

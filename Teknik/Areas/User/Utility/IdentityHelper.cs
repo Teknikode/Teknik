@@ -333,7 +333,7 @@ namespace Teknik.Areas.Users.Utility
             var result = await Get(config, manageUrl);
             if (result.Success)
             {
-                return (Client)result.Data;
+                return ((JObject)result.Data).ToObject<Client>();
             }
             throw new Exception(result.Message);
         }
@@ -350,7 +350,7 @@ namespace Teknik.Areas.Users.Utility
             throw new Exception(result.Message);
         }
 
-        public static async Task<IdentityResult> CreateClient(Config config, string username, string name, string redirectURI, string postLogoutRedirectURI, params string[] allowedScopes)
+        public static async Task<IdentityResult> CreateClient(Config config, string username, string name, string homepageUrl, string logoUrl, string callbackUrl, params string[] allowedScopes)
         {
             var manageUrl = CreateUrl(config, $"Manage/CreateClient");
 
@@ -359,9 +359,27 @@ namespace Teknik.Areas.Users.Utility
                 {
                     username = username,
                     name = name,
-                    redirectURI = redirectURI,
-                    postLogoutRedirectURI = postLogoutRedirectURI,
+                    homepageUrl = homepageUrl,
+                    logoUrl = logoUrl,
+                    callbackUrl = callbackUrl,
                     allowedScopes = allowedScopes
+                });
+            return response;
+        }
+
+        public static async Task<IdentityResult> EditClient(Config config, string username, string clientId, string name, string homepageUrl, string logoUrl, string callbackUrl)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/EditClient");
+
+            var response = await Post(config, manageUrl,
+                new
+                {
+                    username = username,
+                    clientId = clientId,
+                    name = name,
+                    homepageUrl = homepageUrl,
+                    logoUrl = logoUrl,
+                    callbackUrl = callbackUrl
                 });
             return response;
         }

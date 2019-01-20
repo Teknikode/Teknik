@@ -2,22 +2,53 @@
 
 <li class="list-group-item" id="client_@Model.Id">
     <div class="btn-group btn-group-sm pull-right" role="group" aria-label="...">
+        <button type="button" class="btn btn-primary text-primary editClient" id="editClient_@Model.Id" data-clientId="@Model.Id">Edit</button>
         <button type="button" class="btn btn-danger text-danger deleteClient" id="deleteClient_@Model.Id" data-clientId="@Model.Id">Delete</button>
     </div>
-    <h3 class="list-group-item-heading" id="clientName_@Model.Name">@Model.Name</h3>
+    <h3 class="list-group-item-heading" id="clientName_@Model.Name">
+        @Model.Name
+        @if (!string.IsNullOrEmpty(Model.LogoUrl))
+        {
+            <img src="@Model.LogoUrl" class="img-thumbnail" style="max-height: 100px; max-width: 100px;" />
+        }
+    </h3>
+    <hr />
     <div class="list-group-item-text">
         <div class="row">
             <div class="col-sm-4">
-                <strong>Client Id</strong>: @Model.Id
-            </div>
-            <div class="col-sm-8">
                 <div class="row">
-                    <div class="col-sm-4"><strong>Redirect Url</strong></div>
-                    <div class="col-sm-8">@Model.RedirectURI</div>
+                    <div class="col-sm-12">
+                        <strong>Client Id</strong>
+                    </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4"><strong>Logout Url</strong></div>
-                    <div class="col-sm-8">@Model.PostLogoutRedirectURI</div>
+                    <div class="col-sm-12">
+                        @Model.Id
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <strong>Homepage Url</strong>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a href="@Model.HomepageUrl" target="_blank">@Model.HomepageUrl</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <strong>Authorization Callback Url</strong>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        @Model.CallbackUrl
+                    </div>
                 </div>
             </div>
         </div>

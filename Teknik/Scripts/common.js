@@ -135,6 +135,15 @@ function removeAmp(code) {
     return code;
 }
 
+function clearInputs(parent) {
+    $(parent).find('input:text').each(function () {
+        $(this).val('');
+    });
+    $(parent).find('textarea').each(function () {
+        $(this).val('');
+    });
+}
+
 String.prototype.hashCode = function () {
     var hash = 0, i, chr, len;
     if (this.length === 0) return hash;

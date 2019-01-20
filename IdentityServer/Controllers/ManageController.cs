@@ -12,6 +12,8 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Teknik.Configuration;
 using Teknik.IdentityServer.Models;
@@ -473,6 +475,8 @@ namespace Teknik.IdentityServer.Controllers
                 },
                 ClientId = clientId,
                 ClientName = model.Name,
+                ClientUri = model.HomepageUrl,
+                LogoUri = model.LogoUrl,
                 AllowedGrantTypes = new List<string>()
                 {
                     GrantType.AuthorizationCode,
@@ -480,20 +484,15 @@ namespace Teknik.IdentityServer.Controllers
                 },
 
                 ClientSecrets =
-                    {
-                        new IdentityServer4.Models.Secret(clientSecret.Sha256())
-                    },
+                {
+                    new IdentityServer4.Models.Secret(clientSecret.Sha256())
+                },
 
                 RequireConsent = true,
 
                 RedirectUris =
                 {
-                    model.RedirectURI
-                },
-
-                PostLogoutRedirectUris =
-                {
-                    model.PostLogoutRedirectURI
+                    model.CallbackUrl
                 },
 
                 AllowedScopes = model.AllowedScopes,
@@ -505,6 +504,39 @@ namespace Teknik.IdentityServer.Controllers
             configContext.SaveChanges();
 
             return new JsonResult(new { success = true, data = new { id = clientId, secret = clientSecret } });
+        }
+
+        [HttpPost]
+        public IActionResult EditClient(EditClientModel model, [FromServices] ConfigurationDbContext configContext)
+        {
+            // Validate it's an actual client
+            var foundClient = configContext.Clients.Where(c => c.ClientId == model.ClientId).FirstOrDefault();
+            if (foundClient != null)
+            {
+                foundClient.ClientName = model.Name;
+                foundClient.ClientUri = model.HomepageUrl;
+                foundClient.LogoUri = model.LogoUrl;
+                configContext.Entry(foundClient).State = EntityState.Modified;
+
+                // Update the redirect URL for this client
+                var results = configContext.Set<ClientRedirectUri>().Where(c => c.ClientId == foundClient.Id).ToList();
+                if (results != null)
+                {
+                    configContext.RemoveRange(results);
+                }
+                var newUri = new ClientRedirectUri();
+                newUri.Client = foundClient;
+                newUri.ClientId = foundClient.Id;
+                newUri.RedirectUri = model.CallbackUrl;
+                configContext.Add(newUri);
+
+                // Save all the changed
+                configContext.SaveChanges();
+
+                return new JsonResult(new { success = true });
+            }
+
+            return new JsonResult(new { success = false, message = "Client does not exist." });
         }
 
         [HttpPost]
