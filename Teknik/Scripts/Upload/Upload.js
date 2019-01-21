@@ -26,6 +26,19 @@ $(document).ready(function () {
 
         linkExpireSelect($('#uploadSettings').find("#expireunit"));
     });
+
+    document.onpaste = function (event) {
+        var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+        for (index in items) {
+            var item = items[index];
+            if (item.kind === 'file') {
+                // Convert file to blob
+                var file = item.getAsFile();
+                // Upload the file
+                upload(file);
+            }
+        }
+    }
 });
 
 function linkExpireSelect(element) {
@@ -182,31 +195,35 @@ var dropZone = new Dropzone(document.body, {
     clickable: "#uploadButton",
     previewTemplate: function () { },
     addedfile: function (file) {
-
-        // Convert file to blob
-        var blob = file.slice(0, file.size);
-
-        // Create a token for this upload
-        var token = {
-            callback: null,
-            cancel: function() {
-                this.callback();
-            },
-            isCancelable: function() {
-                return this.callback !== null;
-            }
-        };
-
-        // Create the Upload
-        var fileID = createUpload(file.name, token);
-
-        // Process the file
-        processFile(blob, file.name, file.type, file.size, fileID, token);
+        // Upload the file to the server
+        upload(file);
 
         // Remove this file from the dropzone set
         this.removeFile(file);
     }
 });
+
+function upload(file) {
+    // Convert file to blob
+    var blob = file.slice(0, file.size);
+
+    // Create a token for this upload
+    var token = {
+        callback: null,
+        cancel: function () {
+            this.callback();
+        },
+        isCancelable: function () {
+            return this.callback !== null;
+        }
+    };
+
+    // Create the Upload
+    var fileID = createUpload(file.name, token);
+
+    // Process the file
+    processFile(blob, file.name, file.type, file.size, fileID, token);
+}
 
 var fileCount = 0;
 
