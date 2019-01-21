@@ -99,9 +99,9 @@
                         <br />
                         This can be one of the following:
                         <select name="format" class="selectpicker">
-                            @foreach (var format in HighlightHelper.Languages)
+                            @foreach (var format in HighlightHelper.Languages.GroupBy(l => l.Value).ToList())
                             {
-                                <option value="@(format.Key)">@(format.Key)</option>
+                                <!option value="@(format?.FirstOrDefault().Key)">@(format?.Key)</!option>
                             }
                         </select>
                     </td>
@@ -146,20 +146,6 @@
                     </td>
                     <td>
                         Specify a password to encrypt and lock the paste with.
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <code>hide</code>
-                    </td>
-                    <td>
-                        <code>bool</code>
-                    </td>
-                    <td>
-                        <var>false</var>
-                    </td>
-                    <td>
-                        If the paste should be visible in the most recent pastes list.
                     </td>
                 </tr>
                 <tr>

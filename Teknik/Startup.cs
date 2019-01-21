@@ -44,13 +44,11 @@ namespace Teknik
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
             Environment = env;
         }
-
-        public IConfiguration Configuration { get; }
+        
         public IHostingEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -87,7 +85,7 @@ namespace Teknik
             // Create the Database Context
             services.AddDbContext<TeknikEntities>(options => options
                     .UseLazyLoadingProxies()
-                    .UseSqlServer(Configuration.GetConnectionString("TeknikEntities")), ServiceLifetime.Transient);
+                    .UseSqlServer(config.DbConnection), ServiceLifetime.Transient);
 
             // Cookie Policies
             services.Configure<CookiePolicyOptions>(options =>

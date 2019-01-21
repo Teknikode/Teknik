@@ -19,6 +19,9 @@ namespace Teknik.ServiceWorker
         [Option('m', "migrate", Default = false, Required = false, HelpText = "Migrate everything")]
         public bool Migrate { get; set; }
 
+        [Option('e', "expire", Default = false, Required = false, HelpText = "Process Expirations")]
+        public bool Expire { get; set; }
+
         // Omitting long name, default --verbose
         [Option(HelpText = "Prints all messages to standard output.")]
         public bool Verbose { get; set; }

@@ -83,7 +83,7 @@ namespace Teknik.IdentityServer
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<ApplicationDbContext>(builder =>
-                builder.UseSqlServer(Configuration.GetConnectionString("TeknikAuthEntities"), sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)));
+                builder.UseSqlServer(config.DbConnection, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options => 
             {
@@ -111,10 +111,10 @@ namespace Teknik.IdentityServer
             })
                 .AddOperationalStore(options =>
                     options.ConfigureDbContext = builder =>
-                        builder.UseSqlServer(Configuration.GetConnectionString("TeknikAuthEntities"), sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
+                        builder.UseSqlServer(config.DbConnection, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
                 .AddConfigurationStore(options =>
                     options.ConfigureDbContext = builder =>
-                        builder.UseSqlServer(Configuration.GetConnectionString("TeknikAuthEntities"), sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
+                        builder.UseSqlServer(config.DbConnection, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddRedirectUriValidator<TeknikRedirectUriValidator>()
                 .AddDeveloperSigningCredential();

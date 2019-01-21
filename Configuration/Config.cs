@@ -22,6 +22,7 @@ namespace Teknik.Configuration
         private bool                    _DevEnvironment;
         private bool                    _Migrate;
         private bool                    _UseCdn;
+        private string                  _DbConnection;
         private string                  _Title;
         private string                  _Description;
         private string                  _Author;
@@ -55,6 +56,8 @@ namespace Teknik.Configuration
         public bool         DevEnvironment          { get { return _DevEnvironment; }       set { _DevEnvironment = value; } }
         public bool         Migrate                 { get { return _Migrate; }              set { _Migrate = value; } }
         public bool         UseCdn                  { get { return _UseCdn; }               set { _UseCdn = value; } }
+
+        public string       DbConnection            { get { return _DbConnection; }         set { _DbConnection = value; } }
 
         // Site Information
         public string       Title                   { get { return _Title; }                set { _Title = value; } }

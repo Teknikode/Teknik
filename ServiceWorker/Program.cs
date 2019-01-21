@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Teknik.Areas.Paste.Models;
 using Teknik.Areas.Stats.Models;
 using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Users.Models;
@@ -48,7 +49,7 @@ namespace Teknik.ServiceWorker
                         Output(string.Format("[{0}] Started Server Maintenance Process.", DateTime.Now));
 
                         var optionsBuilder = new DbContextOptionsBuilder<TeknikEntities>();
-                        optionsBuilder.UseSqlServer("Data Source=blog.db");
+                        optionsBuilder.UseSqlServer(config.DbConnection);
 
                         using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
                         {
@@ -63,6 +64,11 @@ namespace Teknik.ServiceWorker
                             {
                                 // Run the overall migration calls
                                 TeknikMigration.RunMigration(db, config);
+                            }
+
+                            if (options.Expire)
+                            {
+                                ProcessExpirations(config, db);
                             }
                         }
 
@@ -206,6 +212,23 @@ namespace Teknik.ServiceWorker
                 }
             }
             return virusDetected;
+        }
+
+        public static void ProcessExpirations(Config config, TeknikEntities db)
+        {
+            Output(string.Format("[{0}] Starting processing expirations.", DateTime.Now));
+
+            var curDate = DateTime.Now;
+
+            // Process uploads
+            List<Upload> uploads = db.Uploads.Where(u => u.ExpireDate != null && u.ExpireDate < curDate).ToList();
+            db.RemoveRange(uploads);
+            db.SaveChanges();
+
+            // Process Pastes
+            List<Paste> pastes = db.Pastes.Where(p => p.ExpireDate != null && p.ExpireDate < curDate).ToList();
+            db.RemoveRange(pastes);
+            db.SaveChanges();
         }
 
         public static void Output(string message)
