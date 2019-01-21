@@ -51,8 +51,6 @@ namespace Teknik.Areas.Paste.Models
         [CaseSensitive]
         public string DeleteKey { get; set; }
 
-        public bool Hide { get; set; }
-
         public int MaxViews { get; set; }
 
         public int Views { get; set; }

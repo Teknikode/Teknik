@@ -22,7 +22,7 @@ using Teknik.Utilities;
 
 namespace Teknik.Areas.API.V1.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Policy = "WriteOnlyAPI")]
+    [Authorize(Policy = "WriteAPI")]
     public class UploadAPIv1Controller : APIv1Controller
     {
         public UploadAPIv1Controller(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
@@ -46,6 +46,12 @@ namespace Teknik.Areas.API.V1.Controllers
                             {
                                 maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
                             }
+                        }
+                        else
+                        {
+                            // Non-logged in users are defaulted to 1 day expiration
+                            model.expirationUnit = ExpirationUnit.Days;
+                            model.expirationLength = 1;
                         }
                         if (model.file.Length <= maxUploadSize)
                         {
@@ -156,6 +162,8 @@ namespace Teknik.Areas.API.V1.Controllers
                                     keySize = upload.KeySize,
                                     iv = upload.IV,
                                     blockSize = upload.BlockSize,
+                                    maxDownloads = upload.MaxDownloads,
+                                    expirationDate = upload.ExpireDate,
                                     deletionKey = upload.DeleteKey
 
                                 };

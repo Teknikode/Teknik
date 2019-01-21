@@ -17,20 +17,19 @@ using Teknik.Utilities;
 
 namespace Teknik.Areas.API.V1.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Policy = "WriteOnlyAPI")]
+    [Authorize(Policy = "WriteAPI")]
     public class PasteAPIv1Controller : APIv1Controller
     {
         public PasteAPIv1Controller(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
         [HttpPost]
-        [AllowAnonymous]
         public IActionResult Paste(PasteAPIv1Model model)
         {
             try
             {
                 if (model != null && model.code != null)
                 {
-                    Paste.Models.Paste paste = PasteHelper.CreatePaste(_config, _dbContext, model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password, model.hide);
+                    Paste.Models.Paste paste = PasteHelper.CreatePaste(_config, _dbContext, model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password);
 
                     // Associate this with the user if they are logged in
                     if (User.Identity.IsAuthenticated)

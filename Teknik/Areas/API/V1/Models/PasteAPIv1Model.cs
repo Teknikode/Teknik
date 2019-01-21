@@ -14,8 +14,6 @@
 
         public string password { get; set; }
 
-        public bool hide { get; set; }
-
         public PasteAPIv1Model()
         {
             code = null;
@@ -24,7 +22,6 @@
             expireUnit = "never";
             expireLength = 1;
             password = string.Empty;
-            hide = false;
         }
     }
 }

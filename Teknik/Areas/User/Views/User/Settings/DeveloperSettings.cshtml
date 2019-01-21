@@ -21,8 +21,9 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
+        <span class="pull-right"><button type="button" class="btn btn-default" id="createClient">Create Client</button></span>
+        <div class="clearfix"></div>
         <br />
-        <label for="clients"><h4>Clients</h4></label><span class="pull-right"><button type="button" class="btn btn-default" id="createClient">Create Client</button></span>
         <div id="clients">
             <ul class="list-group" id="clientList">
                 @if (Model.Clients.Any())

@@ -14,7 +14,7 @@ namespace Teknik.Areas.Paste
 {
     public static class PasteHelper
     {
-        public static Models.Paste CreatePaste(Config config, TeknikEntities db, string content, string title = "", string syntax = "text", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
+        public static Models.Paste CreatePaste(Config config, TeknikEntities db, string content, string title = "", string syntax = "text", string expireUnit = "never", int expireLength = 1, string password = "")
         {
             Models.Paste paste = new Models.Paste();
             paste.DatePosted = DateTime.Now;
@@ -88,7 +88,6 @@ namespace Teknik.Areas.Paste
             //paste.Content = content;
             paste.Title = title;
             paste.Syntax = syntax;
-            paste.Hide = hide;
             paste.DeleteKey = delKey;
 
             return paste;

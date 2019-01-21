@@ -18,13 +18,12 @@ using Teknik.Utilities;
 
 namespace Teknik.Areas.API.V1.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Policy = "WriteOnlyAPI")]
+    [Authorize(Policy = "WriteAPI")]
     public class ShortenAPIv1Controller : APIv1Controller
     {
         public ShortenAPIv1Controller(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
         [HttpPost]
-        [AllowAnonymous]
         public IActionResult Shorten(ShortenAPIv1Model model)
         {
             try

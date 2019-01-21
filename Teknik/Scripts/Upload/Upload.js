@@ -428,6 +428,8 @@ function uploadComplete(fileID, key, options, token, evt) {
                 var contentType = obj.result.contentType;
                 var contentLength = obj.result.contentLength;
                 var deleteUrl = obj.result.deleteUrl;
+                var expirationUnit = obj.result.expirationUnit;
+                var expirationLength = obj.result.expirationLength;
 
                 // Set progress bar
                 setProgress(fileID, 100, 'progress-bar-success', '', 'Complete');
@@ -442,9 +444,9 @@ function uploadComplete(fileID, key, options, token, evt) {
                 itemDiv.find('#upload-contentType').html(contentType);
                 itemDiv.find('#upload-contentLength').html(contentLength);
 
-                var expirationMessage = options.expirationUnit;
-                if (options.expirationUnit !== "Never") {
-                    expirationMessage = options.expirationLength + ' ' + options.expirationUnit;
+                var expirationMessage = expirationUnit;
+                if (expirationUnit !== "Never") {
+                    expirationMessage = expirationLength + ' ' + expirationUnit;
                 }
                 itemDiv.find('#upload-expiration').html(expirationMessage);
 

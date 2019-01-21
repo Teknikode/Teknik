@@ -210,19 +210,23 @@ namespace Teknik
             {
                 options.AddPolicy("FullAPI", p =>
                 {
+                    p.AddAuthenticationSchemes("Bearer");
                     p.RequireScope("teknik-api.read");
                     p.RequireScope("teknik-api.write");
                 });
-                options.AddPolicy("ReadOnlyAPI", p =>
+                options.AddPolicy("ReadAPI", p =>
                 {
+                    p.AddAuthenticationSchemes("Bearer");
                     p.RequireScope("teknik-api.read");
                 });
-                options.AddPolicy("WriteOnlyAPI", p =>
+                options.AddPolicy("WriteAPI", p =>
                 {
-                    p.RequireScope("teknik-api.read");
+                    p.AddAuthenticationSchemes("Bearer");
+                    p.RequireScope("teknik-api.write");
                 });
                 options.AddPolicy("AnyAPI", p =>
                 {
+                    p.AddAuthenticationSchemes("Bearer");
                     p.RequireScope("teknik-api.read", "teknik-api.write");
                 });
             });

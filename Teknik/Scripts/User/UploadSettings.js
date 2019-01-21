@@ -47,12 +47,12 @@ $(document).ready(function () {
 function setExpireWidth(unit) {
     if (unit === "Never") {
         $('#length-div').addClass("hidden");
-        $('#unit-div').removeClass("col-sm-8");
-        $('#unit-div').addClass("col-sm-12");
+        $('#unit-div').removeClass("col-sm-7");
+        $('#unit-div').addClass("col-sm-9");
     }
     else {
         $('#length-div').removeClass("hidden");
-        $('#unit-div').removeClass("col-sm-12");
-        $('#unit-div').addClass("col-sm-8");
+        $('#unit-div').removeClass("col-sm-9");
+        $('#unit-div').addClass("col-sm-7");
     }
 }

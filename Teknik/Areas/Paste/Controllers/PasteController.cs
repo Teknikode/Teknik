@@ -143,7 +143,7 @@ namespace Teknik.Areas.Paste.Controllers
         [HttpPost]
         [AllowAnonymous]
         [DisableRequestSizeLimit]
-        public IActionResult Paste([Bind("Content, Title, Syntax, ExpireLength, ExpireUnit, Password, Hide")]PasteCreateViewModel model)
+        public IActionResult Paste([Bind("Content, Title, Syntax, ExpireLength, ExpireUnit, Password")]PasteCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -151,7 +151,7 @@ namespace Teknik.Areas.Paste.Controllers
                 {
                     try
                     {
-                        Models.Paste paste = PasteHelper.CreatePaste(_config, _dbContext, model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password, model.Hide);
+                        Models.Paste paste = PasteHelper.CreatePaste(_config, _dbContext, model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password);
 
                         if (model.ExpireUnit == "view")
                         {

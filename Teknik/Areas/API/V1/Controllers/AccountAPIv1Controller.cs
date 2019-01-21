@@ -12,7 +12,7 @@ using Teknik.Logging;
 
 namespace Teknik.Areas.API.V1.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Policy = "AnyAPI")]
+    [Authorize(Policy = "AnyAPI")]
     public class AccountAPIv1Controller : APIv1Controller
     {
         public AccountAPIv1Controller(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }

@@ -72,6 +72,12 @@ namespace Teknik.Areas.Upload.Controllers
                             maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
                         }
                     }
+                    else
+                    {
+                        // Non-logged in users are defaulted to 1 day expiration
+                        uploadFile.options.ExpirationUnit = ExpirationUnit.Days;
+                        uploadFile.options.ExpirationLength = 1;
+                    }
                     if (uploadFile.file.Length <= maxUploadSize)
                     {
                         // convert file to bytes
@@ -135,7 +141,16 @@ namespace Teknik.Areas.Upload.Controllers
                                         _dbContext.SaveChanges();
                                     }
                                 }
-                                return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), contentType = upload.ContentType, contentLength = StringHelper.GetBytesReadable(upload.ContentLength), deleteUrl = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = upload.Url, key = upload.DeleteKey }) } });
+                                return Json(new { result = new
+                                {
+                                    name = upload.Url,
+                                    url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }),
+                                    contentType = upload.ContentType,
+                                    contentLength = StringHelper.GetBytesReadable(upload.ContentLength),
+                                    deleteUrl = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = upload.Url, key = upload.DeleteKey }),
+                                    expirationUnit = uploadFile.options.ExpirationUnit.ToString(),
+                                    expirationLength = uploadFile.options.ExpirationLength
+                                } });
                             }
                         }
                         return Json(new { error = new { message = "Unable to upload file" } });
