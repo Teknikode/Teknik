@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Folder Include="Middleware\" />
+    <Folder Include="App_Data\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

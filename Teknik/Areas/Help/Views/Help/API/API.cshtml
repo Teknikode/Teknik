@@ -28,21 +28,17 @@
                 <br />
                 The general API calls can be summarized as follows: <code>@Url.SubRouteUrl("api", "Api.Index")v@(Config.ApiConfig.Version)/<b>Service</b>/<b>Action</b></code>
             </p>
-            <h3>Basic Authentication</h3>
+            <h3>Authentication</h3>
             <p>
-                For some services, you may be required to authenticate to access them, or to associate generated content with your account.  In all cases, the same authentication method is used.
+                For some services, you may be required to authenticate to access them, or to associate generated content with your account.  In all cases, the same authentication methods can be used.
                 <br />
                 <br />
-                <h4>Generating Authentication Tokens</h4>
-                To generate a new authentication token, navigate to your <a href="@Url.SubRouteUrl("user", "User.Settings")">user profile</a> and click the <b>Security</b> tab.  There, you can manage your existing tokens and generate new ones.
+                <h4>OAuth2 token (sent in a header)</h4>
+                <code>curl -H "Authorization: token <i>OATH-TOKEN</i>" @Url.SubRouteUrl("api", "Api.Index")v@(Config.ApiConfig.Version)/</code>
                 <br />
                 <br />
-                <h4>Using the Authentication Tokens</h4>
-                To use Basic Authentication with your token, simply send the username and token.
-                <br />
-                <br />
-                For example, if you're accessing the API via cURL, the following command would associate the create paste with your account.  Just replace <code>&lt;username&gt;</code> with your Teknik username and <code>&lt;token&gt;</code> with your token.
-                <pre><code>$ curl -u &lt;username&gt;:&lt;token&gt; --data code="Test" @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
+                For example, if you're accessing the API via cURL, the following command would associate the create paste with your account.  Just replace <code>&lt;OAUTH-TOKEN&gt;</code> with your access token.
+                <pre><code>$ curl -H &lt;OAUTH-TOKEN&gt; --data code="Test" @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
             </p>
             <h3>Responses</h3>
             <p>

@@ -14,7 +14,7 @@
         <hr>
         <p>This is a description of the API commands available for the Url Shortening service.</p>
         <h3>Shorten a Url</h3>
-        <pre><code>POST @Url.SubRouteUrl("api", "API.v1.Shortener")</code></pre>
+        <pre><code>POST @Url.SubRouteUrl("api", "API.v1.Shorten")</code></pre>
         <h4>Headers</h4>
         <table>
             <thead>
@@ -120,7 +120,7 @@
             </tbody>
         </table>
         <h4>Example</h4>
-        <pre><code>$ curl --data "url=http://www.example.com/long/url/is/long" @Url.SubRouteUrl("api", "API.v1.Shortener")</code></pre>
+        <pre><code>$ curl --data "url=http://www.example.com/long/url/is/long" @Url.SubRouteUrl("api", "API.v1.Shorten")</code></pre>
         <p>
             This will shorten the supplied url.
         </p>

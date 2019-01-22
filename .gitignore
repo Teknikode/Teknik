@@ -267,3 +267,4 @@ __pycache__/
 **/appsettings.*.json
 **/tempkey.rsa
 /ServiceWorker/Properties/launchSettings.json
+/IdentityServer/App_Data/Config.json
