@@ -1,3 +1,6 @@
+/* exported disableButton, enableButton, removeAmp, clearInputs, randomString, getFileExtension, SelectAll, getAnchor, GenerateBlobURL, AddAntiForgeryToken, 
+   copyTextToClipboard, getReadableBandwidthString, getReadableFileSizeString, moveUp, moveDown, addParamsToUrl, sleep, parseErrorMessage, isValidURL, 
+   pageloadTimerCount, pageloadDoTimer, pageloadStopTimer */
 $(document).ready(function () {
     $("#top_msg").css('display', 'none', 'important');
 
@@ -6,7 +9,7 @@ $(document).ready(function () {
 
     $('#registerButton').removeClass('hide');
 
-    $('#registerModal').on('shown.bs.modal', function (e) {
+    $('#registerModal').on('shown.bs.modal', function () {
         $("#registerStatus").css('display', 'none', 'important');
         $("#registerStatus").html('');
         $('#registerUsername').focus();
@@ -65,7 +68,7 @@ $(function () {
     });
 
     // for bootstrap 3 use 'shown.bs.tab', for bootstrap 2 use 'shown' in the next line
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
         // save the latest tab; use cookies if you like 'em better:
         localStorage.setItem('lastTab', $(this).attr('href'));
     });
@@ -238,7 +241,7 @@ function getReadableFileSizeString(fileSizeInBytes) {
     } while (fileSizeInBytes > 1024);
 
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
-};
+}
 
 function moveUp(item) {
     var prev = item.prev();

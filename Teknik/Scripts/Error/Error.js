@@ -1,3 +1,4 @@
+/* globals submitErrorReportURL */
 $(document).ready(function () {
     $('#submitErrorReport').click(function() {
         bootbox.prompt({
@@ -5,7 +6,7 @@ $(document).ready(function () {
             inputType: 'textarea',
             callback: function(result) {
                 if (result) {
-                    errorMsg = $("#errorMsg").html();
+                    var errorMsg = $("#errorMsg").html();
                     $.ajax({
                         type: "POST",
                         url: submitErrorReportURL,
@@ -43,7 +44,7 @@ $(document).ready(function () {
                 link.text("Hide Details");
             } else {
                 link.text("Show Details");
-            };
+            }
         }
     );
 });

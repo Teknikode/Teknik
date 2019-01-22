@@ -1,3 +1,4 @@
+/* globals shortenURL, createVaultURL, uploadFileURL, maxUploadSize, keySize, blockSize, encScriptSrc, aesScriptSrc, chunkSize */
 $(document).ready(function () {
     $("#upload-links").css('display', 'none', 'important');
     $("#upload-links").html('');
@@ -20,7 +21,7 @@ $(document).ready(function () {
         linkAddToVault($(this));
     });
 
-    $('#uploadSettings').on('shown.bs.modal', function (e) {
+    $('#uploadSettings').on('shown.bs.modal', function () {
         // Initialize the widths
         setExpireWidth($('#uploadSettings').find("#expireunit").val());
 
@@ -29,13 +30,17 @@ $(document).ready(function () {
 
     document.onpaste = function (event) {
         var items = (event.clipboardData || event.originalEvent.clipboardData).items;
-        for (index in items) {
-            var item = items[index];
-            if (item.kind === 'file') {
-                // Convert file to blob
-                var file = item.getAsFile();
-                // Upload the file
-                upload(file);
+        for (var index in items) {
+            if (!_.isUndefined(index) && !_.isNull(index)) {
+                var item = items[index];
+                if (!_.isUndefined(item) && !_.isNull(item) && item.kind === 'file') {
+                    // Convert file to blob
+                    var file = item.getAsFile();
+                    if (!_.isUndefined(file) && !_.isNull(file)) {
+                        // Upload the file
+                        upload(file);
+                    }
+                }
             }
         }
     }
@@ -63,7 +68,7 @@ function linkUploadDelete(element, deleteUrl) {
     });
 }
 
-function linkShortenUrl(element, fileID, url) {
+function linkShortenUrl(element, fileID) {
     element.click(function () {
         var url = $('#upload-panel-' + fileID).find('#upload-link').text();
         $.ajax({
@@ -97,13 +102,6 @@ function linkRemove(element, fileID, token) {
                 $('#upload-action-buttons').hide();
             }
         }
-        return false;
-    });
-}
-
-function linkCancel(element, fileID) {
-    element.click(function () {
-        $('#upload-panel-' + fileID).remove();
         return false;
     });
 }
@@ -187,7 +185,7 @@ function setExpireWidth(unit) {
     }
 }
 
-var dropZone = new Dropzone(document.body, {
+$(document.body).dropzone({
     url: uploadFileURL, 
     maxFilesize: maxUploadSize, // MB
     addRemoveLinks: true,
@@ -469,7 +467,7 @@ function uploadComplete(fileID, key, options, token, evt) {
 
                 // Setup the buttons
                 linkUploadDelete(itemDiv.find('#delete-link'), deleteUrl);
-                linkShortenUrl(itemDiv.find('#shortenUrl'), fileID, fullName);
+                linkShortenUrl(itemDiv.find('#shortenUrl'), fileID);
 
                 // Hide the progress bar
                 itemDiv.find('#upload-progress-panel').hide();
@@ -502,7 +500,7 @@ function uploadFailed(fileID, token, evt) {
     $('#upload-panel-' + fileID).find('.panel').addClass('panel-danger');
 }
 
-function uploadCanceled(fileID, token, evt) {
+function uploadCanceled(fileID, token) {
     // Cancel out cancel token
     token.callback = null;
 

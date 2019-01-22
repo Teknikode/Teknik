@@ -1,3 +1,4 @@
+/* globals resendVerifyURL, generate2FAURL, disable2FAURL, resetRecoveryCodesURL, confirmAuthSetupURL, editURL */
 $(document).ready(function () {
     $('#ResendVerification').click(function () {
         $.ajax({
@@ -103,7 +104,7 @@ $(document).ready(function () {
                         data: AddAntiForgeryToken({}),
                         success: function (response) {
                             if (response.result) {
-                                var dialog = bootbox.dialog({
+                                bootbox.dialog({
                                     closeButton: false,
                                     buttons: {
                                         close: {
@@ -131,11 +132,11 @@ $(document).ready(function () {
         });
     });
 
-    $('#authenticatorSetup').on('shown.bs.modal', function (e) {
+    $('#authenticatorSetup').on('shown.bs.modal', function () {
         $('#auth_setup_code').focus();
     });
 
-    $('#authenticatorSetup').on('hide.bs.modal', function (e) {
+    $('#authenticatorSetup').on('hide.bs.modal', function () {
         $("#authSetupStatus").css('display', 'none', 'important');
         $("#authSetupStatus").html('');
         $('#authQRCode').attr('src', '');
@@ -145,7 +146,7 @@ $(document).ready(function () {
 
     $('#auth_setup_verify').click(function () {
         disableButton('#auth_setup_verify', 'Verifying...');
-        setCode = $("#auth_setup_code").val();
+        var setCode = $("#auth_setup_code").val();
         $.ajax({
             type: "POST",
             url: confirmAuthSetupURL,
@@ -155,7 +156,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.result) {
                     $('#authenticatorSetup').modal('hide');
-                    var dialog = bootbox.dialog({
+                    bootbox.dialog({
                         closeButton: false,
                         buttons: {
                             close: {
@@ -189,8 +190,8 @@ $(document).ready(function () {
         // Start Updating Animation
         disableButton('#update_submit', 'Saving...');
 
-        update_pgp_public_key = $("#update_pgp_public_key").val();
-        recovery = $("#update_recovery_email").val();
+        var update_pgp_public_key = $("#update_pgp_public_key").val();
+        var recovery = $("#update_recovery_email").val();
         $.ajax({
             type: "POST",
             url: editURL,

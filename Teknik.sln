@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MailService", "MailService\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitService", "GitService\GitService.csproj", "{014879B1-DDD5-4F8C-9597-6D7960912CF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceWorker", "ServiceWorker\ServiceWorker.csproj", "{0B712243-994C-4AC3-893C-B86B59F63F53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceWorker", "ServiceWorker\ServiceWorker.csproj", "{0B712243-994C-4AC3-893C-B86B59F63F53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

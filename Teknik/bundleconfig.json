@@ -297,6 +297,7 @@
             "./wwwroot/lib/jquery/js/jquery.validate.js",
             "./wwwroot/lib/bootstrap/js/bootstrap.js",
             "./wwwroot/lib/bootstrap/js/bootstrap-select.js",
+            "./wwwroot/lib/underscore/js/underscore.js",
             "./wwwroot/js/app/common.js"
         ]
     },

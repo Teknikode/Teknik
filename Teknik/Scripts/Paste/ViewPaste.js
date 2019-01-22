@@ -1,4 +1,5 @@
-﻿$(document).ready(function () {
+﻿/* globals createVaultURL */
+$(document).ready(function () {
     linkCreateVault($('#create-vault'));
 
     $('#add-to-vault-menu').find('.add-to-vault').each(function () {

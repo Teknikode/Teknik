@@ -1,16 +1,19 @@
+/*  globals addPodcastURL, getPodcastEpisodeURL, getPodcastTitleURL, getPodcastDescriptionURL, getPodcastFilesURL, editPodcastURL, addCommentURL, getCommentArticleURL, editCommentURL, getPodcastsURL, getCommentsURL, publishPodcastURL, deletePodcastURL, deleteCommentURL
+    startPodcast:true, podcasts, startComment:true, comments
+*/
 $(document).ready(function () {
     $("#podcast_submit").click(function () {
         $.blockUI({ message: '<div class="text-center"><h3>Saving...</h3></div>' });
         $('#newPodcast').modal('hide');
         var fd = new FormData();
         var fileInput = document.getElementById('podcast_files');
-        for (i = 0; i < fileInput.files.length; i++) {
+        for (var i = 0; i < fileInput.files.length; i++) {
             //Appending each file to FormData object
             fd.append(fileInput.files[i].name, fileInput.files[i]);
         }
-        episode = $("#podcast_episode").val();
-        title = $("#podcast_title").val();
-        description = $("#podcast_description").val();
+        var episode = $("#podcast_episode").val();
+        var title = $("#podcast_title").val();
+        var description = $("#podcast_description").val();
 
         fd.append("episode", episode);
         fd.append("title", title);
@@ -21,7 +24,7 @@ $(document).ready(function () {
         xhr.send(fd);
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                obj = JSON.parse(xhr.responseText);
+                var obj = JSON.parse(xhr.responseText);
                 $.unblockUI();
                 if (obj.result) {
                     window.location.reload();
@@ -41,7 +44,7 @@ $(document).ready(function () {
         $("#edit_podcast_description").val("");
         $("#edit_podcast_cur_file_list").val("");
         $("#edit_podcast_cur_files").html('');
-        podcastId = $(e.relatedTarget).attr("id");
+        var podcastId = $(e.relatedTarget).attr("id");
         $("#edit_podcast_podcastId").val(podcastId);
         $.ajax({
             type: "POST",
@@ -104,16 +107,16 @@ $(document).ready(function () {
         $('#editPodcast').modal('hide');
         var fd = new FormData();
         var fileInput = document.getElementById('edit_podcast_files');
-        for (i = 0; i < fileInput.files.length; i++) {
+        for (var i = 0; i < fileInput.files.length; i++) {
             //Appending each file to FormData object
             fd.append(fileInput.files[i].name, fileInput.files[i]);
         }
 
-        podcastId = $("#edit_podcast_podcastId").val();
-        episode = $("#edit_podcast_episode").val();
-        title = $("#edit_podcast_title").val();
-        description = $("#edit_podcast_description").val();
-        allFiles = $("#edit_podcast_cur_file_list").val();
+        var podcastId = $("#edit_podcast_podcastId").val();
+        var episode = $("#edit_podcast_episode").val();
+        var title = $("#edit_podcast_title").val();
+        var description = $("#edit_podcast_description").val();
+        var allFiles = $("#edit_podcast_cur_file_list").val();
         
         fd.append("podcastId", podcastId);
         fd.append("episode", episode);
@@ -126,7 +129,7 @@ $(document).ready(function () {
         xhr.send(fd);
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                obj = JSON.parse(xhr.responseText);
+                var obj = JSON.parse(xhr.responseText);
                 $.unblockUI();
                 if (obj.result) {
                     window.location.reload();
@@ -142,12 +145,12 @@ $(document).ready(function () {
 
     $("#comment_submit").click(function () {
         $('#newComment').modal('hide');
-        podcastId = $("#podcastId").val();
-        post = $("#comment_post").val();
+        var podcastId = $("#podcastId").val();
+        var post = $("#comment_post").val();
         $.ajax({
             type: "POST",
             url: addCommentURL,
-            data: { podcastId: postID, article: post },
+            data: { podcastId: podcastId, article: post },
             success: function (response) {
                 if (response.result) {
                     window.location.reload();
@@ -163,7 +166,7 @@ $(document).ready(function () {
 
     $('#editComment').on('show.bs.modal', function (e) {
         $("#edit_comment_post").val("");
-        commentID = $(e.relatedTarget).attr("id");
+        var commentID = $(e.relatedTarget).attr("id");
         $("#edit_comment_id").val(commentID);
         $.ajax({
             type: "POST",
@@ -179,8 +182,8 @@ $(document).ready(function () {
 
     $("#edit_comment_submit").click(function () {
         $('#editComment').modal('hide');
-        postID = $("#edit_comment_id").val();
-        post = $("#edit_comment_post").val();
+        var postID = $("#edit_comment_id").val();
+        var post = $("#edit_comment_post").val();
         $.ajax({
             type: "POST",
             url: editCommentURL,
@@ -200,7 +203,7 @@ $(document).ready(function () {
 });
 
 function loadMorePodcasts(start, count) {
-    podcastId = $(".podcast-main").attr("id");
+    var podcastId = $(".podcast-main").attr("id");
     $.ajax({
         type: "POST",
         url: getPodcastsURL,
@@ -218,7 +221,7 @@ function loadMorePodcasts(start, count) {
 }
 
 function loadMoreComments(start, count) {
-    post_id = $(".podcast-comments").attr("id");
+    var post_id = $(".podcast-comments").attr("id");
     $.ajax({
         type: "POST",
         url: getCommentsURL,
@@ -252,7 +255,7 @@ function bindScrollComments() {
 function linkPodcastUnpublish(selector) {
     $(selector).click(function () {
         var object = $(this);
-        podcastId = object.attr("id");
+        var podcastId = object.attr("id");
         $.ajax({
             type: "POST",
             url: publishPodcastURL,
@@ -273,7 +276,7 @@ function linkPodcastUnpublish(selector) {
 function linkPodcastPublish(selector) {
     $(selector).click(function () {
         var object = $(this);
-        podcastId = object.attr("id");
+        var podcastId = object.attr("id");
         $.ajax({
             type: "POST",
             url: publishPodcastURL,
@@ -294,7 +297,7 @@ function linkPodcastPublish(selector) {
 function linkPodcastDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
-        podcastId = object.attr("id");
+        var podcastId = object.attr("id");
         bootbox.confirm("Are you sure you want to delete the podcast?", function (result) {
             if (result) {
                 $.ajax({
@@ -319,8 +322,8 @@ function linkPodcastDelete(selector) {
 function linkEditFileDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
-        podFile = object.attr('id');
-        allFiles = $("#edit_podcast_cur_file_list").val();
+        var podFile = object.attr('id');
+        var allFiles = $("#edit_podcast_cur_file_list").val();
         var fileList = allFiles.split(',');
         var index = fileList.indexOf(podFile);
         if (index != -1) {
@@ -335,7 +338,7 @@ function linkEditFileDelete(selector) {
 function linkCommentDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
-        post_id = object.attr("id");
+        var post_id = object.attr("id");
         bootbox.confirm("Are you sure you want to delete your comment?", function (result) {
             if (result) {
                 $.ajax({

@@ -1,6 +1,8 @@
-var cpuUsageChart;
-var memUsageChart;
-var networkUsageChart;
+/* globals showVisitorStats, getVisitorDataURL */
+//var cpuUsageChart;
+//var memUsageChart;
+//var networkUsageChart;
+var visitChart;
 
 $(document).ready(function () {
     $('#bills-section').collapse('hide');
@@ -314,7 +316,7 @@ $(document).ready(function () {
 
     // Resize the chart when viewing the tab (initial width is wrong due to chart being hidden)
     $('a[href="#site-stats"]').on('shown.bs.tab',
-        function (e) {
+        function () {
             if (showVisitorStats) {
                 visitChart.setSize($('#visitor-chart').width(), $('#visitor-chart').height());
             }

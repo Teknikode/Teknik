@@ -1,3 +1,4 @@
+/* globals encScriptSrc, aesScriptSrc, downloadDataUrl, fileName, fileType:true, iv, decrypt, chunkSize */
 $(document).ready(downloadFile);
 
 function downloadFile() {
@@ -28,7 +29,7 @@ function processDownload(key, iv, decrypt) {
     xhr.open('POST', downloadDataUrl, true);
     xhr.responseType = 'arraybuffer';
 
-    xhr.onload = function(e) {
+    xhr.onload = function() {
         if (this.status === 200) {
             decryptDownload(this.response, key, iv, decrypt);
         }
@@ -53,11 +54,11 @@ function processDownload(key, iv, decrypt) {
         }
     }
 
-    xhr.onerror = function(e) {
+    xhr.onerror = function() {
         setProgress(100, 'progress-bar-danger', '', 'Download Failed');
     };
 
-    xhr.onabort = function(e) {
+    xhr.onabort = function() {
         setProgress(100, 'progress-bar-warning', '', 'Download Aborted');
     };
 
@@ -110,7 +111,7 @@ function decryptDownload(fileData, key, iv, decrypt) {
                     }
                 });
 
-            worker.onerror = function (err) {
+            worker.onerror = function () {
                 // An error occured
                 setProgress(100, 'progress-bar-danger', '', 'Error Occured');
             }

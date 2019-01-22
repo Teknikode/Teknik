@@ -1,3 +1,4 @@
+/* globals editAccountType, editAccountStatus, createInviteCode, deleteUserURL, homeUrl, username */
 $(function () {
 
     $('.userAccountType').on('change', function () {

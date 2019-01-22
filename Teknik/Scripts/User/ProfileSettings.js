@@ -1,11 +1,12 @@
+/* globals editURL */
 $(document).ready(function () {
     $("#update_submit").click(function () {
         // Start Updating Animation
         disableButton('#update_submit', 'Saving...');
         
-        website = $("#update_website").val();
-        quote = $("#update_quote").val();
-        about = $("#update_about").val();
+        var website = $("#update_website").val();
+        var quote = $("#update_quote").val();
+        var about = $("#update_about").val();
         $.ajax({
             type: "POST",
             url: editURL,

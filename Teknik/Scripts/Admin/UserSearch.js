@@ -1,6 +1,7 @@
+/* globals userSearchResultsURL */
 $(document).ready(function () {
     $('#search').click(function () {
-        query = $('#query').val();
+        var query = $('#query').val();
         $.ajax({
             type: "POST",
             url: userSearchResultsURL,

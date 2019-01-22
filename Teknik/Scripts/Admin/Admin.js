@@ -1,3 +1,4 @@
+/* globals createInviteCode, username */
 $(function () {
     $('#createInviteCode').click(function () {
         $.ajax({

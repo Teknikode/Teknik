@@ -1,11 +1,12 @@
-﻿$(document).ready(function () {
+﻿/* globals changePasswordUrl, deleteUserURL, homeUrl */
+$(document).ready(function () {
     $("#change_password_submit").click(function () {
         // Start Updating Animation
         disableButton('#change_password_submit', 'Saving...');
 
-        current_password = $("#update_password_current").val();
-        password = $("#update_password").val();
-        password_confirm = $("#update_password_confirm").val();
+        var current_password = $("#update_password_current").val();
+        var password = $("#update_password").val();
+        var password_confirm = $("#update_password_confirm").val();
         $.ajax({
             type: "POST",
             url: changePasswordUrl,
@@ -58,7 +59,7 @@
                     }
                 }).always(function () {
                     enableButton('#delete_account', 'Delete Account');
-                });;
+                });
             } else {
                 enableButton('#delete_account', 'Delete Account');
             }

@@ -2,7 +2,7 @@ $(document).ready(function () {
     $("#reset_pass_send_submit").click(function () {
         disableButton('#reset_pass_send_submit', 'Generating Link...');
         var form = $('#reset_pass_send');
-        username = $("#reset_username").val();
+        var username = $("#reset_username").val();
         $.ajax({
             type: "POST",
             url: form.attr('action'),
@@ -32,8 +32,8 @@ $(document).ready(function () {
     $("#setNewPass_submit").click(function () {
         disableButton('#setNewPass_submit', 'Resetting...');
         var form = $('#setNewPass');
-        password = $("#setNewPass_Password").val();
-        confirmPassword = $("#setNewPass_ConfirmPassword").val();
+        var password = $("#setNewPass_Password").val();
+        var confirmPassword = $("#setNewPass_ConfirmPassword").val();
         $.ajax({
             type: "POST",
             url: form.attr('action'),

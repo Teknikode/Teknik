@@ -1,3 +1,4 @@
+/* globals addCommentURL, getCommentArticleURL, editCommentURL, getPostsURL, getCommentsURL, publishPostURL, deletePostURL, deleteCommentURL, posts, start_post:true */
 $(document).ready(function () {
     // Initial Load
     var oldVal = $('textarea.mdd_editor').val();
@@ -16,8 +17,8 @@ $(document).ready(function () {
 
     $("#comment_submit").click(function () {
         $('#newComment').modal('hide');
-        postID = $("#post_id").val();
-        post = $("#comment_post").val();
+        var postID = $("#post_id").val();
+        var post = $("#comment_post").val();
         $.ajax({
             type: "POST",
             url: addCommentURL,
@@ -37,7 +38,7 @@ $(document).ready(function () {
 
     $('#editComment').on('show.bs.modal', function (e) {
         $("#edit_comment_post").val("");
-        commentID = $(e.relatedTarget).attr("id");
+        var commentID = $(e.relatedTarget).attr("id");
         $("#edit_comment_postid").val(commentID);
         $.ajax({
             type: "POST",
@@ -53,8 +54,8 @@ $(document).ready(function () {
 
     $("#edit_comment_submit").click(function () {
         $('#editComment').modal('hide');
-        postID = $("#edit_comment_postid").val();
-        post = $("#edit_comment_post").val();
+        var postID = $("#edit_comment_postid").val();
+        var post = $("#edit_comment_post").val();
         $.ajax({
             type: "POST",
             url: editCommentURL,
@@ -74,7 +75,7 @@ $(document).ready(function () {
 });
 
 function loadMorePosts(start, count) {
-    blog_id = $(".blog-main").attr("id");
+    var blog_id = $(".blog-main").attr("id");
     $.ajax({
         type: "POST",
         url: getPostsURL,
@@ -92,7 +93,7 @@ function loadMorePosts(start, count) {
 }
 
 function loadMoreComments(start, count) {
-    post_id = $(".post-comments").attr("id");
+    var post_id = $(".post-comments").attr("id");
     $.ajax({
         type: "POST",
         url: getCommentsURL,
@@ -126,7 +127,7 @@ function bindScrollComments() {
 function linkPostUnpublish(selector) {
     $(selector).click(function () {
         var object = $(this);
-        post_id = object.attr("id");
+        var post_id = object.attr("id");
         $.ajax({
             type: "POST",
             url: publishPostURL,
@@ -147,7 +148,7 @@ function linkPostUnpublish(selector) {
 function linkPostPublish(selector) {
     $(selector).click(function () {
         var object = $(this);
-        post_id = object.attr("id");
+        var post_id = object.attr("id");
         $.ajax({
             type: "POST",
             url: publishPostURL,
@@ -168,7 +169,7 @@ function linkPostPublish(selector) {
 function linkPostDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
-        post_id = object.attr("id");
+        var post_id = object.attr("id");
         bootbox.confirm("Are you sure you want to delete your post?", function (result) {
             if (result) {
                 $.ajax({
@@ -193,7 +194,7 @@ function linkPostDelete(selector) {
 function linkCommentDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
-        post_id = object.attr("id");
+        var post_id = object.attr("id");
         bootbox.confirm("Are you sure you want to delete your comment?", function (result) {
             if (result) {
                 $.ajax({

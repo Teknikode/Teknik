@@ -1,3 +1,4 @@
+/* globals confirmAuthCodeURL */
 $(document).ready(function () {
     $("#authCheckStatus").css('display', 'none', 'important');
     $('#Code').focus();
@@ -9,10 +10,10 @@ $(document).ready(function () {
     });
 
     $("#verifyCodeSubmit").click(function () {
-        setCode = $("#Code").val();
-        returnUrl = $("#ReturnUrl").val();
-        rememberMe = ($("#RememberMe").val() == 'True');
-        rememberDevice = $("#RememberDevice").is(":checked");
+        var setCode = $("#Code").val();
+        var returnUrl = $("#ReturnUrl").val();
+        var rememberMe = ($("#RememberMe").val() == 'True');
+        var rememberDevice = $("#RememberDevice").is(":checked");
         $.ajax({
             type: "POST",
             url: confirmAuthCodeURL,

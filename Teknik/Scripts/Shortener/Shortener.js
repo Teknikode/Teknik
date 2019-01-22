@@ -4,7 +4,7 @@ $(document).ready(function () {
     $("#shortenSubmit").click(function () {
         $("#top_msg").css('display', 'none', 'important');
         $("#top_msg").html('');
-        url = $("#url").val();
+        var url = $("#url").val();
         $.ajax({
             type: "POST",
             url: $("#shortenerForm").attr('action'),
@@ -24,7 +24,7 @@ $(document).ready(function () {
         return false;
     });
 
-    $('#url').on('input', function (e) {
+    $('#url').on('input', function () {
         $("#top_msg").css('display', 'none', 'important');
         $("#top_msg").html('');
     });

@@ -15,6 +15,8 @@ var uglifyes = require('uglify-es');
 var composer = require('gulp-uglify/composer');
 var uglify = composer(uglifyes, console);
 
+var eslint = require('gulp-eslint');
+
 var bundleconfig = require("./bundleconfig.json");
 
 var regex = {
@@ -39,6 +41,7 @@ var assets = [
     { './node_modules/jquery-validation/dist/jquery.validate.js': 'lib/jquery/js' },
     { './node_modules/marked/lib/marked.js': 'lib/marked/js' },
     { './node_modules/sanitize-html/dist/sanitize-html.js': 'lib/sanitize-html/js' },
+    { './node_modules/underscore/underscore.js': 'lib/underscore/js' },
 
     // App JS Files
     { './Scripts/**/*': 'js/app' },
@@ -67,6 +70,12 @@ var assets = [
     { './Images/logo-black.svg': 'images' },
     { './Images/logo-blue.svg': 'images' }
 ];
+
+gulp.task("eslint", function () {
+    return gulp.src(['./Scripts/**/*.js', '!Scripts/lib/**'])
+        .pipe(eslint())
+        .pipe(eslint.formatEach('compact', process.stderr));
+});
 
 gulp.task("clean", function (cb) {
     return rimraf("./wwwroot/*", cb);

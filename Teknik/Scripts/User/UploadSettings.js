@@ -1,3 +1,4 @@
+/* globals editURL */
 $(document).ready(function () {
     $("[name='update_upload_encrypt']").bootstrapSwitch();
 
@@ -9,9 +10,9 @@ $(document).ready(function () {
         // Start Updating Animation
         disableButton('#update_submit', 'Saving...');
         
-        upload_encrypt = $("#update_upload_encrypt").is(":checked");
-        upload_expireLength = $("#expirelength").val();
-        upload_expireUnit = $("#expireunit").val();
+        var upload_encrypt = $("#update_upload_encrypt").is(":checked");
+        var upload_expireLength = $("#expirelength").val();
+        var upload_expireUnit = $("#expireunit").val();
         $.ajax({
             type: "POST",
             url: editURL,

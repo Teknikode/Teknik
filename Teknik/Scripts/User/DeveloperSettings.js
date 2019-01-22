@@ -1,13 +1,14 @@
-﻿$(document).ready(function () {
+﻿/* globals createClientURL, getClientURL, editClientURL, deleteClientURL */
+$(document).ready(function () {
 
-    $('#clientModal').on('shown.bs.modal', function (e) {
+    $('#clientModal').on('shown.bs.modal', function () {
         $("#clientStatus").css('display', 'none', 'important');
         $("#clientStatus").html('');
 
         $('#clientName').focus();
     });
 
-    $('#clientModal').on('hide.bs.modal', function (e) {
+    $('#clientModal').on('hide.bs.modal', function () {
         $("#clientStatus").css('display', 'none', 'important');
         $("#clientStatus").html('');
 
@@ -54,7 +55,7 @@ function createClient() {
                             $('#noClients').remove();
                         }
 
-                        var item = $(html);
+                        var item = $(response);
 
                         processClientItem(item);
 
@@ -154,7 +155,7 @@ function deleteClient(clientId) {
 }
 
 function saveClientInfo(url, submitText, submitActionText, callback) {
-    var name, homepageUrl, logoUrl, callbackUrl;
+    var clientId, name, homepageUrl, logoUrl, callbackUrl;
     disableButton('.clientSubmit', submitActionText);
 
     clientId = $('#clientModal').find('#clientId').val();

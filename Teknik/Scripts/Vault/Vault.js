@@ -1,3 +1,4 @@
+/* globals validateItemURL, modifyVaultURL, deleteVaultURL, itemCount:true */
 $(document).ready(function () {
     // Initial Load
     var oldVal = $('textarea.mdd_editor').val();
@@ -22,7 +23,7 @@ $(document).ready(function () {
         }
     })
 
-    $('#newItem').on('show.bs.modal', function (e) {
+    $('#newItem').on('show.bs.modal', function () {
         var newDiv = $('#newItem');
         newDiv.find("#item_title").val("");
         newDiv.find("#item_description").val("");
@@ -237,7 +238,6 @@ function linkShowMore(element) {
         var link = $(this);
         var contentDiv = link.parent().prev("div.paste-content");
         var id = contentDiv.attr('id');
-        var btnTop = $('#show-more-top-' + id);
         var btnBottom = $('#show-more-bottom-' + id);
         var linkText = link.text().toUpperCase();
 
@@ -253,6 +253,6 @@ function linkShowMore(element) {
             contentDiv.addClass('hideContent');
             btnBottom.show();
             btnBottom.find('.show-more-button').text(linkText);
-        };
+        }
     });
 }

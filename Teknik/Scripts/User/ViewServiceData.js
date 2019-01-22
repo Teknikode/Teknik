@@ -1,3 +1,4 @@
+/* globals deleteUploadURL, deletePasteURL, deleteShortenURL, deleteVaultURL */
 $(document).ready(function () {
     $('.delete-upload-button').click(function () {
         var id = $(this).data('upload-id');

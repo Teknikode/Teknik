@@ -67,15 +67,16 @@ self.addEventListener('message', function (e) {
     prog = Uint8Concat(prog, _base64ToArray(finalStr));
 
     // Now package it into a mesage to send home
-    var objData =
+    var finalData =
         {
             cmd: 'finish',
             buffer: prog.buffer
         };
 
-    self.postMessage(objData, [objData.buffer]);
+    self.postMessage(finalData, [finalData.buffer]);
 }, false);
 
+/* eslint-disable-next-line */
 function _arrayToArrayBuffer(array) {
     var len = array.length;
     var bytes = new Uint8Array(len);

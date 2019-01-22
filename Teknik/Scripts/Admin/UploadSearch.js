@@ -1,6 +1,7 @@
+/* globals searchResultsURL, generateDeleteKeyURL */
 $(document).ready(function () {
-    $('#Query').on('input', function (e) {
-        query = $(this).val();
+    $('#Query').on('input', function () {
+        var query = $(this).val();
 
         // Try to strip out the ID from the url
         var pattern = '(?:(?:.+)\\/)?([^\\?]+)(?:\\?(?:.*))?';
