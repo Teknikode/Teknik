@@ -48,12 +48,12 @@ $(document).ready(function () {
 function setExpireWidth(unit) {
     if (unit === "Never") {
         $('#length-div').addClass("hidden");
-        $('#unit-div').removeClass("col-sm-7");
-        $('#unit-div').addClass("col-sm-9");
+        $('#unit-div').removeClass("col-sm-2");
+        $('#unit-div').addClass("col-sm-4");
     }
     else {
         $('#length-div').removeClass("hidden");
-        $('#unit-div').removeClass("col-sm-9");
-        $('#unit-div').addClass("col-sm-7");
+        $('#unit-div').removeClass("col-sm-4");
+        $('#unit-div').addClass("col-sm-2");
     }
 }

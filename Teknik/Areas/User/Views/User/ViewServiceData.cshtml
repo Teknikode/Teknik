@@ -33,7 +33,7 @@
                                     <label for="type">Type</label>
                                     <p id="type">@upload.ContentType</p>
                                 </div>
-                                <div class="col-sm-3 text-center">
+                                <div class="col-sm-4 text-center">
                                     <label for="dateUploaded">Date Uploaded</label>
                                     <p id="dateUploaded"><time datetime="@upload.DateUploaded.ToString("s")">@upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
                                 </div>
@@ -41,7 +41,7 @@
                                     <label for="downloads">Downloads</label>
                                     <p id="downloads">@upload.Downloads</p>
                                 </div>
-                                <div class="col-sm-2 text-center" style="overflow-x: hidden">
+                                <div class="col-sm-1 text-center">
                                     <p id="delete-upload"><button role="button" class="btn btn-danger delete-upload-button" data-upload-id="@upload.Url">Delete</button></p>
                                 </div>
                             </div>
@@ -60,11 +60,11 @@
                                     <label for="syntax">Syntax</label>
                                     <p id="syntax">@paste.Syntax</p>
                                 </div>
-                                <div class="col-sm-2 text-center">
+                                <div class="col-sm-3 text-center">
                                     <label for="datePosted">Date Posted</label>
                                     <p id="datePosted"><time datetime="@paste.DatePosted.ToString("s")">@paste.DatePosted.ToString("MMMM dd, yyyy")</time></p>
                                 </div>
-                                <div class="col-sm-2 text-center">
+                                <div class="col-sm-3 text-center">
                                     <label for="expireDate">Expire Date</label>
                                     @{
                                         string expireDate = "Never";
@@ -107,7 +107,7 @@
                                     <label for="shortUrl">Short Url</label>
                                     <p id="shortUrl"><a href="@shortUrl">@shortUrl</a></p>
                                 </div>
-                                <div class="col-sm-5 text-center">
+                                <div class="col-sm-4 text-center">
                                     <label for="dateAdded">Date Added</label>
                                     <p id="dateAdded"><time datetime="@url.DateAdded.ToString("s")">@url.DateAdded.ToString("MMMM dd, yyyy")</time></p>
                                 </div>
@@ -132,11 +132,11 @@
                             <div class="panel-body">
                                 <div class="col-sm-5 text-center">
                                     <label for="dateAdded">Date Created</label>
-                                    <p id="dateAdded"><time datetime="@vault.DateCreated.ToString("s")">@vault.DateCreated.ToString("MMMM dd, yyyy")</time></p>
+                                    <p id="dateAdded"><time datetime="@vault.DateCreated.ToString("s")">@vault.DateCreated.ToString("MMMM dd, yyyy HH:mm:ss tt")</time></p>
                                 </div>
-                                <div class="col-sm-5 text-center">
+                                <div class="col-sm-4 text-center">
                                     <label for="dateAdded">Date Edited</label>
-                                    <p id="dateAdded"><time datetime="@vault.DateEdited.ToString("s")">@vault.DateEdited.ToString("MMMM dd, yyyy")</time></p>
+                                    <p id="dateAdded"><time datetime="@vault.DateEdited.ToString("s")">@vault.DateEdited.ToString("MMMM dd, yyyy HH:mm:ss tt")</time></p>
                                 </div>
                                 <div class="col-sm-2 text-center">
                                     <label for="views">Views</label>
