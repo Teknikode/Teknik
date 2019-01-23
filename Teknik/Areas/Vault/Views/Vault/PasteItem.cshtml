@@ -1,7 +1,7 @@
 ﻿@model Teknik.Areas.Vault.ViewModels.PasteItemViewModel
 
 @{
-    string format = Model.Paste.Syntax;
+    string format = Model.Syntax;
     string formatName = "Text";
 
     if (!string.IsNullOrEmpty(format) && HighlightHelper.Languages.ContainsKey(format))
@@ -13,10 +13,10 @@
     <div class="panel-heading">
         <div class="row">
             <div class="col-sm-10 text-left">
-                <h4><b>@((string.IsNullOrEmpty(Model.Title)) ? "Paste" : Model.Title)</b> <small>Pasted on <time datetime="@Model.Paste.DatePosted.ToString("s")">@Model.Paste.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.Paste.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage_@(Model.Paste.PasteId)">@formatName</b></small></h4>
+                <h4><b>@((string.IsNullOrEmpty(Model.Title)) ? "Paste" : Model.Title)</b> <small>Pasted on <time datetime="@Model.DatePosted.ToString("s")">@Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage_@(Model.PasteId)">@formatName</b></small></h4>
             </div>
             <div class="col-sm-2 text-right">
-                <h4><small><a href="@Url.SubRouteUrl("p", "Paste.View", new { url = Model.Paste.Url })" target="_blank">Direct Link</a></small></h4>
+                <h4><small><a href="@Url.SubRouteUrl("p", "Paste.View", new { url = Model.Url })" target="_blank">Direct Link</a></small></h4>
             </div>
         </div>
     </div>
@@ -24,22 +24,22 @@
         <div class="row">
             <div class="col-sm-12 pull-left">
                 <div class="btn-group" role="group">
-                    <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Simple", new { url = Model.Paste.Url })" target="_blank">Simple</a>
-                    <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Raw", new { url = Model.Paste.Url })" target="_blank">Raw</a>
-                    <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Download", new { url = Model.Paste.Url })">Download</a>
+                    <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Simple", new { url = Model.Url })" target="_blank">Simple</a>
+                    <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Raw", new { url = Model.Url })" target="_blank">Raw</a>
+                    <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Download", new { url = Model.Url })">Download</a>
                 </div>
             </div>
         </div>
         <br />
         <div class="row paste-item">
             <div class="col-sm-12 paste-content hideContent" id="@Model.VaultItemId">
-                @if (!string.IsNullOrEmpty(Model.Paste.HashedPassword))
+                @if (Model.HasPassword)
                 {
                     <p class="text-center">Password Required</p>
                 }
                 else
                 {
-                    <pre class="line-numbers" id="code-@(Model.VaultItemId)"><code class="language-@(format)">@Model.Paste.Content</code></pre>
+                    <pre class="line-numbers" id="code-@(Model.VaultItemId)"><code class="language-@(format)">@Model.Content</code></pre>
                 }
             </div>
             <div class="show-more" id="show-more-bottom-@Model.VaultItemId">

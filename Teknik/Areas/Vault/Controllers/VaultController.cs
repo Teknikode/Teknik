@@ -5,7 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using Teknik.Areas.Paste;
 using Teknik.Areas.Users.Models;
@@ -20,6 +23,7 @@ using Teknik.Filters;
 using Teknik.Logging;
 using Teknik.Models;
 using Teknik.Utilities;
+using Teknik.Utilities.Cryptography;
 
 namespace Teknik.Areas.Vault.Controllers
 {
@@ -30,7 +34,7 @@ namespace Teknik.Areas.Vault.Controllers
         public VaultController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
-        public IActionResult ViewVault(string id)
+        public async Task<IActionResult> ViewVault(string id)
         {
             Models.Vault foundVault = _dbContext.Vaults.Where(v => v.Url == id).FirstOrDefault();
             if (foundVault != null)
@@ -94,7 +98,28 @@ namespace Teknik.Areas.Vault.Controllers
                             pasteModel.Title = item.Title;
                             pasteModel.Description = item.Description;
                             pasteModel.DateAdded = item.DateAdded;
-                            pasteModel.Paste = paste.Paste;
+
+                            pasteModel.PasteId = paste.Paste.PasteId;
+                            pasteModel.Url = paste.Paste.Url;
+                            pasteModel.DatePosted = paste.Paste.DatePosted;
+                            pasteModel.Syntax = paste.Paste.Syntax;
+                            pasteModel.HasPassword = !string.IsNullOrEmpty(paste.Paste.HashedPassword);
+
+                            if (!pasteModel.HasPassword)
+                            {
+                                // Read in the file
+                                string subDir = paste.Paste.FileName[0].ToString();
+                                string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.Paste.FileName);
+                                byte[] ivBytes = Encoding.Unicode.GetBytes(paste.Paste.IV);
+                                byte[] keyBytes = AesCounterManaged.CreateKey(paste.Paste.Key, ivBytes, paste.Paste.KeySize);
+                                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                                using (AesCounterStream cs = new AesCounterStream(fs, false, keyBytes, ivBytes))
+                                using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
+                                {
+                                    pasteModel.Content = await sr.ReadToEndAsync();
+                                }
+                            }
+
                             model.Items.Add(pasteModel);
                         }
                     }
