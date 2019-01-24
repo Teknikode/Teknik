@@ -93,13 +93,25 @@
 
 <div class="row">
     <div class="col-sm-12">
+        <h2>Client Grants</h2>
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-sm-10">
+        <a href="@Config.UserConfig.IdentityServerConfig.Authority/Grants">Click here</a> to view/revoke the applications you have granted access to your account.</>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
         <h2>Security Info</h2>
         <hr />
     </div>
 </div>
 <!form class="form" action="##" method="post" id="updateForm">
     <div class="row">
-        <div class="form-group col-sm-10">
+        <div class="form-group col-sm-4">
             <label for="update_recovery_email"><h4>Recovery Email</h4></label>
             <input class="form-control" name="update_recovery_email" id="update_recovery_email" placeholder="user@example.com" title="enter a recovery email." type="text" value="@Model.RecoveryEmail" />
             @if (!string.IsNullOrEmpty(Model.RecoveryEmail))
@@ -116,9 +128,7 @@
                 </p>
             }
         </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-10">
+        <div class="col-sm-6">
             <label for="update_pgp_public_key"><h4>Public Key</h4></label>
             <textarea class="form-control" id="update_pgp_public_key" name="update_pgp_public_key" placeholder="Public Key Here" title="enter your pgp public key" rows="10">@Model.PgpPublicKey</textarea>
         </div>
