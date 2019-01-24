@@ -56,7 +56,7 @@ namespace Teknik.Areas.API.V1.Controllers
                         if (model.file.Length <= maxUploadSize)
                         {
                             // convert file to bytes
-                            string fileExt = Path.GetExtension(model.file.FileName);
+                            string fileExt = FileHelper.GetFileExtension(model.file.FileName);
                             long contentLength = model.file.Length;
 
                             // Scan the file to detect a virus
@@ -86,7 +86,7 @@ namespace Teknik.Areas.API.V1.Controllers
 
                                 if (string.IsNullOrEmpty(model.contentType))
                                 {
-                                    using (System.IO.Stream fileStream = model.file.OpenReadStream())
+                                    using (Stream fileStream = model.file.OpenReadStream())
                                     {
                                         fileStream.Seek(0, SeekOrigin.Begin);
                                         FileType fileType = fileStream.GetFileType();

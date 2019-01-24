@@ -101,5 +101,34 @@ namespace Teknik.Utilities
             var webRoot = env.WebRootPath;
             return Path.Combine(webRoot, file);
         }
+
+        public static string GetFileExtension(string fileName)
+        {
+            string ext;
+            var parts = fileName.Split('.');
+            if (parts.Length == 1 || (parts[0] == "" && parts.Length == 2))
+            {
+                ext = string.Empty;
+            }
+            else if (parts.Length > 2)
+            {
+                ext = "." + parts[parts.Length - 1];
+                // Special case for G-Zip files
+                if (ext == ".gz")
+                {
+                    ext = "." + parts[parts.Length - 2] + ext;
+                }
+            }
+            else
+            {
+                ext = parts[1];
+            }
+
+            // Strip out invalid parts
+            ext = ext.Split('#')[0];
+            ext = ext.Split('?')[0];
+
+            return ext;
+        }
     }
 }

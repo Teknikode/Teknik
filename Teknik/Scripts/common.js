@@ -158,11 +158,24 @@ function randomString(length, chars) {
 }
 
 function getFileExtension(fileName) {
-    var index = fileName.lastIndexOf('.');
-    if (index >= 0 && fileName.length > 0) {
-        return '.' + fileName.substr(index + 1);
+    var ext;
+    var a = fileName.split(".");
+    if (a.length === 1 || (a[0] === "" && a.length === 2)) {
+        ext = "";
+    } else if (a.length > 2) {
+        ext = "." + a.pop();
+        // Special case for G-Zip files
+        if (ext === ".gz") {
+            ext = "." + a.pop() + ext;
+        }
+    } else {
+        ext = a.pop();
     }
-    return '';
+    // Clear the # and ? characters
+    ext = ext.split('#')[0];
+    ext = ext.split('?')[0];
+
+    return ext;
 }
 
 function SelectAll(id) {
