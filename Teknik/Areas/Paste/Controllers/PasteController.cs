@@ -106,6 +106,11 @@ namespace Teknik.Areas.Paste.Controllers
                 // Read in the file
                 string subDir = paste.FileName[0].ToString();
                 string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.FileName);
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
+                }
+
                 using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (AesCounterStream cs = new AesCounterStream(fs, false, keyBytes, ivBytes))
                 using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))

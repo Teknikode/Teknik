@@ -110,6 +110,9 @@ namespace Teknik.Areas.Vault.Controllers
                                 // Read in the file
                                 string subDir = paste.Paste.FileName[0].ToString();
                                 string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.Paste.FileName);
+                                if (!System.IO.File.Exists(filePath))
+                                    continue;
+
                                 byte[] ivBytes = Encoding.Unicode.GetBytes(paste.Paste.IV);
                                 byte[] keyBytes = AesCounterManaged.CreateKey(paste.Paste.Key, ivBytes, paste.Paste.KeySize);
                                 using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
