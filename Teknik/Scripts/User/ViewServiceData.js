@@ -23,6 +23,17 @@ $(document).ready(function () {
         var element = $('#vaults [id="' + id + '"');
         deleteItem(deleteVaultURL, id, element, "Are you sure you want to delete this vault?");
     });
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        // save the latest tab; use cookies if you like 'em better:
+        localStorage.setItem('lastTab_serviceData', $(this).attr('href'));
+    });
+
+    // go to the latest tab, if it exists:
+    var lastTab = localStorage.getItem('lastTab_serviceData');
+    if (lastTab) {
+        $('a[href="' + lastTab + '"]').tab('show');
+    }
 });
 
 function deleteItem(url, id, element, confirmationMsg) {

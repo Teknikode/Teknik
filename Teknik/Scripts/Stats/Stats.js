@@ -9,6 +9,17 @@ $(document).ready(function () {
     $('#oneTime-section').collapse('hide');
     $('#donations-section').collapse('hide');
     $('#takedowns-section').collapse('hide');
+    
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        // save the latest tab; use cookies if you like 'em better:
+        localStorage.setItem('lastTab_stats', $(this).attr('href'));
+    });
+
+    // go to the latest tab, if it exists:
+    var lastTab = localStorage.getItem('lastTab_stats');
+    if (lastTab) {
+        $('a[href="' + lastTab + '"]').tab('show');
+    }
 
     ///* ----------------------------------------
     //            CPU Usage                      
