@@ -242,7 +242,7 @@ namespace Teknik.Areas.Users.Utility
 
         public static async Task<IdentityResult> UpdatePGPPublicKey(Config config, string username, string publicKey)
         {
-            var manageUrl = CreateUrl(config, $"Manage/UpdateAccountType");
+            var manageUrl = CreateUrl(config, $"Manage/UpdatePGPPublicKey");
 
             var response = await Post(config, manageUrl,
                 new
