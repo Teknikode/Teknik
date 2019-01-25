@@ -38,31 +38,31 @@
 
                 <li class="dropdown">
                     <a href="#" id="services_menu" class="dropdown-toggle" data-toggle="dropdown">Services <strong class="caret"></strong></a>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="services_menu">
+                    <ul class="dropdown-menu dropdown-left-manual" role="menu" aria-labelledby="services_menu">
                         <li class="@Url.GetActive("podcast")">
-                            <a href="@Url.SubRouteUrl("podcast", "Podcast.Index")">Teknikast</a>
+                            <a href="@Url.SubRouteUrl("podcast", "Podcast.Index")"><i class="fa fa-microphone fa-fw"></i>&nbsp;&nbsp;Teknikast</a>
                         </li>
                         <li class="@Url.GetActive("upload", "u")">
-                            <a href="@Url.SubRouteUrl("upload", "Upload.Index")">Uploads</a>
+                            <a href="@Url.SubRouteUrl("upload", "Upload.Index")"><i class="fa fa-lock fa-fw"></i>&nbsp;&nbsp;Upload Files</a>
                         </li>
                         <li class="@Url.GetActive("paste", "p")">
-                            <a href="@Url.SubRouteUrl("paste", "Paste.Index")">Pastebin</a>
+                            <a href="@Url.SubRouteUrl("paste", "Paste.Index")"><i class="fa fa-code fa-fw"></i>&nbsp;&nbsp;Pastebin</a>
                         </li>
                         <li class="@Url.GetActive("shorten", "s")">
-                            <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")">Shorten Url</a>
+                            <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")"><i class="fa fa-link fa-fw"></i>&nbsp;&nbsp;Url Shortener</a>
                         </li>
                         <li class="@Url.GetActive("vault", "v")">
-                            <a href="@Url.SubRouteUrl("vault", "Vault.NewVault")">Vaults</a>
+                            <a href="@Url.SubRouteUrl("vault", "Vault.NewVault")"><i class="fa fa-folder fa-fw"></i>&nbsp;&nbsp;Create Vault</a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li class="@Url.GetActive("git")">
-                            <a href="@Config.GitConfig.Host">Git</a>
+                            <a href="@Config.GitConfig.Host"><i class="fa fa-git-square fa-fw"></i>&nbsp;&nbsp;Git</a>
                         </li>
                         <li class="@Url.GetActive("mail")">
-                            <a href="@Url.SubRouteUrl("mail", "Mail.Index")" target="_blank">Mail</a>
+                            <a href="@Url.SubRouteUrl("mail", "Mail.Index")" target="_blank"><i class="fa fa-envelope fa-fw"></i>&nbsp;&nbsp;Mail</a>
                         </li>
                         <li class="@Url.GetActive("mumble")">
-                            <a href="mumble://mumble.@(Config.Host):64738/?version=1.2.5" target="_blank">Mumble</a>
+                            <a href="mumble://mumble.@(Config.Host):64738/?version=1.2.5" target="_blank"><i class="fa fa-comments fa-fw"></i>&nbsp;&nbsp;Mumble</a>
                         </li>
                     </ul>
                 </li>
