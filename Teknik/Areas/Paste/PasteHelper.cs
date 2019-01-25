@@ -14,7 +14,7 @@ namespace Teknik.Areas.Paste
 {
     public static class PasteHelper
     {
-        public static Models.Paste CreatePaste(Config config, TeknikEntities db, string content, string title = "", string syntax = "text", string expireUnit = "never", int expireLength = 1, string password = "")
+        public static Models.Paste CreatePaste(Config config, TeknikEntities db, string content, string title = "", string syntax = "text", ExpirationUnit expireUnit = ExpirationUnit.Never, int expireLength = 1, string password = "")
         {
             Models.Paste paste = new Models.Paste();
             paste.DatePosted = DateTime.Now;
@@ -30,26 +30,26 @@ namespace Teknik.Areas.Paste
             paste.Url = url;
 
             // Figure out the expire date (null if 'never' or 'visit')
-            switch (expireUnit.ToLower())
+            switch (expireUnit)
             {
-                case "never":
+                case ExpirationUnit.Never:
                     break;
-                case "view":
+                case ExpirationUnit.Views:
                     paste.MaxViews = expireLength;
                     break;
-                case "minute":
+                case ExpirationUnit.Minutes:
                     paste.ExpireDate = paste.DatePosted.AddMinutes(expireLength);
                     break;
-                case "hour":
+                case ExpirationUnit.Hours:
                     paste.ExpireDate = paste.DatePosted.AddHours(expireLength);
                     break;
-                case "day":
+                case ExpirationUnit.Days:
                     paste.ExpireDate = paste.DatePosted.AddDays(expireLength);
                     break;
-                case "month":
+                case ExpirationUnit.Months:
                     paste.ExpireDate = paste.DatePosted.AddMonths(expireLength);
                     break;
-                case "year":
+                case ExpirationUnit.Years:
                     paste.ExpireDate = paste.DatePosted.AddYears(expireLength);
                     break;
                 default:

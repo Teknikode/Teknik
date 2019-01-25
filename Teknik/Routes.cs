@@ -418,6 +418,13 @@ namespace Teknik
               defaults: new { area = "Paste", controller = "Paste", action = "ViewPaste", type = "Download" }
             );
             routes.MapSubdomainRoute(
+              name: "Paste.Edit",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "paste", "p" },
+              template: "Edit/{url}/{password?}",
+              defaults: new { area = "Paste", controller = "Paste", action = "Edit" }
+            );
+            routes.MapSubdomainRoute(
               name: "Paste.Delete",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "paste", "p" },

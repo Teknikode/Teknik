@@ -96,6 +96,9 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="Areas\Paste\Views\Paste\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Areas\User\Views\User\Settings\ClientView.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

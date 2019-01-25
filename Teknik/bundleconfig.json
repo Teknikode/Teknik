@@ -99,6 +99,7 @@
     {
         "outputFileName": "./wwwroot/js/paste.view.min.js",
         "inputFiles": [
+            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/lib/Prism/prism.js",
             "./wwwroot/js/app/lib/Prism/prism-line-numbers.js",
             "./wwwroot/js/app/lib/Prism/prism-line-highlight.js",
@@ -111,6 +112,24 @@
             "./wwwroot/css/app/lib/Prism/prism-line-numbers.css",
             "./wwwroot/css/app/lib/Prism/prism-line-highlight.css",
             "./wwwroot/css/app/lib/Prism/prism-vs.css"
+        ]
+    },
+    {
+        "outputFileName": "./wwwroot/js/paste.edit.min.js",
+        "inputFiles": [
+            "./wwwroot/js/app/lib/Prism/prism.js",
+            "./wwwroot/js/app/lib/Prism/prism-line-numbers.js",
+            "./wwwroot/js/app/lib/Prism/prism-line-highlight.js",
+            "./wwwroot/js/app/Paste/EditPaste.js"
+        ]
+    },
+    {
+        "outputFileName": "./wwwroot/css/paste.edit.min.css",
+        "inputFiles": [
+            "./wwwroot/css/app/lib/Prism/prism-line-numbers.css",
+            "./wwwroot/css/app/lib/Prism/prism-line-highlight.css",
+            "./wwwroot/css/app/lib/Prism/prism-vs.css",
+            "./wwwroot/css/app/Paste/EditPaste.css"
         ]
     },
     {

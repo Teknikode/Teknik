@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Teknik.Utilities;
 using Teknik.ViewModels;
 
 namespace Teknik.Areas.Paste.ViewModels
@@ -15,7 +16,7 @@ namespace Teknik.Areas.Paste.ViewModels
         [Range(1, int.MaxValue)]
         public int? ExpireLength { get; set; }
 
-        public string ExpireUnit { get; set; }
+        public ExpirationUnit ExpireUnit { get; set; }
         
         public string Password { get; set; }
 

@@ -1,4 +1,6 @@
-﻿namespace Teknik.Areas.API.V1.Models
+﻿using Teknik.Utilities;
+
+namespace Teknik.Areas.API.V1.Models
 {
     public class PasteAPIv1Model : BaseAPIv1Model
     {
@@ -8,7 +10,7 @@
 
         public string syntax { get; set; }
 
-        public string expireUnit { get; set; }
+        public ExpirationUnit expireUnit { get; set; }
 
         public int expireLength { get; set; }
 
@@ -19,7 +21,7 @@
             code = null;
             title = string.Empty;
             syntax = "text";
-            expireUnit = "never";
+            expireUnit = ExpirationUnit.Never;
             expireLength = 1;
             password = string.Empty;
         }

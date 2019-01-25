@@ -21,6 +21,8 @@ namespace Teknik.Areas.Paste.Models
 
         public DateTime DatePosted { get; set; }
 
+        public DateTime DateEdited { get; set; }
+
         [CaseSensitive]
         public string Url { get; set; }
 

@@ -46,13 +46,10 @@
                     </div>
                     <div class="col-sm-4" id="unit-div">
                         <select class="form-control" name="ExpireUnit" id="expireunit">
-                            <!option value="never">Never</!option>
-                            <!option value="view">Views</!option>
-                            <!option value="minute">Minutes</!option>
-                            <!option value="hour">Hours</!option>
-                            <!option value="day">Days</!option>
-                            <!option value="month">Months</!option>
-                            <!option value="year">Years</!option>
+                            @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+                            {
+                                <!option value="@unit">@unit.ToString()</!option>
+                            }
                         </select>
                     </div>
                 </div>
