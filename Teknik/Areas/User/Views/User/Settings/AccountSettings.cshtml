@@ -8,8 +8,8 @@
 
 <script>
     var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
-    var deleteUserURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Delete" })';
-    var changePasswordUrl = '@Url.SubRouteUrl("user", "User.Action", new { action = "ChangePassword" })';
+    var deleteUserURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "Delete" })';
+    var changePasswordUrl = '@Url.SubRouteUrl("account", "User.Action", new { action = "ChangePassword" })';
 </script>
 
 <div class="row">
@@ -43,12 +43,12 @@
     </div>
     <div class="row">
         <div class="form-group col-sm-10">
-            <button class="btn btn-default" id="change_password_submit" type="button">Change Password</button> <a href="@Url.SubRouteUrl("user", "User.ResetPassword", new { Username = User.Identity.Name })">I forgot my password</a>
+            <button class="btn btn-default" id="change_password_submit" type="button">Change Password</button> <a href="@Url.SubRouteUrl("account", "User.ResetPassword", new { Username = User.Identity.Name })">I forgot my password</a>
         </div>
     </div>
     <div class="row">
         <div class="form-group col-sm-10">
-            <p><small>Want to manage your two-factor authentication?  Check out your <a href="@Url.SubRouteUrl("user", "User.SecuritySettings")">Security</a> settings.</small></p>
+            <p><small>Want to manage your two-factor authentication?  Check out your <a href="@Url.SubRouteUrl("account", "User.SecuritySettings")">Security</a> settings.</small></p>
         </div>
     </div>
 </!form>

@@ -634,135 +634,136 @@ namespace Teknik
             routes.MapSubdomainRoute(
               name: "User.GetPremium",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "GetPremium",
               defaults: new { area = "User", controller = "User", action = "GetPremium" }
             );
             routes.MapSubdomainRoute(
               name: "User.Register",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Register",
               defaults: new { area = "User", controller = "User", action = "Register" }
             );
             routes.MapSubdomainRoute(
               name: "User.Login",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Login",
               defaults: new { area = "User", controller = "User", action = "Login" }
             );
             routes.MapSubdomainRoute(
               name: "User.Logout",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Logout",
               defaults: new { area = "User", controller = "User", action = "Logout" }
             );
             routes.MapSubdomainRoute(
               name: "User.Settings",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Settings",
               defaults: new { area = "User", controller = "User", action = "Settings" }
             );
             routes.MapSubdomainRoute(
               name: "User.AccountSettings",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Settings/Account",
               defaults: new { area = "User", controller = "User", action = "AccountSettings" }
             );
             routes.MapSubdomainRoute(
               name: "User.SecuritySettings",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Settings/Security",
               defaults: new { area = "User", controller = "User", action = "SecuritySettings" }
             );
             routes.MapSubdomainRoute(
               name: "User.ProfileSettings",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Settings/Profile",
               defaults: new { area = "User", controller = "User", action = "ProfileSettings" }
             );
             routes.MapSubdomainRoute(
               name: "User.DeveloperSettings",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Settings/Developer",
               defaults: new { area = "User", controller = "User", action = "DeveloperSettings" }
             );
             routes.MapSubdomainRoute(
               name: "User.InviteSettings",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Settings/Invites",
               defaults: new { area = "User", controller = "User", action = "InviteSettings" }
             );
             routes.MapSubdomainRoute(
               name: "User.BlogSettings",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Settings/Blog",
               defaults: new { area = "User", controller = "User", action = "BlogSettings" }
             );
             routes.MapSubdomainRoute(
               name: "User.UploadSettings",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "Settings/Uploads",
               defaults: new { area = "User", controller = "User", action = "UploadSettings" }
             );
             routes.MapSubdomainRoute(
               name: "User.ResetPassword",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "ResetPassword/{username?}",
               defaults: new { area = "User", controller = "User", action = "ResetPassword" }
             );
             routes.MapSubdomainRoute(
               name: "User.VerifyResetPassword",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "SetPassword/{username}",
               defaults: new { area = "User", controller = "User", action = "VerifyResetPassword" }
             );
             routes.MapSubdomainRoute(
               name: "User.VerifyRecoveryEmail",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "VerifyEmail/{username}",
               defaults: new { area = "User", controller = "User", action = "VerifyRecoveryEmail" }
             );
             routes.MapSubdomainRoute(
               name: "User.ViewServiceData",
               domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
+              subDomains: new List<string>() { "account" },
               template: "ServiceData",
               defaults: new { area = "User", controller = "User", action = "ViewServiceData" }
             );
             routes.MapSubdomainRoute(
+              name: "User.Action",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "account" },
+              template: "Action/{action}",
+              defaults: new { area = "User", controller = "User", action = "Index" }
+            );
+
+            routes.MapSubdomainRoute(
               name: "User.ViewProfile",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "user" },
-              template: "u/{username?}",
+              template: "{username?}",
               defaults: new { area = "User", controller = "User", action = "ViewProfile" }
             );
             routes.MapSubdomainRoute(
               name: "User.PGPKey",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "user" },
-              template: "u/{username}/PGP",
+              template: "{username}/PGP",
               defaults: new { area = "User", controller = "User", action = "ViewRawPGP" }
-            );
-            routes.MapSubdomainRoute(
-              name: "User.Action",
-              domains: new List<string>() { config.Host },
-              subDomains: new List<string>() { "user" },
-              template: "Action/{action}",
-              defaults: new { area = "User", controller = "User", action = "Index" }
             );
         }
 

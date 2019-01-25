@@ -15,10 +15,10 @@
                     <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })"><i class="fa fa-book fa-fw"></i>&nbsp;&nbsp;View Blog</a>
                 </li>
                 <li is-active-route asp-controller="User" asp-action="ViewServiceData">
-                    <a href="@Url.SubRouteUrl("user", "User.ViewServiceData")"><i class="fa fa-database fa-fw"></i>&nbsp;&nbsp;Service Data</a>
+                    <a href="@Url.SubRouteUrl("account", "User.ViewServiceData")"><i class="fa fa-database fa-fw"></i>&nbsp;&nbsp;Service Data</a>
                 </li>
                 <li is-active-route asp-controller="User" asp-action="Settings">
-                    <a href="@Url.SubRouteUrl("user", "User.Settings")"><i class="fa fa-sliders fa-fw"></i>&nbsp;&nbsp;Settings</a>
+                    <a href="@Url.SubRouteUrl("account", "User.Settings")"><i class="fa fa-sliders fa-fw"></i>&nbsp;&nbsp;Settings</a>
                 </li>
                 @if (User.IsInRole("Admin"))
                 {
@@ -29,7 +29,7 @@
                 }
                 <li role="separator" class="divider"></li>
                 <li>
-                    <a href="@Url.SubRouteUrl("user", "User.Logout")"><i class="fa fa-sign-out fa-fw"></i>&nbsp;&nbsp;Log Out</a>
+                    <a href="@Url.SubRouteUrl("account", "User.Logout")"><i class="fa fa-sign-out fa-fw"></i>&nbsp;&nbsp;Log Out</a>
                 </li>
             </ul>
         </li>
@@ -40,13 +40,13 @@
         {
             <button id="registerButton" data-toggle="modal" data-target="#registerModal" class="btn btn-default navbar-btn hide">Register</button>
             <noscript>
-                <a href="@Url.SubRouteUrl("user", "User.Register")" class="btn btn-default navbar-btn">Register</a>
+                <a href="@Url.SubRouteUrl("account", "User.Register")" class="btn btn-default navbar-btn">Register</a>
             </noscript>
         }
         if (Config.UserConfig.LoginEnabled)
         {
             @*<button id="loginButton" data-toggle="modal" data-target="#loginModal" class="btn btn-default navbar-btn hide">Log In</button>*@
-            <a href="@Url.SubRouteUrl("user", "User.Login", new { returnUrl = @Context.Request.GetDisplayUrl() })" class="btn btn-default navbar-btn">Log In</a>
+            <a href="@Url.SubRouteUrl("account", "User.Login", new { returnUrl = @Context.Request.GetDisplayUrl() })" class="btn btn-default navbar-btn">Log In</a>
         }
     }
 </div>

@@ -7,12 +7,12 @@
 }
 
 <script>
-    var editURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditSecurity" })';
-    var resendVerifyURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ResendVerifyRecoveryEmail"})';
-    var generate2FAURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Generate2FA" })';
-    var confirmAuthSetupURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "VerifyAuthenticatorCode" })';
-    var resetRecoveryCodesURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ResetRecoveryCodes" })';
-    var disable2FAURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "Disable2FA" })';
+    var editURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "EditSecurity" })';
+    var resendVerifyURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "ResendVerifyRecoveryEmail"})';
+    var generate2FAURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "Generate2FA" })';
+    var confirmAuthSetupURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "VerifyAuthenticatorCode" })';
+    var resetRecoveryCodesURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "ResetRecoveryCodes" })';
+    var disable2FAURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "Disable2FA" })';
 </script>
 
 <div class="modal fade" id="authenticatorSetup" tabindex="-1" role="dialog" aria-labelledby="authenticatorSetupLabel" aria-hidden="true">

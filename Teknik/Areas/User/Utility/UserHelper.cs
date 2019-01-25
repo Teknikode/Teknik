@@ -155,8 +155,8 @@ namespace Teknik.Areas.Users.Utility
                     if (!string.IsNullOrEmpty(recoveryEmail))
                     {
                         var token = await IdentityHelper.UpdateRecoveryEmail(config, username, recoveryEmail);
-                        string resetUrl = url.SubRouteUrl("user", "User.ResetPassword", new { Username = username });
-                        string verifyUrl = url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Code = WebUtility.UrlEncode(token) });
+                        string resetUrl = url.SubRouteUrl("account", "User.ResetPassword", new { Username = username });
+                        string verifyUrl = url.SubRouteUrl("account", "User.VerifyRecoveryEmail", new { Code = WebUtility.UrlEncode(token) });
                         SendRecoveryEmailVerification(config, username, recoveryEmail, resetUrl, verifyUrl);
                     }
                     return;

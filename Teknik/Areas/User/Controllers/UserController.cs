@@ -165,7 +165,7 @@ namespace Teknik.Areas.Users.Controllers
                         }
                         if (!model.Error)
                         {
-                            return Redirect(Url.SubRouteUrl("user", "User.Login", new { returnUrl = model.ReturnUrl }));
+                            return Redirect(Url.SubRouteUrl("account", "User.Login", new { returnUrl = model.ReturnUrl }));
                         }
                     }
                 }
@@ -282,7 +282,7 @@ namespace Teknik.Areas.Users.Controllers
 
         public IActionResult Settings()
         {
-            return Redirect(Url.SubRouteUrl("user", "User.ProfileSettings"));
+            return Redirect(Url.SubRouteUrl("account", "User.ProfileSettings"));
         }
         
         public IActionResult ProfileSettings()
@@ -617,8 +617,8 @@ namespace Teknik.Areas.Users.Controllers
                             // If they have a recovery email, let's send a verification
                             if (!string.IsNullOrEmpty(settings.RecoveryEmail))
                             {
-                                string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
-                                string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Username = user.Username, Code = WebUtility.UrlEncode(token) });
+                                string resetUrl = Url.SubRouteUrl("account", "User.ResetPassword", new { Username = user.Username });
+                                string verifyUrl = Url.SubRouteUrl("account", "User.VerifyRecoveryEmail", new { Username = user.Username, Code = WebUtility.UrlEncode(token) });
                                 UserHelper.SendRecoveryEmailVerification(_config, user.Username, settings.RecoveryEmail, resetUrl, verifyUrl);
                             }
                         }
@@ -635,7 +635,7 @@ namespace Teknik.Areas.Users.Controllers
 
                         //if (!oldTwoFactor && settings.TwoFactorEnabled)
                         //{
-                        //    return Json(new { result = new { checkAuth = true, key = newKey, qrUrl = Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = newKey }) } });
+                        //    return Json(new { result = new { checkAuth = true, key = newKey, qrUrl = Url.SubRouteUrl("account", "User.Action", new { action = "GenerateAuthQrCode", key = newKey }) } });
                         //}
                         return Json(new { result = true });
                     }
@@ -785,8 +785,8 @@ namespace Teknik.Areas.Users.Controllers
                             if (!userInfo.RecoveryVerified.HasValue || !userInfo.RecoveryVerified.Value)
                             {
                                 var token = await IdentityHelper.UpdateRecoveryEmail(_config, user.Username, userInfo.RecoveryEmail);
-                                string resetUrl = Url.SubRouteUrl("user", "User.ResetPassword", new { Username = user.Username });
-                                string verifyUrl = Url.SubRouteUrl("user", "User.VerifyRecoveryEmail", new { Username = user.Username, Code = WebUtility.UrlEncode(token) });
+                                string resetUrl = Url.SubRouteUrl("account", "User.ResetPassword", new { Username = user.Username });
+                                string verifyUrl = Url.SubRouteUrl("account", "User.VerifyRecoveryEmail", new { Username = user.Username, Code = WebUtility.UrlEncode(token) });
                                 UserHelper.SendRecoveryEmailVerification(_config, user.Username, userInfo.RecoveryEmail, resetUrl, verifyUrl);
                                 return Json(new { result = true });
                             }
@@ -829,7 +829,7 @@ namespace Teknik.Areas.Users.Controllers
                         if (!string.IsNullOrEmpty(userClaims.RecoveryEmail) && userClaims.RecoveryVerified.HasValue && userClaims.RecoveryVerified.Value)
                         {
                             string verifyCode = await IdentityHelper.GeneratePasswordResetToken(_config, User.Identity.Name);
-                            string resetUrl = Url.SubRouteUrl("user", "User.VerifyResetPassword", new { Username = user.Username, Code = WebUtility.UrlEncode(verifyCode) });
+                            string resetUrl = Url.SubRouteUrl("account", "User.VerifyResetPassword", new { Username = user.Username, Code = WebUtility.UrlEncode(verifyCode) });
                             UserHelper.SendResetPasswordVerification(_config, user.Username, userClaims.RecoveryEmail, resetUrl);
                             return Json(new { result = true });
                         }
@@ -937,7 +937,7 @@ namespace Teknik.Areas.Users.Controllers
 
                     if (!string.IsNullOrEmpty(key))
                     {
-                        return Json(new { result = true, key = key, qrUrl = Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = key }) });
+                        return Json(new { result = true, key = key, qrUrl = Url.SubRouteUrl("account", "User.Action", new { action = "GenerateAuthQrCode", key = key }) });
                     }
                     return Json(new { error = "Unable to generate Two Factor Authentication key" });
                 }
@@ -1331,7 +1331,7 @@ namespace Teknik.Areas.Users.Controllers
                     {
                         if (code.Owner.Username == User.Identity.Name)
                         {
-                            return Json(new { result = Url.SubRouteUrl("user", "User.Register", new { inviteCode = code.Code }) });
+                            return Json(new { result = Url.SubRouteUrl("account", "User.Register", new { inviteCode = code.Code }) });
                         }
                     }
                     return Json(new { error = "Invite Code not associated with this user" });
