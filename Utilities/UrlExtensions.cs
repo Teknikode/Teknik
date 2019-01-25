@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System;
 using System.Linq;
@@ -176,13 +177,33 @@ namespace Teknik.Utilities
 
         public static string GetActive(this IUrlHelper url, params string[] subs)
         {
-            string curSub = url.GetSubdomain();
+            return url.GetActive(null, null, subs);
+        }
+
+        public static string GetActive(this IUrlHelper url, string controller)
+        {
+            return url.GetActive(controller, null);
+        }
+
+        public static string GetActive(this IUrlHelper url, string controller, string action, params string[] subs)
+        {
+            var curSub = url.GetSubdomain();
+            var curController = url.ActionContext.RouteData.Values["Controller"]?.ToString();
+            var curAction = url.ActionContext.RouteData.Values["Action"]?.ToString();
             foreach (string sub in subs)
             {
                 if (curSub == sub)
                 {
-                    return "active";
+                    if ((string.IsNullOrEmpty(controller) || curController == controller) &&
+                        (string.IsNullOrEmpty(action) || curAction == action))
+                        return "active";
                 }
+            }
+            if (!subs.Any() &&
+                (string.IsNullOrEmpty(controller) || curController == controller) &&
+                (string.IsNullOrEmpty(action) || curAction == action))
+            {
+                return "active";
             }
             return string.Empty;
         }

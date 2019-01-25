@@ -8,22 +8,22 @@
             <ul class="dropdown-menu dropdown-left-manual" role="menu" aria-labelledby="user_menu">
                 <li class="text-center text-uppercase dropdown__username">Signed in as @User.Identity.Name</li>
                 <li role="separator" class="divider"></li>
-                <li>
+                <li is-active-route asp-controller="User" asp-action="ViewProfile">
                     <a href="@Url.SubRouteUrl("user", "User.ViewProfile", new { username = User.Identity.Name })"><i class="fa fa-user fa-fw"></i>&nbsp;&nbsp;Profile</a>
                 </li>
-                <li>
+                <li is-active-route asp-controller="Blog" asp-action="Blog" asp-route-username="@User.Identity.Name">
                     <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })"><i class="fa fa-book fa-fw"></i>&nbsp;&nbsp;View Blog</a>
                 </li>
-                <li>
+                <li is-active-route asp-controller="User" asp-action="ViewServiceData">
                     <a href="@Url.SubRouteUrl("user", "User.ViewServiceData")"><i class="fa fa-database fa-fw"></i>&nbsp;&nbsp;Service Data</a>
                 </li>
-                <li>
+                <li is-active-route asp-controller="User" asp-action="Settings">
                     <a href="@Url.SubRouteUrl("user", "User.Settings")"><i class="fa fa-sliders fa-fw"></i>&nbsp;&nbsp;Settings</a>
                 </li>
                 @if (User.IsInRole("Admin"))
                 {
                     <li role="separator" class="divider"></li>
-                    <li>
+                    <li is-active-route asp-controller="Admin" asp-action="Dashboard">
                         <a href="@Url.SubRouteUrl("admin", "Admin.Dashboard")"><i class="fa fa-cogs fa-fw"></i>&nbsp;&nbsp;Administration</a>
                     </li>
                 }
