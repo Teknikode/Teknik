@@ -9,7 +9,7 @@ $(document).ready(function () {
     $('#delete-paste').click(function () {
         var id = $(this).data('paste-url');
 
-        bootbox.confirm("Are you sure you want to delete this paste?", function (result) {
+        deleteConfirm("Are you sure you want to delete this paste?", function (result) {
             if (result) {
                 $.ajax({
                     type: "POST",

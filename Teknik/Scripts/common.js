@@ -1,4 +1,4 @@
-/* exported disableButton, enableButton, removeAmp, clearInputs, randomString, getFileExtension, SelectAll, getAnchor, GenerateBlobURL, AddAntiForgeryToken, 
+/* exported deleteConfirm, disableButton, enableButton, removeAmp, clearInputs, randomString, getFileExtension, SelectAll, getAnchor, GenerateBlobURL, AddAntiForgeryToken, 
    copyTextToClipboard, getReadableBandwidthString, getReadableFileSizeString, moveUp, moveDown, addParamsToUrl, sleep, parseErrorMessage, isValidURL, 
    pageloadTimerCount, pageloadDoTimer, pageloadStopTimer */
 $(document).ready(function () {
@@ -110,6 +110,23 @@ $(function () {
         }
     };
 });
+
+function deleteConfirm(message, callback) {
+    bootbox.confirm({
+        message: "<h3>" + message + "</h3>",
+        buttons: {
+            confirm: {
+                label: 'Delete',
+                className: 'btn-danger'
+            },
+            cancel: {
+                label: 'Cancel',
+                className: 'btn-default'
+            }
+        },
+        callback: callback
+    });
+}
 
 function disableButton(btn, text) {
     $(btn).addClass('disabled');

@@ -192,7 +192,7 @@ $(document).ready(function () {
 
     $('.delete-vault-button').click(function () {
         var vaultUrl = $(this).data('vault-url');
-        bootbox.confirm("Are you sure you want to delete this vault?", function (result) {
+        deleteConfirm("Are you sure you want to delete this vault?", function (result) {
             if (result) {
                 $.ajax({
                     type: "POST",

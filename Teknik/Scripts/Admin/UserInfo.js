@@ -67,7 +67,7 @@ $(function () {
     });
 
     $('#delete_account').click(function () {
-        bootbox.confirm("Are you sure you want to delete this account?", function (result) {
+        deleteConfirm("Are you sure you want to delete this account?", function (result) {
             if (result) {
                 $.ajax({
                     type: "POST",

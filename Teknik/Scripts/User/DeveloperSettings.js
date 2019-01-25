@@ -127,29 +127,42 @@ function editClientSave() {
 
 function deleteClient(clientId) {
     disableButton('.deleteClient[data-clientId="' + clientId + '"]', 'Deleting...');
-    bootbox.confirm("<h2>Are you sure you want to delete this client?</h2><br /><br />This is <b>irreversable</b> and all applications using these client credentials will stop working.", function (result) {
-        if (result) {
-            $.ajax({
-                type: "POST",
-                url: deleteClientURL,
-                data: AddAntiForgeryToken({ clientId: clientId }),
-                success: function (response) {
-                    if (response.result) {
-                        $('#client_' + clientId).remove();
-                        if ($('#clientList li').length <= 0) {
-                            $('#clientList').html('<li class="list-group-item text-center" id="noClients">No Clients</li>');
+    bootbox.confirm({
+        message: "<h2>Are you sure you want to delete this client?</h2><br /><br />This is <b>irreversable</b> and all applications using these client credentials will stop working.",
+        buttons: {
+            confirm: {
+                label: 'Delete',
+                className: 'btn-danger'
+            },
+            cancel: {
+                label: 'Cancel',
+                className: 'btn-default'
+            }
+        },
+        callback: function (result) {
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: deleteClientURL,
+                    data: AddAntiForgeryToken({ clientId: clientId }),
+                    success: function (response) {
+                        if (response.result) {
+                            $('#client_' + clientId).remove();
+                            if ($('#clientList li').length <= 0) {
+                                $('#clientList').html('<li class="list-group-item text-center" id="noClients">No Clients</li>');
+                            }
+                        }
+                        else {
+                            $("#top_msg").css('display', 'inline', 'important');
+                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
                         }
                     }
-                    else {
-                        $("#top_msg").css('display', 'inline', 'important');
-                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
-                    }
-                }
-            }).always(function () {
+                }).always(function () {
+                    enableButton('.deleteClient[data-clientId="' + clientId + '"]', 'Delete');
+                });
+            } else {
                 enableButton('.deleteClient[data-clientId="' + clientId + '"]', 'Delete');
-            });
-        } else {
-            enableButton('.deleteClient[data-clientId="' + clientId + '"]', 'Delete');
+            }
         }
     });
 }

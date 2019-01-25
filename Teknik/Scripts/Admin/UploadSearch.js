@@ -33,7 +33,7 @@ function LinkUploadDelete(selector) {
     $(selector).click(function () {
         var deleteUrl = $(this).attr('id');
         var uploadID = $(this).data('upload-id');
-        bootbox.confirm("Are you sure you want to delete this upload?", function (result) {
+        deleteConfirm("Are you sure you want to delete this upload?", function (result) {
             if (result) {
                 if (deleteUrl !== '') {
                     window.open(deleteUrl, '_blank');

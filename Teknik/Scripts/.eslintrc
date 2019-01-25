@@ -24,6 +24,7 @@
         "Uint8Array": false,
 
         // Common.js Functions
+        "deleteConfirm": false,
         "disableButton": false,
         "enableButton": false,
         "removeAmp": false,

@@ -2,21 +2,18 @@
     {
         "outputFileName": "./wwwroot/js/admin.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/Admin/Admin.js"
         ]
     },
     {
         "outputFileName": "./wwwroot/js/uploadSearch.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/App/Admin/UploadSearch.js"
         ]
     },
     {
         "outputFileName": "./wwwroot/js/userInfo.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/Admin/UserInfo.js"
         ]
     },
@@ -29,7 +26,6 @@
     {
         "outputFileName": "./wwwroot/js/blog.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/lib/marked/js/marked.js",
             "./wwwroot/lib/sanitize-html/js/sanitize-html.js",
             "./wwwroot/js/app/Blog/Blog.js"
@@ -50,7 +46,6 @@
     {
         "outputFileName": "./wwwroot/js/error.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/Error/Error.js"
         ]
     },
@@ -99,7 +94,6 @@
     {
         "outputFileName": "./wwwroot/js/paste.view.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/lib/Prism/prism.js",
             "./wwwroot/js/app/lib/Prism/prism-line-numbers.js",
             "./wwwroot/js/app/lib/Prism/prism-line-highlight.js",
@@ -135,7 +129,6 @@
     {
         "outputFileName": "./wwwroot/js/podcast.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/lib/jquery/js/jquery.BlockUI.js",
             "./wwwroot/js/app/Podcast/Podcast.js"
         ]
@@ -165,7 +158,6 @@
         "inputFiles": [
             "./wwwroot/js/app/lib/Blob.js",
             "./wwwroot/lib/file-saver/js/FileSaver.js",
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/Upload/Download.js"
         ]
     },
@@ -194,7 +186,6 @@
         "inputFiles": [
             "./wwwroot/lib/dropzone/js/dropzone.js",
             "./wwwroot/lib/bootstrap/js/bootstrap-switch.js",
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/Upload/Upload.js"
         ]
     },
@@ -214,14 +205,12 @@
     {
         "outputFileName": "./wwwroot/js/user.profile.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/User/Profile.js"
         ]
     },
     {
         "outputFileName": "./wwwroot/js/user.serviceData.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/User/ViewServiceData.js"
         ]
     },
@@ -234,7 +223,6 @@
     {
         "outputFileName": "./wwwroot/js/user.settings.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/User/Settings.js"
         ]
     },
@@ -290,7 +278,6 @@
     {
         "outputFileName": "./wwwroot/js/vault.min.js",
         "inputFiles": [
-            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/lib/jquery/js/jquery.BlockUI.js",
             "./wwwroot/lib/marked/js/marked.js",
             "./wwwroot/lib/sanitize-html/js/sanitize-html.js",
@@ -317,6 +304,7 @@
             "./wwwroot/lib/bootstrap/js/bootstrap.js",
             "./wwwroot/lib/bootstrap/js/bootstrap-select.js",
             "./wwwroot/lib/underscore/js/underscore.js",
+            "./wwwroot/lib/bootbox/js/bootbox.js",
             "./wwwroot/js/app/common.js"
         ]
     },

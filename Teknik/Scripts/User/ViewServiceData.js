@@ -37,7 +37,7 @@ $(document).ready(function () {
 });
 
 function deleteItem(url, id, element, confirmationMsg) {
-    bootbox.confirm(confirmationMsg, function (result) {
+    deleteConfirm(confirmationMsg, function (result) {
         if (result) {
             $.ajax({
                 type: "POST",

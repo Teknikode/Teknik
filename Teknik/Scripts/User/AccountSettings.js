@@ -38,7 +38,7 @@ $(document).ready(function () {
     $('#delete_account').click(function () {
         disableButton('#delete_account', 'Deleting Account...');
 
-        bootbox.confirm("Are you sure you want to delete your account?", function (result) {
+        deleteConfirm("Are you sure you want to delete your account?", function (result) {
             if (result) {
                 $.ajax({
                     type: "POST",

@@ -24,6 +24,7 @@ $(document).ready(function () {
 
     $('#disable_2fa_button').click(function () {
         bootbox.confirm({
+            size: "small",
             message: "Are you sure you want to disable Two-Factor Authentication?  This will also invalidate all current recovery codes.",
             buttons: {
                 confirm: {
@@ -89,6 +90,7 @@ $(document).ready(function () {
 
     $('#resetRecoveryCodes').click(function () {
         bootbox.confirm({
+            size: "small",
             message: "Are you sure you want to reset your recovery codes?  This will invalidate all current recovery codes.",
             buttons: {
                 confirm: {

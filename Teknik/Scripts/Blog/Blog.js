@@ -170,7 +170,7 @@ function linkPostDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
         var post_id = object.attr("id");
-        bootbox.confirm("Are you sure you want to delete your post?", function (result) {
+        deleteConfirm("Are you sure you want to delete your post?", function (result) {
             if (result) {
                 $.ajax({
                     type: "POST",
@@ -195,7 +195,7 @@ function linkCommentDelete(selector) {
     $(selector).click(function () {
         var object = $(this);
         var post_id = object.attr("id");
-        bootbox.confirm("Are you sure you want to delete your comment?", function (result) {
+        deleteConfirm("Are you sure you want to delete your comment?", function (result) {
             if (result) {
                 $.ajax({
                     type: "POST",
