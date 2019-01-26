@@ -32,4 +32,16 @@
     <ProjectReference Include="..\Logging\Logging.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Images\favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\logo-black.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\logo-blue.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

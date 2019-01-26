@@ -28,7 +28,7 @@ namespace Teknik.Areas.Contact.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "Contact - " + _config.Title;
+            ViewBag.Title = "Contact Us";
             ViewBag.Description = "Contact Teknik Support";
 
             return View(new ContactViewModel());

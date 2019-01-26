@@ -24,7 +24,7 @@ namespace Teknik.Areas.Abuse.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "Abuse Reporting - " + _config.Title;
+            ViewBag.Title = "Abuse Reporting";
             ViewBag.Description = "Methods for reporting abuse reports to Teknik Services.";
 
             return View(new AbuseViewModel());

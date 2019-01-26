@@ -44,7 +44,7 @@ namespace Teknik.Areas.Vault.Controllers
                 _dbContext.Entry(foundVault).State = EntityState.Modified;
                 _dbContext.SaveChanges();
 
-                ViewBag.Title = foundVault.Title + " - Teknik Vault";
+                ViewBag.Title = foundVault.Title + " | Vault";
 
                 VaultViewModel model = new VaultViewModel();
                 model.CurrentSub = Subdomain;
@@ -189,7 +189,7 @@ namespace Teknik.Areas.Vault.Controllers
             {
                 if (foundVault.User.Username == User.Identity.Name)
                 {
-                    ViewBag.Title = "Edit Vault - " + foundVault.Title;
+                    ViewBag.Title = "Edit Vault | " + foundVault.Title;
 
                     ModifyVaultViewModel model = new ModifyVaultViewModel();
                     model.CurrentSub = Subdomain;

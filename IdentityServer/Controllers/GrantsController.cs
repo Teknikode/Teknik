@@ -41,6 +41,7 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            ViewBag.Title = "Granted Applications";
             return View("Index", await BuildViewModelAsync());
         }
 

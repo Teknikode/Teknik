@@ -20,7 +20,7 @@ namespace Teknik.Areas.TOS.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "Terms of Service - " + _config.Title;
+            ViewBag.Title = "Terms of Service";
             ViewBag.Description = "Teknik Terms of Service.";
 
             return View(new TOSViewModel());

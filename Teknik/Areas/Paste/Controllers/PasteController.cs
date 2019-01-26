@@ -33,7 +33,7 @@ namespace Teknik.Areas.Paste.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "Paste - " + _config.Title;
+            ViewBag.Title = "Pastebin";
             ViewBag.Description = "Paste your code or text easily and securely.  Set an expiration, set a password, or leave it open for the world to see.";
             PasteCreateViewModel model = new PasteCreateViewModel();
             return View(model);
@@ -45,7 +45,7 @@ namespace Teknik.Areas.Paste.Controllers
             Models.Paste paste = _dbContext.Pastes.Where(p => p.Url == url).FirstOrDefault();
             if (paste != null)
             {
-                ViewBag.Title = ((string.IsNullOrEmpty(paste.Title)) ? string.Empty : paste.Title + " - ") + _config.Title + " Paste";
+                ViewBag.Title = paste.Title + " | Pastebin";
                 ViewBag.Description = "Paste your code or text easily and securely.  Set an expiration, set a password, or leave it open for the world to see.";
                 // Increment Views
                 paste.Views += 1;

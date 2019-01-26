@@ -96,7 +96,7 @@ namespace Teknik.Areas.Users.Controllers
         [AllowAnonymous]
         public IActionResult GetPremium()
         {
-            ViewBag.Title = "Get a Premium Account - " + _config.Title;
+            ViewBag.Title = "Get a Premium Account";
 
             GetPremiumViewModel model = new GetPremiumViewModel();
 
@@ -193,7 +193,7 @@ namespace Teknik.Areas.Users.Controllers
             }
 
             ProfileViewModel model = new ProfileViewModel();
-            ViewBag.Title = "User Does Not Exist - " + _config.Title;
+            ViewBag.Title = "User Does Not Exist";
             ViewBag.Description = "The User does not exist";
 
             try
@@ -202,7 +202,7 @@ namespace Teknik.Areas.Users.Controllers
 
                 if (user != null)
                 {
-                    ViewBag.Title = username + "'s Profile - " + _config.Title;
+                    ViewBag.Title = username + "'s Profile";
                     ViewBag.Description = "Viewing " + username + "'s Profile";
 
                     model.UserID = user.UserId;
@@ -247,7 +247,7 @@ namespace Teknik.Areas.Users.Controllers
             string username = User.Identity.Name;
 
             ViewServiceDataViewModel model = new ViewServiceDataViewModel();
-            ViewBag.Title = "User Does Not Exist - " + _config.Title;
+            ViewBag.Title = "User Does Not Exist";
             ViewBag.Description = "The User does not exist";
 
             try
@@ -256,7 +256,7 @@ namespace Teknik.Areas.Users.Controllers
 
                 if (user != null)
                 {
-                    ViewBag.Title = "Service Data - " + _config.Title;
+                    ViewBag.Title = "Service Data";
                     ViewBag.Description = "Viewing all of your service data";
                     
                     model.Uploads = _dbContext.Uploads.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DateUploaded).ToList();
@@ -292,7 +292,7 @@ namespace Teknik.Areas.Users.Controllers
 
             if (user != null)
             {
-                ViewBag.Title = "Profile Settings - " + _config.Title;
+                ViewBag.Title = "Profile Settings";
                 ViewBag.Description = "Your " + _config.Title + " Profile Settings";
 
                 ProfileSettingsViewModel model = new ProfileSettingsViewModel();
@@ -316,7 +316,7 @@ namespace Teknik.Areas.Users.Controllers
 
             if (user != null)
             {
-                ViewBag.Title = "Account Settings - " + _config.Title;
+                ViewBag.Title = "Account Settings";
                 ViewBag.Description = "Your " + _config.Title + " Account Settings";
 
                 AccountSettingsViewModel model = new AccountSettingsViewModel();
@@ -337,7 +337,7 @@ namespace Teknik.Areas.Users.Controllers
 
             if (user != null)
             {
-                ViewBag.Title = "Security Settings - " + _config.Title;
+                ViewBag.Title = "Security Settings";
                 ViewBag.Description = "Your " + _config.Title + " Security Settings";
 
                 SecuritySettingsViewModel model = new SecuritySettingsViewModel();
@@ -379,7 +379,7 @@ namespace Teknik.Areas.Users.Controllers
 
             if (user != null)
             {
-                ViewBag.Title = "Developer Settings - " + _config.Title;
+                ViewBag.Title = "Developer Settings";
                 ViewBag.Description = "Your " + _config.Title + " Developer Settings";
 
                 DeveloperSettingsViewModel model = new DeveloperSettingsViewModel();
@@ -426,7 +426,7 @@ namespace Teknik.Areas.Users.Controllers
 
             if (user != null)
             {
-                ViewBag.Title = "Invite Settings - " + _config.Title;
+                ViewBag.Title = "Invite Settings";
                 ViewBag.Description = "Your " + _config.Title + " Invite Settings";
 
                 InviteSettingsViewModel model = new InviteSettingsViewModel();
@@ -471,7 +471,7 @@ namespace Teknik.Areas.Users.Controllers
 
             if (user != null)
             {
-                ViewBag.Title = "Blog Settings - " + _config.Title;
+                ViewBag.Title = "Blog Settings";
                 ViewBag.Description = "Your " + _config.Title + " Blog Settings";
 
                 BlogSettingsViewModel model = new BlogSettingsViewModel();
@@ -494,7 +494,7 @@ namespace Teknik.Areas.Users.Controllers
 
             if (user != null)
             {
-                ViewBag.Title = "Upload Settings - " + _config.Title;
+                ViewBag.Title = "Upload Settings";
                 ViewBag.Description = "Your " + _config.Title + " Upload Settings";
 
                 UploadSettingsViewModel model = new UploadSettingsViewModel();
@@ -515,7 +515,7 @@ namespace Teknik.Areas.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ViewRawPGP(string username)
         {
-            ViewBag.Title = username + "'s Public Key - " + _config.Title;
+            ViewBag.Title = username + "'s Public Key";
             ViewBag.Description = "The PGP public key for " + username;
             
             IdentityUserInfo userClaims = await IdentityHelper.GetIdentityUserInfo(_config, username);

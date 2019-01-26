@@ -35,7 +35,7 @@ namespace Teknik.Areas.Upload.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "Teknik Upload - End to End Encryption";
+            ViewBag.Title = "Upload Files";
             UploadViewModel model = new UploadViewModel();
             model.CurrentSub = Subdomain;
             Users.Models.User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
@@ -175,7 +175,7 @@ namespace Teknik.Areas.Upload.Controllers
         {
             if (_config.UploadConfig.DownloadEnabled)
             {
-                ViewBag.Title = "Teknik Download - " + file;
+                ViewBag.Title = "Download " + file;
                 string fileName = string.Empty;
                 string url = string.Empty;
                 string key = string.Empty;
@@ -462,7 +462,7 @@ namespace Teknik.Areas.Upload.Controllers
         [AllowAnonymous]
         public IActionResult DeleteByKey(string file, string key)
         {
-            ViewBag.Title = "File Delete - " + file + " - " + _config.Title;
+            ViewBag.Title = "File Delete | " + file ;
             Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
             if (upload != null)
             {

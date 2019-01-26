@@ -36,7 +36,7 @@ namespace Teknik.Areas.Blog.Controllers
             // The blog is the main site's blog
             if (string.IsNullOrEmpty(username))
             {
-                ViewBag.Title = _config.BlogConfig.Title + " - " + _config.Title;
+                ViewBag.Title = _config.BlogConfig.Title;
                 ViewBag.Description = _config.BlogConfig.Description;
                 bool isAuth = User.IsInRole("Admin");
                 model = new BlogViewModel();
@@ -78,10 +78,10 @@ namespace Teknik.Areas.Blog.Controllers
                 // find the blog specified
                 if (blog != null)
                 {
-                    ViewBag.Title = blog.User.Username + "'s Blog - " + _config.Title;
+                    ViewBag.Title = blog.User.Username + "'s Blog";
                     if (!string.IsNullOrEmpty(blog.User.BlogSettings.Title))
                     {
-                        ViewBag.Title = blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                        ViewBag.Title = blog.User.BlogSettings.Title;
                     }
                     ViewBag.Description = blog.User.BlogSettings.Description;
                     bool isAuth = User.IsInRole("Admin");
@@ -141,17 +141,17 @@ namespace Teknik.Areas.Blog.Controllers
 
                 if (post.System)
                 {
-                    ViewBag.Title = model.Title + " - " + _config.BlogConfig.Title + " - " + _config.Title;
+                    ViewBag.Title = model.Title + " | " + _config.BlogConfig.Title;
                     ViewBag.Description = _config.BlogConfig.Description;
                 }
                 else
                 {
-                    ViewBag.Title = username + "'s Blog - " + _config.Title;
+                    ViewBag.Title = username + "'s Blog";
                     if (!string.IsNullOrEmpty(post.Blog.User.BlogSettings.Title))
                     {
-                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " | " + ViewBag.Title;
                     }
-                    ViewBag.Title = model.Title + " - " + ViewBag.Title;
+                    ViewBag.Title = model.Title + " | " + ViewBag.Title;
                     ViewBag.Description = post.Blog.User.BlogSettings.Description;
                 }
                 return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
@@ -180,12 +180,12 @@ namespace Teknik.Areas.Blog.Controllers
                 model = new BlogViewModel(blog);
                 if (blog.User.Username == Constants.SERVERUSER)
                 {
-                    ViewBag.Title = "Create Post - " + _config.BlogConfig.Title + " - " + _config.Title;
+                    ViewBag.Title = "Create Post | " + _config.BlogConfig.Title;
                     ViewBag.Description = _config.BlogConfig.Description;
                 }
                 else
                 {
-                    ViewBag.Title = username + "'s Blog - " + _config.Title;
+                    ViewBag.Title = username + "'s Blog | " + _config.Title;
                     if (!string.IsNullOrEmpty(blog.User.BlogSettings.Title))
                     {
                         ViewBag.Title = blog.User.BlogSettings.Title + " - " + ViewBag.Title;
@@ -223,17 +223,17 @@ namespace Teknik.Areas.Blog.Controllers
 
                 if (post.System)
                 {
-                    ViewBag.Title = "Edit Post - " + model.Title + " - " + _config.BlogConfig.Title + " - " + _config.Title;
+                    ViewBag.Title = "Edit Post | " + model.Title + " | " + _config.BlogConfig.Title;
                     ViewBag.Description = _config.BlogConfig.Description;
                 }
                 else
                 {
-                    ViewBag.Title = username + "'s Blog - " + _config.Title;
+                    ViewBag.Title = username + "'s Blog";
                     if (!string.IsNullOrEmpty(post.Blog.User.BlogSettings.Title))
                     {
-                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " | " + ViewBag.Title;
                     }
-                    ViewBag.Title = "Edit Post - " + model.Title + " - " + ViewBag.Title;
+                    ViewBag.Title = "Edit Post | " + model.Title + " | " + ViewBag.Title;
                     ViewBag.Description = post.Blog.User.BlogSettings.Description;
                 }
                 return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);

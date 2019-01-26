@@ -26,7 +26,16 @@
         </script>
 
         <!-- Main Page Title -->
-        <title>@ViewBag.Title</title>
+        <title>
+            @if (string.IsNullOrEmpty(ViewBag.Title))
+            {
+                <text>@Config.Title</text>
+            }
+            else
+            {
+                <text>@ViewBag.Title | @Config.Title</text>
+            }
+        </title>
 
         <!-- Favicon -->
         <link href="@Url.SubRouteUrl("www", "Default.Favicon")" rel="shortcut icon" type="image/x-icon" />

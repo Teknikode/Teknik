@@ -24,7 +24,7 @@ namespace Teknik.Areas.About.Controllers
         [AllowAnonymous]
         public IActionResult Index([FromServices] Config config)
         {
-            ViewBag.Title = "About - " + config.Title;
+            ViewBag.Title = "About";
             ViewBag.Description = "What is Teknik?";
 
             return View(new AboutViewModel());

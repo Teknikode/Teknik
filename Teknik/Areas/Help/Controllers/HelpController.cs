@@ -21,7 +21,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "Help - " + _config.Title;
+            ViewBag.Title = "Help";
             HelpViewModel model = new HelpViewModel();
             return View(model);
         }
@@ -32,12 +32,12 @@ namespace Teknik.Areas.Help.Controllers
             HelpViewModel model = new HelpViewModel();
             if (string.IsNullOrEmpty(version) && string.IsNullOrEmpty(service))
             {
-                ViewBag.Title = "API Help - " + _config.Title;
+                ViewBag.Title = "API Help";
                 return View("~/Areas/Help/Views/Help/API/API.cshtml", model);
             }
             else if(!string.IsNullOrEmpty(version) && !string.IsNullOrEmpty(service))
             {
-                ViewBag.Title = service + " API " + version + " Help - " + _config.Title;
+                ViewBag.Title = service + " API " + version + " Help";
                 return View("~/Areas/Help/Views/Help/API/" + version + "/" + service + ".cshtml", model);
             }
             return new StatusCodeResult(StatusCodes.Status404NotFound);
@@ -46,7 +46,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult Blog()
         {
-            ViewBag.Title = "Blogging Help - " + _config.Title;
+            ViewBag.Title = "Blogging Help";
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Blog.cshtml", model);
         }
@@ -54,7 +54,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult Git()
         {
-            ViewBag.Title = "Git Service Help - " + _config.Title;
+            ViewBag.Title = "Git Service Help";
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Git.cshtml", model);
         }
@@ -62,7 +62,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult IRC()
         {
-            ViewBag.Title = "IRC Server Help - " + _config.Title;
+            ViewBag.Title = "IRC Server Help ";
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/IRC.cshtml", model);
         }
@@ -70,7 +70,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult Mail()
         {
-            ViewBag.Title = "Mail Server Help - " + _config.Title;
+            ViewBag.Title = "Mail Server Help";
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Mail.cshtml", model);
         }
@@ -78,7 +78,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult Markdown()
         {
-            ViewBag.Title = "Markdown Help - " + _config.Title;
+            ViewBag.Title = "Markdown Help";
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Markdown.cshtml", model);
         }
@@ -86,7 +86,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult Mumble()
         {
-            ViewBag.Title = "Mumble Server Help - " + _config.Title;
+            ViewBag.Title = "Mumble Server Help";
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Mumble.cshtml", model);
         }
@@ -94,7 +94,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult RSS()
         {
-            ViewBag.Title = "RSS Help - " + _config.Title;
+            ViewBag.Title = "RSS Help";
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/RSS.cshtml", model);
         }
@@ -102,7 +102,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult Tools()
         {
-            ViewBag.Title = "Tool Help - " + _config.Title;
+            ViewBag.Title = "Tool Help";
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Tools.cshtml", model);
         }
@@ -110,7 +110,7 @@ namespace Teknik.Areas.Help.Controllers
         [AllowAnonymous]
         public IActionResult Upload()
         {
-            ViewBag.Title = "Upload Service Help - " + _config.Title;
+            ViewBag.Title = "Upload Service Help";
             HelpViewModel model = new HelpViewModel();
             return View("~/Areas/Help/Views/Help/Upload.cshtml", model);
         }

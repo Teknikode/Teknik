@@ -42,8 +42,7 @@ namespace Teknik.Areas.Home.Controllers
 
             model.SitePosts = lastSite;
             model.Podcasts = lastPods;
-
-            ViewBag.Title = _config.Title;
+            
             return View(model);
         }
     }

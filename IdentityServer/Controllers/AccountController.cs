@@ -59,6 +59,7 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
         {
+            ViewBag.Title = $"Sign in";
             // build a model so we know what to show on the login page
             var vm = await _account.BuildLoginViewModelAsync(returnUrl);
 
@@ -142,6 +143,7 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl = null)
         {
+            ViewBag.Title = "Two-Factor Authentication";
             // Ensure the user has gone through the username & password screen first
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
 
@@ -193,6 +195,7 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> LoginWithRecoveryCode(string returnUrl = null)
         {
+            ViewBag.Title = "Two-Factor Recovery Code";
             // Ensure the user has gone through the username & password screen first
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
@@ -242,12 +245,14 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         public IActionResult Lockout()
         {
+            ViewBag.Title = "Locked Out";
             return View();
         }
 
         [HttpGet]
         public IActionResult Banned()
         {
+            ViewBag.Title = "Banned";
             return View();
         }
 
@@ -257,6 +262,7 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
+            ViewBag.Title = "Logout";
             // build a model so the logout page knows what to display
             var vm = await _account.BuildLogoutViewModelAsync(logoutId);
 

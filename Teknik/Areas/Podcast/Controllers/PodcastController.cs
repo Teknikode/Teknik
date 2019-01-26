@@ -36,7 +36,7 @@ namespace Teknik.Areas.Podcast.Controllers
             model.Description = _config.PodcastConfig.Description;
             try
             {
-                ViewBag.Title = _config.PodcastConfig.Title + " - " + _config.Title;
+                ViewBag.Title = _config.PodcastConfig.Title;
                 ViewBag.Description = _config.PodcastConfig.Description;
                 bool editor = User.IsInRole("Podcast");
                 var foundPodcasts = _dbContext.Podcasts.Where(p => (p.Published || editor)).FirstOrDefault();
@@ -73,7 +73,7 @@ namespace Teknik.Areas.Podcast.Controllers
             {
                 model = new PodcastViewModel(foundPodcast);
 
-                ViewBag.Title = model.Title + " - Teknikast - " + _config.Title;
+                ViewBag.Title = model.Title + " | Teknikast";
                 return View("~/Areas/Podcast/Views/Podcast/ViewPodcast.cshtml", model);
             }
             model.Error = true;

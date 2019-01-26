@@ -23,7 +23,7 @@ namespace Teknik.IdentityServer.Controllers
             _logger = logger;
             _config = config;
 
-            ViewBag.Title = "Teknik Authentication";
+            ViewBag.Title = string.Empty;
             ViewBag.Description = "Teknik Authentication Service";
         }
 

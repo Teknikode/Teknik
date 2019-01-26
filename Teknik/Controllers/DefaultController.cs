@@ -43,7 +43,7 @@ namespace Teknik.Controllers
             _config = config;
             _dbContext = dbContext;
 
-            ViewBag.Title = _config.Title;
+            ViewBag.Title = string.Empty;
             ViewBag.Description = _config.Description;
         }
 

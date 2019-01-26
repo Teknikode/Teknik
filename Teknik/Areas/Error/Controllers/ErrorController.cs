@@ -46,7 +46,7 @@ namespace Teknik.Areas.Error.Controllers
         [AllowAnonymous]
         public IActionResult HttpGeneral(int statusCode)
         {
-            ViewBag.Title = statusCode + " - " + _config.Title;
+            ViewBag.Title = statusCode;
 
             LogError(LogLevel.Error, "HTTP Error Code: " + statusCode);
 
@@ -61,7 +61,7 @@ namespace Teknik.Areas.Error.Controllers
         {
             Response.StatusCode = StatusCodes.Status401Unauthorized;
 
-            ViewBag.Title = "401 - " + _config.Title;
+            ViewBag.Title = "401";
             ViewBag.Description = "Unauthorized";
 
             LogError(LogLevel.Error, "Unauthorized");
@@ -77,7 +77,7 @@ namespace Teknik.Areas.Error.Controllers
         {
             Response.StatusCode = StatusCodes.Status403Forbidden;
 
-            ViewBag.Title = "403 - " + _config.Title;
+            ViewBag.Title = "403";
             ViewBag.Description = "Access Denied";
 
             LogError(LogLevel.Error, "Access Denied");
@@ -93,7 +93,7 @@ namespace Teknik.Areas.Error.Controllers
         {
             Response.StatusCode = StatusCodes.Status404NotFound;
 
-            ViewBag.Title = "404 - " + _config.Title;
+            ViewBag.Title = "404";
             ViewBag.Description = "Uh Oh, can't find it!";            
 
             LogError(LogLevel.Warning, "Page Not Found");
@@ -124,7 +124,7 @@ namespace Teknik.Areas.Error.Controllers
 
             Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-            ViewBag.Title = "500 - " + _config.Title;
+            ViewBag.Title = "500";
             ViewBag.Description = "Something Borked";
             
             LogError(LogLevel.Error, "Server Error", exception);

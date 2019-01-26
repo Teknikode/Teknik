@@ -20,7 +20,7 @@ namespace Teknik.Areas.FAQ.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "Frequently Asked Questions - " + _config.Title;
+            ViewBag.Title = "Frequently Asked Questions";
             FAQViewModel model = new FAQViewModel();
             return View(model);
         }

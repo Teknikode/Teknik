@@ -37,6 +37,7 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string returnUrl)
         {
+            ViewBag.Title = "Application Consent";
             var vm = await _consent.BuildViewModelAsync(returnUrl);
             if (vm != null)
             {

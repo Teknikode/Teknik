@@ -20,7 +20,7 @@ namespace Teknik.Areas.Privacy.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "Privacy Policy - " + _config.Title;
+            ViewBag.Title = "Privacy Policy";
             ViewBag.Description = "Teknik privacy policy.";
 
             return View(new PrivacyViewModel());

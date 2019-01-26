@@ -26,7 +26,7 @@ namespace Teknik.Areas.Shortener.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "Url Shortener - " + _config.Title;
+            ViewBag.Title = "Url Shortener";
             ShortenViewModel model = new ShortenViewModel();
             return View(model);
         }
@@ -97,7 +97,7 @@ namespace Teknik.Areas.Shortener.Controllers
         [AllowAnonymous]
         public IActionResult Verify()
         {
-            ViewBag.Title = "Url Shortener Verification - " + _config.Title;
+            ViewBag.Title = "Url Shortener Verification";
             return View();
         }
     }

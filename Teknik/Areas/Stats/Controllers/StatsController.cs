@@ -26,7 +26,7 @@ namespace Teknik.Areas.Stats.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            ViewBag.Title = "System Statistics - " + _config.Title;
+            ViewBag.Title = "System Statistics";
             ViewBag.Description = "Current statistics for the services.";
 
             StatsViewModel model = new StatsViewModel();

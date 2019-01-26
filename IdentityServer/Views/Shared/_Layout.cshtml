@@ -29,7 +29,16 @@
         <meta name="wot-verification" content="e858b91d99b767ad70db" /> 
 
         <!-- Main Page Title -->
-        <title>@ViewBag.Title</title>
+        <title>
+            @if (string.IsNullOrEmpty(ViewBag.Title))
+            {
+                <text>@Config.Title</text>
+            }
+            else
+            {
+                <text>@ViewBag.Title | @Config.Title</text>
+            }
+        </title>
 
         <!-- Favicon -->
         <link href="~/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
