@@ -314,6 +314,5 @@ namespace Teknik
                 context.Response.StatusCode = 403;
             context.HandleResponse();
         }
-
     }
 }

@@ -42,7 +42,20 @@ namespace Teknik.Middleware
                     allowedDomain += " " + config.CdnHost;
                 }                
 
-                httpContext.Response.Headers.Append("Content-Security-Policy", string.Format("default-src 'none'; script-src blob: 'unsafe-eval' 'nonce-{1}' {0}; style-src 'unsafe-inline' {0}; img-src data: *; font-src data: {0}; connect-src wss: blob: data: {0}; media-src *; worker-src blob: mediastream: {0}; form-action {0}; base-uri {0}; frame-ancestors {0};", allowedDomain, httpContext.Items[Constants.NONCE_KEY]));
+                httpContext.Response.Headers.Append("Content-Security-Policy", string.Format(
+                    "default-src 'none'; " +
+                    "script-src blob: 'unsafe-eval' 'nonce-{1}' {0}; " +
+                    "style-src 'unsafe-inline' {0}; " +
+                    "img-src data: *; " +
+                    "font-src data: {0}; " +
+                    "connect-src wss: blob: data: {0}; " +
+                    "media-src *; " +
+                    "worker-src blob: mediastream: {0}; " +
+                    "form-action {0}; " +
+                    "base-uri {0}; " +
+                    "frame-ancestors {0};", 
+                    allowedDomain, 
+                    httpContext.Items[Constants.NONCE_KEY]));
             }
 
             return _next(httpContext);

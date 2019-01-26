@@ -34,11 +34,20 @@ namespace Teknik.IdentityServer.Middleware
                     allowedDomain = host;
                 }
 
-                var csp = "default-src 'self';" +
-                         "img-src * 'self' data: https:;" +
-                         $"style-src 'self' {allowedDomain};" +
-                         $"font-src 'self' {allowedDomain};" +
-                         $"script-src 'self' 'unsafe-inline' {allowedDomain};";
+                var csp = string.Format(
+                    "default-src 'none'; " +
+                    "script-src blob: 'unsafe-eval' 'nonce-{1}' {0}; " +
+                    "style-src 'unsafe-inline' {0}; " +
+                    "img-src data: *; " +
+                    "font-src data: {0}; " +
+                    "connect-src wss: blob: data: {0}; " +
+                    "media-src *; " +
+                    "worker-src blob: mediastream: {0}; " +
+                    "form-action {0}; " +
+                    "base-uri {0}; " +
+                    "frame-ancestors {0};",
+                    allowedDomain,
+                    httpContext.Items[Constants.NONCE_KEY]);
 
                 if (!httpContext.Response.Headers.ContainsKey("Content-Security-Policy"))
                 {
