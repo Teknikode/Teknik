@@ -128,3 +128,13 @@ label {
 .grants .grant li:last-child:after {
   content: '';
 }
+
+.validation-summary-errors ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+    .validation-summary-errors ul li {
+        margin: 5px 0;
+    }
