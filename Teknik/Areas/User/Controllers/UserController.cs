@@ -165,7 +165,9 @@ namespace Teknik.Areas.Users.Controllers
                         }
                         if (!model.Error)
                         {
-                            return Redirect(Url.SubRouteUrl("account", "User.Login", new { returnUrl = model.ReturnUrl }));
+                            // Let's log them in
+
+                            return GenerateActionResult(new { success = true, redirectUrl = Url.SubRouteUrl("account", "User.Login", new { returnUrl = model.ReturnUrl }) }, Redirect(Url.SubRouteUrl("account", "User.Login", new { returnUrl = model.ReturnUrl })));
                         }
                     }
                 }

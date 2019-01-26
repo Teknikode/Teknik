@@ -21,7 +21,7 @@ $(document).ready(function () {
         $("#registerStatus").html('');
 
         // Disable the register button
-        disableButton('#registerSubmit', 'Signing In...');
+        disableButton('#registerSubmit', 'Signing Up...');
 
         var form = $('#registrationForm');
         $.ajax({
@@ -33,8 +33,13 @@ $(document).ready(function () {
                 withCredentials: true
             },
             success: function (html) {
-                if (html.result) {
-                    window.location.reload();
+                if (html.success) {
+                    $('#registerModal').modal('hide');
+
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Registration Successful.  Redirecting...</div>');
+
+                    window.location = html.redirectUrl;
                 }
                 else {
                     $("#registerStatus").css('display', 'inline', 'important');
