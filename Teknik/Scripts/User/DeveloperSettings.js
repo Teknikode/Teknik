@@ -55,7 +55,7 @@ function createClient() {
                             $('#noClients').remove();
                         }
 
-                        var item = $(response);
+                        var item = $(response.html);
 
                         processClientItem(item);
 
