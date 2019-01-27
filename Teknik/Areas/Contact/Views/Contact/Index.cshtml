@@ -1,5 +1,22 @@
 @model Teknik.Areas.Contact.ViewModels.ContactViewModel
 
+@using Teknik.Areas.Users.Utility
+
+@{ 
+    string username = string.Empty;
+    string email = string.Empty;
+
+    if (User.Identity.IsAuthenticated)
+    {
+        username = User.Identity.Name;
+
+        if (UserHelper.UserEmailEnabled(Config, UserHelper.GetUserEmailAddress(Config, username)))
+        {
+            email = UserHelper.GetUserEmailAddress(Config, username);
+        }
+    }
+}
+
 <div class="container">
     <div class="row">
         <div class="col-sm-12 col-lg-12">
@@ -22,7 +39,7 @@
                                 <label for="Name">
                                     Name
                                 </label>
-                                <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter name" required="required" value="@((User.Identity.IsAuthenticated) ? User.Identity.Name : string.Empty)" />
+                                <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter name" required="required" value="@username" />
                             </div>
                             <div class="form-group">
                                 @Html.ValidationMessageFor(u => u.Email)
@@ -33,7 +50,7 @@
                                     <span class="input-group-addon">
                                         <span class="fa fa-envelope"></span>
                                     </span>
-                                    <input type="email" class="form-control" id="Email" name="Email" placeholder="Enter email" required="required" value="@((User.Identity.IsAuthenticated) ? User.Identity.Name + "@" + Config.Host : string.Empty)" />
+                                    <input type="email" class="form-control" id="Email" name="Email" placeholder="Enter email" required="required" value="@email" />
                                 </div>
                             </div>
                             <div class="form-group">

@@ -19,12 +19,14 @@ namespace Teknik.Data
     {
         // Users
         public DbSet<User> Users { get; set; }
-        public DbSet<LoginInfo> UserLogins { get; set; }
         public DbSet<InviteCode> InviteCodes { get; set; }
+        public DbSet<UserFeature> UserFeatures { get; set; }
         // User Settings
         public DbSet<UserSettings> UserSettings { get; set; }
         public DbSet<BlogSettings> BlogSettings { get; set; }
         public DbSet<UploadSettings> UploadSettings { get; set; }
+        // Features
+        public DbSet<Feature> Features { get; set; }
         // Blogs
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
@@ -70,19 +72,23 @@ namespace Teknik.Data
             modelBuilder.Entity<User>().OwnsOne(u => u.UserSettings);
             modelBuilder.Entity<User>().OwnsOne(u => u.BlogSettings);
             modelBuilder.Entity<User>().OwnsOne(u => u.UploadSettings);
+            modelBuilder.Entity<User>().HasMany(u => u.Features).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(u => u.Uploads).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(u => u.Pastes).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(u => u.ShortenedUrls).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(u => u.Vaults).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(u => u.OwnedInviteCodes).WithOne(i => i.Owner);
             modelBuilder.Entity<User>().HasOne(u => u.ClaimedInviteCode).WithOne(i => i.ClaimedUser);
-            modelBuilder.Entity<User>().HasMany(u => u.Logins).WithOne(r => r.User);
             modelBuilder.Entity<User>().HasOne(u => u.ClaimedInviteCode).WithOne(t => t.ClaimedUser); // Legacy???
             modelBuilder.Entity<User>().HasMany(u => u.OwnedInviteCodes).WithOne(t => t.Owner); // Legacy???
 
             // Invite Codes
             //modelBuilder.Entity<InviteCode>().HasOne(t => t.ClaimedUser).WithOne(u => u.ClaimedInviteCode).HasPrincipalKey("ClaimedUserId").HasForeignKey("ClaimedUser_UserId"); // Legacy???
             //modelBuilder.Entity<InviteCode>().HasOne(t => t.Owner).WithMany(u => u.OwnedInviteCodes).HasPrincipalKey("ClaimedUserId").HasForeignKey("Owner_UserId"); // Legacy???
+
+            // Features
+            modelBuilder.Entity<UserFeature>().HasOne(f => f.Feature);
+            modelBuilder.Entity<UserFeature>().HasOne(f => f.User);
 
             // Blogs
             modelBuilder.Entity<BlogPost>().HasMany(p => p.Comments).WithOne(c => c.BlogPost);
@@ -107,12 +113,14 @@ namespace Teknik.Data
 
             // Users
             modelBuilder.Entity<User>().ToTable("Users");
-            modelBuilder.Entity<LoginInfo>().ToTable("UserLogins");
             modelBuilder.Entity<InviteCode>().ToTable("InviteCodes");
+            modelBuilder.Entity<UserFeature>().ToTable("UserFeatures");
             // User Settings
             modelBuilder.Entity<UserSettings>().ToTable("Users");
             modelBuilder.Entity<BlogSettings>().ToTable("Users");
             modelBuilder.Entity<UploadSettings>().ToTable("Users");
+            // Features
+            modelBuilder.Entity<Feature>().ToTable("Features");
             // Blogs
             modelBuilder.Entity<Blog>().ToTable("Blogs");
             modelBuilder.Entity<BlogPost>().ToTable("BlogPosts");

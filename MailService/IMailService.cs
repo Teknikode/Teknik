@@ -8,6 +8,8 @@ namespace Teknik.MailService
 
         DateTime LastActive(string username);
 
+        bool Enabled(string username);
+
         void CreateAccount(string username, string password, int size);
 
         void EditPassword(string username, string password);

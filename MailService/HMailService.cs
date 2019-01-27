@@ -128,5 +128,11 @@ namespace Teknik.MailService
             var domain = _App.Domains.ItemByName[_Domain];
             return domain.Accounts.ItemByAddress[username];
         }
+
+        public bool Enabled(string username)
+        {
+            var account = GetAccount(username);
+            return account.Active;
+        }
     }
 }

@@ -145,6 +145,9 @@ namespace Teknik.Areas.Users.Utility
                     // Create an Email Account
                     CreateUserEmail(config, GetUserEmailAddress(config, username), password);
 
+                    // Disable the email account
+                    DisableUserEmail(config, GetUserEmailAddress(config, username));
+
                     // Create a Git Account
                     CreateUserGit(config, username, password);
 
@@ -253,18 +256,12 @@ namespace Teknik.Areas.Users.Utility
                     switch (type)
                     {
                         case AccountType.Basic:
-                            // Set the email size to 1GB
-                            EditUserEmailMaxSize(config, email, config.EmailConfig.MaxSize);
-
-                            // Set the email max/day to 100
-                            EditUserEmailMaxEmailsPerDay(config, email, 100);
+                            // Disable their email
+                            DisableUserEmail(config, email);
                             break;
                         case AccountType.Premium:
-                            // Set the email size to 5GB
-                            EditUserEmailMaxSize(config, email, 5000);
-
-                            // Set the email max/day to infinite (-1)
-                            EditUserEmailMaxEmailsPerDay(config, email, -1);
+                            // Enable their email account
+                            EnableUserEmail(config, email);
                             break;
                     }
                 }
@@ -666,6 +663,24 @@ If you recieved this email and you did not reset your password, you can ignore t
                     lastActive = lastEmail;
             }
             return lastActive;
+        }
+
+        public static bool UserEmailEnabled(Config config, string email)
+        {
+            try
+            {
+                // If Email Server is enabled
+                if (config.EmailConfig.Enabled)
+                {
+                    var svc = CreateMailService(config);
+                    return svc.Enabled(email);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to disable email account.", ex);
+            }
+            return false;
         }
 
         public static void CreateUserEmail(Config config, string email, string password)

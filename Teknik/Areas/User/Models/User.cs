@@ -15,7 +15,7 @@ namespace Teknik.Areas.Users.Models
 
         public string Username { get; set; }
 
-        public virtual ICollection<LoginInfo> Logins { get; set; }
+        public virtual ICollection<UserFeature> Features { get; set; }
 
         public virtual InviteCode ClaimedInviteCode { get; set; }
 
@@ -38,7 +38,7 @@ namespace Teknik.Areas.Users.Models
         public User()
         {
             Username = string.Empty;
-            Logins = new List<LoginInfo>();
+            Features = new List<UserFeature>();
             ClaimedInviteCode = null;
             OwnedInviteCodes = new List<InviteCode>();
         }
