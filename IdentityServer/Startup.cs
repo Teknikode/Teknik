@@ -23,6 +23,7 @@ using Teknik.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Teknik.IdentityServer.Models;
 using IdentityServer4.Services;
+using System.Collections.Generic;
 
 namespace Teknik.IdentityServer
 {
@@ -108,6 +109,10 @@ namespace Teknik.IdentityServer
                 options.Events.RaiseSuccessEvents = true;
                 options.UserInteraction.ErrorUrl = "/Error/IdentityError";
                 options.UserInteraction.ErrorIdParameter = "errorId";
+                options.Cors.CorsPaths.Add(new PathString("/connect/authorize"));
+                options.Cors.CorsPaths.Add(new PathString("/connect/endsession"));
+                options.Cors.CorsPaths.Add(new PathString("/connect/checksession"));
+                options.Cors.CorsPaths.Add(new PathString("/connect/introspect"));
             })
                 .AddOperationalStore(options =>
                     options.ConfigureDbContext = builder =>

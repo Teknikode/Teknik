@@ -69,7 +69,7 @@ namespace Teknik.IdentityServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteUser(DeleteUserModel model)
+        public async Task<IActionResult> DeleteUser(DeleteUserModel model, [FromServices] ConfigurationDbContext configContext)
         {
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
@@ -77,6 +77,18 @@ namespace Teknik.IdentityServer.Controllers
             var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
+                // Find this user's clients
+                var foundClients = configContext.Clients.Where(c =>
+                                        c.Properties.Exists(p =>
+                                            p.Key == "username" &&
+                                            p.Value.ToLower() == model.Username.ToLower())
+                                        ).ToList();
+                if (foundClients != null)
+                {
+                    configContext.Clients.RemoveRange(foundClients);
+                    configContext.SaveChanges();
+                }
+
                 var result = await _userManager.DeleteAsync(foundUser);
                 if (result.Succeeded)
                     return new JsonResult(new { success = true });
@@ -467,6 +479,10 @@ namespace Teknik.IdentityServer.Controllers
 
             var clientSecret = StringHelper.RandomString(40, "abcdefghjkmnpqrstuvwxyz1234567890");
 
+            // Generate the origin for the callback
+            Uri redirect = new Uri(model.CallbackUrl);
+            string origin = redirect.Scheme + "://" + redirect.Host;
+
             var client = new IdentityServer4.Models.Client
             {
                 Properties = new Dictionary<string, string>()
@@ -493,6 +509,11 @@ namespace Teknik.IdentityServer.Controllers
                 RedirectUris =
                 {
                     model.CallbackUrl
+                },
+
+                AllowedCorsOrigins =
+                {
+                    origin
                 },
 
                 AllowedScopes = model.AllowedScopes,
@@ -528,6 +549,22 @@ namespace Teknik.IdentityServer.Controllers
                 newUri.Client = foundClient;
                 newUri.ClientId = foundClient.Id;
                 newUri.RedirectUri = model.CallbackUrl;
+                configContext.Add(newUri);
+
+                // Generate the origin for the callback
+                Uri redirect = new Uri(model.CallbackUrl);
+                string origin = redirect.Scheme + "://" + redirect.Host;
+
+                // Update the allowed origin for this client
+                var corsOrigins = configContext.Set<ClientCorsOrigin>().Where(c => c.ClientId == foundClient.Id).ToList();
+                if (corsOrigins != null)
+                {
+                    configContext.RemoveRange(corsOrigins);
+                }
+                var newOrigin = new ClientCorsOrigin();
+                newOrigin.Client = foundClient;
+                newOrigin.ClientId = foundClient.Id;
+                newOrigin.Origin = origin;
                 configContext.Add(newUri);
 
                 // Save all the changed

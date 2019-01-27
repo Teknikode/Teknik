@@ -31,23 +31,24 @@ namespace Teknik.IdentityServer.Middleware
 
                 if (!string.IsNullOrEmpty(host))
                 {
-                    allowedDomain = host;
-                }
+                    string domain = host.GetDomain();
 
+                    allowedDomain = string.Format("*.{0} {0}", domain);
+                }
+                
                 var csp = string.Format(
-                    "default-src 'none'; " +
-                    "script-src blob: 'unsafe-eval' 'nonce-{1}' {0}; " +
+                    "default-src 'self'; " +
+                    "script-src blob: 'unsafe-eval' 'unsafe-inline' {0}; " +
                     "style-src 'unsafe-inline' {0}; " +
                     "img-src data: *; " +
                     "font-src data: {0}; " +
                     "connect-src wss: blob: data: {0}; " +
                     "media-src *; " +
                     "worker-src blob: mediastream: {0}; " +
-                    "form-action {0}; " +
+                    "form-action *; " +
                     "base-uri {0}; " +
                     "frame-ancestors {0};",
-                    allowedDomain,
-                    httpContext.Items[Constants.NONCE_KEY]);
+                    allowedDomain);
 
                 if (!httpContext.Response.Headers.ContainsKey("Content-Security-Policy"))
                 {

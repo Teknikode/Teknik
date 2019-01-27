@@ -12,6 +12,7 @@ namespace Teknik.Configuration
         public string ClientSecret { get; set; }
         public List<string> RedirectUris { get; set; }
         public List<string> PostLogoutRedirectUris { get; set; }
+        public List<string> AllowedCorsOrigins { get; set; }
 
         public string APIName { get; set; }
         public string APISecret { get; set; }
@@ -23,6 +24,7 @@ namespace Teknik.Configuration
             ClientSecret = "mysecret";
             RedirectUris = new List<string>();
             PostLogoutRedirectUris = new List<string>();
+            AllowedCorsOrigins = new List<string>();
             APIName = "api";
             APISecret = "secret";
         }

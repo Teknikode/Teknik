@@ -295,7 +295,18 @@ namespace Teknik.IdentityServer.Controllers
             }
 
             return View("LoggedOut", vm);
-            return RedirectToLocal(model.ReturnURL);
+        }
+
+        [HttpOptions]
+        public async Task Logout()
+        {
+            if (User?.Identity.IsAuthenticated == true)
+            {
+                await _signInManager.SignOutAsync();
+
+                // raise the logout event
+                await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+            }
         }
 
         private IActionResult RedirectToLocal(string returnUrl)

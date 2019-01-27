@@ -49,12 +49,19 @@ namespace Teknik.Utilities
             // If the param is not being used, we will use the curSub
             if (string.IsNullOrEmpty(subParam))
             {
-                // If we are on dev and no subparam, we need to set the subparam to the specified sub
-                subParam = (curSub == "dev") ? sub : string.Empty;
-                string firstSub = (curSub == "dev") ? "dev" : sub;
-                if (!string.IsNullOrEmpty(firstSub))
+                if (url.ActionContext.HttpContext.Request.IsLocal())
                 {
-                    domain = firstSub + "." + domain;
+                    subParam = sub;
+                }
+                else
+                {
+                    // If we are on dev and no subparam, we need to set the subparam to the specified sub
+                    subParam = (curSub == "dev") ? sub : string.Empty;
+                    string firstSub = (curSub == "dev") ? "dev" : sub;
+                    if (!string.IsNullOrEmpty(firstSub))
+                    {
+                        domain = firstSub + "." + domain;
+                    }
                 }
             }
             else

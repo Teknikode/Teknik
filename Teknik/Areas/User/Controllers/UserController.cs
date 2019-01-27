@@ -1208,6 +1208,8 @@ namespace Teknik.Areas.Users.Controllers
                     return Json(new { error = "You must enter a client name" });
                 if (string.IsNullOrEmpty(callbackUrl))
                     return Json(new { error = "You must enter an authorization callback URL" });
+                if (!callbackUrl.IsValidUrl())
+                    return Json(new { error = "Invalid callback URL" });
 
                 // Validate the code with the identity server
                 var result = await IdentityHelper.CreateClient(_config, User.Identity.Name, name, homepageUrl, logoUrl, callbackUrl, "openid", "role", "account-info", "security-info", "teknik-api.read", "teknik-api.write");
@@ -1267,6 +1269,8 @@ namespace Teknik.Areas.Users.Controllers
                     return Json(new { error = "You must enter a client name" });
                 if (string.IsNullOrEmpty(callbackUrl))
                     return Json(new { error = "You must enter an authorization callback URL" });
+                if (!callbackUrl.IsValidUrl())
+                    return Json(new { error = "Invalid callback URL" });
 
                 Client foundClient = await IdentityHelper.GetClient(_config, User.Identity.Name, clientId);
 

@@ -77,6 +77,11 @@ namespace Teknik
             // Resolve the services from the service provider
             var config = sp.GetService<Config>();
 
+            if (config.DevEnvironment)
+            {
+                Environment.EnvironmentName = EnvironmentName.Development;
+            }
+
             // Add Tracking Filter scopes
             //services.AddScoped<TrackDownload>();
             //services.AddScoped<TrackLink>();
@@ -263,13 +268,6 @@ namespace Teknik
 
             // Use Exception Handling
             app.UseErrorHandler(config);
-
-            if (env.IsDevelopment())
-            {
-                app.UseBrowserLink();
-                //app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-            }
 
             // Performance Monitor the entire request
             app.UsePerformanceMonitor();

@@ -35,14 +35,6 @@ namespace Teknik.IdentityServer.Middleware
             // Content Type Options
             headers.Append("X-Content-Type-Options", "nosniff");
 
-            // Public Key Pinning
-            string keys = string.Empty;
-            foreach (string key in config.PublicKeys)
-            {
-                keys += $"pin-sha256=\"{key}\";";
-            }
-            headers.Append("Public-Key-Pins", $"max-age=300; includeSubDomains; {keys}");
-
             // Referrer Policy
             headers.Append("Referrer-Policy", "no-referrer, strict-origin-when-cross-origin");
 
