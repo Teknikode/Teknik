@@ -114,6 +114,7 @@ namespace Teknik.Areas.Users.Controllers
             return View("/Areas/User/Views/User/ViewRegistration.cshtml", model);
         }
 
+        [HttpOptions]
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register([Bind(Prefix = "Register")]RegisterViewModel model)
