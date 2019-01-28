@@ -120,6 +120,7 @@ namespace Teknik.Areas.Admin.Controllers
                 model.DateUploaded = foundUpload.DateUploaded;
                 model.Downloads = foundUpload.Downloads;
                 model.DeleteKey = foundUpload.DeleteKey;
+                model.Username = foundUpload.User?.Username;
 
                 string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/Admin/Views/Admin/UploadResult.cshtml", model);
 
