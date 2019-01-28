@@ -52,7 +52,7 @@ namespace Teknik.Areas.Blog.Controllers
                                             .Include(p => p.Blog.User)
                                             .Include(p => p.Comments)
                                             .Include(p => p.Tags)
-                                            .Where(p => (p.System || isAuth) && p.Published).OrderByDescending(p => p.DatePosted)
+                                            .Where(p => (p.BlogId == _config.BlogConfig.ServerBlogId || p.System) && (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth))
                                             .OrderByDescending(p => p.DatePosted)
                                             .Take(_config.BlogConfig.PostsToLoad).ToList();
 

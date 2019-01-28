@@ -128,6 +128,7 @@ namespace Teknik
             // Set the anti-forgery cookie name
             services.AddAntiforgery(options =>
             {
+                options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment());
                 options.Cookie.Name = "TeknikWebAntiForgery";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
@@ -159,6 +160,7 @@ namespace Teknik
                 {
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                     options.Cookie.Name = "TeknikWebAuth";
+                    options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment());
 
                     options.EventsType = typeof(CookieEventHandler);
                 })
@@ -259,7 +261,7 @@ namespace Teknik
                 IdleTimeout = TimeSpan.FromMinutes(30),
                 Cookie = new CookieBuilder()
                 {
-                    Domain = null,
+                    Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment()),
                     Name = "TeknikWebSession",
                     SecurePolicy = CookieSecurePolicy.SameAsRequest,
                     SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict

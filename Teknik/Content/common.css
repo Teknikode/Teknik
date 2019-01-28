@@ -56,8 +56,10 @@ body { padding-top: 70px; }
 
 .dropdown .dropdown__username {
     text-overflow: ellipsis;
+    white-space: nowrap;
     font-weight: bolder;
-    font-size: 12px;
+    font-size: 10px;
+    margin: 3px 5px 0 5px;
 }
 
 .dropdown-menu a {
