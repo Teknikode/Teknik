@@ -28,7 +28,7 @@
         "Authentication"
     ],
     "license": "BSD-3-Clause",
-    "main": "webpack.config.js",
+    "main": "gulpfile.js",
     "name": "teknik",
     "repository": {
         "type": "git",
@@ -39,10 +39,5 @@
         "build": "npm install && gulp clean && gulp copy-assets && gulp min && gulp update-version",
         "gulp": "gulp"
     },
-    "version": "2.1.0",
-    "-vs-binding": {
-        "ProjectOpened": [
-            "pre-publish"
-        ]
-    }
+    "version": "2.1.0"
 }

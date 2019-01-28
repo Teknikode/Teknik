@@ -30,8 +30,11 @@ namespace Teknik.ServiceWorker
                 Directory.CreateDirectory(config.PasteConfig.PasteDirectory);
             }
 
-            foreach (var paste in db.Pastes)
+            var pastes = db.Pastes.Select(p => p.PasteId).ToList();
+
+            foreach (var pasteId in pastes)
             {
+                var paste = db.Pastes.Where(p => p.PasteId == pasteId).FirstOrDefault();
                 if (!string.IsNullOrEmpty(paste.Content) && string.IsNullOrEmpty(paste.FileName) && string.IsNullOrEmpty(paste.HashedPassword))
                 {
                     // Generate a unique file name that does not currently exist
