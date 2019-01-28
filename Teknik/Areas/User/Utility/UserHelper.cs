@@ -678,7 +678,7 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to disable email account.", ex);
+                throw new Exception("Unable to get email account status.", ex);
             }
             return false;
         }

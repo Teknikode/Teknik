@@ -268,3 +268,4 @@ __pycache__/
 **/tempkey.rsa
 /ServiceWorker/Properties/launchSettings.json
 /IdentityServer/App_Data/Config.json
+/ServiceWorker/Output
