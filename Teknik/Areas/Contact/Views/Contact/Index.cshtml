@@ -1,8 +1,22 @@
 @model Teknik.Areas.Contact.ViewModels.ContactViewModel
 
-@using Teknik.Utilities
+@using Teknik.Areas.Users.Utility
 
-@Scripts.Render("~/bundles/contact")
+@{ 
+    string username = string.Empty;
+    string email = string.Empty;
+
+    if (User.Identity.IsAuthenticated)
+    {
+        username = User.Identity.Name;
+
+        if (UserHelper.UserEmailEnabled(Config, UserHelper.GetUserEmailAddress(Config, username)))
+        {
+            email = UserHelper.GetUserEmailAddress(Config, username);
+        }
+    }
+}
+
 <div class="container">
     <div class="row">
         <div class="col-sm-12 col-lg-12">
@@ -16,7 +30,7 @@
     <div class="row">
         <div class="col-md-8">
             <div class="well well-sm">
-                <form role="form" id="contactForm" action="@Url.SubRouteUrl("contact", "Contact.Action", new { action = "Submit" })" method="post" accept-charset="UTF-8">
+                <!form role="form" id="contactForm" action="@Url.SubRouteUrl("contact", "Contact.Action", new { action = "Submit" })" method="post" accept-charset="UTF-8">
                     @Html.ValidationSummary(true, "Message send failed.")
                     <div class="row">
                         <div class="col-md-6">
@@ -25,7 +39,7 @@
                                 <label for="Name">
                                     Name
                                 </label>
-                                <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter name" required="required" value="@((Request.IsAuthenticated) ? User.Identity.Name : string.Empty)" />
+                                <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter name" required="required" value="@username" />
                             </div>
                             <div class="form-group">
                                 @Html.ValidationMessageFor(u => u.Email)
@@ -34,9 +48,9 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-envelope"></span>
+                                        <span class="fa fa-envelope"></span>
                                     </span>
-                                    <input type="email" class="form-control" id="Email" name="Email" placeholder="Enter email" required="required" value="@((Request.IsAuthenticated) ? User.Identity.Name + "@" + Model.Config.Host : string.Empty)" />
+                                    <input type="email" class="form-control" id="Email" name="Email" placeholder="Enter email" required="required" value="@email" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -63,24 +77,26 @@
                             </button>
                         </div>
                     </div>
-                </form>
+                </!form>
             </div>
             <div class="row">
                 <div class="col-sm-10 col-sm-offset-1"><p>If you want to report abuse, follow the instructions at the <a href="@Url.SubRouteUrl("abuse", "Abuse.Index")">Abuse Prevention</a> page.</p></div>
             </div>
         </div>
         <div class="col-md-4">
-            <form>
-                <legend><span class="glyphicon glyphicon-globe"></span> Where to find us</legend>
+            <!form>
+                <legend><span class="fa fa-globe"></span> Where to find us</legend>
                 <address>
                     <strong>Customer Support</strong><br>
-                    <a href="mailto:@Model.Config.SupportEmail">@Model.Config.SupportEmail</a>
+                    <a href="mailto:@Config.SupportEmail">@Config.SupportEmail</a>
                 </address>
                 <address>
                     <strong>Teknik on Rizon IRC</strong><br>
                     #Teknik (<a href="irc://irc.rizon.net" target="_blank">irc.rizon.net</a>)<br>
                 </address>
-            </form>
+            </!form>
         </div>
     </div>
 </div>
+
+<bundle src="js/contact.min.js" append-version="true"></bundle>

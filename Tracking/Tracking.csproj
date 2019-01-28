@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>Teknik.Tracking</AssemblyName>
+    <RootNamespace>Teknik.Tracking</RootNamespace>
+    <RuntimeIdentifiers>win-x86;win-x64;linux-x64;linux-arm;osx-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Configuration\Configuration.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Piwik.Tracker.NetStandard1.4">
+      <HintPath>lib\Piwik.Tracker.NetStandard1.4.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

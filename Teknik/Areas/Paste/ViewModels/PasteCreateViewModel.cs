@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using Teknik.Utilities;
 using Teknik.ViewModels;
 
 namespace Teknik.Areas.Paste.ViewModels
@@ -11,7 +7,6 @@ namespace Teknik.Areas.Paste.ViewModels
     public class PasteCreateViewModel : ViewModelBase
     {
         [Required]
-        [AllowHtml]
         public string Content { get; set; }
 
         public string Title { get; set; }
@@ -21,12 +16,9 @@ namespace Teknik.Areas.Paste.ViewModels
         [Range(1, int.MaxValue)]
         public int? ExpireLength { get; set; }
 
-        public string ExpireUnit { get; set; }
-
-        [AllowHtml]
+        public ExpirationUnit ExpireUnit { get; set; }
+        
         public string Password { get; set; }
-
-        public bool Hide { get; set; }
 
         public string CurrentSub { get; set; }
     }

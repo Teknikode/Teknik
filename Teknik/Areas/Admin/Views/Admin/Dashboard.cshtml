@@ -1,6 +1,8 @@
 @model Teknik.Areas.Admin.ViewModels.DashboardViewModel
 
-@using Teknik.Utilities
+<script>
+    var createInviteCode = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "CreateInviteCode" })';
+</script>
 
 <div class="container">
     <div class="row">
@@ -13,4 +15,11 @@
             <a href="@Url.SubRouteUrl("admin", "Admin.UploadSearch")">Upload Search</a>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <button type="button" class="btn btn-info" id="createInviteCode">Create Invite Code</button>
+        </div>
+    </div>
 </div>
+
+<bundle src="js/admin.min.js" append-version="true"></bundle>

@@ -1,8 +1,6 @@
 @model Teknik.Areas.Blog.ViewModels.PostViewModel
 
-@using Teknik.Utilities
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     // We need to define the action URLs for the script
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
     var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
@@ -18,20 +16,20 @@
     var deleteCommentURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "DeleteComment" })';
 </script>
 
-@Styles.Render("~/Content/blog")
-@Scripts.Render("~/bundles/blog")
+<bundle src="css/blog.min.css" append-version="true"></bundle>
+<bundle src="js/blog.min.js" append-version="true"></bundle>
 
 <div class="container">
 @if (!Model.Error)
 {
     <ol class="breadcrumb">
-        <li><a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = (Model.System) ? string.Empty : Model.Blog.User.Username })">@((Model.System) ? Model.Config.BlogConfig.Title : (string.IsNullOrEmpty(Model.Blog.User.BlogSettings.Title) ? string.Format("{0}'s Blog", Model.Blog.User.Username) : Model.Blog.User.BlogSettings.Title))</a></li>
+        <li><a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = (Model.System) ? string.Empty : Model.Blog.User.Username })">@((Model.System) ? Config.BlogConfig.Title : (string.IsNullOrEmpty(Model.Blog.User.BlogSettings.Title) ? string.Format("{0}'s Blog", Model.Blog.User.Username) : Model.Blog.User.BlogSettings.Title))</a></li>
         <li class="active"><a href="#">@Model.Title</a></li>
     </ol>
 
-    @Html.Partial("../../Areas/Blog/Views/Blog/Post", Model)
+    @await Html.PartialAsync("../../Areas/Blog/Views/Blog/Post", Model)
 
-    if (Request.IsAuthenticated)
+    if (User.Identity.IsAuthenticated)
     {
     <div class="row">
         <div class="col-sm-10 col-sm-offset-1">
@@ -42,7 +40,7 @@
     <div class="modal fade" id="newComment" tabindex="-1" role="dialog" aria-labelledby="newCommentLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="##" method="post" id="publishComment">
+                <!form class="form" action="##" method="post" id="publishComment">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
                         <h4 class="modal-title" id="newCommentLabel">Add a New Comment</h4>
@@ -60,14 +58,14 @@
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" id="comment_submit">Publish</button>
                     </div>
-                </form>
+                </!form>
             </div>
         </div>
     </div>
     <div class="modal fade" id="editComment" tabindex="-1" role="dialog" aria-labelledby="editCommentLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="##" method="post" id="editCommentForm">
+                <!form class="form" action="##" method="post" id="editCommentForm">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
                         <h4 class="modal-title" id="editCommentLabel">Edit Your Comment</h4>
@@ -85,19 +83,19 @@
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" id="edit_comment_submit">Save</button>
                     </div>
-                </form>
+                </!form>
             </div>
         </div>
     </div>
     }
     <a name="replies"></a>
     <div class="post-comments" id="@Model.PostId"></div>
-    <script nonce="@Context.Items[Constants.NONCE_KEY]">
+    <script>
             linkPostDelete('.delete_post');
             linkPostPublish('.publish_post');
             linkPostUnpublish('.unpublish_post');
 
-            var posts = @(Model.Config.BlogConfig.CommentsToLoad);
+            var posts = @(Config.BlogConfig.CommentsToLoad);
             var start_post = 0;
             var view_post_id = @(Model.PostId);
             loadMoreComments(start_post, posts);

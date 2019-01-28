@@ -1,15 +1,8 @@
 using nClam;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Teknik.Areas.Error.ViewModels;
-using Teknik.Areas.Upload.Models;
 using Teknik.Areas.Upload.ViewModels;
 using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
@@ -19,107 +12,148 @@ using Teknik.Models;
 using Teknik.Attributes;
 using System.Text;
 using Teknik.Utilities.Cryptography;
-using System.Web.SessionState;
+using Teknik.Data;
+using Teknik.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Teknik.Logging;
+using Teknik.Areas.Users.Models;
 
 namespace Teknik.Areas.Upload.Controllers
 {
-    [TeknikAuthorize]
-    [SessionState(SessionStateBehavior.ReadOnly)]
+    [Authorize]
+    [Area("Upload")]
     public class UploadController : DefaultController
     {
-        // GET: Upload/Upload
+        public UploadController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+        
         [HttpGet]
-        [TrackPageView]
-        public ActionResult Index()
+        [AllowAnonymous]
+        public IActionResult Index()
         {
-            ViewBag.Title = "Teknik Upload - End to End Encryption";
+            ViewBag.Title = "Upload Files";
             UploadViewModel model = new UploadViewModel();
             model.CurrentSub = Subdomain;
-            using (TeknikEntities db = new TeknikEntities())
+            Users.Models.User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+            if (user != null)
             {
-                Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
-                if (user != null)
-                {
-                    model.Encrypt = user.UploadSettings.Encrypt;
-                    model.Vaults = user.Vaults.ToList();
-                }
-                else
-                {
-                    model.Encrypt = false;
-                }
+                model.Encrypt = user.UploadSettings.Encrypt;
+                model.ExpirationLength = user.UploadSettings.ExpirationLength;
+                model.ExpirationUnit = user.UploadSettings.ExpirationUnit;
+                model.Vaults = user.Vaults.ToList();
+            }
+            else
+            {
+                model.Encrypt = false;
             }
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult Upload(string fileType, string fileExt, string iv, int keySize, int blockSize, bool encrypt, HttpPostedFileWrapper data)
+        [AllowAnonymous]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> Upload([FromForm] UploadFileViewModel uploadFile)
         {
             try
             {
-                if (Config.UploadConfig.UploadEnabled)
+                if (_config.UploadConfig.UploadEnabled)
                 {
-                    long maxUploadSize = Config.UploadConfig.MaxUploadSize;
+                    long maxUploadSize = _config.UploadConfig.MaxUploadSize;
                     if (User.Identity.IsAuthenticated)
                     {
-                        maxUploadSize = Config.UploadConfig.MaxUploadSizeBasic;
-                        if (User.Info.AccountType == AccountType.Premium)
+                        maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
+                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
+                        if (userInfo.AccountType == AccountType.Premium)
                         {
-                            maxUploadSize = Config.UploadConfig.MaxUploadSizePremium;
+                            maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
                         }
                     }
-                    if (data.ContentLength <= maxUploadSize)
+                    else
+                    {
+                        // Non-logged in users are defaulted to 1 day expiration
+                        uploadFile.options.ExpirationUnit = ExpirationUnit.Days;
+                        uploadFile.options.ExpirationLength = 1;
+                    }
+                    if (uploadFile.file.Length <= maxUploadSize)
                     {
                         // convert file to bytes
-                        int contentLength = data.ContentLength;
+                        long contentLength = uploadFile.file.Length;
 
                         // Scan the file to detect a virus
-                        if (Config.UploadConfig.VirusScanEnable)
+                        if (_config.UploadConfig.VirusScanEnable)
                         {
-                            ClamClient clam = new ClamClient(Config.UploadConfig.ClamServer, Config.UploadConfig.ClamPort);
-                            clam.MaxStreamSize = maxUploadSize;
-                            ClamScanResult scanResult = clam.SendAndScanFile(data.InputStream);
-
-                            switch (scanResult.Result)
+                            using (Stream fs = uploadFile.file.OpenReadStream())
                             {
-                                case ClamScanResults.Clean:
-                                    break;
-                                case ClamScanResults.VirusDetected:
-                                    return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.InfectedFiles.First().VirusName, Url.SubRouteUrl("tos", "TOS.Index")) } });
-                                case ClamScanResults.Error:
-                                    return Json(new { error = new { message = string.Format("Error scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
-                                case ClamScanResults.Unknown:
-                                    return Json(new { error = new { message = string.Format("Unknown result while scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
+                                ClamClient clam = new ClamClient(_config.UploadConfig.ClamServer, _config.UploadConfig.ClamPort);
+                                clam.MaxStreamSize = maxUploadSize;
+                                ClamScanResult scanResult = await clam.SendAndScanFileAsync(fs);
+
+                                switch (scanResult.Result)
+                                {
+                                    case ClamScanResults.Clean:
+                                        break;
+                                    case ClamScanResults.VirusDetected:
+                                        return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.InfectedFiles.First().VirusName, Url.SubRouteUrl("tos", "TOS.Index")) } });
+                                    case ClamScanResults.Error:
+                                        return Json(new { error = new { message = string.Format("Error scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
+                                    case ClamScanResults.Unknown:
+                                        return Json(new { error = new { message = string.Format("Unknown result while scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
+                                }
                             }
                         }
 
                         // Check content type restrictions (Only for encrypting server side
-                        if (encrypt)
+                        if (!uploadFile.options.Encrypt)
                         {
-                            if (Config.UploadConfig.RestrictedContentTypes.Contains(fileType) || Config.UploadConfig.RestrictedExtensions.Contains(fileExt))
+                            if (_config.UploadConfig.RestrictedContentTypes.Contains(uploadFile.fileType) || _config.UploadConfig.RestrictedExtensions.Contains(uploadFile.fileExt))
                             {
                                 return Json(new { error = new { message = "File Type Not Allowed" } });
                             }
                         }
 
-                        using (TeknikEntities db = new TeknikEntities())
+                        using (Stream fs = uploadFile.file.OpenReadStream())
                         {
-                            Models.Upload upload = Uploader.SaveFile(db, Config, data.InputStream, fileType, contentLength, encrypt, fileExt, iv, null, keySize, blockSize);
+                            Models.Upload upload = UploadHelper.SaveFile(_dbContext, 
+                                _config, 
+                                fs, 
+                                uploadFile.fileType, 
+                                contentLength, 
+                                !uploadFile.options.Encrypt, 
+                                uploadFile.options.ExpirationUnit, 
+                                uploadFile.options.ExpirationLength, 
+                                uploadFile.fileExt, 
+                                uploadFile.iv, null, 
+                                uploadFile.keySize, 
+                                uploadFile.blockSize);
                             if (upload != null)
                             {
                                 if (User.Identity.IsAuthenticated)
                                 {
-                                    Users.Models.User user = UserHelper.GetUser(db, User.Identity.Name);
+                                    Users.Models.User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
                                     if (user != null)
                                     {
                                         upload.UserId = user.UserId;
-                                        db.Entry(upload).State = EntityState.Modified;
-                                        db.SaveChanges();
+                                        _dbContext.Entry(upload).State = EntityState.Modified;
+                                        _dbContext.SaveChanges();
                                     }
                                 }
-                                return Json(new { result = new { name = upload.Url, url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }), contentType = upload.ContentType, contentLength = StringHelper.GetBytesReadable(upload.ContentLength), deleteUrl = Url.SubRouteUrl("u", "Upload.Delete", new { file = upload.Url, key = upload.DeleteKey }) } }, "text/plain");
+                                return Json(new { result = new
+                                {
+                                    name = upload.Url,
+                                    url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }),
+                                    contentType = upload.ContentType,
+                                    contentLength = StringHelper.GetBytesReadable(upload.ContentLength),
+                                    deleteUrl = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = upload.Url, key = upload.DeleteKey }),
+                                    expirationUnit = uploadFile.options.ExpirationUnit.ToString(),
+                                    expirationLength = uploadFile.options.ExpirationLength
+                                } });
                             }
-                            return Json(new { error = new { message = "Unable to upload file" } });
                         }
+                        return Json(new { error = new { message = "Unable to upload file" } });
                     }
                     else
                     {
@@ -133,16 +167,15 @@ namespace Teknik.Areas.Upload.Controllers
                 return Json(new { error = new { message = "Exception while uploading file: " + ex.GetFullMessage(true) } });
             }
         }
-
-        // User did not supply key
+        
         [HttpGet]
-        [TrackDownload]
         [AllowAnonymous]
-        public ActionResult Download(string file)
+        [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        public async Task<IActionResult> Download(string file)
         {
-            if (Config.UploadConfig.DownloadEnabled)
+            if (_config.UploadConfig.DownloadEnabled)
             {
-                ViewBag.Title = "Teknik Download - " + file;
+                ViewBag.Title = "Download " + file;
                 string fileName = string.Empty;
                 string url = string.Empty;
                 string key = string.Empty;
@@ -152,29 +185,42 @@ namespace Teknik.Areas.Upload.Controllers
                 bool premiumAccount = false;
                 DateTime dateUploaded = new DateTime();
 
-                using (TeknikEntities db = new TeknikEntities())
+                Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
+                if (upload != null)
                 {
-                    Models.Upload uploads = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
-                    if (uploads != null)
+                    // Check Expiration
+                    if (UploadHelper.CheckExpiration(upload))
                     {
-                        uploads.Downloads += 1;
-                        db.Entry(uploads).State = EntityState.Modified;
-                        db.SaveChanges();
+                        _dbContext.Uploads.Remove(upload);
+                        _dbContext.SaveChanges();
+                        return new StatusCodeResult(StatusCodes.Status404NotFound);
+                    }
 
-                        fileName = uploads.FileName;
-                        url = uploads.Url;
-                        key = uploads.Key;
-                        iv = uploads.IV;
-                        contentType = uploads.ContentType;
-                        contentLength = uploads.ContentLength;
-                        dateUploaded = uploads.DateUploaded;
-                        premiumAccount = (uploads.User != null && uploads.User.AccountType == AccountType.Premium) || 
-                                         (User.Identity.IsAuthenticated && User.Info != null && User.Info.AccountType == AccountType.Premium);
-                    }
-                    else
+                    upload.Downloads += 1;
+                    _dbContext.Entry(upload).State = EntityState.Modified;
+                    _dbContext.SaveChanges();
+
+                    fileName = upload.FileName;
+                    url = upload.Url;
+                    key = upload.Key;
+                    iv = upload.IV;
+                    contentType = upload.ContentType;
+                    contentLength = upload.ContentLength;
+                    dateUploaded = upload.DateUploaded;
+                    if (User.Identity.IsAuthenticated)
                     {
-                        return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
+                        premiumAccount = userInfo.AccountType == AccountType.Premium;
                     }
+                    if (!premiumAccount && upload.User != null)
+                    {
+                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, upload.User.Username);
+                        premiumAccount = userInfo.AccountType == AccountType.Premium;
+                    }
+                }
+                else
+                {
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
 
                 // We don't have the key, so we need to decrypt it client side
@@ -190,7 +236,7 @@ namespace Teknik.Areas.Upload.Controllers
 
                     return View(model);
                 }
-                else if (!premiumAccount && Config.UploadConfig.MaxDownloadSize < contentLength)
+                else if (!premiumAccount && _config.UploadConfig.MaxDownloadSize < contentLength)
                 {
                     // We want to force them to the dl page due to them being over the max download size for embedded content
                     DownloadViewModel model = new DownloadViewModel();
@@ -222,15 +268,12 @@ namespace Teknik.Areas.Upload.Controllers
 
                     if (isCached)
                     {
-                        // The file is cached, let's just 304 this
-                        Response.StatusCode = 304;
-                        Response.StatusDescription = "Not Modified";
-                        return new EmptyResult();
+                        return new StatusCodeResult(StatusCodes.Status304NotModified);
                     }
                     else
                     {
                         string subDir = fileName[0].ToString();
-                        string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, fileName);
+                        string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, fileName);
                         long startByte = 0;
                         long endByte = contentLength - 1;
                         long length = contentLength;
@@ -238,14 +281,14 @@ namespace Teknik.Areas.Upload.Controllers
                         {
                             #region Range Calculation
                             // Are they downloading it by range?
-                            bool byRange = !string.IsNullOrEmpty(Request.ServerVariables["HTTP_RANGE"]); // We do not support ranges
+                            bool byRange = !string.IsNullOrEmpty(Request.Headers["Range"]); // We do not support ranges
 
                             // check to see if we need to pass a specified range
                             if (byRange)
                             {
                                 long anotherStart = startByte;
                                 long anotherEnd = endByte;
-                                string[] arr_split = Request.ServerVariables["HTTP_RANGE"].Split(new char[] { '=' });
+                                string[] arr_split = Request.Headers["Range"].ToString().Split(new char[] { '=' });
                                 string range = arr_split[1];
 
                                 // Make sure the client hasn't sent us a multibyte range 
@@ -254,8 +297,9 @@ namespace Teknik.Areas.Upload.Controllers
                                     // (?) Shoud this be issued here, or should the first 
                                     // range be used? Or should the header be ignored and 
                                     // we output the whole content? 
-                                    Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
-                                    throw new HttpException(416, "Requested Range Not Satisfiable");
+                                    Response.Headers.Add("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+
+                                    return new StatusCodeResult(StatusCodes.Status416RequestedRangeNotSatisfiable);
                                 }
 
                                 // If the range starts with an '-' we start from the beginning 
@@ -283,8 +327,9 @@ namespace Teknik.Areas.Upload.Controllers
                                 if (anotherStart > anotherEnd || anotherStart > contentLength - 1 || anotherEnd >= contentLength)
                                 {
 
-                                    Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
-                                    throw new HttpException(416, "Requested Range Not Satisfiable");
+                                    Response.Headers.Add("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+
+                                    return new StatusCodeResult(StatusCodes.Status416RequestedRangeNotSatisfiable);
                                 }
                                 startByte = anotherStart;
                                 endByte = anotherEnd;
@@ -296,19 +341,20 @@ namespace Teknik.Areas.Upload.Controllers
                             }
                             #endregion
 
-                            // Add cache parameters
-                            Response.Cache.SetCacheability(HttpCacheability.Public);
-                            Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
-                            Response.Cache.SetLastModified(dateUploaded);
+                            // Set Last Modified
+                            Response.GetTypedHeaders().LastModified = dateUploaded;
 
                             // We accept ranges
-                            Response.AddHeader("Accept-Ranges", "0-" + contentLength);
+                            Response.Headers.Add("Accept-Ranges", "0-" + contentLength);
 
                             // Notify the client the byte range we'll be outputting 
-                            Response.AddHeader("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
+                            Response.Headers.Add("Content-Range", "bytes " + startByte + "-" + endByte + "/" + contentLength);
 
                             // Notify the client the content length we'll be outputting 
-                            Response.AddHeader("Content-Length", length.ToString());
+                            Response.Headers.Add("Content-Length", length.ToString());
+
+                            // Set the content type of this response
+                            Response.Headers.Add("Content-Type", contentType);
 
                             // Create content disposition
                             var cd = new System.Net.Mime.ContentDisposition
@@ -317,7 +363,7 @@ namespace Teknik.Areas.Upload.Controllers
                                 Inline = true
                             };
 
-                            Response.AddHeader("Content-Disposition", cd.ToString());
+                            Response.Headers.Add("Content-Disposition", cd.ToString());
 
                             // Read in the file
                             FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -333,145 +379,161 @@ namespace Teknik.Areas.Upload.Controllers
                                     byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                                     byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
-                                    return new FileGenerateResult(url,
-                                                                contentType,
-                                                                (response) => ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)length, Config.UploadConfig.ChunkSize),
-                                                                false);
+                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)length, _config.UploadConfig.ChunkSize), false);
                                 }
                                 else // Otherwise just send it
                                 {
                                     // Send the file
-                                    return new FileGenerateResult(url,
-                                                                contentType,
-                                                                (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)length, Config.UploadConfig.ChunkSize),
-                                                                false);
+                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, fs, (int)length, _config.UploadConfig.ChunkSize), false);
                                 }
                             }
                             catch (Exception ex)
                             {
-                                Logging.Logger.WriteEntry(Logging.LogLevel.Warning, "Error in Download", ex);
+                                _logger.LogWarning(ex, "Error in Download: {url}", new { url });
                             }
                         }
                     }
-                    return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http403"));
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult DownloadData(string file, bool decrypt)
+        public IActionResult DownloadData(string file, bool decrypt)
         {
-            if (Config.UploadConfig.DownloadEnabled)
+            if (_config.UploadConfig.DownloadEnabled)
             {
-                using (TeknikEntities db = new TeknikEntities())
+                Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
+                if (upload != null)
                 {
-                    Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
-                    if (upload != null)
+                    // Check Expiration
+                    if (UploadHelper.CheckExpiration(upload))
                     {
-                        string subDir = upload.FileName[0].ToString();
-                        string filePath = Path.Combine(Config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-                        if (System.IO.File.Exists(filePath))
+                        _dbContext.Uploads.Remove(upload);
+                        _dbContext.SaveChanges();
+                        return Json(new { error = new { message = "File Does Not Exist" } });
+                    }
+
+                    string subDir = upload.FileName[0].ToString();
+                    string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, upload.FileName);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        // Notify the client the content length we'll be outputting 
+                        Response.Headers.Add("Content-Length", upload.ContentLength.ToString());
+
+                        // Create content disposition
+                        var cd = new System.Net.Mime.ContentDisposition
                         {
-                            // Notify the client the content length we'll be outputting 
-                            Response.AddHeader("Content-Length", upload.ContentLength.ToString());
+                            FileName = upload.Url,
+                            Inline = true
+                        };
 
-                            // Create content disposition
-                            var cd = new System.Net.Mime.ContentDisposition
-                            {
-                                FileName = upload.Url,
-                                Inline = true
-                            };
+                        // Set the content type of this response
+                        Response.Headers.Add("Content-Type", upload.ContentType);
 
-                            Response.AddHeader("Content-Disposition", cd.ToString());
+                        Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                            // Read in the file
-                            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        // Read in the file
+                        FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-                            // If the IV is set, and Key is set, then decrypt it while sending
-                            if (decrypt && !string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
-                            {
-                                byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
-                                byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
+                        // If the IV is set, and Key is set, then decrypt it while sending
+                        if (decrypt && !string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
+                        {
+                            byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
+                            byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
 
-                                return new FileGenerateResult(upload.Url,
-                                    upload.ContentType,
-                                    (response) => ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)upload.ContentLength, Config.UploadConfig.ChunkSize),
-                                    false);
-                            }
-                            else // Otherwise just send it
-                            {
-                                // Send the file
-                                return new FileGenerateResult(upload.Url,
-                                    upload.ContentType,
-                                    (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)upload.ContentLength, Config.UploadConfig.ChunkSize),
-                                    false);
-                            }
+                            return new BufferedFileStreamResult(upload.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)upload.ContentLength, _config.UploadConfig.ChunkSize), false);
+                        }
+                        else // Otherwise just send it
+                        {
+                            // Send the file
+                            return new BufferedFileStreamResult(upload.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)upload.ContentLength, _config.UploadConfig.ChunkSize), false);
                         }
                     }
-                    return Json(new { error = new { message = "File Does Not Exist" } });
                 }
+                return Json(new { error = new { message = "File Does Not Exist" } });
             }
             return Json(new { error = new { message = "Downloads are disabled" } });
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult Delete(string file, string key)
+        public IActionResult DeleteByKey(string file, string key)
         {
-            using (TeknikEntities db = new TeknikEntities())
+            ViewBag.Title = "File Delete | " + file ;
+            Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
+            if (upload != null)
             {
-                ViewBag.Title = "File Delete - " + file + " - " + Config.Title;
-                Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
-                if (upload != null)
+                DeleteViewModel model = new DeleteViewModel();
+                model.File = file;
+                if (!string.IsNullOrEmpty(upload.DeleteKey) && upload.DeleteKey == key)
                 {
-                    DeleteViewModel model = new DeleteViewModel();
-                    model.File = file;
-                    if (!string.IsNullOrEmpty(upload.DeleteKey) && upload.DeleteKey == key)
-                    {
-                        string filePath = upload.FileName;
-                        // Delete from the DB
-                        db.Uploads.Remove(upload);
-                        db.SaveChanges();
+                    string filePath = upload.FileName;
+                    // Delete from the DB
+                    _dbContext.Uploads.Remove(upload);
+                    _dbContext.SaveChanges();
 
-                        // Delete the File
-                        if (System.IO.File.Exists(filePath))
-                        {
-                            System.IO.File.Delete(filePath);
-                        }
-                        model.Deleted = true;
-                    }
-                    else
+                    // Delete the File
+                    if (System.IO.File.Exists(filePath))
                     {
-                        model.Deleted = false;
+                        System.IO.File.Delete(filePath);
                     }
-                    return View(model);
+                    model.Deleted = true;
                 }
-                return RedirectToRoute("Error.Http404");
+                else
+                {
+                    model.Deleted = false;
+                }
+                return View(model);
             }
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]
-        public ActionResult GenerateDeleteKey(string file)
+        public IActionResult GenerateDeleteKey(string file)
         {
-            using (TeknikEntities db = new TeknikEntities())
+            Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
+            if (upload != null)
             {
-                Models.Upload upload = db.Uploads.Where(up => up.Url == file).FirstOrDefault();
-                if (upload != null)
+                if (upload.User.Username == User.Identity.Name)
                 {
-                    if (upload.User.Username == User.Identity.Name)
-                    {
-                        string delKey = StringHelper.RandomString(Config.UploadConfig.DeleteKeyLength);
-                        upload.DeleteKey = delKey;
-                        db.Entry(upload).State = EntityState.Modified;
-                        db.SaveChanges();
-                        return Json(new { result = new { url = Url.SubRouteUrl("u", "Upload.Delete", new { file = file, key = delKey }) } });
-                    }
-                    return Json(new { error = new { message = "You do not own this upload" } });
+                    string delKey = StringHelper.RandomString(_config.UploadConfig.DeleteKeyLength);
+                    upload.DeleteKey = delKey;
+                    _dbContext.Entry(upload).State = EntityState.Modified;
+                    _dbContext.SaveChanges();
+                    return Json(new { result = new { url = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = file, key = delKey }) } });
                 }
-                return Json(new { error = new { message = "Invalid URL" } });
+                return Json(new { error = new { message = "You do not own this upload" } });
             }
+            return Json(new { error = new { message = "Invalid URL" } });
+        }
+
+        [HttpPost]
+        public IActionResult Delete(string id)
+        {
+            Models.Upload foundUpload = _dbContext.Uploads.Where(u => u.Url == id).FirstOrDefault();
+            if (foundUpload != null)
+            {
+                if (foundUpload.User.Username == User.Identity.Name)
+                {
+                    string filePath = foundUpload.FileName;
+                    // Delete from the DB
+                    _dbContext.Uploads.Remove(foundUpload);
+                    _dbContext.SaveChanges();
+
+                    // Delete the File
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    return Json(new { result = true });
+                }
+                return Json(new { error = new { message = "You do not have permission to edit this Paste" } });
+            }
+            return Json(new { error = new { message = "This Paste does not exist" } });
         }
     }
 }

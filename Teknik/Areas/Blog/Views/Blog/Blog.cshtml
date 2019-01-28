@@ -1,8 +1,6 @@
 @model Teknik.Areas.Blog.ViewModels.BlogViewModel
 
-@using Teknik.Utilities
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     // We need to define the action URLs for the script
     var uploadURL = '@Url.SubRouteUrl("upload", "Upload.Upload")';
     var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
@@ -18,8 +16,7 @@
     var deleteCommentURL = '@Url.SubRouteUrl("blog", "Blog.Action", new { action = "DeleteComment" })';
 </script>
 
-@Styles.Render("~/Content/blog")
-@Scripts.Render("~/bundles/blog")
+<bundle src="css/blog.min.css" append-version="true"></bundle>
 
 <div class="container">
     @if (!Model.Error)
@@ -33,7 +30,7 @@
         <div class="row">
             <div class="col-sm-12 text-center">
                 <p>
-                    <a href="@Url.SubRouteUrl("rss", "RSS.Blog", new { username = (Model.BlogId == Model.Config.BlogConfig.ServerBlogId) ? string.Empty : Model.User.Username })"><i class="fa fa-rss fa-2x fa-border"></i></a>
+                    <a href="@Url.SubRouteUrl("rss", "RSS.Blog", new { username = (Model.BlogId == Config.BlogConfig.ServerBlogId) ? string.Empty : Model.User.Username })"><i class="fa fa-rss fa-2x fa-border"></i></a>
                 </p>
             </div>
         </div>
@@ -46,14 +43,25 @@
         </div>
         }
 
+        <bundle src="js/blog.min.js" append-version="true"></bundle>
+
         if (Model.HasPosts)
         {
-            <div class="blog-main" id="@Model.BlogId"></div>
-            <script nonce="@Context.Items[Constants.NONCE_KEY]">
-                var posts = @Model.Config.BlogConfig.PostsToLoad;
-                var start_post = 0;
-                loadMorePosts(start_post, posts);
-                start_post = start_post + posts;
+            <div class="blog-main" id="@Model.BlogId">
+                @foreach (var post in Model.Posts)
+                {
+                    @await Html.PartialAsync("Post", post)
+                }
+            </div>
+            <script>
+                var posts = @Config.BlogConfig.PostsToLoad;
+                var start_post = @Model.Posts.Count;
+
+                linkPostDelete('.delete_post');
+                linkPostPublish('.publish_post');
+                linkPostUnpublish('.unpublish_post');
+
+                $(window).bind('scroll', bindScrollPosts);
             </script>
         }
         else

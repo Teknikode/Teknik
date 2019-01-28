@@ -1,16 +1,14 @@
 @model Teknik.Areas.Vault.ViewModels.VaultViewModel
 
 @using Teknik.Areas.Vault.ViewModels
-@using Teknik.Utilities
-@using Teknik.Pygments
 
-@Styles.Render("~/Content/vault")
+<bundle src="css/vault.min.css" append-version="true"></bundle>
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     var helpURL = '@Url.SubRouteUrl("help", "Help.Markdown")';
     var validateItemURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = "ValidateItem" })';
     var modifyVaultURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Action", new { action = "EditVault" })';
-    var deleteVaultURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.DeleteVault")';
+    var deleteVaultURL = '@Url.SubRouteUrl(Model.CurrentSub, "Vault.Delete")';
 </script>
 
 <div class="container">
@@ -19,7 +17,7 @@
             <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Created on <time datetime="@Model.DateCreated.ToString("s")">@Model.DateCreated.ToString("dddd, MMMM d, yyyy") at @Model.DateCreated.ToString("h:mm:ss tt")</time></small></h2>
         </div>
     </div>
-    @if (User.Identity.IsAuthenticated &&  Model.User != null && Model.User.Username == User.Info.Username)
+    @if (User.Identity.IsAuthenticated &&  Model.User != null && Model.User.Username == User.Identity.Name)
     {
         <div class="row">
             <div class="col-sm-12">
@@ -48,13 +46,13 @@
         {
             PasteItemViewModel pasteModel = (PasteItemViewModel)item;
 
-            @Html.Partial("~/Areas/Vault/Views/Vault/PasteItem.cshtml", pasteModel)
+            @await Html.PartialAsync("~/Areas/Vault/Views/Vault/PasteItem.cshtml", pasteModel)
         }
         else if (itemType == typeof(UploadItemViewModel))
         {
             UploadItemViewModel uploadModel = (UploadItemViewModel)item;
 
-            @Html.Partial("~/Areas/Vault/Views/Vault/UploadItem.cshtml", uploadModel)
+            @await Html.PartialAsync("~/Areas/Vault/Views/Vault/UploadItem.cshtml", uploadModel)
         }
         else
         {
@@ -63,4 +61,4 @@
     }
 </div>
 
-@Scripts.Render("~/bundles/vault")
+<bundle src="js/vault.min.js" append-version="true"></bundle>

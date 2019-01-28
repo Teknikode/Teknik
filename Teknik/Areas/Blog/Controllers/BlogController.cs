@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
-using System.Web.Mvc;
 using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Blog.ViewModels;
 using Teknik.Areas.Users.Models;
@@ -15,61 +13,102 @@ using Teknik.Filters;
 using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Attributes;
+using Microsoft.Extensions.Logging;
+using Teknik.Configuration;
+using Teknik.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Teknik.Logging;
 
 namespace Teknik.Areas.Blog.Controllers
 {
-    [TeknikAuthorize]
+    [Authorize]
+    [Area("Blog")]
     public class BlogController : DefaultController
     {
-        private TeknikEntities db = new TeknikEntities();
-
-        // GET: Blogs/Details/5
-        [TrackPageView]
+        public BlogController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+        
         [AllowAnonymous]
-        public ActionResult Blog(string username)
+        public IActionResult Blog(string username)
         {
             BlogViewModel model = new BlogViewModel();
             // The blog is the main site's blog
             if (string.IsNullOrEmpty(username))
             {
-                ViewBag.Title = Config.BlogConfig.Title + " - " + Config.Title;
-                ViewBag.Description = Config.BlogConfig.Description;
+                ViewBag.Title = _config.BlogConfig.Title;
+                ViewBag.Description = _config.BlogConfig.Description;
                 bool isAuth = User.IsInRole("Admin");
-                var foundPosts = db.BlogPosts.Where(p => ((p.System || isAuth) && p.Published));
                 model = new BlogViewModel();
-                model.BlogId = Config.BlogConfig.ServerBlogId;
+                model.BlogId = _config.BlogConfig.ServerBlogId;
 
-                User user = (User.IsInRole("Admin")) ? UserHelper.GetUser(db, User.Identity.Name) : null;
+                User user = (User.IsInRole("Admin")) ? UserHelper.GetUser(_dbContext, User.Identity.Name) : null;
                 model.UserId = (user != null) ? user.UserId : 0;
                 model.User = user;
-                model.Title = Config.BlogConfig.Title;
-                model.Description = Config.BlogConfig.Description;
-                model.HasPosts = (foundPosts != null && foundPosts.Any());
+                model.Title = _config.BlogConfig.Title;
+                model.Description = _config.BlogConfig.Description;
+                var posts = _dbContext.BlogPosts
+                                            .Include(p => p.Blog)
+                                            .Include(p => p.Blog.User)
+                                            .Include(p => p.Comments)
+                                            .Include(p => p.Tags)
+                                            .Where(p => (p.System || isAuth) && p.Published).OrderByDescending(p => p.DatePosted)
+                                            .OrderByDescending(p => p.DatePosted)
+                                            .Take(_config.BlogConfig.PostsToLoad).ToList();
+
+                List<PostViewModel> postViews = new List<PostViewModel>();
+                if (posts != null)
+                {
+                    foreach (BlogPost post in posts)
+                    {
+                        postViews.Add(new PostViewModel(post));
+                    }
+                }
+                model.Posts = postViews;
 
                 return View(model);
             }
             else // A user specific blog
             {
-                Models.Blog blog = db.Blogs.Where(p => p.User.Username == username && p.BlogId != Config.BlogConfig.ServerBlogId).FirstOrDefault();
+                Models.Blog blog = _dbContext.Blogs
+                                                .Include(b => b.User)
+                                                .Include(b => b.User.BlogSettings)
+                                                .Where(p => p.User.Username == username && p.BlogId != _config.BlogConfig.ServerBlogId)
+                                                .FirstOrDefault();
                 // find the blog specified
                 if (blog != null)
                 {
-                    ViewBag.Title = blog.User.Username + "'s Blog - " + Config.Title;
+                    ViewBag.Title = blog.User.Username + "'s Blog";
                     if (!string.IsNullOrEmpty(blog.User.BlogSettings.Title))
                     {
-                        ViewBag.Title = blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                        ViewBag.Title = blog.User.BlogSettings.Title;
                     }
                     ViewBag.Description = blog.User.BlogSettings.Description;
                     bool isAuth = User.IsInRole("Admin");
-                    var foundPosts = db.BlogPosts.Where(p => (p.BlogId == blog.BlogId && !p.System) && 
-                                                                                                    (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
                     model = new BlogViewModel();
                     model.BlogId = blog.BlogId;
                     model.UserId = blog.UserId;
                     model.User = blog.User;
                     model.Title = blog.User.BlogSettings.Title;
                     model.Description = blog.User.BlogSettings.Description;
-                    model.HasPosts = (foundPosts != null);
+                    var posts = _dbContext.BlogPosts
+                                    .Include(p => p.Blog)
+                                    .Include(p => p.Blog.User)
+                                    .Include(p => p.Comments)
+                                    .Include(p => p.Tags)
+                                    .Where(p => (p.BlogId == blog.BlogId && !p.System) && (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth))
+                                    .OrderByDescending(p => p.DatePosted)
+                                    .Take(_config.BlogConfig.PostsToLoad).ToList();
+                    
+                    List<PostViewModel> postViews = new List<PostViewModel>();
+                    if (posts != null)
+                    {
+                        foreach (BlogPost post in posts)
+                        {
+                            postViews.Add(new PostViewModel(post));
+                        }
+                    }
+                    model.Posts = postViews;
 
                     return View(model);
                 }
@@ -79,35 +118,40 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         #region Posts
-        [TrackPageView]
         [AllowAnonymous]
-        public ActionResult Post(string username, int id)
+        public IActionResult Post(string username, int id)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
             PostViewModel model = new PostViewModel();
             // find the post specified
             bool isAuth = User.IsInRole("Admin");
-            var post = db.BlogPosts.Where(p => p.BlogPostId == id && (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+            var post = _dbContext.BlogPosts
+                                    .Include(p => p.Blog)
+                                    .Include(p => p.Blog.User)
+                                    .Include(p => p.Comments)
+                                    .Include(p => p.Tags)
+                                    .Where(p => p.BlogPostId == id && (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth))
+                                    .FirstOrDefault();
             if (post != null)
             {
                 model = new PostViewModel(post);
 
                 if (post.System)
                 {
-                    ViewBag.Title = model.Title + " - " + Config.BlogConfig.Title + " - " + Config.Title;
-                    ViewBag.Description = Config.BlogConfig.Description;
+                    ViewBag.Title = model.Title + " | " + _config.BlogConfig.Title;
+                    ViewBag.Description = _config.BlogConfig.Description;
                 }
                 else
                 {
-                    ViewBag.Title = username + "'s Blog - " + Config.Title;
+                    ViewBag.Title = username + "'s Blog";
                     if (!string.IsNullOrEmpty(post.Blog.User.BlogSettings.Title))
                     {
-                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " | " + ViewBag.Title;
                     }
-                    ViewBag.Title = model.Title + " - " + ViewBag.Title;
+                    ViewBag.Title = model.Title + " | " + ViewBag.Title;
                     ViewBag.Description = post.Blog.User.BlogSettings.Description;
                 }
                 return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
@@ -117,27 +161,31 @@ namespace Teknik.Areas.Blog.Controllers
             return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
         }
         
-        public ActionResult NewPost(string username, int blogID)
+        public IActionResult NewPost(string username, int blogID)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
             BlogViewModel model = new BlogViewModel();
             // find the post specified
             bool isAuth = User.IsInRole("Admin");
-            var blog = db.Blogs.Where(p => (p.BlogId == blogID) && (p.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+            var blog = _dbContext.Blogs
+                                    .Include(b => b.User)
+                                    .Include(b => b.User.BlogSettings)
+                                    .Where(p => (p.BlogId == blogID) && (p.User.Username == User.Identity.Name || isAuth))
+                                    .FirstOrDefault();
             if (blog != null)
             {
                 model = new BlogViewModel(blog);
                 if (blog.User.Username == Constants.SERVERUSER)
                 {
-                    ViewBag.Title = "Create Post - " + Config.BlogConfig.Title + " - " + Config.Title;
-                    ViewBag.Description = Config.BlogConfig.Description;
+                    ViewBag.Title = "Create Post | " + _config.BlogConfig.Title;
+                    ViewBag.Description = _config.BlogConfig.Description;
                 }
                 else
                 {
-                    ViewBag.Title = username + "'s Blog - " + Config.Title;
+                    ViewBag.Title = username + "'s Blog | " + _config.Title;
                     if (!string.IsNullOrEmpty(blog.User.BlogSettings.Title))
                     {
                         ViewBag.Title = blog.User.BlogSettings.Title + " - " + ViewBag.Title;
@@ -151,34 +199,41 @@ namespace Teknik.Areas.Blog.Controllers
             model.ErrorMessage = "Blog does not exist.";
             return View("~/Areas/Blog/Views/Blog/Blog.cshtml", model);
         }
-        public ActionResult EditPost(string username, int id)
+
+        public IActionResult EditPost(string username, int id)
         {
             if (string.IsNullOrEmpty(username))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
             PostViewModel model = new PostViewModel();
             // find the post specified
             bool isAuth = User.IsInRole("Admin");
-            var post = db.BlogPosts.Where(p => (p.Blog.User.Username == username && p.BlogPostId == id) &&
-                                                                                        (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+            var post = _dbContext.BlogPosts
+                                    .Include(p => p.Blog)
+                                    .Include(p => p.Blog.User)
+                                    .Include(p => p.Comments)
+                                    .Include(p => p.Tags)
+                                    .Where(p => (p.Blog.User.Username == username && p.BlogPostId == id) &&
+                                                (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth))
+                                    .FirstOrDefault();
             if (post != null)
             {
                 model = new PostViewModel(post);
 
                 if (post.System)
                 {
-                    ViewBag.Title = "Edit Post - " + model.Title + " - " + Config.BlogConfig.Title + " - " + Config.Title;
-                    ViewBag.Description = Config.BlogConfig.Description;
+                    ViewBag.Title = "Edit Post | " + model.Title + " | " + _config.BlogConfig.Title;
+                    ViewBag.Description = _config.BlogConfig.Description;
                 }
                 else
                 {
-                    ViewBag.Title = username + "'s Blog - " + Config.Title;
+                    ViewBag.Title = username + "'s Blog";
                     if (!string.IsNullOrEmpty(post.Blog.User.BlogSettings.Title))
                     {
-                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " - " + ViewBag.Title;
+                        ViewBag.Title = post.Blog.User.BlogSettings.Title + " | " + ViewBag.Title;
                     }
-                    ViewBag.Title = "Edit Post - " + model.Title + " - " + ViewBag.Title;
+                    ViewBag.Title = "Edit Post | " + model.Title + " | " + ViewBag.Title;
                     ViewBag.Description = post.Blog.User.BlogSettings.Description;
                 }
                 return View("~/Areas/Blog/Views/Blog/EditPost.cshtml", model);
@@ -190,11 +245,20 @@ namespace Teknik.Areas.Blog.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult GetPosts(int blogID, int startPostID, int count)
+        public IActionResult GetPosts(int blogID, int startPostID, int count)
         {
             bool isAuth = User.IsInRole("Admin");
-            var posts = db.BlogPosts.Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == Config.BlogConfig.ServerBlogId)) && 
-                                                                                        (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth)).OrderByDescending(p => p.DatePosted).Skip(startPostID).Take(count).ToList();
+            var posts = _dbContext.BlogPosts
+                                    .Include(p => p.Blog)
+                                    .Include(p => p.Blog.User)
+                                    .Include(p => p.Comments)
+                                    .Include(p => p.Tags)
+                                    .Where(p => ((p.BlogId == blogID && !p.System) || (p.System && blogID == _config.BlogConfig.ServerBlogId)) && 
+                                                (p.Published || p.Blog.User.Username == User.Identity.Name || isAuth))
+                                    .OrderByDescending(p => p.DatePosted)
+                                    .Skip(startPostID)
+                                    .Take(count)
+                                    .ToList();
             List<PostViewModel> postViews = new List<PostViewModel>();
             if (posts != null)
             {
@@ -207,16 +271,16 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreatePost(CreatePostViewModel data)
+        public IActionResult CreatePost(CreatePostViewModel data)
         {
             BlogViewModel model = new BlogViewModel();
             if (ModelState.IsValid)
             {
                 bool isAuth = User.IsInRole("Admin");
-                var blog = db.Blogs.Where(p => (p.BlogId == data.BlogId) && (p.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
+                var blog = _dbContext.Blogs.Where(p => (p.BlogId == data.BlogId) && (p.User.Username == User.Identity.Name || isAuth)).FirstOrDefault();
                 if (blog != null)
                 {
-                    if (User.IsInRole("Admin") || db.Blogs.Where(b => b.User.Username == User.Identity.Name).FirstOrDefault() != null)
+                    if (User.IsInRole("Admin") || _dbContext.Blogs.Where(b => b.User.Username == User.Identity.Name).FirstOrDefault() != null)
                     {
                         // Validate the fields
                         if (string.IsNullOrEmpty(data.Title))
@@ -233,16 +297,16 @@ namespace Teknik.Areas.Blog.Controllers
                             return View("~/Areas/Blog/Views/Blog/NewPost.cshtml", model);
                         }
 
-                        bool system = (data.BlogId == Config.BlogConfig.ServerBlogId);
+                        bool system = (data.BlogId == _config.BlogConfig.ServerBlogId);
                         if (system)
                         {
-                            var user = db.Blogs.Where(b => b.User.Username == User.Identity.Name);
+                            var user = _dbContext.Blogs.Where(b => b.User.Username == User.Identity.Name);
                             if (user != null)
                             {
                                 data.BlogId = user.First().BlogId;
                             }
                         }
-                        BlogPost post = db.BlogPosts.Create();
+                        BlogPost post = new BlogPost();
                         post.BlogId = data.BlogId;
                         post.Title = data.Title;
                         post.Article = data.Article;
@@ -251,8 +315,8 @@ namespace Teknik.Areas.Blog.Controllers
                         post.DatePublished = DateTime.Now;
                         post.DateEdited = DateTime.Now;
 
-                        db.BlogPosts.Add(post);
-                        db.SaveChanges();
+                        _dbContext.BlogPosts.Add(post);
+                        _dbContext.SaveChanges();
                         return Redirect(Url.SubRouteUrl("blog", "Blog.Post", new { username = blog.User.Username, id = post.BlogPostId }));
                     }
                     model.Error = true;
@@ -269,12 +333,12 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditPost(EditPostViewModel data)
+        public IActionResult EditPost(EditPostViewModel data)
         {
             PostViewModel model = new PostViewModel();
             if (ModelState.IsValid)
             {
-                BlogPost post = db.BlogPosts.Where(p => p.BlogPostId == data.PostId).FirstOrDefault();
+                BlogPost post = _dbContext.BlogPosts.Where(p => p.BlogPostId == data.PostId).FirstOrDefault();
                 if (post != null)
                 {
                     model = new PostViewModel(post);
@@ -298,8 +362,8 @@ namespace Teknik.Areas.Blog.Controllers
                         post.Title = data.Title;
                         post.Article = data.Article;
                         post.DateEdited = DateTime.Now;
-                        db.Entry(post).State = EntityState.Modified;
-                        db.SaveChanges();
+                        _dbContext.Entry(post).State = EntityState.Modified;
+                        _dbContext.SaveChanges();
                         return Redirect(Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId }));
                     }
                     model.Error = true;
@@ -316,11 +380,11 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult PublishPost(int postID, bool publish)
+        public IActionResult PublishPost(int postID, bool publish)
         {
             if (ModelState.IsValid)
             {
-                BlogPost post = db.BlogPosts.Where(p => p.BlogPostId == postID).FirstOrDefault();
+                BlogPost post = _dbContext.BlogPosts.Where(p => p.BlogPostId == postID).FirstOrDefault();
                 if (post != null)
                 {
                     if (User.IsInRole("Admin") || post.Blog.User.Username == User.Identity.Name)
@@ -328,8 +392,8 @@ namespace Teknik.Areas.Blog.Controllers
                         post.Published = publish;
                         if (publish)
                             post.DatePublished = DateTime.Now;
-                        db.Entry(post).State = EntityState.Modified;
-                        db.SaveChanges();
+                        _dbContext.Entry(post).State = EntityState.Modified;
+                        _dbContext.SaveChanges();
                         return Json(new { result = true });
                     }
                     return Json(new { error = "You are not authorized to publish this post" });
@@ -340,17 +404,17 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeletePost(int postID)
+        public IActionResult DeletePost(int postID)
         {
             if (ModelState.IsValid)
             {
-                BlogPost post = db.BlogPosts.Where(p => p.BlogPostId == postID).FirstOrDefault();
+                BlogPost post = _dbContext.BlogPosts.Where(p => p.BlogPostId == postID).FirstOrDefault();
                 if (post != null)
                 {
                     if (User.IsInRole("Admin") || post.Blog.User.Username == User.Identity.Name)
                     {
-                        db.BlogPosts.Remove(post);
-                        db.SaveChanges();
+                        _dbContext.BlogPosts.Remove(post);
+                        _dbContext.SaveChanges();
                         return Json(new { result = true });
                     }
                     return Json(new { error = "You are not authorized to delete this post" });
@@ -364,9 +428,9 @@ namespace Teknik.Areas.Blog.Controllers
         #region Comments
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult GetComments(int postID, int startCommentID, int count)
+        public IActionResult GetComments(int postID, int startCommentID, int count)
         {
-            var comments = db.BlogComments.Where(p => (p.BlogPostId == postID)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
+            var comments = _dbContext.BlogPostComments.Where(p => (p.BlogPostId == postID)).OrderByDescending(p => p.DatePosted).Skip(startCommentID).Take(count).ToList();
             List<CommentViewModel> commentViews = new List<CommentViewModel>();
             if (comments != null)
             {
@@ -380,9 +444,9 @@ namespace Teknik.Areas.Blog.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult GetCommentArticle(int commentID)
+        public IActionResult GetCommentArticle(int commentID)
         {
-            BlogPostComment comment = db.BlogComments.Where(p => (p.BlogPostCommentId == commentID)).First();
+            BlogPostComment comment = _dbContext.BlogPostComments.Where(p => (p.BlogPostCommentId == commentID)).First();
             if (comment != null)
             {
                 return Json(new { result = comment.Article });
@@ -391,21 +455,21 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateComment(int postID, string article)
+        public IActionResult CreateComment(int postID, string article)
         {
             if (ModelState.IsValid)
             {
-                if (db.BlogPosts.Where(p => p.BlogPostId == postID).FirstOrDefault() != null)
+                if (_dbContext.BlogPosts.Where(p => p.BlogPostId == postID).FirstOrDefault() != null)
                 {
-                    BlogPostComment comment = db.BlogComments.Create();
+                    BlogPostComment comment = new BlogPostComment();
                     comment.BlogPostId = postID;
-                    comment.UserId = UserHelper.GetUser(db, User.Identity.Name).UserId;
+                    comment.UserId = UserHelper.GetUser(_dbContext, User.Identity.Name).UserId;
                     comment.Article = article;
                     comment.DatePosted = DateTime.Now;
                     comment.DateEdited = DateTime.Now;
 
-                    db.BlogComments.Add(comment);
-                    db.SaveChanges();
+                    _dbContext.BlogPostComments.Add(comment);
+                    _dbContext.SaveChanges();
                     return Json(new { result = true });
                 }
                 return Json(new { error = "The post does not exist" });
@@ -414,19 +478,19 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditComment(int commentID, string article)
+        public IActionResult EditComment(int commentID, string article)
         {
             if (ModelState.IsValid)
             {
-                BlogPostComment comment = db.BlogComments.Where(c => c.BlogPostCommentId == commentID).FirstOrDefault();
+                BlogPostComment comment = _dbContext.BlogPostComments.Where(c => c.BlogPostCommentId == commentID).FirstOrDefault();
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
                     {
                         comment.Article = article;
                         comment.DateEdited = DateTime.Now;
-                        db.Entry(comment).State = EntityState.Modified;
-                        db.SaveChanges();
+                        _dbContext.Entry(comment).State = EntityState.Modified;
+                        _dbContext.SaveChanges();
                         return Json(new { result = true });
                     }
                     return Json(new { error = "You don't have permission to edit this comment" });
@@ -437,17 +501,17 @@ namespace Teknik.Areas.Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeleteComment(int commentID)
+        public IActionResult DeleteComment(int commentID)
         {
             if (ModelState.IsValid)
             {
-                BlogPostComment comment = db.BlogComments.Where(c => c.BlogPostCommentId == commentID).FirstOrDefault();
+                BlogPostComment comment = _dbContext.BlogPostComments.Where(c => c.BlogPostCommentId == commentID).FirstOrDefault();
                 if (comment != null)
                 {
                     if (comment.User.Username == User.Identity.Name || User.IsInRole("Admin"))
                     {
-                        db.BlogComments.Remove(comment);
-                        db.SaveChanges();
+                        _dbContext.BlogPostComments.Remove(comment);
+                        _dbContext.SaveChanges();
                         return Json(new { result = true });
                     }
                     return Json(new { error = "You don't have permission to delete this comment" });

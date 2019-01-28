@@ -1,70 +1,80 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using System.Threading.Tasks;
 using Teknik.Areas.Admin.ViewModels;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Attributes;
+using Teknik.Configuration;
 using Teknik.Controllers;
+using Teknik.Data;
 using Teknik.Filters;
 using Teknik.Models;
 using Teknik.Utilities;
 using Teknik.ViewModels;
+using Teknik.Logging;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace Teknik.Areas.Admin.Controllers
 {
-    [TeknikAuthorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
+    [Area("Admin")]
     public class AdminController : DefaultController
     {
-        private TeknikEntities db = new TeknikEntities();
+        public AdminController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base (logger, config, dbContext) { }
 
         [HttpGet]
-        [TrackPageView]
-        public ActionResult Dashboard()
+        public IActionResult Dashboard()
         {
             DashboardViewModel model = new DashboardViewModel();
             return View(model);
         }
 
         [HttpGet]
-        [TrackPageView]
-        public ActionResult UserSearch()
+        public IActionResult UserSearch()
         {
             UserSearchViewModel model = new UserSearchViewModel();
             return View(model);
         }
 
         [HttpGet]
-        [TrackPageView]
-        public ActionResult UserInfo(string username)
+        public async Task<IActionResult> UserInfo(string username)
         {
-            if (UserHelper.UserExists(db, username))
+            if (UserHelper.UserExists(_dbContext, username))
             {
-                User user = UserHelper.GetUser(db, username);
+                User user = UserHelper.GetUser(_dbContext, username);
                 UserInfoViewModel model = new UserInfoViewModel();
                 model.Username = user.Username;
-                model.AccountType = user.AccountType;
-                model.AccountStatus = user.AccountStatus;
+
+                // Get Identity User Info
+                var info = await IdentityHelper.GetIdentityUserInfo(_config, username);
+                if (info.AccountType.HasValue)
+                    model.AccountType = info.AccountType.Value;
+                if (info.AccountStatus.HasValue)
+                    model.AccountStatus = info.AccountStatus.Value;
                 return View(model);
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpGet]
-        public ActionResult UploadSearch()
+        public IActionResult UploadSearch()
         {
             UploadSearchViewModel model = new UploadSearchViewModel();
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult GetUserSearchResults(string query)
+        public async Task<IActionResult> GetUserSearchResults(string query, [FromServices] ICompositeViewEngine viewEngine)
         {
             List<UserResultViewModel> models = new List<UserResultViewModel>();
 
-            var results = db.Users.Where(u => u.Username.Contains(query)).ToList();
+            var results = _dbContext.Users.Where(u => u.Username.Contains(query)).ToList();
             if (results != null)
             {
                 foreach (User user in results)
@@ -73,28 +83,33 @@ namespace Teknik.Areas.Admin.Controllers
                     {
                         UserResultViewModel model = new UserResultViewModel();
                         model.Username = user.Username;
-                        if (Config.EmailConfig.Enabled)
+                        if (_config.EmailConfig.Enabled)
                         {
-                            model.Email = string.Format("{0}@{1}", user.Username, Config.EmailConfig.Domain);
+                            model.Email = string.Format("{0}@{1}", user.Username, _config.EmailConfig.Domain);
                         }
-                        model.JoinDate = user.JoinDate;
-                        model.LastSeen = UserHelper.GetLastAccountActivity(db, Config, user);
+                        var info = await IdentityHelper.GetIdentityUserInfo(_config, user.Username);
+                        if (info.CreationDate.HasValue)
+                            model.JoinDate = info.CreationDate.Value;
+
+                        model.LastSeen = await UserHelper.GetLastAccountActivity(_dbContext, _config, user.Username);
                         models.Add(model);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         // Skip this result
                     }
                 }
             }
 
-            return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UserResults.cshtml", models).RenderToString() } });
+            string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/Admin/Views/Admin/UserResults.cshtml", models);
+
+            return Json(new { result = new { html = renderedView } });
         }
 
         [HttpPost]
-        public ActionResult GetUploadSearchResults(string url)
+        public async Task<IActionResult> GetUploadSearchResults(string url, [FromServices] ICompositeViewEngine viewEngine)
         {
-            Upload.Models.Upload foundUpload = db.Uploads.Where(u => u.Url == url).FirstOrDefault();
+            Upload.Models.Upload foundUpload = _dbContext.Uploads.Where(u => u.Url == url).FirstOrDefault();
             if (foundUpload != null)
             {
                 UploadResultViewModel model = new UploadResultViewModel();
@@ -107,70 +122,73 @@ namespace Teknik.Areas.Admin.Controllers
                 model.DeleteKey = foundUpload.DeleteKey;
                 model.Username = foundUpload.User?.Username;
 
-                return Json(new { result = new { html = PartialView("~/Areas/Admin/Views/Admin/UploadResult.cshtml", model).RenderToString() } });
+                string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/Admin/Views/Admin/UploadResult.cshtml", model);
+
+                return Json(new { result = new { html = renderedView } });
             }
             return Json(new { error = new { message = "Upload does not exist" } });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditUserAccountType(string username, AccountType accountType)
+        public async Task<IActionResult> EditUserAccountType(string username, AccountType accountType)
         {
-            if (UserHelper.UserExists(db, username))
+            if (UserHelper.UserExists(_dbContext, username))
             {
                 // Edit the user's account type
-                UserHelper.EditAccountType(db, Config, username, accountType);
+                await UserHelper.EditAccountType(_dbContext, _config, username, accountType);
                 return Json(new { result = new { success = true } });
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditUserAccountStatus(string username, AccountStatus accountStatus)
+        public async Task<IActionResult> EditUserAccountStatus(string username, AccountStatus accountStatus)
         {
-            if (UserHelper.UserExists(db, username))
+            if (UserHelper.UserExists(_dbContext, username))
             {
                 // Edit the user's account type
-                UserHelper.EditAccountStatus(db, Config, username, accountStatus);
+                await UserHelper.EditAccountStatus(_dbContext, _config, username, accountStatus);
                 return Json(new { result = new { success = true } });
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateInviteCode(string username)
+        public IActionResult CreateInviteCode(string username)
         {
-            if (UserHelper.UserExists(db, username))
+            InviteCode inviteCode = new InviteCode();
+            inviteCode.Active = true;
+            inviteCode.Code = Guid.NewGuid().ToString();
+
+            if (!string.IsNullOrEmpty(username))
             {
-                User user = UserHelper.GetUser(db, username);
-                InviteCode inviteCode = db.InviteCodes.Create();
-                inviteCode.Active = true;
-                inviteCode.Code = Guid.NewGuid().ToString();
+                if (!UserHelper.UserExists(_dbContext, username))
+                {
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
+                }
+                User user = UserHelper.GetUser(_dbContext, username);
                 inviteCode.Owner = user;
-                db.InviteCodes.Add(inviteCode);
-                db.SaveChanges();
-
-                return Json(new { result = new { code = inviteCode.Code } });
             }
-            return Redirect(Url.SubRouteUrl("error", "Error.Http404"));
+            _dbContext.InviteCodes.Add(inviteCode);
+            _dbContext.SaveChanges();
+
+            return Json(new { result = new { code = inviteCode.Code } });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteAccount(string username)
+        public async Task<IActionResult> DeleteAccount(string username)
         {
             try
             {
-                using (TeknikEntities db = new TeknikEntities())
+                User user = UserHelper.GetUser(_dbContext, username);
+                if (user != null)
                 {
-                    User user = UserHelper.GetUser(db, username);
-                    if (user != null)
-                    {
-                        UserHelper.DeleteAccount(db, Config, user);
-                        return Json(new { result = true });
-                    }
+                    await UserHelper.DeleteAccount(_dbContext, _config, user);
+                    return Json(new { result = true });
                 }
             }
             catch (Exception ex)

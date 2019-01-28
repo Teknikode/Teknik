@@ -1,0 +1,39 @@
+﻿@model ViewModelBase
+
+@{
+    string logoPath = "/images/logo-blue.svg";
+
+    // If we are using a CDN, let's replace it
+    if (Config.UseCdn)
+    {
+        if (!string.IsNullOrEmpty(Config.CdnHost))
+        {
+            logoPath = Config.CdnHost.TrimEnd('/') + logoPath;
+        }
+    }
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <div class="row">
+                <img src="@logoPath" class="img-responsive center-block" alt="Teknik">
+            </div>
+            <br />
+            <div class="col-md-6 col-md-offset-3">
+                <h2>Welcome to the Teknik Identity Server</h2>
+                <p>
+                    You can view our <a href="~/.well-known/openid-configuration">discovery document</a>
+                    where you can find metadata and links to all the endpoints, key material, etc.
+                </p>
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+            <div class="col-md-10 col-md-offset-1">
+                <a class="btn btn-default" href="@Url.Action("Index", "Grants")">View Granted Clients</a>
+                <a class="btn btn-default" href="@Url.Action("Logout", "Account")">Logout</a>
+            </div>
+            }
+        </div>
+    </div>
+</div>

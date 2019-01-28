@@ -7,15 +7,16 @@ using Teknik.Configuration;
 using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Utilities.Cryptography;
+using Teknik.Data;
+using System.IO;
 
 namespace Teknik.Areas.Paste
 {
     public static class PasteHelper
     {
-        public static Models.Paste CreatePaste(TeknikEntities db, string content, string title = "", string syntax = "text", string expireUnit = "never", int expireLength = 1, string password = "", bool hide = false)
+        public static Models.Paste CreatePaste(Config config, TeknikEntities db, string content, string title = "", string syntax = "text", ExpirationUnit expireUnit = ExpirationUnit.Never, int expireLength = 1, string password = "")
         {
-            Config config = Config.Load();
-            Models.Paste paste = db.Pastes.Create();
+            Models.Paste paste = new Models.Paste();
             paste.DatePosted = DateTime.Now;
             paste.MaxViews = 0;
             paste.Views = 0;
@@ -29,56 +30,65 @@ namespace Teknik.Areas.Paste
             paste.Url = url;
 
             // Figure out the expire date (null if 'never' or 'visit')
-            switch (expireUnit.ToLower())
+            switch (expireUnit)
             {
-                case "never":
+                case ExpirationUnit.Never:
                     break;
-                case "view":
+                case ExpirationUnit.Views:
                     paste.MaxViews = expireLength;
                     break;
-                case "minute":
+                case ExpirationUnit.Minutes:
                     paste.ExpireDate = paste.DatePosted.AddMinutes(expireLength);
                     break;
-                case "hour":
+                case ExpirationUnit.Hours:
                     paste.ExpireDate = paste.DatePosted.AddHours(expireLength);
                     break;
-                case "day":
+                case ExpirationUnit.Days:
                     paste.ExpireDate = paste.DatePosted.AddDays(expireLength);
                     break;
-                case "month":
+                case ExpirationUnit.Months:
                     paste.ExpireDate = paste.DatePosted.AddMonths(expireLength);
                     break;
-                case "year":
+                case ExpirationUnit.Years:
                     paste.ExpireDate = paste.DatePosted.AddYears(expireLength);
                     break;
                 default:
                     break;
             }
 
-            // Set the hashed password if one is provided and encrypt stuff
-            if (!string.IsNullOrEmpty(password))
+            if (!Directory.Exists(config.PasteConfig.PasteDirectory))
             {
-                string key = StringHelper.RandomString(config.PasteConfig.KeySize / 8);
-                string iv = StringHelper.RandomString(config.PasteConfig.BlockSize / 16);
-                paste.HashedPassword = SHA384.Hash(key, password).ToHex();
-
-                // Encrypt Content
-                byte[] data = Encoding.Unicode.GetBytes(content);
-                byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
-                byte[] keyBytes = AesCounterManaged.CreateKey(password, ivBytes, config.PasteConfig.KeySize);
-                byte[] encData = AesCounterManaged.Encrypt(data, keyBytes, ivBytes);
-                content = Convert.ToBase64String(encData);
-
-                paste.Key = key;
-                paste.KeySize = config.PasteConfig.KeySize;
-                paste.IV = iv;
-                paste.BlockSize = config.PasteConfig.BlockSize;
+                Directory.CreateDirectory(config.PasteConfig.PasteDirectory);
             }
 
-            paste.Content = content;
+            // Generate a unique file name that does not currently exist
+            string filePath = FileHelper.GenerateRandomFileName(config.PasteConfig.PasteDirectory, config.PasteConfig.FileExtension, 10);
+            string fileName = Path.GetFileName(filePath);
+
+            string key = GenerateKey(config.PasteConfig.KeySize);
+            string iv = GenerateIV(config.PasteConfig.BlockSize);
+
+            if (!string.IsNullOrEmpty(password))
+            {
+                paste.HashedPassword = HashPassword(key, password);
+            }
+
+            // Encrypt the contents to the file
+            EncryptContents(content, filePath, password, key, iv, config.PasteConfig.KeySize, config.PasteConfig.ChunkSize);
+
+            // Generate a deletion key
+            string delKey = StringHelper.RandomString(config.PasteConfig.DeleteKeyLength);
+
+            paste.Key = key;
+            paste.KeySize = config.PasteConfig.KeySize;
+            paste.IV = iv;
+            paste.BlockSize = config.PasteConfig.BlockSize;
+
+            paste.FileName = fileName;
+            //paste.Content = content;
             paste.Title = title;
             paste.Syntax = syntax;
-            paste.Hide = hide;
+            paste.DeleteKey = delKey;
 
             return paste;
         }
@@ -91,6 +101,40 @@ namespace Teknik.Areas.Paste
                 return true;
 
             return false;
+        }
+
+        public static string GenerateKey(int keySize)
+        {
+            return StringHelper.RandomString(keySize / 8);
+        }
+
+        public static string GenerateIV(int ivSize)
+        {
+            return StringHelper.RandomString(ivSize / 16);
+        }
+
+        public static string HashPassword(string key, string password)
+        {
+            return SHA384.Hash(key, password).ToHex();
+        }
+
+        public static void EncryptContents(string content, string filePath, string password, string key, string iv, int keySize, int chunkSize)
+        {
+            byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
+            byte[] keyBytes = AesCounterManaged.CreateKey(key, ivBytes, keySize);
+
+            // Set the hashed password if one is provided and modify the key
+            if (!string.IsNullOrEmpty(password))
+            {
+                keyBytes = AesCounterManaged.CreateKey(password, ivBytes, keySize);
+            }
+
+            // Encrypt Content
+            byte[] data = Encoding.Unicode.GetBytes(content);
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                AesCounterManaged.EncryptToFile(filePath, ms, chunkSize, keyBytes, ivBytes);
+            }
         }
     }
 }

@@ -1,37 +1,36 @@
 @model Teknik.Areas.Upload.ViewModels.UploadViewModel
 
-@using Teknik.Utilities
 @using Teknik.Areas.Vault.Models
 
 @{
-    long maxUploadSize = Model.Config.UploadConfig.MaxUploadSize;
+    long maxUploadSize = Config.UploadConfig.MaxUploadSize;
     if (User.Identity.IsAuthenticated)
     {
-        maxUploadSize = Model.Config.UploadConfig.MaxUploadSizeBasic;
-        if (User.Info.AccountType == AccountType.Premium)
-        {
-            maxUploadSize = Model.Config.UploadConfig.MaxUploadSizePremium;
-        }
+        maxUploadSize = Config.UploadConfig.MaxUploadSizeBasic;
+        //if (User.Info.AccountType == AccountType.Premium)
+        //{
+        //    maxUploadSize = Config.UploadConfig.MaxUploadSizePremium;
+        //}
     }
 }
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
-    var encScriptSrc = '@Scripts.Url("~/bundles/cryptoWorker")';
-    var aesScriptSrc = '@Scripts.Url("~/bundles/crypto")';
+<script>
+    var encScriptSrc = '@Url.FullURL("~/js/cryptoWorker.min.js")';
+    var aesScriptSrc = '@Url.FullURL("~/js/crypto.min.js")';
     var uploadFileURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action = "Upload" })';
     var maxUploadSize = @maxUploadSize;
-    var chunkSize = @Model.Config.UploadConfig.ChunkSize;
-    var keySize = @Model.Config.UploadConfig.KeySize;
-    var blockSize = @Model.Config.UploadConfig.BlockSize;
+    var chunkSize = @Config.UploadConfig.ChunkSize;
+    var keySize = @Config.UploadConfig.KeySize;
+    var blockSize = @Config.UploadConfig.BlockSize;
     var shortenURL = '@Url.SubRouteUrl("shorten", "Shortener.Action", new { action = "ShortenUrl" })';
     var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.NewVaultFromService", new { type = "Upload" })';
 </script>
 
-@Styles.Render("~/Content/upload")
+<bundle src="css/upload.min.css" append-version="true" />
 
 <div class="container">
     <div class="row text-center">
-        <div class="col-sm-8 col-sm-offset-2">
+        <div class="col-sm-10 col-sm-offset-1">
             <div class="row text-center">
                 <div class="well well-lg text-center" id="uploadButton" style="cursor: pointer">
                     <div class="row">
@@ -41,24 +40,19 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <h2>Or just click here</h2>
+                            <h2>Or paste them</h2>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <h3>Your Choice</h3>
+                            <h3>Or click</h3>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-sm-2">
-            <div class="row">
-                <div class="col-sm-12">
-                    <label for="encrypt">Encrypt in Browser</label>
-                    <input type="checkbox" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
-                </div>
-            </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#uploadSettings"><i class="fa fa-gear"></i></button>
         </div>
     </div>
     <div class="row" id="upload-action-buttons" style="display: none">
@@ -84,18 +78,61 @@
     <br />
     <div class="well text-center">
         <p>
-            Each file is encrypted on upload using an AES-256-CTR cipher.
-        </p>
-        <p>
-            To view the file decrypted, you must use the direct Teknik link in a javascript enabled browser.
-        </p>
-        <p>
             The maximum file size per upload is <b>@StringHelper.GetBytesReadable(maxUploadSize)</b>
+        </p>
+        <p>
+            Each file is encrypted after upload using an AES-256-CTR cipher.  You can encrypt it within your browser for extra security by setting the option <strong>Encrypt in Browser</strong> in the options pane.
         </p>
     </div>
     <div class="text-center">
         Useful Tools: <a href="@Url.SubRouteUrl("help", "Help.Tools")">Upload Scripts and Utilities</a>
     </div>
+</div>
+
+<div class="modal fade" id="uploadSettings" tabindex="-1" role="dialog" aria-labelledby="uploadSettingsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <h4 class="text-center">Encrypt in Browser</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <input type="checkbox" class="center-block" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
+                            </div>
+                        </div>
+                    </div>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <h4 class="text-center">Expiration</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 hidden" id="length-div">
+                                <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
+                            </div>
+                            <div class="col-sm-12" id="unit-div">
+                                <select class="form-control" name="expireunit" id="expireunit">
+                                    @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+                                    {
+                                        <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+     </div>
 </div>
 
 <div id="templates" style="display: none">
@@ -114,13 +151,15 @@
                     <div class="row" id="upload-link-panel">
                         <input type="hidden" id="upload-url" />
                         <div class="col-sm-8">
-                            <dl class="dl-horizontal">
+                            <dl class="dl-horizontal" style="margin-bottom: 0;">
                                 <dt>Url</dt>
                                 <dd><a href="#" id="upload-link" target="_blank" class="alert-link"></a></dd>
                                 <dt>Content-Type</dt>
                                 <dd id="upload-contentType"></dd>
                                 <dt>File Size</dt>
                                 <dd id="upload-contentLength"></dd>
+                                <dt>Expiration</dt>
+                                <dd id="upload-expiration"></dd>
                             </dl>
                         </div>
                         <div class="col-sm-4">
@@ -152,4 +191,4 @@
     </div>
 </div>
 
-@Scripts.Render("~/bundles/upload")
+<bundle src="js/upload.min.js" append-version="true" />

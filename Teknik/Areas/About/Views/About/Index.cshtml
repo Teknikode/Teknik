@@ -1,7 +1,5 @@
 @model Teknik.Areas.About.ViewModels.AboutViewModel
 
-@using Teknik.Utilities
-
 @{ 
     string lifetimeAccount = "The account will not get deleted for inactivity as defined in the ToS";
     string apiAccountAccess = "Passing user credentials allows linking for Uploads/Pastes/Shortened URLs and other account specific features";
@@ -28,14 +26,14 @@
                         <!-- Heading -->
                         <tr>
                             <th class="text-center"></th>
-                            <th class="text-center"><a href="@Url.SubRouteUrl("user", "User.GetPremium")">Premium Account</a></th>
-                            <th class="text-center"><a href="@Url.SubRouteUrl("user", "User.Register")">Basic Account</a></th>
+                            <th class="text-center"><a href="@Url.SubRouteUrl("account", "User.GetPremium")">Premium Account</a></th>
+                            <th class="text-center"><a href="@Url.SubRouteUrl("account", "User.Register")">Basic Account</a></th>
                             <th class="text-center">No Account</th>
                         </tr>
                         <!-- Prices -->
                         <tr>
                             <td class="text-left"></td>
-                            <td class="text-center">$@Model.Config.UserConfig.PremiumAccountPrice @Model.Config.UserConfig.PaymentType</td>
+                            <td class="text-center">$@Config.UserConfig.PremiumAccountPrice @Config.UserConfig.PaymentType</td>
                             <td class="text-center">Free</td>
                             <td class="text-center">Free</td>
                         </tr>
@@ -47,24 +45,12 @@
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
                         </tr>
                         <tr>
-                            <td class="text-left">Email Storage</td>
-                            <td class="text-center">5GB Storage</td>
-                            <td class="text-center">1GB Storage</td>
+                            <td class="text-left">Email Account</td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
-                        </tr>
-                        <tr>
-                            <td class="text-left">Outbound Emails</td>
-                            <td class="text-center">Unlimited</td>
-                            <td class="text-center">100 per Day</td>
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
                         </tr>
                         <!-- Basic Features -->
-                        <tr>
-                            <td class="text-left">Email Account</td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
-                        </tr>
                         <tr>
                             <td class="text-left">Git Repositories</td>
                             <td class="text-center">Unlimited Public &amp; Private Repos</td>
@@ -78,14 +64,14 @@
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
                         </tr>
                         <tr>
-                            <td class="text-left">Vault Editing</td>
+                            <td class="text-left">Vault and Paste Editing</td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
                         </tr>
                         <tr>
                             <td class="text-left">
-                                View Content History:
+                                View and Delete Previous Content:
                                 <br />
                                 <ul>
                                     <li>Pastes</li>
@@ -103,37 +89,43 @@
                             <td class="text-left">Pastebin</td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                         </tr>
                         <tr>
                             <td class="text-left">File Uploads</td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                         </tr>
                         <tr>
                             <td class="text-left">Max Upload Filesize</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizePremium)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizeBasic)</td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSizePremium)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSizeBasic)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSize)</td>
                         </tr>
                         <tr>
                             <td class="text-left">Max Embedded Filesize</td>
                             <td class="text-center">Unlimited</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxDownloadSize)</td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxDownloadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxDownloadSize)</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Upload Expiration</td>
+                            <td class="text-center">Never</td>
+                            <td class="text-center">Never</td>
+                            <td class="text-center">24 Hours</td>
                         </tr>
                         <tr>
                             <td class="text-left">Url Shortening</td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                         </tr>
                         <tr>
                             <td class="text-left">Vault Creation</td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                         </tr>
                         <tr>
                             <td class="text-left">Technical Podcasts</td>

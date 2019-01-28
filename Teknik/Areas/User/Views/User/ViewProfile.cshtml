@@ -1,18 +1,13 @@
 @model Teknik.Areas.Users.ViewModels.ProfileViewModel
 
-@using Teknik.Utilities
 @using Teknik.Utilities.Cryptography
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
-    var generateDeleteKeyURL = '@Url.SubRouteUrl("u", "Upload.GenerateDeleteKey")';
-    var deleteVaultURL = '@Url.SubRouteUrl("v", "Vault.DeleteVault")';
-</script>
+@using Teknik.Areas.Users.Utility
 
 <div class="container">
     @if (!Model.Error)
     {
         bool OwnProfile = (Model.Username == User.Identity.Name || User.IsInRole("Admin")) && User.Identity.IsAuthenticated;
-        string gitHost = Model.Config.GitConfig.Host;
+        string gitHost = Config.GitConfig.Host;
         string gitFullUrl = string.Empty;
         if (!string.IsNullOrEmpty(gitHost))
         {
@@ -23,14 +18,14 @@
         string pgpFingerprint = pgpFingerprint = string.Empty;
         string pgpFingerprint64 = string.Empty;
 
-        if (!string.IsNullOrEmpty(Model.SecuritySettings.PGPSignature))
+        if (!string.IsNullOrEmpty(Model.IdentityUserInfo.PGPPublicKey))
         {
-            pgpFingerprint = PGP.GetFingerprint(Model.SecuritySettings.PGPSignature);
-            pgpFingerprint64 = PGP.GetFingerprint64(Model.SecuritySettings.PGPSignature);
+            pgpFingerprint = PGP.GetFingerprint(Model.IdentityUserInfo.PGPPublicKey);
+            pgpFingerprint64 = PGP.GetFingerprint64(Model.IdentityUserInfo.PGPPublicKey);
         }
 
         <div class="row text-center">
-            <div class="col-sm-3"><h1>@Model.Username</h1></div>
+            <div class="col-sm-4 @(string.IsNullOrEmpty(Model.UserSettings.About) ? "col-sm-offset-4" : "")"><h1>@Model.Username</h1></div>
         </div>
         if (User.IsInRole("Admin"))
         {
@@ -73,7 +68,7 @@
                         <br />
                         <div class="row">
                             <div class="col-sm-12">
-                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" readonly>@Model.SecuritySettings.PGPSignature</textarea>
+                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" readonly>@Model.IdentityUserInfo.PGPPublicKey</textarea>
                             </div>
                         </div>
                     </div>
@@ -82,28 +77,28 @@
         </div>
         <div class="row">
             <!-- Left Info Box -->
-            <div class="col-sm-3"><!--left col-->
+            <div class="col-sm-4 @(string.IsNullOrEmpty(Model.UserSettings.About) ? "col-sm-offset-4" : "")"><!--left col-->
                 <ul class="list-group">
-                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.LastSeen.ToString("s")">@Model.JoinDate.ToString("MMMM dd, yyyy")</time></li>
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.IdentityUserInfo.CreationDate?.ToString("s")">@Model.IdentityUserInfo.CreationDate?.ToString("MMMM dd, yyyy")</time></li>
                     @if (OwnProfile)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.LastSeen.ToString("s")">@Model.LastSeen.ToString("dd/MM/yyyy hh:mm tt")</time></li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.IdentityUserInfo.LastSeen?.ToString("s")">@Model.IdentityUserInfo.LastSeen?.ToString("dd/MM/yyyy hh:mm tt")</time></li>
                     }
                     @if (OwnProfile)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Type</strong></span> @Model.AccountType</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Type</strong></span> @Model.IdentityUserInfo.AccountType</li>
                     }
                     @if (User.IsInRole("Admin"))
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Status</strong></span> @Model.AccountStatus</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Status</strong></span> @Model.IdentityUserInfo.AccountStatus</li>
                     }
                     @if (!string.IsNullOrEmpty(pgpFingerprint))
                     {
                         <li class="list-group-item text-right"><span class="pull-left"><strong>Public Key</strong></span> <a href="#" data-toggle="modal" data-target="#pgpSignature">@pgpFingerprint64.AddStringAtInterval(4, " ")</a></li>
                     }
-                    @if (!string.IsNullOrEmpty(Model.Email) && Model.Config.EmailConfig.Enabled)
+                    @if (!string.IsNullOrEmpty(Model.Email) && Config.EmailConfig.Enabled && UserHelper.UserEmailEnabled(Config, Model.Email))
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> @(Html.Raw(User.Identity.IsAuthenticated ? $"<a href=\"mailto:{Model.Email}\">{Model.Email}</a>" : $"{Model.Username} at {Model.Config.EmailConfig.Domain}"))</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> @(Html.Raw(User.Identity.IsAuthenticated ? $"<a href=\"mailto:{Model.Email}\">{Model.Email}</a>" : $"{Model.Username} at {Config.EmailConfig.Domain}"))</li>
                     }
                     <li class="list-group-item text-right"><span class="pull-left"><strong>Blog</strong></span> <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = Model.Username })" id="blog_title">@(string.IsNullOrEmpty(Model.BlogSettings.Title) ? string.Format("{0}'s Blog", Model.Username) : Model.BlogSettings.Title)</a></li>
                     @if (!string.IsNullOrEmpty(gitFullUrl))
@@ -126,157 +121,20 @@
                 </div>
                 }
             </div><!--/col-3-->
+            @if (!string.IsNullOrEmpty(Model.UserSettings.About))
+            {
             <!-- Right Content Area -->
-            <div class="col-sm-9">
+            <div class="col-sm-8">
                 @if (OwnProfile)
                 {
-                <ul class="nav nav-tabs" id="myTab">
-                    <li><a href="#about" data-toggle="tab"> About Myself </a></li>
-                    <li><a href="#uploads" data-toggle="tab"> Uploads </a></li>
-                    <li><a href="#pastes" data-toggle="tab"> Pastes </a></li>
-                    <li><a href="#shortenedUrls" data-toggle="tab"> Shortened Urls </a></li>
-                    <li><a href="#vaults" data-toggle="tab"> Vaults </a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane active" id="about">
-                        <div class="col-sm-12" id="markdown_body">@Html.Markdown(@Model.UserSettings.About)</div>
-                    </div><!--/tab-pane-->
-                    @if (OwnProfile)
-                    {
-                    <div class="tab-pane" id="uploads" style="overflow-y: auto; max-height: 500px;">
-                        @foreach (Teknik.Areas.Upload.Models.Upload upload in Model.Uploads)
-                        {
-                        <div class="panel panel-default">
-                            <div class="panel-heading text-center">
-                                <a id="upload-url" href="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url })">@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url })</a>
-                            </div>
-                            <div class="panel-body">
-                                <div class="col-sm-2 text-center">
-                                    <label for="size">Size</label>
-                                    <p id="size">@StringHelper.GetBytesReadable(upload.ContentLength)</p>
-                                </div>
-                                <div class="col-sm-3 text-center">
-                                    <label for="type">Type</label>
-                                    <p id="type">@upload.ContentType</p>
-                                </div>
-                                <div class="col-sm-3 text-center">
-                                    <label for="dateUploaded">Date Uploaded</label>
-                                    <p id="dateUploaded"><time datetime="@upload.DateUploaded.ToString("s")">@upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
-                                </div>
-                                <div class="col-sm-2 text-center">
-                                    <label for="downloads">Downloads</label>
-                                    <p id="downloads">@upload.Downloads</p>
-                                </div>
-                                <div class="col-sm-2 text-center" style="overflow-x: hidden">
-                                    @{ 
-                                        string deleteUrl = (string.IsNullOrEmpty(upload.DeleteKey)) ? string.Empty : Url.SubRouteUrl("u", "Upload.Delete", new { file = upload.Url, key = upload.DeleteKey });
-                                    }
-                                    <p id="delete-upload"><button role="button" class="btn btn-danger delete-upload-button" id="@deleteUrl" data-upload-id="@upload.Url">Delete</button></p>
-                                </div>
-                            </div>
-                        </div>
-                        }
-                    </div><!--/tab-pane-->
-                    <div class="tab-pane" id="pastes" style="overflow-y: auto; max-height: 500px;">
-                        @foreach (Teknik.Areas.Paste.Models.Paste paste in Model.Pastes)
-                        {
-                            <div class="panel panel-default">
-                                <div class="panel-heading text-center">
-                                    <a href="@Url.SubRouteUrl("paste", "Paste.View", new { url = paste.Url })">@(string.IsNullOrEmpty(paste.Title) ? "Untitled Paste" : paste.Title)</a>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="col-sm-2 text-center">
-                                        <label for="syntax">Syntax</label>
-                                        <p id="syntax">@paste.Syntax</p>
-                                    </div>
-                                    <div class="col-sm-3 text-center">
-                                        <label for="datePosted">Date Posted</label>
-                                        <p id="datePosted"><time datetime="@paste.DatePosted.ToString("s")">@paste.DatePosted.ToString("MMMM dd, yyyy")</time></p>
-                                    </div>
-                                    <div class="col-sm-3 text-center">
-                                        <label for="expireDate">Expire Date</label>
-                                        @{ 
-                                            string expireDate = "Never";
-                                            if (paste.ExpireDate != null)
-                                            {
-                                                expireDate = "<time datetime=\"" + paste.ExpireDate.Value.ToString("s") + "\">" + paste.ExpireDate.Value.ToString("MMMM dd, yyyy") + "</time>";
-                                            }
-                                        }
-                                        <p id="expireDate">@Html.Raw(expireDate)</p>
-                                    </div>
-                                    <div class="col-sm-2 text-center">
-                                        <label for="maxViews">Max Views</label>
-                                        <p id="maxViews">@paste.MaxViews</p>
-                                    </div>
-                                    <div class="col-sm-2 text-center">
-                                        <label for="views">Views</label>
-                                        <p id="views">@paste.Views</p>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <div class="tab-pane" id="shortenedUrls" style="overflow-y: auto; max-height: 500px;">
-                        @foreach (Teknik.Areas.Shortener.Models.ShortenedUrl url in Model.ShortenedUrls)
-                        {
-                            string shortUrl = string.Format("{0}://{1}/{2}", Request.Url.Scheme, Model.Config.ShortenerConfig.ShortenerHost, url.ShortUrl);
-                            if (Model.Config.DevEnvironment)
-                            {
-                                shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = url.ShortUrl });
-                            }
-                            <div class="panel panel-default">
-                                <div class="panel-heading text-center">
-                                    <a href="@url.OriginalUrl">@url.OriginalUrl</a>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="col-sm-5 text-center">
-                                        <label for="shortUrl">Short Url</label>
-                                        <p id="shortUrl"><a href="@shortUrl">@shortUrl</a></p>
-                                    </div>
-                                    <div class="col-sm-5 text-center">
-                                        <label for="dateAdded">Date Added</label>
-                                        <p id="dateAdded"><time datetime="@url.DateAdded.ToString("s")">@url.DateAdded.ToString("MMMM dd, yyyy")</time></p>
-                                    </div>
-                                    <div class="col-sm-2 text-center">
-                                        <label for="views">Views</label>
-                                        <p id="views">@url.Views</p>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <div class="tab-pane" id="vaults" style="overflow-y: auto; max-height: 500px;">
-                        @foreach (Teknik.Areas.Vault.Models.Vault vault in Model.Vaults)
-                        {
-                            <div class="panel panel-default">
-                                <div class="panel-heading text-center">
-                                    <a href="@Url.SubRouteUrl("v", "Vault.ViewVault", new { id = vault.Url })">@(string.IsNullOrEmpty(vault.Title) ? "Vault" : vault.Title)</a>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="col-sm-5 text-center">
-                                        <label for="dateAdded">Date Created</label>
-                                        <p id="dateAdded"><time datetime="@vault.DateCreated.ToString("s")">@vault.DateCreated.ToString("MMMM dd, yyyy")</time></p>
-                                    </div>
-                                    <div class="col-sm-5 text-center">
-                                        <label for="dateAdded">Date Edited</label>
-                                        <p id="dateAdded"><time datetime="@vault.DateEdited.ToString("s")">@vault.DateEdited.ToString("MMMM dd, yyyy")</time></p>
-                                    </div>
-                                    <div class="col-sm-2 text-center">
-                                        <label for="views">Views</label>
-                                        <p id="views">@vault.Views</p>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                                            }
-                </div><!--/tab-content-->
+                        <div class="col-sm-12" id="markdown_body">@Html.Markdown(Model.UserSettings.About)</div>
                 }
                 else
                 {
-                    @Html.Markdown(@Model.UserSettings.About)
+                    @Html.Markdown(Model.UserSettings.About)
                 }
             </div><!--/col-9-->
+            }
         </div><!--/row-->
     }
     else
@@ -289,4 +147,4 @@
     }
 </div>
 
-@Scripts.Render("~/bundles/profile")
+<bundle src="js/user.profile.min.js" append-version="true"></bundle>

@@ -1,22 +1,18 @@
 @model Teknik.Areas.Admin.ViewModels.UserSearchViewModel
 
-@using Teknik.Utilities
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     // We need to define the action URLs for the script
     var userSearchResultsURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "GetUserSearchResults" })';
 </script>
 
-@Scripts.Render("~/bundles/UserSearch")
-
 <div class="container">
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-            <form>
+            <!form>
                 <div class="form-group center-block">
                     <input type="text" class="form-control" id="query" name="query" placeholder="Username" />
                 </div>
-            </form>
+            </!form>
         </div>
         <div class="col-sm-2">
             <button type="button" class="btn btn-info text-center" id="search">Search</button>
@@ -28,3 +24,5 @@
         </div>
     </div>
 </div>
+
+<bundle src="js/userInfo.min.js" append-version="true"></bundle>

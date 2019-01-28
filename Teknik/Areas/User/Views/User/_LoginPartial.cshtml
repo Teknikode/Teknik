@@ -1,52 +1,52 @@
-@model Teknik.ViewModels.ViewModelBase
-
-@using Teknik.Utilities
-@using Microsoft.AspNet.Identity
-
-@if (Model.Config.UserConfig.RegistrationEnabled || Model.Config.UserConfig.LoginEnabled)
+@if (Config.UserConfig.RegistrationEnabled || Config.UserConfig.LoginEnabled)
 {
 <div class="nav navbar-nav pull-right">
-    @if (Request.IsAuthenticated)
+    @if (User.Identity.IsAuthenticated)
     {
         <li class="dropdown">
             <a href="#" id="user_menu" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name <strong class="caret"></strong></a>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="user_menu">
-                <li>
-                    <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })">View Blog</a>
+            <ul class="dropdown-menu dropdown-left-manual" role="menu" aria-labelledby="user_menu">
+                <li class="text-center text-uppercase dropdown__username">Signed in as @User.Identity.Name</li>
+                <li role="separator" class="divider"></li>
+                <li is-active-route asp-controller="User" asp-action="ViewProfile">
+                    <a href="@Url.SubRouteUrl("user", "User.ViewProfile", new { username = User.Identity.Name })"><i class="fa fa-user fa-fw"></i>&nbsp;&nbsp;Profile</a>
                 </li>
-                <li>
-                    <a href="@Url.SubRouteUrl("user", "User.ViewProfile", new { username = User.Identity.Name })">Profile</a>
+                <li is-active-route asp-controller="Blog" asp-action="Blog" asp-route-username="@User.Identity.Name">
+                    <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })"><i class="fa fa-book fa-fw"></i>&nbsp;&nbsp;View Blog</a>
                 </li>
-                <li>
-                    <a href="@Url.SubRouteUrl("user", "User.Settings")">Settings</a>
+                <li is-active-route asp-controller="User" asp-action="ViewServiceData">
+                    <a href="@Url.SubRouteUrl("account", "User.ViewServiceData")"><i class="fa fa-database fa-fw"></i>&nbsp;&nbsp;Service Data</a>
+                </li>
+                <li is-active-route asp-controller="User" asp-action="Settings">
+                    <a href="@Url.SubRouteUrl("account", "User.Settings")"><i class="fa fa-sliders fa-fw"></i>&nbsp;&nbsp;Settings</a>
                 </li>
                 @if (User.IsInRole("Admin"))
                 {
-                    <li>
-                        <a href="@Url.SubRouteUrl("admin", "Admin.Dashboard")">Administration</a>
+                    <li role="separator" class="divider"></li>
+                    <li is-active-route asp-controller="Admin" asp-action="Dashboard">
+                        <a href="@Url.SubRouteUrl("admin", "Admin.Dashboard")"><i class="fa fa-cogs fa-fw"></i>&nbsp;&nbsp;Administration</a>
                     </li>
                 }
+                <li role="separator" class="divider"></li>
                 <li>
-                    <a href="@Url.SubRouteUrl("user", "User.Logout")">Sign Out</a>
+                    <a href="@Url.SubRouteUrl("account", "User.Logout")"><i class="fa fa-sign-out fa-fw"></i>&nbsp;&nbsp;Log Out</a>
                 </li>
             </ul>
         </li>
     }
     else
     {
-        if (Model.Config.UserConfig.RegistrationEnabled)
+        if (Config.UserConfig.RegistrationEnabled)
         {
-            <button id="registerButton" data-toggle="modal" data-target="#registerModal" class="btn btn-default navbar-btn hide">Sign Up</button>
+            <button id="registerButton" data-toggle="modal" data-target="#registerModal" class="btn btn-default navbar-btn hide">Register</button>
             <noscript>
-                <a href="@Url.SubRouteUrl("user", "User.Register")" class="btn btn-default navbar-btn">Sign Up</a>
+                <a href="@Url.SubRouteUrl("account", "User.Register")" class="btn btn-default navbar-btn">Register</a>
             </noscript>
         }
-        if (Model.Config.UserConfig.LoginEnabled)
+        if (Config.UserConfig.LoginEnabled)
         {
-            <button id="loginButton" data-toggle="modal" data-target="#loginModal" class="btn btn-default navbar-btn hide">Sign In</button>
-            <noscript>
-                <a href="@Url.SubRouteUrl("user", "User.Login")" class="btn btn-default navbar-btn">Sign In</a>
-            </noscript>
+            @*<button id="loginButton" data-toggle="modal" data-target="#loginModal" class="btn btn-default navbar-btn hide">Log In</button>*@
+            <a href="@Url.SubRouteUrl("account", "User.Login", new { returnUrl = @Context.Request.GetDisplayUrl() })" class="btn btn-default navbar-btn">Log In</a>
         }
     }
 </div>

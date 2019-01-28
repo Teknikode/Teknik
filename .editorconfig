@@ -1,9 +1,7 @@
-root = true
-
 [*]
-charset = utf-8
-indent_style = space
 indent_size = 4
+indent_style = space
 end_of_line = crlf
-trim_trailing_whitespace = false
-insert_final_newline = true
+
+[*.cshtml]
+indent_size = 4

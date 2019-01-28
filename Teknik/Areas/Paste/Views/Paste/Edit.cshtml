@@ -1,0 +1,48 @@
+@model Teknik.Areas.Paste.ViewModels.PasteViewModel
+
+<bundle src="css/paste.edit.min.css" append-version="true"></bundle>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1 text-center">
+            <b>@Html.ValidationSummary(true, "The input is not valid")</b>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <!form class="form-horizontal" name="editor" method="post" action="@Url.SubRouteUrl("p", "Paste.Action", new { action = "EditSubmit", url = Model.Url })">
+                <input type="hidden" class="form-control" name="Url" id="url" value="@Model.Url">
+                <div class="form-group">
+                    <div class="col-sm-10 col-sm-offset-1">
+                        <textarea class="form-control" name="Content" id="content" rows="20">@Model.Content</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="title" class="col-sm-2 col-sm-offset-1 control-label">Title</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" name="Title" id="title" value="@Model.Title">
+                    </div>
+                    <div class="col-sm-1 col-sm-offset-2">
+                        <button type="submit" class="btn btn-primary pull-right" id="pasteSubmit">Save</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Syntax</label>
+                    <div class="col-sm-4">
+                        <select class="form-control" name="Syntax" id="syntax">
+                            <!option value=""@((string.IsNullOrEmpty(Model.Syntax)) ? " selected" : string.Empty)>Text</!option>
+
+                            @foreach (var format in HighlightHelper.Languages.GroupBy(l => l.Value).ToList())
+                            {
+                                <!option value="@(format?.FirstOrDefault().Key)"@((Model.Syntax == format?.FirstOrDefault().Key) ? " selected" : string.Empty)>@(format?.Key)</!option>
+                            }
+
+                        </select>
+                    </div>
+                </div>
+            </!form>
+        </div>
+    </div>
+</div>
+
+<bundle src="js/paste.edit.min.js" append-version="true"></bundle>

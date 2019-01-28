@@ -1,0 +1,55 @@
+﻿@using IdentityServer4.Extensions
+@{
+    string name = null;
+    if (!true.Equals(ViewData["signed-out"]))
+    {
+        name = Context.User?.GetDisplayName();
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+        <!-- Character Set -->       
+        <meta charset="UTF-8">
+        
+        <!-- Compatability --> 
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <!-- Website Info -->
+        <meta name="description" content="@ViewBag.Description" />
+        <meta name="author" content="@Config.Author" />
+
+        <!-- Robots -->
+        <meta name="robots" content="index,follow,noodp"><!-- All Search Engines -->
+
+        <!-- Site Verification Tags -->
+        <meta name="google-site-verification" content="X54N1YTsjgOc7hivpZK7RRKyvhGwaTI4BoFfxqOLlbc" />
+        <meta name='yandex-verification' content='6f209fa6f1b4114c' /> 
+        <meta name="wot-verification" content="e858b91d99b767ad70db" /> 
+
+        <!-- Main Page Title -->
+        <title>
+            @if (string.IsNullOrEmpty(ViewBag.Title))
+            {
+                <text>@Config.Title</text>
+            }
+            else
+            {
+                <text>@ViewBag.Title | @Config.Title</text>
+            }
+        </title>
+
+        <!-- Favicon -->
+        <link href="~/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <link href="~/images/favicon.ico" rel="apple-touch-icon-precomposed" />
+        
+        <bundle src="css/common.min.css" append-version="true"></bundle>
+</head>
+<body data-twttr-rendered="true">
+    <div id="wrap">
+        @RenderBody()
+    </div>
+    @await Html.PartialAsync("_Footer")
+</body>
+</html>

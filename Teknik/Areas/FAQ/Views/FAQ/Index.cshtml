@@ -1,8 +1,6 @@
 ﻿@model Teknik.Areas.FAQ.ViewModels.FAQViewModel
 
-@using Teknik.Utilities
-
-@Styles.Render("~/Content/faq")
+<bundle src="css/faq.min.css" append-version="true"></bundle>
 
 <div class="container">
     <div class="row">
@@ -42,7 +40,7 @@
                     </div>
                     <div id="collapse2" class="panel-collapse collapse" role="tabpanel">
                         <div class="panel-body">
-                            You can contact us via the <a href="@Url.SubRouteUrl("contact", "Contact.Index")">Contact page</a> or email us at <a href="mailto:@Model.Config.SupportEmail">@Model.Config.SupportEmail</a>.
+                            You can contact us via the <a href="@Url.SubRouteUrl("contact", "Contact.Index")">Contact page</a> or email us at <a href="mailto:@Config.SupportEmail">@Config.SupportEmail</a>.
                         </div>
                     </div>
                 </div>
@@ -94,7 +92,7 @@
                     </div>
                     <div id="collapse101" class="panel-collapse collapse" role="tabpanel">
                         <div class="panel-body">
-                            To sign up for an account, you just need to click the <strong>Sign Up</strong> button on the top right of the navigation panel, or visit the <a href="@Url.SubRouteUrl("user", "User.Register")">Registration Page</a>.
+                            To sign up for an account, you just need to click the <strong>Sign Up</strong> button on the top right of the navigation panel, or visit the <a href="@Url.SubRouteUrl("account", "User.Register")">Registration Page</a>.
                         </div>
                     </div>
                 </div>
@@ -106,7 +104,7 @@
                     </div>
                     <div id="collapse102" class="panel-collapse collapse" role="tabpanel">
                         <div class="panel-body">
-                            To purchase a premium account, you can navigate to the <a href="@Url.SubRouteUrl("user", "User.GetPremium")">premium account</a> page and choose the method of payment and follow the instructions provided.
+                            To purchase a premium account, you can navigate to the <a href="@Url.SubRouteUrl("account", "User.GetPremium")">premium account</a> page and choose the method of payment and follow the instructions provided.
                         </div>
                     </div>
                 </div>
@@ -121,7 +119,7 @@
                     </div>
                     <div id="collapse200" class="panel-collapse collapse" role="tabpanel">
                         <div class="panel-body">
-                            The max file size for everyone is <strong>@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSize)</strong>, basic accounts are <strong>@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizeBasic)</strong>, and Premium accounts are <strong>@StringHelper.GetBytesReadable(Model.Config.UploadConfig.MaxUploadSizePremium)</strong>.
+                            The max file size for everyone is <strong>@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSize)</strong>, basic accounts are <strong>@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSizeBasic)</strong>, and Premium accounts are <strong>@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSizePremium)</strong>.
                         </div>
                     </div>
                 </div>

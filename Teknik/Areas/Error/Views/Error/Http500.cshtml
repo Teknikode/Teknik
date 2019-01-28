@@ -1,9 +1,6 @@
 @model Teknik.Areas.Error.ViewModels.ErrorViewModel
 
-@using Teknik.Utilities
-
-@Scripts.Render("~/bundles/error")
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+<script>
     var submitErrorReportURL = '@Url.SubRouteUrl("error", "Error.Action", new { action = "SubmitErrorReport" })';
 </script>
 
@@ -17,7 +14,7 @@
                     <p>Sorry, a server error occured.  Please contact an Administrator about this error.</p>
                     <div class="error-actions">
                         <a href="@Url.SubRouteUrl("www", "Home.Index")" class="btn btn-default btn-lg">
-                            <span class="glyphicon glyphicon-home"></span>
+                            <span class="fa fa-home"></span>
                             Take Me Home
                         </a>
                         @if (Model != null && Model.Exception != null)
@@ -52,4 +49,4 @@
     </div>
 </div>
 
-
+<bundle src="error.min.js" append-version="true"></bundle>

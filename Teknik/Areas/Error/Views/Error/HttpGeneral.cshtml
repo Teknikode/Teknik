@@ -1,0 +1,23 @@
+﻿@model Teknik.Areas.Error.ViewModels.ErrorViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template text-center">
+                <h1>Http Error</h1>
+                <h2>Status Code: @Model.StatusCode</h2>
+                <div class="error-details">
+                    Sorry, an error has occured: @Model.Description
+                </div>
+                <br />
+                <div class="error-actions">
+                    <a href="@Url.SubRouteUrl("www", "Home.Index")" class="btn btn-primary btn-lg">
+                        <span class="fa fa-home"></span>
+                        Take Me Home
+                    </a><a href="@Url.SubRouteUrl("contact", "Contact.Index")" class="btn btn-default btn-lg"><span class="fa fa-envelope"></span> Contact Support </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

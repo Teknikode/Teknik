@@ -1,7 +1,5 @@
 ﻿@model Teknik.Areas.Vault.ViewModels.UploadItemViewModel
 
-@using Teknik.Utilities
-            
 @{
     bool needsKey = (string.IsNullOrEmpty(Model.Upload.Key) && !string.IsNullOrEmpty(Model.Upload.IV));
 }

@@ -1,45 +1,71 @@
 @model Teknik.Areas.Paste.ViewModels.PasteViewModel
 
-@using Teknik.Utilities
 @using Teknik.Areas.Vault.Models
 
-@Styles.Render("~/Content/paste")
+@{ 
+    string format = Model.Syntax;
+    string formatName = "Text";
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
+    if (!string.IsNullOrEmpty(format) && HighlightHelper.Languages.ContainsKey(format))
+    {
+        formatName = HighlightHelper.Languages[format];
+    }
+}
+
+<bundle src="css/paste.view.min.css" append-version="true"></bundle>
+
+<script>
     var createVaultURL = '@Url.SubRouteUrl("vault", "Vault.NewVaultFromService", new { type = "Paste" })';
+    var deletePasteURL = '@Url.SubRouteUrl("p", "Paste.Delete")';
 </script>
 
 <div class="container">
     <div class="row text-center">
         <div class="col-sm-12 text-center">
-            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Posted on <time datetime="@Model.DatePosted.ToString("s")">@Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage">@Model.Syntax</b></small></h2>
+            <h2><b>@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)</b> <small>Posted on <time datetime="@Model.DatePosted.ToString("s")">@Model.DatePosted.ToString("dddd, MMMM d, yyyy") at @Model.DatePosted.ToString("h:mm:ss tt")</time> - Format: <b id="syntaxLanguage">@(formatName)</b></small></h2>
         </div>
     </div>
     <hr />
     <div class="row">
         <div class="col-sm-12 pull-left">
-            <div class="btn-group" role="group">
-                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Simple", new { url = Model.Url })">Simple</a>
-                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Raw", new { url = Model.Url })">Raw</a>
-                <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Download", new { url = Model.Url })">Download</a>
-                <button type="button" class="btn btn-default" id="create-vault" data-paste-url="@Model.Url" data-paste-title="@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)">Create Vault</button>
-                @if (User.Identity.IsAuthenticated && Model.Vaults != null && Model.Vaults.Any())
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Simple", new { url = Model.Url })">Simple</a>
+                    <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Raw", new { url = Model.Url })">Raw</a>
+                    <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Download", new { url = Model.Url })">Download</a>
+                </div>
+                @if (User.Identity.IsAuthenticated && User.Identity.Name == Model.Username)
                 {
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Add to Vault <span class="caret"></span></button>
-                    <ul class="dropdown-menu pull-right" id="add-to-vault-menu">
-                        @foreach (Vault item in Model.Vaults)
-                        {
-                            <li><a href="#" class="add-to-vault" data-add-to-vault-url="@Url.SubRouteUrl("vault", "Vault.EditVault", new { url = item.Url, type = "Paste" })" data-paste-url="@Model.Url" data-paste-title="@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)">@item.Title</a></li>
-                        }
-                    </ul>
+                    <div class="btn-group pull-right" role="group">
+                        <a role="button" class="btn btn-default" href="@Url.SubRouteUrl("p", "Paste.Edit", new { url = Model.Url })"><span class="text-primary">Edit</span></a>
+                        <button type="button" class="btn btn-default" id="delete-paste" data-paste-url="@Model.Url"><span class="text-danger">Delete</span></button>
+                    </div>
                 }
+                <div class="btn-group pull-right" role="group">
+                    <button type="button" class="btn btn-default" id="create-vault" data-paste-url="@Model.Url" data-paste-title="@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)">Create Vault</button>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        @if (Model.Vaults != null && Model.Vaults.Any())
+                        {
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Add to Vault <span class="caret"></span></button>
+                            <ul class="dropdown-menu pull-right" id="add-to-vault-menu">
+                                @foreach (Vault item in Model.Vaults)
+                                {
+                                    <li><a href="#" class="add-to-vault" data-add-to-vault-url="@Url.SubRouteUrl("vault", "Vault.EditVault", new { url = item.Url, type = "Paste" })" data-paste-url="@Model.Url" data-paste-title="@((string.IsNullOrEmpty(Model.Title)) ? "Untitled" : Model.Title)">@item.Title</a></li>
+                                }
+                            </ul>
+                        }
+                    }
+                </div>
             </div>
         </div>
     </div>
     <br />
     <div class="row">
-        <div class="col-sm-12">@Html.Raw(Model.Content)</div>
+        <div class="col-sm-12">
+            <pre class="line-numbers" id="code"><code class="language-@(format)">@Model.Content</code></pre>
+        </div>
     </div>
 </div>
 
-@Scripts.Render("~/bundles/paste")
+<bundle src="js/paste.view.min.js" append-version="true"></bundle>

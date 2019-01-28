@@ -2,22 +2,21 @@
 
 @using Teknik.Areas.Blog.Models
 @using Teknik.Areas.Podcast.Models
-@using Teknik.Utilities
 
 @{
-    string logoPath = "/Images/logo-blue.svg";
+    string logoPath = "/images/logo-blue.svg";
 
     // If we are using a CDN, let's replace it
-    if (Model.Config.UseCdn)
+    if (Config.UseCdn)
     {
-        if (!string.IsNullOrEmpty(Model.Config.CdnHost))
+        if (!string.IsNullOrEmpty(Config.CdnHost))
         {
-            logoPath = Model.Config.CdnHost.TrimEnd('/') + logoPath;
+            logoPath = Config.CdnHost.TrimEnd('/') + logoPath;
         }
     }
 }
 
-@Styles.Render("~/Content/home")
+<bundle src="css/home.min.css" append-version="true"></bundle>
 
 <div class="container">
     <div class="row">
@@ -34,39 +33,48 @@
 <div class="container">
     <div class="row">
         <a href="@Url.SubRouteUrl("upload", "Upload.Index")">
-            <div class="col-md-3 text-center">
-                    <br />
-                    <i class="fa fa-lock fa-5x"></i>
-                    <div class="caption">
-                        <h3>Encrypted File Uploads</h3>
-                    </div>
+            <div class="col-md-2 col-lg-offset-1 text-center">
+                <br />
+                <i class="fa fa-lock fa-5x"></i>
+                <div class="caption">
+                    <h3>Encrypted File Uploads</h3>
+                </div>
             </div>
         </a>
         <a href="@Url.SubRouteUrl("paste", "Paste.Index")">
-            <div class="col-md-3 text-center">
-                    <br />
-                    <i class="fa fa-code fa-5x"></i>
-                    <div class="caption">
-                        <h3>Clean Pastebin</h3>
-                    </div>
+            <div class="col-md-2 text-center">
+                <br />
+                <i class="fa fa-code fa-5x"></i>
+                <div class="caption">
+                    <h3>Pastebin</h3>
+                </div>
             </div>
         </a>
         <a href="@Url.SubRouteUrl("podcast", "Podcast.Index")">
-            <div class="col-md-3 text-center">
-                    <br />
-                    <i class="fa fa-microphone fa-5x"></i>
-                    <div class="caption">
-                        <h3>Technical Podcasts</h3>
-                    </div>
+            <div class="col-md-2 text-center">
+                <br />
+                <i class="fa fa-microphone fa-5x"></i>
+                <div class="caption">
+                    <h3>Technical Podcasts</h3>
+                </div>
+            </div>
+        </a>
+        <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")">
+            <div class="col-md-2 text-center">
+                <br />
+                <i class="fa fa-link fa-5x"></i>
+                <div class="caption">
+                    <h3>Url Shortener</h3>
+                </div>
             </div>
         </a>
         <a href="@Url.SubRouteUrl("help", "Help.Mumble")">
-            <div class="col-md-3 text-center">
-                    <br />
-                    <i class="fa fa-comments fa-5x"></i>
-                    <div class="caption">
-                        <h3>Mumble Server</h3>
-                    </div>
+            <div class="col-md-2 text-center">
+                <br />
+                <i class="fa fa-comments fa-5x"></i>
+                <div class="caption">
+                    <h3>Mumble Server</h3>
+                </div>
             </div>
         </a>
     </div>
@@ -79,30 +87,30 @@
         <div class="col-sm-12">
             <div class="panel panel-default">
                 <div class="panel-heading text-center">
-                    <h2><a href="@Url.SubRouteUrl("user", "User.Register")">Sign Up</a> for free and get access to these features and more!</h2>
+                    <h2><a href="@Url.SubRouteUrl("account", "User.Register")">Sign Up</a> and get access to these features and more!</h2>
                 </div>
                 <br />
                 <div class="panel-body">
-                    <a href="@Url.SubRouteUrl("help", "Help.Mail")">
-                        <div class="col-md-3 text-center">
+                    <a conditional href="@Url.SubRouteUrl("help", "Help.Mail")" asp-condition="@User.Identity.IsAuthenticated">
+                        <div class="col-md-3 text-center text-primary">
                             <br />
-                            <i class="fa fa-at fa-5x"></i>
+                            <i class="fa fa-envelope fa-5x"></i>
                             <div class="caption">
-                                <h3>Free Email</h3>
+                                <h3>Email Account</h3>
                             </div>
                         </div>
                     </a>
-                    <a href="@Url.SubRouteUrl("git", "Git.Index")">
-                        <div class="col-md-3 text-center">
+                    <a conditional href="@Config.GitConfig.Host" asp-condition="@User.Identity.IsAuthenticated">
+                        <div class="col-md-3 text-center text-primary">
                             <br />
                             <i class="fa fa-git fa-5x"></i>
                             <div class="caption">
-                                <h3>Unlimited Git Repositories</h3>
+                                <h3>Unlimited Git Repos</h3>
                             </div>
                         </div>
                     </a>
-                    <a href="@Url.SubRouteUrl("blog", "Blog.Blog")">
-                        <div class="col-md-3 text-center">
+                    <a conditional href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })" asp-condition="@User.Identity.IsAuthenticated">
+                        <div class="col-md-3 text-center text-primary">
                             <br />
                             <i class="fa fa-book fa-5x"></i>
                             <div class="caption">
@@ -110,12 +118,12 @@
                             </div>
                         </div>
                     </a>
-                    <a href="@Url.SubRouteUrl("user", "User.ViewProfile")">
-                        <div class="col-md-3 text-center">
+                    <a conditional href="@Url.SubRouteUrl("account", "User.ViewServiceData")" asp-condition="@User.Identity.IsAuthenticated">
+                        <div class="col-md-3 text-center text-primary">
                             <br />
-                            <i class="fa fa-sitemap fa-5x"></i>
+                            <i class="fa fa-database fa-5x"></i>
                             <div class="caption">
-                                <h3>Service Logs</h3>
+                                <h3>Service Data</h3>
                             </div>
                         </div>
                     </a>

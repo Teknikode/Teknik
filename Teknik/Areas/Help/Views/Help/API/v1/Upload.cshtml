@@ -1,8 +1,6 @@
 @model Teknik.Areas.Help.ViewModels.HelpViewModel
 
-@using Teknik.Utilities
-
-@Styles.Render("~/Content/help");
+<bundle src="css/help.min.css" append-version="true"></bundle>
 
 <div class="container">
     <ol class="breadcrumb">
@@ -134,7 +132,7 @@
                         <code>int</code>
                     </td>
                     <td>
-                        <var>@Model.Config.UploadConfig.KeySize</var>
+                        <var>@Config.UploadConfig.KeySize</var>
                     </td>
                     <td>
                         The size of the key provided in bits.  Only needed if encrypting and no key is provided.
@@ -162,7 +160,7 @@
                         <code>int</code>
                     </td>
                     <td>
-                        <var>@Model.Config.UploadConfig.BlockSize</var>
+                        <var>@Config.UploadConfig.BlockSize</var>
                     </td>
                     <td>
                         The size of the iv provided in bits.  Only needed if encrypting and no iv is provided.
@@ -308,7 +306,7 @@
                     </td>
                     <td>
                         <strong>Optional</strong>
-                        The deletion key for file.  Use it as follows: <code>@Url.SubRouteUrl("u", "Upload.Delete", new { file = "file.jpg", key = "deletionKey" })</code>
+                        The deletion key for file.  Use it as follows: <code>@Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = "file.jpg", key = "deletionKey" })</code>
                     </td>
                 </tr>
             </tbody>

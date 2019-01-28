@@ -1,36 +1,51 @@
 @model Teknik.Areas.Users.ViewModels.UploadSettingsViewModel
 
-@using Teknik.Utilities
 @using Teknik.Areas.Users.ViewModels
 
 @{
     Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
 }
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
-    var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
-    var editURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditUpload" })';
+<script>
+    var editURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "EditUpload" })';
 </script>
 
-@Styles.Render("~/Content/user/settings/upload")
-@Scripts.Render("~/bundles/user/settings/upload")
+<bundle src="css/user.settings.upload.min.css" append-version="true"></bundle>
 
-<form class="form" action="##" method="post" id="updateForm">
+<!form class="form" action="##" method="post" id="updateForm">
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-3">
+            <h4>Encrypt in Browser</h4>
+        </div>
+        <div class="col-sm-9">
             <div class="checkbox">
-                <label>
-                    <label for="update_upload_encrypt"><h4>Encrypt in Browser</h4></label>
-                    <input id="update_upload_encrypt" name="update_upload_encrypt" title="whether the file should be encrypted in the browser before upload" type="checkbox" value="true" @(Model.Encrypt ? "checked" : string.Empty) />
-                </label>
+                <input id="update_upload_encrypt" name="update_upload_encrypt" title="whether the file should be encrypted in the browser before upload" type="checkbox" value="true" @(Model.Encrypt ? "checked" : string.Empty) />
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <h4 class="text-center">Expiration</h4>
+        </div>
+        <div class="col-sm-2 hidden" id="length-div">
+            <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
+        </div>
+        <div class="col-sm-4" id="unit-div">
+            <select class="form-control" name="expireunit" id="expireunit">
+                @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+                {
+                    <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
+                }
+            </select>
         </div>
     </div>
     <div class="row">
         <div class="form-group col-sm-10">
             <br />
-            <button class="btn btn-lg btn-success" id="update_submit" type="submit">Save</button>
-            <button class="btn btn-lg" type="reset">Reset</button>
+            <button class="btn btn-success" id="update_submit" type="submit">Save</button>
+            <button class="btn" type="reset">Reset</button>
         </div>
     </div>
-</form>
+</!form>
+
+<bundle src="js/user.settings.upload.min.js" append-version="true"></bundle>

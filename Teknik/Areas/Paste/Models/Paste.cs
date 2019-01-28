@@ -21,8 +21,13 @@ namespace Teknik.Areas.Paste.Models
 
         public DateTime DatePosted { get; set; }
 
+        public DateTime DateEdited { get; set; }
+
         [CaseSensitive]
         public string Url { get; set; }
+
+        [CaseSensitive]
+        public string FileName { get; set; }
 
         public string Content { get; set; }
 
@@ -45,12 +50,11 @@ namespace Teknik.Areas.Paste.Models
 
         public int BlockSize { get; set; }
 
-        public bool Hide { get; set; }
+        [CaseSensitive]
+        public string DeleteKey { get; set; }
 
         public int MaxViews { get; set; }
 
         public int Views { get; set; }
-
-        public virtual ICollection<TransferType> Transfers { get; set; }
     }
 }

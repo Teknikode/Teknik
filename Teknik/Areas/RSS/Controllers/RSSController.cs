@@ -1,10 +1,8 @@
-﻿using MarkdownDeep;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web;
-using System.Web.Mvc;
 using System.Xml.Linq;
 using Teknik.Areas.Blog.Models;
 using Teknik.Controllers;
@@ -13,126 +11,203 @@ using Teknik.Utilities;
 using Teknik.Models;
 using Teknik.Attributes;
 using Teknik.Areas.Users.Utility;
+using Microsoft.Extensions.Logging;
+using Teknik.Configuration;
+using Teknik.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.SyndicationFeed.Rss;
+using System.Xml;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.SyndicationFeed;
+using Teknik.Logging;
 
 namespace Teknik.Areas.RSS.Controllers
 {
     [TeknikAuthorize(AuthType.Basic)]
+    [Area("RSS")]
     public class RSSController : DefaultController
     {
+        public RSSController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+        
         [AllowAnonymous]
-        public ActionResult Index()
+        public async Task Index()
         {
-            SyndicationFeed feed = new SyndicationFeed("Teknik RSS", "RSS feeds for the Teknik Services.", new Uri(Url.SubRouteUrl("help", "Help.RSS")));
+            Response.ContentType = "application/rss+xml";
 
-            return new RssResult(feed);
-        }
-
-        [TrackDownload]
-        [AllowAnonymous]
-        public ActionResult Blog(string username)
-        {
-            using (TeknikEntities db = new TeknikEntities())
+            using (var xmlWriter = CreateXmlWriter())
             {
-                // If empty, grab the main blog
-                List<BlogPost> posts = new List<BlogPost>();
+                var feedWriter = new RssFeedWriter(xmlWriter);
 
-                string blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
-                string title = string.Empty;
-                string description = string.Empty;
-                bool isSystem = string.IsNullOrEmpty(username);
+                await feedWriter.WriteTitle("Teknik RSS");
+                await feedWriter.WriteDescription("RSS feeds for the Teknik Services.");
+                await feedWriter.Write(new SyndicationLink(new Uri(Url.SubRouteUrl("help", "Help.RSS"))));
+
+                await xmlWriter.FlushAsync();
+            }
+        }
+        
+        [AllowAnonymous]
+        public async Task Blog(string username)
+        {
+            Response.ContentType = "application/rss+xml";
+
+            // If empty, grab the main blog
+            List<BlogPost> posts = new List<BlogPost>();
+
+            string blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
+            string title = string.Empty;
+            string description = string.Empty;
+            bool isSystem = string.IsNullOrEmpty(username);
+            bool userExists = false;
+            if (isSystem)
+            {
+                posts = _dbContext.BlogPosts.Where(p => (p.System && p.Published)).ToList();
+                blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
+            }
+            else
+            {
+                Blog.Models.Blog blog = _dbContext.Blogs.Where(p => p.User.Username == username && p.BlogId != _config.BlogConfig.ServerBlogId).FirstOrDefault();
+                posts = _dbContext.BlogPosts.Where(p => (p.BlogId == blog.BlogId && !p.System) && p.Published).ToList();
+                blogUrl = Url.SubRouteUrl("blog", "Blog.Blog", new { username = username });
+            }
+            if (posts.Any())
+            {
                 if (isSystem)
                 {
-                    posts = db.BlogPosts.Where(p => (p.System && p.Published)).ToList();
-                    blogUrl = Url.SubRouteUrl("blog", "Blog.Blog");
+                    userExists = true;
+                    title = _config.BlogConfig.Title;
+                    description = _config.BlogConfig.Description;
                 }
                 else
                 {
-                    Blog.Models.Blog blog = db.Blogs.Where(p => p.User.Username == username && p.BlogId != Config.BlogConfig.ServerBlogId).FirstOrDefault();
-                    posts = db.BlogPosts.Where(p => (p.BlogId == blog.BlogId && !p.System) && p.Published).ToList();
-                    blogUrl = Url.SubRouteUrl("blog", "Blog.Blog", new { username = username });
-                }
-                if (posts.Any())
-                {
-                    if (isSystem)
+                    Users.Models.User user = UserHelper.GetUser(_dbContext, username);
+                    if (user != null)
                     {
-                        title = Config.BlogConfig.Title;
-                        description = Config.BlogConfig.Description;
+                        userExists = true;
+                        title = user.BlogSettings.Title;
+                        description = user.BlogSettings.Description;
                     }
                     else
                     {
-                        Users.Models.User user = UserHelper.GetUser(db, username);
-                        if (user != null)
-                        {
-                            title = user.BlogSettings.Title;
-                            description = user.BlogSettings.Description;
-                        }
-                        else
-                        {
-                            SyndicationFeed badUserFeed = new SyndicationFeed("No Blog Available", "The specified user does not exist", new Uri(blogUrl));
-
-                            return new RssResult(badUserFeed);
-                        }
+                        userExists = false;
+                        title = "No Blog Available";
+                        description = "The specified user does not exist";
                     }
+                }
 
-                    List<SyndicationItem> items = new List<SyndicationItem>();
+                List<SyndicationItem> items = new List<SyndicationItem>();
 
+                if (userExists)
+                {
                     foreach (BlogPost post in posts.OrderByDescending(p => p.BlogPostId))
                     {
                         if (post.Published && post.System == isSystem)
                         {
-                            items.Add(new SyndicationItem(
-                                post.Title,
-                                MarkdownHelper.Markdown(post.Article).ToHtmlString(),
-                                new Uri(Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId })),
-                                post.BlogPostId.ToString(),
-                                post.DateEdited
-                                ));
+                            SyndicationItem item = new SyndicationItem()
+                            {
+                                Id = post.BlogPostId.ToString(),
+                                Title = post.Title,
+                                Description = MarkdownHelper.Markdown(post.Article).Value,
+                                Published = post.DatePublished
+                            };
+
+                            item.AddLink(new SyndicationLink(new Uri(Url.SubRouteUrl("blog", "Blog.Post", new { username = post.Blog.User.Username, id = post.BlogPostId }))));
+                            item.AddContributor(new SyndicationPerson(post.Blog.User.Username, UserHelper.GetUserEmailAddress(_config, post.Blog.User.Username)));
+
+                            items.Add(item);
                         }
                     }
-
-                    SyndicationFeed feed = new SyndicationFeed(title, description, new Uri(blogUrl), items);
-
-                    return new RssResult(feed);
                 }
-                SyndicationFeed badFeed = new SyndicationFeed("No Blog Available", "The specified blog does not exist", new Uri(blogUrl));
 
-                return new RssResult(badFeed);
+                using (var xmlWriter = CreateXmlWriter())
+                {
+                    var feedWriter = new RssFeedWriter(xmlWriter);
+
+                    await feedWriter.WriteTitle(title);
+                    await feedWriter.WriteDescription(description);
+                    await feedWriter.Write(new SyndicationLink(new Uri(blogUrl)));
+                    
+                    foreach (SyndicationItem item in items)
+                    {
+                        await feedWriter.Write(item);
+                    }
+
+                    await xmlWriter.FlushAsync();
+                }
+            }
+            else
+            {
+                using (var xmlWriter = CreateXmlWriter())
+                {
+                    var feedWriter = new RssFeedWriter(xmlWriter);
+
+                    await feedWriter.WriteTitle("No Blog Available");
+                    await feedWriter.WriteDescription("The specified blog does not exist");
+                    await feedWriter.Write(new SyndicationLink(new Uri(blogUrl)));
+
+                    await xmlWriter.FlushAsync();
+                }
+
             }
         }
         
-        [TrackDownload]
         [AllowAnonymous]
-        public ActionResult Podcast()
+        public async Task Podcast()
         {
-            using (TeknikEntities db = new TeknikEntities())
-            {
-                List<SyndicationItem> items = new List<SyndicationItem>();
-                List<Podcast.Models.Podcast> podcasts = db.Podcasts.Where(p => p.Published).OrderByDescending(p => p.Episode).ToList();
-                if (podcasts != null)
-                {
-                    foreach (Podcast.Models.Podcast podcast in podcasts)
-                    {
-                        SyndicationItem item = new SyndicationItem(
-                                                        podcast.Title,
-                                                        MarkdownHelper.Markdown(podcast.Description).ToHtmlString(),
-                                                        new Uri(Url.SubRouteUrl("podcast", "Podcast.View", new { episode = podcast.Episode })),
-                                                        podcast.Episode.ToString(),
-                                                        podcast.DateEdited
-                                                    );
-                        foreach (Podcast.Models.PodcastFile file in podcast.Files)
-                        {
-                            SyndicationLink enclosure = SyndicationLink.CreateMediaEnclosureLink(new Uri(Url.SubRouteUrl("podcast", "Podcast.Download", new { episode = podcast.Episode, fileName = file.FileName })), file.ContentType, file.ContentLength);
-                            item.Links.Add(enclosure);
-                        }
+            Response.ContentType = "application/rss+xml";
 
-                        items.Add(item);
+            List<SyndicationItem> items = new List<SyndicationItem>();
+            List<Podcast.Models.Podcast> podcasts = _dbContext.Podcasts.Where(p => p.Published).OrderByDescending(p => p.Episode).ToList();
+            if (podcasts != null)
+            {
+                foreach (Podcast.Models.Podcast podcast in podcasts)
+                {
+                    SyndicationItem item = new SyndicationItem()
+                    {
+                        Id = podcast.Episode.ToString(),
+                        Title = podcast.Title,
+                        Description = MarkdownHelper.Markdown(podcast.Description).Value,
+                        Published = podcast.DatePublished
+                    };
+
+                    item.AddLink(new SyndicationLink(new Uri(Url.SubRouteUrl("podcast", "Podcast.View", new { episode = podcast.Episode }))));
+
+                    foreach (Podcast.Models.PodcastFile file in podcast.Files)
+                    {
+                        SyndicationLink enclosure = new SyndicationLink(new Uri(Url.SubRouteUrl("podcast", "Podcast.Download", new { episode = podcast.Episode, fileName = file.FileName })));
+                        item.AddLink(enclosure);
                     }
+
+                    items.Add(item);
+                }
+            }
+
+            using (var xmlWriter = CreateXmlWriter())
+            {
+                var feedWriter = new RssFeedWriter(xmlWriter);
+
+                await feedWriter.WriteTitle(_config.PodcastConfig.Title);
+                await feedWriter.WriteDescription(_config.PodcastConfig.Description);
+                await feedWriter.Write(new SyndicationLink(new Uri(Url.SubRouteUrl("podcast", "Podcast.Index"))));
+
+                foreach (SyndicationItem item in items)
+                {
+                    await feedWriter.Write(item);
                 }
 
-                SyndicationFeed feed = new SyndicationFeed(Config.PodcastConfig.Title, Config.PodcastConfig.Description, new Uri(Url.SubRouteUrl("podcast", "Podcast.Index")), items);
-
-                return new RssResult(feed);
+                await xmlWriter.FlushAsync();
             }
+        }
+
+        private XmlWriter CreateXmlWriter()
+        {
+            return XmlWriter.Create(Response.Body, new XmlWriterSettings()
+            {
+                Async = true,
+                Encoding = Encoding.UTF8
+            });
         }
     }
 }

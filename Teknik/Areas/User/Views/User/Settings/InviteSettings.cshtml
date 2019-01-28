@@ -1,16 +1,13 @@
 @model Teknik.Areas.Users.ViewModels.InviteSettingsViewModel
 
-@using Teknik.Utilities
 @using Teknik.Areas.Users.ViewModels
 
 @{
     Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
 }
 
-@Scripts.Render("~/bundles/user/settings/invite")
-
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
-    var createExternalLinkURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "CreateInviteCodeLink" })';
+<script>
+    var createExternalLinkURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "CreateInviteCodeLink" })';
 </script>
 
 <div class="row">
@@ -23,7 +20,7 @@
                 {
                     foreach (InviteCodeViewModel code in Model.AvailableCodes)
                     {
-                        @Html.Partial("Settings/InviteCode", code)
+                        @await Html.PartialAsync("Settings/InviteCode", code)
                     }
                 }
                 else
@@ -45,7 +42,7 @@
                 {
                     foreach (InviteCodeViewModel code in Model.ClaimedCodes)
                     {
-                        @Html.Partial("Settings/InviteCode", code)
+                        @await Html.PartialAsync("Settings/InviteCode", code)
                     }
                 }
                 else
@@ -56,3 +53,5 @@
         </div>
     </div>
 </div>
+
+<bundle src="js/user.settings.invite.min.js" append-version="true"></bundle>

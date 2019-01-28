@@ -1,0 +1,157 @@
+﻿@model Teknik.Areas.Users.ViewModels.ViewServiceDataViewModel
+
+<script>
+    var deleteUploadURL = '@Url.SubRouteUrl("u", "Upload.Delete")';
+    var deletePasteURL = '@Url.SubRouteUrl("p", "Paste.Delete")';
+    var deleteShortenURL = '@Url.SubRouteUrl("s", "Shortener.Delete")';
+    var deleteVaultURL = '@Url.SubRouteUrl("v", "Vault.Delete")';
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul class="nav nav-tabs" id="myTab">
+                <li class="active"><a href="#uploads" data-toggle="tab"> Uploads </a></li>
+                <li><a href="#pastes" data-toggle="tab"> Pastes </a></li>
+                <li><a href="#shortenedUrls" data-toggle="tab"> Shortened Urls </a></li>
+                <li><a href="#vaults" data-toggle="tab"> Vaults </a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="uploads">
+                    @foreach (Teknik.Areas.Upload.Models.Upload upload in Model.Uploads)
+                    {
+                        <div class="panel panel-default" id="@upload.Url">
+                            <div class="panel-heading text-center">
+                                <a id="upload-url" href="@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url })">@Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url })</a>
+                            </div>
+                            <div class="panel-body">
+                                <div class="col-sm-2 text-center">
+                                    <label for="size">Size</label>
+                                    <p id="size">@StringHelper.GetBytesReadable(upload.ContentLength)</p>
+                                </div>
+                                <div class="col-sm-3 text-center">
+                                    <label for="type">Type</label>
+                                    <p id="type">@upload.ContentType</p>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <label for="dateUploaded">Date Uploaded</label>
+                                    <p id="dateUploaded"><time datetime="@upload.DateUploaded.ToString("s")">@upload.DateUploaded.ToString("MMMM dd, yyyy")</time></p>
+                                </div>
+                                <div class="col-sm-2 text-center">
+                                    <label for="downloads">Downloads</label>
+                                    <p id="downloads">@upload.Downloads</p>
+                                </div>
+                                <div class="col-sm-1 text-center">
+                                    <p id="delete-upload"><button role="button" class="btn btn-danger delete-upload-button" data-upload-id="@upload.Url">Delete</button></p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div><!--/tab-pane-->
+                <div class="tab-pane" id="pastes">
+                    @foreach (Teknik.Areas.Paste.Models.Paste paste in Model.Pastes)
+                    {
+                        <div class="panel panel-default" id="@paste.Url">
+                            <div class="panel-heading text-center">
+                                <a href="@Url.SubRouteUrl("paste", "Paste.View", new { url = paste.Url })">@(string.IsNullOrEmpty(paste.Title) ? "Untitled Paste" : paste.Title)</a>
+                            </div>
+                            <div class="panel-body">
+                                <div class="col-sm-1 text-center">
+                                    <label for="syntax">Syntax</label>
+                                    <p id="syntax">@paste.Syntax</p>
+                                </div>
+                                <div class="col-sm-3 text-center">
+                                    <label for="datePosted">Date Posted</label>
+                                    <p id="datePosted"><time datetime="@paste.DatePosted.ToString("s")">@paste.DatePosted.ToString("MMMM dd, yyyy")</time></p>
+                                </div>
+                                <div class="col-sm-3 text-center">
+                                    <label for="expireDate">Expire Date</label>
+                                    @{
+                                        string expireDate = "Never";
+                                        if (paste.ExpireDate != null)
+                                        {
+                                            expireDate = "<time datetime=\"" + paste.ExpireDate.Value.ToString("s") + "\">" + paste.ExpireDate.Value.ToString("MMMM dd, yyyy") + "</time>";
+                                        }
+                                    }
+                                    <p id="expireDate">@Html.Raw(expireDate)</p>
+                                </div>
+                                <div class="col-sm-2 text-center">
+                                    <label for="maxViews">Max Views</label>
+                                    <p id="maxViews">@paste.MaxViews</p>
+                                </div>
+                                <div class="col-sm-2 text-center">
+                                    <label for="views">Views</label>
+                                    <p id="views">@paste.Views</p>
+                                </div>
+                                <div class="col-sm-1 text-center">
+                                    <p id="delete-paste"><button role="button" class="btn btn-danger delete-paste-button" data-paste-id="@paste.Url">Delete</button></p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="tab-pane" id="shortenedUrls">
+                    @foreach (Teknik.Areas.Shortener.Models.ShortenedUrl url in Model.ShortenedUrls)
+                    {
+                        string shortUrl = string.Format("{0}://{1}/{2}", Context.Request.Scheme, Config.ShortenerConfig.ShortenerHost, url.ShortUrl);
+                        if (Config.DevEnvironment)
+                        {
+                            shortUrl = Url.SubRouteUrl("shortened", "Shortener.View", new { url = url.ShortUrl });
+                        }
+                        <div class="panel panel-default" id="@url.ShortUrl">
+                            <div class="panel-heading text-center">
+                                <a href="@url.OriginalUrl">@url.OriginalUrl</a>
+                            </div>
+                            <div class="panel-body">
+                                <div class="col-sm-5 text-center">
+                                    <label for="shortUrl">Short Url</label>
+                                    <p id="shortUrl"><a href="@shortUrl">@shortUrl</a></p>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <label for="dateAdded">Date Added</label>
+                                    <p id="dateAdded"><time datetime="@url.DateAdded.ToString("s")">@url.DateAdded.ToString("MMMM dd, yyyy")</time></p>
+                                </div>
+                                <div class="col-sm-2 text-center">
+                                    <label for="views">Views</label>
+                                    <p id="views">@url.Views</p>
+                                </div>
+                                <div class="col-sm-1 text-center">
+                                    <p id="delete-shorten"><button role="button" class="btn btn-danger delete-shorten-button" data-shorten-id="@url.ShortUrl">Delete</button></p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="tab-pane" id="vaults">
+                    @foreach (Teknik.Areas.Vault.Models.Vault vault in Model.Vaults)
+                    {
+                        <div class="panel panel-default" id="@vault.Url">
+                            <div class="panel-heading text-center">
+                                <a href="@Url.SubRouteUrl("v", "Vault.ViewVault", new { id = vault.Url })">@(string.IsNullOrEmpty(vault.Title) ? "Vault" : vault.Title)</a>
+                            </div>
+                            <div class="panel-body">
+                                <div class="col-sm-5 text-center">
+                                    <label for="dateAdded">Date Created</label>
+                                    <p id="dateAdded"><time datetime="@vault.DateCreated.ToString("s")">@vault.DateCreated.ToString("MMMM dd, yyyy HH:mm:ss tt")</time></p>
+                                </div>
+                                <div class="col-sm-4 text-center">
+                                    <label for="dateAdded">Date Edited</label>
+                                    <p id="dateAdded"><time datetime="@vault.DateEdited.ToString("s")">@vault.DateEdited.ToString("MMMM dd, yyyy HH:mm:ss tt")</time></p>
+                                </div>
+                                <div class="col-sm-2 text-center">
+                                    <label for="views">Views</label>
+                                    <p id="views">@vault.Views</p>
+                                </div>
+                                <div class="col-sm-1 text-center">
+                                    <p id="delete-vault"><button role="button" class="btn btn-danger delete-vault-button" data-vault-id="@vault.Url">Delete</button></p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div><!--/tab-content-->
+        </div>
+    </div>
+</div>
+
+<bundle src="js/user.serviceData.min.js" append-version="true"></bundle>

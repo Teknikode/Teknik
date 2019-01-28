@@ -1,0 +1,46 @@
+﻿@model LoginWith2faViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2 text-center">
+                    <h1>Two-factor authentication</h1>
+                    <hr />
+                    <p>Your login is protected with an authenticator app. Enter your authenticator code below.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4">
+                    <form method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                        <input asp-for="RememberMe" type="hidden" />
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="TwoFactorCode"></label>
+                            <input asp-for="TwoFactorCode" class="form-control" autocomplete="off" />
+                            <span asp-validation-for="TwoFactorCode" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <div class="abc-checkbox">
+                                <input asp-for="RememberMachine" />
+                                <label asp-for="RememberMachine">@Html.DisplayNameFor(m => m.RememberMachine)</label>
+                            </div>
+                        </div>
+                        <div class="form-group pull-right">
+                            <button type="submit" class="btn btn-default">Log in</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2 text-center">
+                    <p>
+                        Don't have access to your authenticator device? You can
+                        <a asp-action="LoginWithRecoveryCode" asp-route-returnUrl="@ViewData["ReturnUrl"]">log in with a recovery code</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,68 @@
+﻿@model Teknik.Areas.Users.ViewModels.AccountSettingsViewModel
+
+@using Teknik.Areas.Users.ViewModels
+
+@{
+    Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
+}
+
+<script>
+    var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
+    var deleteUserURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "Delete" })';
+    var changePasswordUrl = '@Url.SubRouteUrl("account", "User.Action", new { action = "ChangePassword" })';
+</script>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h2>Change Password</h2>
+        <hr />
+    </div>
+</div>
+<!form class="form" action="##" method="post" id="changePasswordForm">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    <label for="update_password_current"><h4>Current Password</h4></label>
+                    <input class="form-control" name="update_password_current" id="update_password_current" placeholder="current password" title="enter your current password." type="password" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    <label for="update_password"><h4>New Password</h4></label>
+                    <input class="form-control" name="update_password" id="update_password" placeholder="new password" title="enter your password." type="password" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    <label for="update_password_confirm"><h4>Verify New Password</h4></label>
+                    <input class="form-control" name="update_password_confirm" id="update_password_confirm" placeholder="new password confirmed" title="enter your password again." type="password" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-sm-10">
+            <button class="btn btn-default" id="change_password_submit" type="button">Change Password</button> <a href="@Url.SubRouteUrl("account", "User.ResetPassword", new { Username = User.Identity.Name })">I forgot my password</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-sm-10">
+            <p><small>Want to manage your two-factor authentication?  Check out your <a href="@Url.SubRouteUrl("account", "User.SecuritySettings")">Security</a> settings.</small></p>
+        </div>
+    </div>
+</!form>
+
+<div class="row">
+    <div class="col-sm-12 text-danger">
+        <h2>Delete Account</h2>
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <button type="button" class="btn btn-danger" id="delete_account">Delete Account</button>
+    </div>
+</div>
+
+<bundle src="js/user.settings.account.min.js" append-version="true"></bundle>

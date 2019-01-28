@@ -19,7 +19,7 @@ namespace Teknik.Areas.Podcast.ViewModels
 
         public List<PodcastFile> Files { get; set; }
 
-        public List<string> Tags { get; set; }
+        public List<PodcastTag> Tags { get; set; }
 
         public DateTime DatePosted { get; set; }
         
@@ -38,7 +38,7 @@ namespace Teknik.Areas.Podcast.ViewModels
             Title = podcast.Title;
             Description = podcast.Description;
             Files = podcast.Files.ToList();
-            Tags = podcast.Tags;
+            Tags = podcast.Tags.ToList();
             DatePosted = podcast.DatePosted;
             Published = podcast.Published;
             DatePublished = podcast.DatePublished;

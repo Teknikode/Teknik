@@ -1,7 +1,5 @@
 @model Teknik.Areas.Admin.ViewModels.UploadResultViewModel
 
-@using Teknik.Utilities
-
 <div class="panel panel-default">
     <div class="panel-heading text-center">
         <a id="upload-url" href="@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Url })">@Url.SubRouteUrl("u", "Upload.Download", new { file = Model.Url })</a>
@@ -34,7 +32,7 @@
         </div>
         <div class="col-sm-2 text-center">
             @{
-                string deleteUrl = (string.IsNullOrEmpty(Model.DeleteKey)) ? string.Empty : Url.SubRouteUrl("u", "Upload.Delete", new { file = Model.Url, key = Model.DeleteKey });
+                string deleteUrl = (string.IsNullOrEmpty(Model.DeleteKey)) ? string.Empty : Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = Model.Url, key = Model.DeleteKey });
             }
             <p id="delete-upload"><button role="button" class="btn btn-danger delete-upload-button" id="@deleteUrl" data-upload-id="@Model.Url">Delete</button></p>
         </div>

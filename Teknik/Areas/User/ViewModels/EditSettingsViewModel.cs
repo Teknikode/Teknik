@@ -1,20 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-
 namespace Teknik.Areas.Users.ViewModels
 {
     public class EditSettingsViewModel
     {
-        [AllowHtml]
         public string CurrentPassword { get; set; }
-
-        [AllowHtml]
+        
         public string NewPassword { get; set; }
-
-        [AllowHtml]
+        
         public string NewPasswordConfirm { get; set; }
         
         public string PgpPublicKey { get; set; }
@@ -29,7 +20,6 @@ namespace Teknik.Areas.Users.ViewModels
         
         public string Quote { get; set; }
         
-        [AllowHtml]
         public string About { get; set; }
         
         public string BlogTitle { get; set; }

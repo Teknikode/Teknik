@@ -1,26 +1,19 @@
 @model Teknik.Areas.Users.ViewModels.SecuritySettingsViewModel
 
-@using Teknik.Utilities
 @using Teknik.Areas.Users.ViewModels
 
 @{
     Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
 }
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
-    var homeUrl = '@Url.SubRouteUrl("www", "Home.Index")';
-    var editURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditSecurity" })';
-    var resendVerifyURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ResendVerifyRecoveryEmail"})';
-    var confirmAuthSetupURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "VerifyAuthenticatorCode" })';
-    var clearTrustedDevicesURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "ClearTrustedDevices" })';
-    var generateTokenURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "GenerateToken" })';
-    var revokeAllTokensURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "RevokeAllTokens" })';
-    var editTokenNameURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "EditTokenName" })';
-    var deleteTokenURL = '@Url.SubRouteUrl("user", "User.Action", new { action = "DeleteToken" })';
+<script>
+    var editURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "EditSecurity" })';
+    var resendVerifyURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "ResendVerifyRecoveryEmail"})';
+    var generate2FAURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "Generate2FA" })';
+    var confirmAuthSetupURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "VerifyAuthenticatorCode" })';
+    var resetRecoveryCodesURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "ResetRecoveryCodes" })';
+    var disable2FAURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "Disable2FA" })';
 </script>
-
-@Styles.Render("~/Content/user/settings/security")
-@Scripts.Render("~/bundles/user/settings/security")
 
 <div class="modal fade" id="authenticatorSetup" tabindex="-1" role="dialog" aria-labelledby="authenticatorSetupLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -35,14 +28,14 @@
                         <div id="authSetupStatus"></div>
                     </div>
                 </div>
-                <form class="form" action="##" method="post" id="confirmAuthSetup">
+                <!form class="form" action="##" method="post" id="confirmAuthSetup">
                     <p>To get a third party app working, either scan the QR code below or type the secret key into the app.</p>
                     <div class="row">
                         <div class="col-sm-4">
                             <p class="text-muted">QR Code:</p>
                         </div>
                         <div class="col-sm-8">
-                            <img id="authQRCode" src="@Url.SubRouteUrl("user", "User.Action", new { action = "GenerateAuthQrCode", key = Model.TwoFactorKey })" width="200" height="200" alt="qr code" />
+                            <img id="authQRCode" width="200" height="200" alt="qr code" />
                         </div>
                     </div>
                     <div class="row">
@@ -50,7 +43,7 @@
                             <p class="text-muted">Secret Key:</p>
                         </div>
                         <div class="col-sm-8">
-                            <span class="text-success" id="authSetupSecretKey">@Model.TwoFactorKey</span>
+                            <span class="text-success" id="authSetupSecretKey"></span>
                         </div>
                     </div>
                     <hr />
@@ -67,112 +60,86 @@
                     <div class="form-group text-right">
                         <button class="btn btn-primary" id="auth_setup_verify" type="button" name="auth_setup_verify">Verify</button>
                     </div>
-                </form>
+                </!form>
             </div>
         </div>
     </div>
 </div>
 
-<form class="form" action="##" method="post" id="updateForm">
-    <div class="row">
-        <div class="col-sm-4">
-            <div class="row">
-                <div class="form-group col-sm-12">
-                    <label for="update_password_current"><h4>Current Password</h4></label>
-                    <input class="form-control" name="update_password_current" id="update_password_current" placeholder="current password" title="enter your current password." type="password" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col-sm-12">
-                    <label for="update_password"><h4>New Password</h4></label>
-                    <input class="form-control" name="update_password" id="update_password" placeholder="new password" title="enter your password." type="password" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col-sm-12">
-                    <label for="update_password_confirm"><h4>Verify New Password</h4></label>
-                    <input class="form-control" name="update_password_confirm" id="update_password_confirm" placeholder="new password confirmed" title="enter your password again." type="password" />
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-8">
-            <label for="update_pgp_public_key"><h4>Public Key</h4></label>
-            <textarea class="form-control" id="update_pgp_public_key" name="update_pgp_public_key" placeholder="Public Key Here" title="enter your pgp public key" rows="15">@Model.PgpPublicKey</textarea>
-        </div>
+<div class="row">
+    <div class="col-sm-12">
+        <h2>Two-Factor Authentication - <small>@(Model.TwoFactorEnabled ? Html.Raw("<span class=\"text-success\">Enabled</span>") : Html.Raw("<span class=\"text-danger\">Disabled</span>"))</small></h2>
+        <hr />
     </div>
+</div>
+<div class="row">
+    <div class="form-group col-sm-12 text-left">
+        @{
+            if (Model.TwoFactorEnabled)
+            {
+                <p>
+                    <button class="btn btn-danger" id="disable_2fa_button" type="button">Disable</button>&nbsp;&nbsp;<small><a href="#" class="text-primary" id="resetRecoveryCodes">Reset Recovery Codes</a></small>
+                </p>
+            }
+            else
+            {
+                <p>
+                    <button class="btn btn-success" id="enable_2fa_button" type="button">Enable</button>
+                </p>
+            }
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h2>Client Grants</h2>
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-sm-10">
+        <a href="@Config.UserConfig.IdentityServerConfig.Authority/Grants">Click here</a> to view/revoke the applications you have granted access to your account.</>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h2>Security Info</h2>
+        <hr />
+    </div>
+</div>
+<!form class="form" action="##" method="post" id="updateForm">
     <div class="row">
-        <div class="col-sm-4 text-left">
-            <div class="row">
-                <div class="form-group col-sm-12">
-                    <label for="update_recovery_email"><h4>Recovery Email</h4></label>
-                    <input class="form-control" name="update_recovery_email" id="update_recovery_email" placeholder="user@example.com" title="enter a recovery email." type="text" value="@Model.RecoveryEmail" />
-                    @if (!string.IsNullOrEmpty(Model.RecoveryEmail))
+        <div class="form-group col-sm-4">
+            <label for="update_recovery_email"><h4>Recovery Email</h4></label>
+            <input class="form-control" name="update_recovery_email" id="update_recovery_email" placeholder="user@example.com" title="enter a recovery email." type="text" value="@Model.RecoveryEmail" />
+            @if (!string.IsNullOrEmpty(Model.RecoveryEmail))
+            {
+                <p class="form-control-static">
+                    @if (Model.RecoveryVerified)
                     {
-                        <p class="form-control-static">
-                            @if (Model.RecoveryVerified)
-                            {
-                                <span class="text-success"><i class="fa fa-check"></i> Verified</span>
-                            }
-                            else
-                            {
-                                <span class="text-danger"><i class="fa fa-ban"></i> Unverified</span> <small><a href="#" class="text-primary" id="ResendVerification"><i class="fa fa-repeat"></i> Resend</a></small>
-                            }
-                        </p>
-                    }
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col-sm-12 text-left">
-                    <label for="update_security_two_factor"><h4>Enable Two Factor Authentication</h4></label>
-                    <div class="checkbox">
-                        <label>
-                            <input id="update_security_two_factor" name="update_security_two_factor" title="whether two factor authentication should occur for this account" type="checkbox" value="true" @(Model.TwoFactorEnabled ? "checked" : string.Empty) />
-                        </label>
-                    </div>
-                    <p class="form-control-static @(Model.TwoFactorEnabled ? string.Empty : "hide")" id="setupAuthenticatorLink">
-                        <small><a href="#" class="text-primary" id="SetupAuthenticator" data-toggle="modal" data-target="#authenticatorSetup"><i class="fa fa-lock"></i> Set Up Authenticator</a></small>
-                    </p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col-sm-12 text-left">
-                    <label for="update_security_allow_trusted"><h4>Allow Trusted Devices</h4></label>
-                    <div class="checkbox">
-                        <label>
-                            <input id="update_security_allow_trusted" name="update_security_allow_trusted" title="whether a device could be cached to bypass two factor authentication" type="checkbox" value="true" @(Model.AllowTrustedDevices ? "checked" : string.Empty) />
-                        </label>
-                    </div>
-                    <p class="form-control-static @(Model.AllowTrustedDevices ? string.Empty : "hide")" id="ClearDevicesLink">
-                        <small><a href="#" class="text-primary" id="ClearDevices">Clear Trusted Devices (@Model.TrustedDeviceCount)</a></small>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-8">
-            <br />
-            <label for="authTokens"><h4>Authentication Tokens</h4></label><span class="pull-right"><button type="button" class="btn btn-default" id="generate_token">Generate Token</button> <button type="button" class="btn btn-danger" id="revoke_all_tokens">Revoke All</button></span>
-            <div id="authTokens" style="overflow-y: auto; max-height: 400px;">
-                <ul class="list-group" id="authTokenList">
-                    @if (Model.AuthTokens.Any())
-                    {
-                        foreach (AuthTokenViewModel token in Model.AuthTokens)
-                        {
-                            @Html.Partial("Settings/AuthToken", token)
-                        }
+                        <span class="text-success"><i class="fa fa-check"></i> Verified</span>
                     }
                     else
                     {
-                        <li class="list-group-item text-center" id="noAuthTokens">No Authentication Tokens</li>
+                        <span class="text-danger"><i class="fa fa-ban"></i> Unverified</span> <small><a href="#" class="text-primary" id="ResendVerification"><i class="fa fa-repeat"></i> Resend</a></small>
                     }
-                </ul>
-            </div>
+                </p>
+            }
+        </div>
+        <div class="col-sm-6">
+            <label for="update_pgp_public_key"><h4>Public Key</h4></label>
+            <textarea class="form-control" id="update_pgp_public_key" name="update_pgp_public_key" placeholder="Public Key Here" title="enter your pgp public key" rows="10">@Model.PgpPublicKey</textarea>
         </div>
     </div>
+    <br />
     <div class="row">
         <div class="form-group col-sm-10">
-            <br />
-            <button class="btn btn-lg btn-success" id="update_submit" type="submit">Save</button>
-            <button class="btn btn-lg" type="reset">Reset</button>
+            <button class="btn btn-success" id="update_submit" type="submit">Save</button>
+            <button class="btn" type="reset">Reset</button>
         </div>
     </div>
-</form>
+</!form>
+
+<bundle src="js/user.settings.security.min.js" append-version="true"></bundle>

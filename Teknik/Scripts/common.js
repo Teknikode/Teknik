@@ -1,53 +1,15 @@
+/* exported deleteConfirm, disableButton, enableButton, removeAmp, clearInputs, randomString, getFileExtension, SelectAll, getAnchor, GenerateBlobURL, AddAntiForgeryToken, 
+   copyTextToClipboard, getReadableBandwidthString, getReadableFileSizeString, moveUp, moveDown, addParamsToUrl, sleep, parseErrorMessage, isValidURL, 
+   pageloadTimerCount, pageloadDoTimer, pageloadStopTimer */
 $(document).ready(function () {
     $("#top_msg").css('display', 'none', 'important');
 
     // Opt-in for tooltips
     $('[data-toggle="tooltip"]').tooltip();
 
-    $('#loginButton').removeClass('hide');
-
-    $('#loginModal').on('shown.bs.modal', function (e) {
-        $("#loginStatus").css('display', 'none', 'important');
-        $("#loginStatus").html('');
-        $('#loginUsername').focus();
-    });
-
-    $("#loginSubmit").click(function () {
-        // Reset login status messages
-        $("#loginStatus").css('display', 'none', 'important');
-        $("#loginStatus").html('');
-
-        // Disable the login button
-        disableButton('#loginSubmit', 'Signing In...');
-
-        var form = $('#loginForm');
-        $.ajax({
-            type: "POST",
-            url: form.attr('action'),
-            data: form.serialize(),
-            headers: {'X-Requested-With': 'XMLHttpRequest'},
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function (html) {
-                if (html.result) {
-                    window.location = html.result;
-                }
-                else {
-                    $("#loginStatus").css('display', 'inline', 'important');
-                    $("#loginStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
-                }
-
-                // Re-enable the login button
-                enableButton('#loginSubmit', 'Sign In');
-            }
-        });
-        return false;
-    });
-
     $('#registerButton').removeClass('hide');
 
-    $('#registerModal').on('shown.bs.modal', function (e) {
+    $('#registerModal').on('shown.bs.modal', function () {
         $("#registerStatus").css('display', 'none', 'important');
         $("#registerStatus").html('');
         $('#registerUsername').focus();
@@ -59,29 +21,37 @@ $(document).ready(function () {
         $("#registerStatus").html('');
 
         // Disable the register button
-        disableButton('#registerSubmit', 'Signing In...');
+        disableButton('#registerSubmit', 'Signing Up...');
 
         var form = $('#registrationForm');
         $.ajax({
             type: "POST",
             url: form.attr('action'),
             data: form.serialize(),
-            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
             xhrFields: {
                 withCredentials: true
             },
             success: function (html) {
-                if (html.result) {
-                    window.location.reload();
+                if (html.success) {
+                    $('#registerModal').modal('hide');
+
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Registration Successful.  Redirecting...</div>');
+
+                    window.location = html.redirectUrl;
                 }
                 else {
                     $("#registerStatus").css('display', 'inline', 'important');
                     $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                 }
-
-                // Re-enable the register button
-                enableButton('#registerSubmit', 'Sign Up');
+            },
+            error: function (response) {
+                $("#registerStatus").css('display', 'inline', 'important');
+                $("#registerStatus").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
             }
+        }).always(function () {
+            enableButton('#registerSubmit', 'Sign Up');
         });
         return false;
     });
@@ -101,18 +71,6 @@ $(function () {
     $('.dropdown input, .dropdown label').click(function (e) {
         e.stopPropagation();
     });
-
-    // for bootstrap 3 use 'shown.bs.tab', for bootstrap 2 use 'shown' in the next line
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        // save the latest tab; use cookies if you like 'em better:
-        localStorage.setItem('lastTab', $(this).attr('href'));
-    });
-
-    // go to the latest tab, if it exists:
-    var lastTab = localStorage.getItem('lastTab');
-    if (lastTab) {
-        $('[href="' + lastTab + '"]').tab('show');
-    }
 
     // Auo-select bitcoin address
     $('#bitcoin_address_footer').click(function() {
@@ -158,6 +116,23 @@ $(function () {
     };
 });
 
+function deleteConfirm(message, callback) {
+    bootbox.confirm({
+        message: "<h3>" + message + "</h3>",
+        buttons: {
+            confirm: {
+                label: 'Delete',
+                className: 'btn-danger'
+            },
+            cancel: {
+                label: 'Cancel',
+                className: 'btn-default'
+            }
+        },
+        callback: callback
+    });
+}
+
 function disableButton(btn, text) {
     $(btn).addClass('disabled');
     $(btn).text(text);
@@ -173,9 +148,18 @@ function removeAmp(code) {
     return code;
 }
 
+function clearInputs(parent) {
+    $(parent).find('input:text').each(function () {
+        $(this).val('');
+    });
+    $(parent).find('textarea').each(function () {
+        $(this).val('');
+    });
+}
+
 String.prototype.hashCode = function () {
     var hash = 0, i, chr, len;
-    if (this.length == 0) return hash;
+    if (this.length === 0) return hash;
     for (i = 0, len = this.length; i < len; i++) {
         chr = this.charCodeAt(i);
         hash = ((hash << 5) - hash) + chr;
@@ -196,11 +180,24 @@ function randomString(length, chars) {
 }
 
 function getFileExtension(fileName) {
-    var index = fileName.lastIndexOf('.');
-    if (index >= 0 && fileName.length > 0) {
-        return '.' + fileName.substr(index + 1);
+    var ext;
+    var a = fileName.split(".");
+    if (a.length === 1 || (a[0] === "" && a.length === 2)) {
+        ext = "";
+    } else if (a.length > 2) {
+        ext = "." + a.pop();
+        // Special case for G-Zip files
+        if (ext === ".gz") {
+            ext = "." + a.pop() + ext;
+        }
+    } else {
+        ext = a.pop();
     }
-    return '';
+    // Clear the # and ? characters
+    ext = ext.split('#')[0];
+    ext = ext.split('?')[0];
+
+    return ext;
 }
 
 function SelectAll(id) {
@@ -217,7 +214,7 @@ function getAnchor() {
 
 function GenerateBlobURL(url) {
     var cachedBlob = null;
-    jQuery.ajax({
+    $.ajax({
         url: url,
         success: function (result) {
             var workerJSBlob = new Blob([result], {
@@ -267,11 +264,11 @@ function getReadableFileSizeString(fileSizeInBytes) {
     } while (fileSizeInBytes > 1024);
 
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
-};
+}
 
 function moveUp(item) {
     var prev = item.prev();
-    if (prev.length == 0)
+    if (prev.length === 0)
         return;
     prev.css('z-index', 999).css('position', 'relative').animate({ top: item.height() }, 250);
     item.css('z-index', 1000).css('position', 'relative').animate({ top: '-' + prev.height() }, 300, function () {
@@ -283,7 +280,7 @@ function moveUp(item) {
 
 function moveDown(item) {
     var next = item.next();
-    if (next.length == 0)
+    if (next.length === 0)
         return;
     next.css('z-index', 999).css('position', 'relative').animate({ top: '-' + item.height() }, 250);
     item.css('z-index', 1000).css('position', 'relative').animate({ top: next.height() }, 300, function () {
@@ -333,6 +330,55 @@ function parseErrorMessage(errorObj) {
         }
     }
     return errorMsg;
+}
+var re_weburl = new RegExp(
+    "^" +
+    // protocol identifier (optional)
+    // short syntax // still required
+    "(?:(?:(?:https?|ftp):)?\\/\\/)" +
+    // user:pass BasicAuth (optional)
+    "(?:\\S+(?::\\S*)?@)?" +
+    "(?:" +
+    // IP address exclusion
+    // private & local networks
+    "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
+    "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
+    "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
+    // IP address dotted notation octets
+    // excludes loopback network 0.0.0.0
+    // excludes reserved space >= 224.0.0.0
+    // excludes network & broacast addresses
+    // (first & last IP address of each class)
+    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+    "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+    "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+    "|" +
+    // host & domain names, may end with dot
+    // can be replaced by a shortest alternative
+    // (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
+    "(?:" +
+    "(?:" +
+    "[a-z0-9\\u00a1-\\uffff]" +
+    "[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
+    ")?" +
+    "[a-z0-9\\u00a1-\\uffff]\\." +
+    ")+" +
+    // TLD identifier name, may end with dot
+    "(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
+    ")" +
+    // port number (optional)
+    "(?::\\d{2,5})?" +
+    // resource path (optional)
+    "(?:[/?#]\\S*)?" +
+    "$", "i"
+);
+
+function isValidURL(str) {
+    if (!re_weburl.test(str)) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 /***************************** TIMER Page Load *******************************/

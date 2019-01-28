@@ -1,0 +1,38 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "https://localhost:23818",
+      "sslPort": 44362
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_HTTPS_PORT": "44362",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "TeknikCore": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "?sub=www",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "https://localhost:5050",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Teknik - Prod": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "?sub=www",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "https://localhost:5050",
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}

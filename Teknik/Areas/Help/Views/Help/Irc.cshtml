@@ -1,7 +1,5 @@
 ﻿@model Teknik.Areas.Help.ViewModels.HelpViewModel
 
-@using Teknik.Utilities
-
 <div class="container">
     <ol class="breadcrumb">
         <li><a href="@Url.SubRouteUrl("help", "Help.Index")">Help Index</a></li>
@@ -12,7 +10,7 @@
         <hr>
         <h3>IRC Server Info</h3>
         <p>
-            You can connect to the Teknik IRC using any RFC compliant client by connecting to <b>irc.@Model.Config.Host</b> on port <b>6667</b>.
+            You can connect to the Teknik IRC using any RFC compliant client by connecting to <b>irc.@Config.Host</b> on port <b>6667</b>.
         </p>
         <h3>Channel Information</h3>
         <p>

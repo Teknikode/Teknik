@@ -1,0 +1,51 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "script"
+    },
+    "extends": "eslint:recommended",
+    "globals": {
+        // Libraries
+        "jQuery": false,
+        "$": false,
+        "_": false,
+        "bootbox": false,
+        "marked": false,
+        "sanitizeHtml": false,
+        "Highcharts": false,
+        "saveAs": false,
+        "importScripts": false,
+        "CryptoJS": false,
+        "Uint8Array": false,
+
+        // Common.js Functions
+        "deleteConfirm": false,
+        "disableButton": false,
+        "enableButton": false,
+        "removeAmp": false,
+        "clearInputs": false,
+        "randomString": false,
+        "getFileExtension": false,
+        "SelectAll": false,
+        "getAnchor": false,
+        "GenerateBlobURL": false,
+        "AddAntiForgeryToken": true,
+        "copyTextToClipboard": false,
+        "getReadableBandwidthString": false,
+        "getReadableFileSizeString": false,
+        "moveUp": false,
+        "moveDown": false,
+        "addParamsToUrl": false,
+        "sleep": false,
+        "parseErrorMessage": false,
+        "isValidURL": false,
+        "pageloadTimerCount": false,
+        "pageloadDoTimer": false,
+        "pageloadStopTimer": false
+    }
+}

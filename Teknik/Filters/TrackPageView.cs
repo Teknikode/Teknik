@@ -4,60 +4,64 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
-using System.Web.UI;
 using Teknik.Configuration;
 using Teknik.Utilities;
-using Teknik.Piwik;
+using Teknik.Tracking;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Teknik.Filters
 {
     public class TrackPageView : ActionFilterAttribute
     {
+        private readonly Config _config;
+
+        public TrackPageView(Config config)
+        {
+            _config = config;
+        }
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            base.OnActionExecuting(filterContext);
         }
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            HttpRequestBase request = filterContext.HttpContext.Request;
+            HttpRequest request = filterContext.HttpContext.Request;
 
             string doNotTrack = request.Headers["DNT"];
             if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
             {
-                string title = filterContext.Controller?.ViewBag?.Title;
+                string title = (filterContext.Controller as Controller)?.ViewBag?.Title;
 
-                string sub = request.RequestContext.RouteData.Values["sub"].ToString();
+                string sub = filterContext.RouteData.Values["sub"].ToString();
                 if (string.IsNullOrEmpty(sub))
                 {
-                    sub = request.Url?.AbsoluteUri.GetSubdomain();
+                    sub = request.Host.ToUriComponent().GetSubdomain();
                 }
 
                 string clientIp = request.ClientIPFromRequest(true);
 
-                string url = string.Empty;
-                if (request.Url != null)
-                    url = request.Url.ToString();
+                string url = UriHelper.GetEncodedUrl(request);
 
-                string urlReferrer = request.UrlReferrer?.ToString();
+                string urlReferrer = request.Headers["Referer"].ToString();
 
-                string userAgent = request.UserAgent;
+                string userAgent = request.Headers["User-Agent"].ToString();
 
-                int pixelWidth = request.Browser.ScreenPixelsWidth;
-                int pixelHeight = request.Browser.ScreenPixelsHeight;
+                int pixelWidth = 0;
+                int pixelHeight = 0;
 
-                bool hasCookies = request.Browser.Cookies;
+                bool hasCookies = false;
 
                 string acceptLang = request.Headers["Accept-Language"];
 
-                bool hasJava = request.Browser.JavaApplets;
+                bool hasJava = false;
 
                 // Fire and forget.  Don't need to wait for it.
-                Tracking.TrackPageView(title, sub, clientIp, url, urlReferrer, userAgent, pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava);
+                Tracking.Tracking.TrackPageView(filterContext.HttpContext, _config, title, sub, clientIp, url, urlReferrer, userAgent, pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava);
             }
-
-            base.OnActionExecuted(filterContext);
         }
     }
 }

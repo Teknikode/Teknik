@@ -1,10 +1,6 @@
 @model Teknik.Areas.Paste.ViewModels.PasteCreateViewModel
 
-@using Teknik.Utilities
-@using Teknik.Pygments
-
-@Styles.Render("~/Content/paste")
-@Scripts.Render("~/bundles/paste")
+<bundle src="css/paste.min.css" append-version="true"></bundle>
 
 <div class="container">
     <div class="row">
@@ -14,7 +10,7 @@
     </div>
     <div class="row">
         <div class="col-sm-12">
-            <form class="form-horizontal" name="editor" method="post" action="@Url.SubRouteUrl("paste", "Paste.Action", new { action = "Paste" })">
+            <!form class="form-horizontal" name="editor" method="post" action="@Url.SubRouteUrl("paste", "Paste.Action", new { action = "Paste" })">
                 <div class="form-group">
                     <div class="col-sm-10 col-sm-offset-1">
                         <textarea class="form-control" name="Content" id="content" rows="20"></textarea>
@@ -33,13 +29,13 @@
                     <label for="syntax" class="col-sm-2 col-sm-offset-1 control-label">Syntax</label>
                     <div class="col-sm-4">
                         <select class="form-control" name="Syntax" id="syntax">
-                            <option value="text">Text only</option>
-                            @{ 
-                                foreach (Highlighter.Lexer format in Highlighter.Lexers.OrderBy(l => l.Name))
-                                {
-                                    <option value="@format.Aliases.FirstOrDefault()">@format.Name</option>
-                                }
+                            <!option value="">Text</!option>
+
+                            @foreach (var format in HighlightHelper.Languages.GroupBy(l => l.Value).ToList())
+                            {
+                                <!option value="@(format?.FirstOrDefault().Key)">@(format?.Key)</!option>
                             }
+
                         </select>
                     </div>
                 </div>
@@ -50,13 +46,10 @@
                     </div>
                     <div class="col-sm-4" id="unit-div">
                         <select class="form-control" name="ExpireUnit" id="expireunit">
-                            <option value="never">Never</option>
-                            <option value="view">Views</option>
-                            <option value="minute">Minutes</option>
-                            <option value="hour">Hours</option>
-                            <option value="day">Days</option>
-                            <option value="month">Months</option>
-                            <option value="year">Years</option>
+                            @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+                            {
+                                <!option value="@unit">@unit.ToString()</!option>
+                            }
                         </select>
                     </div>
                 </div>
@@ -66,16 +59,7 @@
                         <input type="password" class="form-control" name="Password" id="password" placeholder="Secret">
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-6">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="Hide" id="hide" value="true"> Hide from Public List
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </form>
+            </!form>
         </div>
     </div>
     <div class="text-center">
@@ -83,17 +67,4 @@
     </div>
 </div>
 
-<script nonce="@Context.Items[Constants.NONCE_KEY]">
-    $("select[name='ExpireUnit']").change(function () {
-        if ($(this).val() == "never") {
-            $('#length-div').addClass("hidden");
-            $('#unit-div').removeClass("col-sm-2");
-            $('#unit-div').addClass("col-sm-4");
-        }
-        else {
-            $('#length-div').removeClass("hidden");
-            $('#unit-div').removeClass("col-sm-4");
-            $('#unit-div').addClass("col-sm-2");
-        }
-    });
-</script>
+<bundle src="js/paste.min.js" append-version="true"></bundle>

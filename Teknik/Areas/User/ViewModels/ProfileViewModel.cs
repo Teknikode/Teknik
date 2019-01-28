@@ -16,13 +16,7 @@ namespace Teknik.Areas.Users.ViewModels
 
         public string Email { get; set; }
 
-        public DateTime JoinDate { get; set; }
-
         public DateTime LastSeen { get; set; }
-
-        public AccountType AccountType { get; set; }
-
-        public AccountStatus AccountStatus { get; set; }
 
         public List<Upload.Models.Upload> Uploads { get; set; }
 
@@ -34,10 +28,10 @@ namespace Teknik.Areas.Users.ViewModels
 
         public UserSettings UserSettings { get; set; }
 
-        public SecuritySettings SecuritySettings { get; set; }
-
         public BlogSettings BlogSettings { get; set; }
 
         public UploadSettings UploadSettings { get; set; }
+
+        public IdentityUserInfo IdentityUserInfo { get; set; }
     }
 }

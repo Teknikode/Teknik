@@ -1,33 +1,39 @@
-@model Teknik.Areas.Paste.ViewModels.PasteViewModel
-@using Teknik.Utilities
+﻿@model Teknik.Areas.Paste.ViewModels.PasteViewModel
 
-@{
-    Layout = "";
-    string syntax = string.Empty;
-    if (Model.Syntax != "auto-detect")
+@{ 
+    Layout = null;
+    string format = Model.Syntax;
+    string formatName = "Text";
+
+    if (!string.IsNullOrEmpty(format) && HighlightHelper.Languages.ContainsKey(format))
     {
-        syntax = Model.Syntax;
+        formatName = HighlightHelper.Languages[format];
     }
 }
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="description" content="@Model.Config.Description" />
-    <meta name="author" content="@Model.Config.Author" />
-    <title>@ViewBag.Title</title>
-    <link rel="shortcut icon" href="/Images/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="@Config.Description" />
+    <meta name="author" content="@Config.Author" />
+    <title>@ViewBag.Title | @Config.Title</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
 
-    @Styles.Render("~/Content/paste")
-    @Scripts.Render("~/bundles/common")
-
+    <bundle src="css/paste.view.min.css" append-version="true"></bundle>
+    <bundle src="css/paste.view.min.css" append-version="true"></bundle>
 </head>
 <body data-twttr-rendered="true">
-    @Html.Raw(Model.Content)
-    <script nonce="@Context.Items[Constants.NONCE_KEY]">
-        function pageloadStopTimer() { }
+
+    <pre class="line-numbers" id="code" style="border: none;"><code class="language-@(format)">@Model.Content</code></pre>
+    
+    <bundle src="js/common.min.js" append-version="true"></bundle>
+    <bundle src="js/paste.view.min.js" append-version="true"></bundle>
+
+    <script>
+        $(document).ready(function () { pageloadDoTimer(); });
     </script>
 </body>
 </html>

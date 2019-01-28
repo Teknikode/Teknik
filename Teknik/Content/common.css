@@ -47,6 +47,23 @@ body { padding-top: 70px; }
     display: block;
  }
 
+.dropdown-left-manual {
+    right: 0;
+    left: auto;
+    padding-left: 1px;
+    padding-right: 1px;
+}
+
+.dropdown .dropdown__username {
+    text-overflow: ellipsis;
+    font-weight: bolder;
+    font-size: 12px;
+}
+
+.dropdown-menu a {
+    padding-bottom: 5px;
+}
+
 .collapse.in {
     display: block;
 }

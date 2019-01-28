@@ -1,129 +1,89 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using System;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
-using System.Web.UI;
 using Teknik.Areas.Error.Controllers;
+using Teknik.Attributes;
 using Teknik.Configuration;
-
+using Teknik.Data;
 using Teknik.Filters;
-using Teknik.Security;
+using Teknik.Logging;
 using Teknik.Utilities;
 
 namespace Teknik.Controllers
 {
     [CORSActionFilter]
+    [Area("Default")]
     public class DefaultController : Controller
     {
-        private Config _config;
-
         protected string Subdomain
         {
-            get { return (string)Request.RequestContext.RouteData.Values["sub"]; }
+            get { return (string)this.ControllerContext.RouteData.Values["sub"]; }
         }
 
-        protected Config Config
-        {
-            get
-            {
-                if (_config == null)
-                {
-                    _config = Config.Load();
-                }
-                return _config;
-            }
-        }
-        protected virtual new TeknikPrincipal User
-        {
-            get { return HttpContext.User as TeknikPrincipal; }
-        }
+        protected readonly ILogger<Logger> _logger;
+        protected readonly Config _config;
+        protected readonly TeknikEntities _dbContext;
 
-        public object ObjectFactory { get; private set; }
-
-        public DefaultController()
+        public DefaultController(ILogger<Logger> logger, Config config, TeknikEntities dbContext)
         {
-            ViewBag.Title = Config.Title;
-            ViewBag.Description = Config.Description;
+            _logger = logger;
+            _config = config;
+            _dbContext = dbContext;
 
-            if (Response != null)
-            {
-                Response.SuppressFormsAuthenticationRedirect = true;
-            }
-        }
-
-        protected override void HandleUnknownAction(string actionName)
-        {
-            this.InvokeHttp404(HttpContext);
-        }
-        
-        [AllowAnonymous]
-        public ActionResult InvokeHttp404(HttpContextBase httpContext)
-        {
-            IController errorController = new ErrorController();
-            var errorRoute = new RouteData();
-            errorRoute.DataTokens.Add("namespaces", new[] { typeof(ErrorController).Namespace });
-            errorRoute.DataTokens.Add("area", "Error");
-            errorRoute.Values.Add("controller", "Error");
-            errorRoute.Values.Add("action", "Http404");
-            errorRoute.Values.Add("exception", null);
-            errorController.Execute(new RequestContext(
-                 httpContext, errorRoute));
-
-            return new EmptyResult();
+            ViewBag.Title = string.Empty;
+            ViewBag.Description = _config.Description;
         }
 
         // Get the Favicon
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult Favicon()
+        [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        public IActionResult Favicon([FromServices] IHostingEnvironment env)
         {
-            // Get favicon
-            string imageFile = Server.MapPath(Constants.FAVICON_PATH);
-
-            Response.Cache.SetCacheability(HttpCacheability.Public);
-            Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
-            Response.Cache.SetLastModified(System.IO.File.GetLastWriteTime(imageFile));
-
-            return File(imageFile, "image/x-icon");
+            string imageFile = FileHelper.MapPath(env, Constants.FAVICON_PATH);
+            FileStream fs = new FileStream(imageFile, FileMode.Open, FileAccess.Read);
+            return File(fs, "image/x-icon");
         }
 
         // Get the Logo
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult Logo()
+        [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        public IActionResult Logo([FromServices] IHostingEnvironment env)
         {
-            // Get favicon
-            string imageFile = Server.MapPath(Constants.LOGO_PATH);
-
-            Response.Cache.SetCacheability(HttpCacheability.Public);
-            Response.Cache.SetMaxAge(new TimeSpan(365, 0, 0, 0));
-            Response.Cache.SetLastModified(System.IO.File.GetLastWriteTime(imageFile));
-
-            return File(imageFile, "image/svg+xml");
+            string imageFile = FileHelper.MapPath(env, Constants.LOGO_PATH);
+            FileStream fs = new FileStream(imageFile, FileMode.Open, FileAccess.Read);
+            return File(fs, "image/svg+xml");
         }
 
         // Get the Robots.txt
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult Robots()
+        public IActionResult Robots([FromServices] IHostingEnvironment env)
         {
-            // Get favicon
-            string file = Server.MapPath(Constants.ROBOTS_PATH);
-            return File(file, "text/plain");
-        }
-        
-        [AllowAnonymous]
-        public ActionResult NotFound()
-        {
-            return InvokeHttp404(HttpContext);
+            //string file = FileHelper.MapPath(env, Constants.ROBOTS_PATH);
+            return File(Constants.ROBOTS_PATH, "text/plain");
         }
 
-        protected ActionResult GenerateActionResult(object json)
+        protected IActionResult GenerateActionResult(object json)
         {
             return GenerateActionResult(json, View());
         }
 
-        protected ActionResult GenerateActionResult(object json, ActionResult result)
+        protected IActionResult GenerateActionResult(object json, IActionResult result)
         {
             if (Request.IsAjaxRequest())
             {
@@ -131,21 +91,33 @@ namespace Teknik.Controllers
             }
             return result;
         }
-    }
 
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class MyAuthorizeAttribute : AuthorizeAttribute
-    {
-        protected override bool AuthorizeCore(HttpContextBase httpContext)
+        protected async Task<string> RenderPartialViewToString(ICompositeViewEngine viewEngine, string viewName, object model)
         {
-            if (httpContext == null)
-                throw new ArgumentNullException("httpContext");
+            if (string.IsNullOrEmpty(viewName))
+                viewName = ControllerContext.ActionDescriptor.ActionName;
 
-            var user = httpContext.User;
-            if (!user.Identity.IsAuthenticated)
-                return false;
+            ViewData.Model = model;
 
-            return true;
+            using (var writer = new StringWriter())
+            {
+                string path = (new Uri(Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath;
+                ViewEngineResult viewResult =
+                    viewEngine.GetView(path, viewName, false);
+
+                ViewContext viewContext = new ViewContext(
+                    ControllerContext,
+                    viewResult.View,
+                    ViewData,
+                    TempData,
+                    writer,
+                    new HtmlHelperOptions()
+                );
+
+                await viewResult.View.RenderAsync(viewContext);
+
+                return writer.GetStringBuilder().ToString();
+            }
         }
     }
 }
