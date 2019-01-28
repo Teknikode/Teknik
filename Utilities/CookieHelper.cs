@@ -8,6 +8,9 @@ namespace Teknik.Utilities
     {
         public static string GenerateCookieDomain(string domain, bool local, bool dev)
         {
+#if DEBUG
+            return null;
+#endif
             if (local) // localhost
             {
                 return null;

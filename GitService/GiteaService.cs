@@ -136,7 +136,7 @@ namespace Teknik.GitService
                                 WHERE gogs.user.login_name = {0}";
             var results = mySQL.Query(sql, new object[] { email });
 
-            DateTime lastActive = new DateTime(1, 0, 0);
+            DateTime lastActive = new DateTime(1900, 1, 1);
             if (results != null && results.Any())
             {
                 var result = results.First();
