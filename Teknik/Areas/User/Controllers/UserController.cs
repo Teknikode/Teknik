@@ -142,6 +142,16 @@ namespace Teknik.Areas.Users.Controllers
                         model.Error = true;
                         model.ErrorMessage = "That username is not available";
                     }
+                    if (!model.Error && string.IsNullOrEmpty(model.Password))
+                    {
+                        model.Error = true;
+                        model.ErrorMessage = "You must enter a password";
+                    }
+                    if (!model.Error && model.Password.Length < _config.UserConfig.MinPasswordLength)
+                    {
+                        model.Error = true;
+                        model.ErrorMessage = $"Password must be at least {_config.UserConfig.MinPasswordLength} characters long";
+                    }
                     if (!model.Error && model.Password != model.ConfirmPassword)
                     {
                         model.Error = true;
@@ -707,6 +717,9 @@ namespace Teknik.Areas.Users.Controllers
                         // Old Password Valid?
                         if (!(await UserHelper.UserPasswordCorrect(_config, user.Username, settings.CurrentPassword)))
                             return Json(new { error = "Invalid Original Password" });
+                        // Does the new password meet the length requirement?
+                        if (settings.NewPassword.Length < _config.UserConfig.MinPasswordLength)
+                            return Json(new { error = $"New Password must be at least {_config.UserConfig.MinPasswordLength} characters long" });
                         // The New Password Match?
                         if (settings.NewPassword != settings.NewPasswordConfirm)
                             return Json(new { error = "New Password must match confirmation" });
@@ -899,6 +912,10 @@ namespace Teknik.Areas.Users.Controllers
                             if (string.IsNullOrEmpty(passwordViewModel.Password))
                             {
                                 return Json(new { error = "Password must not be empty" });
+                            }
+                            if (passwordViewModel.Password.Length < _config.UserConfig.MinPasswordLength)
+                            {
+                                return Json(new { error = $"Password must be at least {_config.UserConfig.MinPasswordLength} characters long" });
                             }
                             if (passwordViewModel.Password != passwordViewModel.PasswordConfirm)
                             {

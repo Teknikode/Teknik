@@ -53,7 +53,8 @@ namespace Teknik.Middleware
                     "worker-src blob: mediastream: {0}; " +
                     "form-action {0}; " +
                     "base-uri {0}; " +
-                    "frame-ancestors {0};", 
+                    "frame-ancestors {0}; " +
+                    "object-src {0};",
                     allowedDomain, 
                     httpContext.Items[Constants.NONCE_KEY]));
             }

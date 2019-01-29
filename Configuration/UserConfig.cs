@@ -9,6 +9,7 @@ namespace Teknik.Configuration
         public string UsernameFilterLabel { get; set; }
         public int MinUsernameLength { get; set; }
         public int MaxUsernameLength { get; set; }
+        public int MinPasswordLength { get; set; }
         public string ReservedUsernameDefinitionFile { get; set; }
         public decimal PremiumAccountPrice { get; set; }
         public string PaymentType { get; set; } 
@@ -24,6 +25,7 @@ namespace Teknik.Configuration
             UsernameFilterLabel = "AlphaNumeric Characters with Dashes, Underlines, and 0-1 Periods not in the beginning or end.";
             MinUsernameLength = 1;
             MaxUsernameLength = 35;
+            MinPasswordLength = 2;
             ReservedUsernameDefinitionFile = string.Empty;
             PremiumAccountPrice = 0;
             PaymentType = "Donation";
