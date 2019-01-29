@@ -121,7 +121,7 @@ namespace Teknik.Utilities
             }
             else
             {
-                ext = parts[1];
+                ext = "." + parts[1];
             }
 
             // Strip out invalid parts

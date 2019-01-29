@@ -191,7 +191,7 @@ function getFileExtension(fileName) {
             ext = "." + a.pop() + ext;
         }
     } else {
-        ext = a.pop();
+        ext = "." + a.pop();
     }
     // Clear the # and ? characters
     ext = ext.split('#')[0];
