@@ -14,10 +14,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Teknik.Configuration;
 using Teknik.IdentityServer.Models;
 using Teknik.IdentityServer.Models.Manage;
+using Teknik.IdentityServer.Services;
 using Teknik.Logging;
 using Teknik.Utilities;
 
@@ -28,17 +31,22 @@ namespace Teknik.IdentityServer.Controllers
     [ApiController]
     public class ManageController : DefaultController
     {
+        private const string _UserInfoCacheKey = "UserInfo";
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IMemoryCache _cache;
 
         public ManageController(
             ILogger<Logger> logger,
             Config config,
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager) : base(logger, config)
+            SignInManager<ApplicationUser> signInManager,
+            IMemoryCache cache) : base(logger, config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -91,7 +99,11 @@ namespace Teknik.IdentityServer.Controllers
 
                 var result = await _userManager.DeleteAsync(foundUser);
                 if (result.Succeeded)
+                {
+                    RemoveCachedUser(model.Username);
+
                     return new JsonResult(new { success = true });
+                }
                 else
                     return new JsonResult(new { success = false, message = "Unable to delete user.", identityErrors = result.Errors });
             }
@@ -104,8 +116,8 @@ namespace Teknik.IdentityServer.Controllers
         {
             if (string.IsNullOrEmpty(username))
                 return new JsonResult(new { success = false, message = "Username is required" });
-
-            var foundUser = await _userManager.FindByNameAsync(username);
+            
+            var foundUser = await GetCachedUser(username);
             return new JsonResult(new { success = true, data = foundUser != null });
         }
 
@@ -115,12 +127,11 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(username);
+            var foundUser = await GetCachedUser(username);
             if (foundUser != null)
             {
                 return new JsonResult(new { success = true, data = foundUser.ToJson() });
             }
-
             return new JsonResult(new { success = false, message = "User does not exist." });
         }
 
@@ -132,7 +143,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Password))
                 return new JsonResult(new { success = false, message = "Password is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 bool valid = await _userManager.CheckPasswordAsync(foundUser, model.Password);
@@ -148,7 +159,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 string token = await _userManager.GeneratePasswordResetTokenAsync(foundUser);
@@ -168,7 +179,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Password))
                 return new JsonResult(new { success = false, message = "Password is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 var result = await _userManager.ResetPasswordAsync(foundUser, model.Token, model.Password);
@@ -191,7 +202,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.NewPassword))
                 return new JsonResult(new { success = false, message = "New Password is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 var result = await _userManager.ChangePasswordAsync(foundUser, model.CurrentPassword, model.NewPassword);
@@ -210,12 +221,15 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 var result = await _userManager.SetEmailAsync(foundUser, model.Email);
                 if (result.Succeeded)
                 {
+                    // Remove the UserInfo Cache
+                    RemoveCachedUser(model.Username);
+
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(foundUser);
                     return new JsonResult(new { success = true, data = token });
                 }
@@ -234,9 +248,12 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Token))
                 return new JsonResult(new { success = false, message = "Token is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
+                // Remove the UserInfo Cache
+                RemoveCachedUser(model.Username);
+
                 var result = await _userManager.ConfirmEmailAsync(foundUser, model.Token);
                 if (result.Succeeded)
                     return new JsonResult(new { success = true });
@@ -253,14 +270,19 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 foundUser.AccountStatus = model.AccountStatus;
 
                 var result = await _userManager.UpdateAsync(foundUser);
                 if (result.Succeeded)
+                {
+                    // Remove the UserInfo Cache
+                    RemoveCachedUser(model.Username);
+
                     return new JsonResult(new { success = true });
+                }
                 else
                     return new JsonResult(new { success = false, message = "Unable to update account status.", identityErrors = result.Errors });
             }
@@ -274,14 +296,19 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 foundUser.AccountType = model.AccountType;
 
                 var result = await _userManager.UpdateAsync(foundUser);
                 if (result.Succeeded)
+                {
+                    // Remove the UserInfo Cache
+                    RemoveCachedUser(model.Username);
+
                     return new JsonResult(new { success = true });
+                }
                 else
                     return new JsonResult(new { success = false, message = "Unable to update account type.", identityErrors = result.Errors });
             }
@@ -295,14 +322,19 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 foundUser.PGPPublicKey = model.PGPPublicKey;
 
                 var result = await _userManager.UpdateAsync(foundUser);
                 if (result.Succeeded)
+                {
+                    // Remove the UserInfo Cache
+                    RemoveCachedUser(model.Username);
+
                     return new JsonResult(new { success = true });
+                }
                 else
                     return new JsonResult(new { success = false, message = "Unable to update pgp public key.", identityErrors = result.Errors });
             }
@@ -316,7 +348,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(username);
+            var foundUser = await GetCachedUser(username);
             if (foundUser != null)
             {
                 string unformattedKey = await _userManager.GetAuthenticatorKeyAsync(foundUser);
@@ -333,9 +365,12 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
+                // Remove the UserInfo Cache
+                RemoveCachedUser(model.Username);
+
                 await _userManager.ResetAuthenticatorKeyAsync(foundUser);
                 string unformattedKey = await _userManager.GetAuthenticatorKeyAsync(foundUser);
 
@@ -353,7 +388,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Code))
                 return new JsonResult(new { success = false, message = "Code is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 // Strip spaces and hypens
@@ -367,6 +402,9 @@ namespace Teknik.IdentityServer.Controllers
                     var result = await _userManager.SetTwoFactorEnabledAsync(foundUser, true);
                     if (result.Succeeded)
                     {
+                        // Remove the UserInfo Cache
+                        RemoveCachedUser(model.Username);
+
                         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(foundUser, 10);
                         return new JsonResult(new { success = true, data = recoveryCodes.ToArray() });
                     }
@@ -386,12 +424,17 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 var result = await _userManager.SetTwoFactorEnabledAsync(foundUser, false);
                 if (result.Succeeded)
+                {
+                    // Remove the UserInfo Cache
+                    RemoveCachedUser(model.Username);
+
                     return new JsonResult(new { success = true });
+                }
                 else
                     return new JsonResult(new { success = false, message = "Unable to disable Two-Factor Authentication.", identityErrors = result.Errors });
             }
@@ -405,11 +448,14 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await _userManager.FindByNameAsync(model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
                 if (foundUser.TwoFactorEnabled)
                 {
+                    // Remove the UserInfo Cache
+                    RemoveCachedUser(model.Username);
+
                     var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(foundUser, 10);
 
                     return new JsonResult(new { success = true, data = recoveryCodes.ToArray() });
@@ -606,6 +652,35 @@ namespace Teknik.IdentityServer.Controllers
             }
 
             return result.ToString().ToLowerInvariant();
+        }
+
+        private async Task<ApplicationUser> GetCachedUser(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException("username");
+
+            // Check the cache
+            string cacheKey = _UserInfoCacheKey + username;
+            ApplicationUser foundUser;
+            if (!_cache.TryGetValue(cacheKey, out foundUser))
+            {
+                foundUser = await _userManager.FindByNameAsync(username);
+                if (foundUser != null)
+                {
+                    _cache.AddToCache(cacheKey, foundUser, new TimeSpan(1, 0, 0));
+                }
+            }
+
+            return foundUser;
+        }
+
+        private void RemoveCachedUser(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException("username");
+
+            string cacheKey = _UserInfoCacheKey + username;
+            _cache.Remove(cacheKey);
         }
     }
 }

@@ -23,8 +23,7 @@ using Teknik.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Teknik.IdentityServer.Models;
 using IdentityServer4.Services;
-using System.Collections.Generic;
-using Teknik.Utilities;
+
 
 namespace Teknik.IdentityServer
 {
@@ -128,6 +127,7 @@ namespace Teknik.IdentityServer
                 options.Cors.CorsPaths.Add(new PathString("/connect/endsession"));
                 options.Cors.CorsPaths.Add(new PathString("/connect/checksession"));
                 options.Cors.CorsPaths.Add(new PathString("/connect/introspect"));
+                options.Caching.ClientStoreExpiration = TimeSpan.FromHours(1);
             })
                 .AddOperationalStore(options =>
                     options.ConfigureDbContext = builder =>
@@ -135,6 +135,7 @@ namespace Teknik.IdentityServer
                 .AddConfigurationStore(options =>
                     options.ConfigureDbContext = builder =>
                         builder.UseSqlServer(config.DbConnection, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
+                .AddConfigurationStoreCache()
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddRedirectUriValidator<TeknikRedirectUriValidator>()
                 .AddDeveloperSigningCredential();

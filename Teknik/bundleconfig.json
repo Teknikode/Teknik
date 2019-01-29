@@ -20,7 +20,7 @@
     {
         "outputFileName": "./wwwroot/js/userSearch.min.js",
         "inputFiles": [
-            "./wwwroot/js/app/Admin/UserInfo.js"
+            "./wwwroot/js/app/Admin/UserSearch.js"
         ]
     },
     {
