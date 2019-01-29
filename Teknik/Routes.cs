@@ -632,6 +632,13 @@ namespace Teknik
         public static void BuildUserRoutes(this IRouteBuilder routes, Config config)
         {
             routes.MapSubdomainRoute(
+              name: "User.Index",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "account" },
+              template: "",
+              defaults: new { area = "User", controller = "User", action = "Index" }
+            );
+            routes.MapSubdomainRoute(
               name: "User.GetPremium",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "account" },

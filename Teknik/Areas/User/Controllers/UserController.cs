@@ -58,6 +58,12 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
+        public IActionResult Index()
+        {
+            return Redirect(Url.SubRouteUrl("www", "Home.Index"));
+        }
+
+        [HttpGet]
         public IActionResult Login(string returnUrl)
         {
             // Let's double check their email and git accounts to make sure they exist
