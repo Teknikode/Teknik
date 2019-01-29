@@ -81,6 +81,10 @@ namespace Teknik
             {
                 Environment.EnvironmentName = EnvironmentName.Development;
             }
+            else
+            {
+                Environment.EnvironmentName = EnvironmentName.Production;
+            }
 
             services.AddHttpsRedirection(options =>
             {
@@ -169,7 +173,10 @@ namespace Teknik
                 })
                 .AddCookie(options =>
                 {
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+                    options.Cookie.Expiration = TimeSpan.FromDays(30);
+                    options.ExpireTimeSpan = TimeSpan.FromDays(30);
                     options.Cookie.Name = "TeknikWebAuth";
                     options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment());
 
@@ -191,7 +198,6 @@ namespace Teknik
                     options.Scope.Add("openid");
                     options.Scope.Add("role");
                     options.Scope.Add("account-info");
-                    options.Scope.Add("security-info");
                     options.Scope.Add("teknik-api.read");
                     options.Scope.Add("teknik-api.write");
                     options.Scope.Add("offline_access");

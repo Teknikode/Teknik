@@ -115,6 +115,8 @@ namespace Teknik.Areas.Paste.Controllers
                 CachePassword(url, password);
 
                 // Read in the file
+                if (string.IsNullOrEmpty(paste.FileName))
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
                 string subDir = paste.FileName[0].ToString();
                 string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.FileName);
                 if (!System.IO.File.Exists(filePath))
@@ -227,8 +229,8 @@ namespace Teknik.Areas.Paste.Controllers
                 model.DatePosted = paste.DatePosted;
                 model.Username = paste.User?.Username;
 
-                byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
-                byte[] keyBytes = AesCounterManaged.CreateKey(paste.Key, ivBytes, paste.KeySize);
+                byte[] ivBytes = (string.IsNullOrEmpty(paste.IV)) ? new byte[paste.BlockSize] : Encoding.Unicode.GetBytes(paste.IV);
+                byte[] keyBytes = (string.IsNullOrEmpty(paste.Key)) ? new byte[paste.KeySize] : AesCounterManaged.CreateKey(paste.Key, ivBytes, paste.KeySize);
 
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
@@ -265,6 +267,8 @@ namespace Teknik.Areas.Paste.Controllers
                 CachePassword(url, password);
 
                 // Read in the file
+                if (string.IsNullOrEmpty(paste.FileName))
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
                 string subDir = paste.FileName[0].ToString();
                 string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.FileName);
                 if (!System.IO.File.Exists(filePath))
@@ -394,15 +398,15 @@ namespace Teknik.Areas.Paste.Controllers
 
         private void CachePassword(string url, string password)
         {
-            if (HttpContext != null)
+            if (HttpContext != null && HttpContext.Session != null)
             {
-                HttpContext.Session.Set("PastePassword_" + url, password);
+                HttpContext.Session?.Set("PastePassword_" + url, password);
             }
         }
 
         private string GetCachedPassword(string url)
         {
-            if (HttpContext != null)
+            if (HttpContext != null && HttpContext.Session != null)
             {
                 return HttpContext.Session.Get<string>("PastePassword_" + url);
             }

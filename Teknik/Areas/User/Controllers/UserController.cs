@@ -58,6 +58,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return Redirect(Url.SubRouteUrl("www", "Home.Index"));
