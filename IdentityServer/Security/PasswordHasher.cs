@@ -35,7 +35,7 @@ namespace Teknik.IdentityServer.Security
 
             // Test legacy password hashes
             #region Legacy Checks
-            byte[] hashBytes = SHA384.Hash(user.UserName, providedPassword);
+            byte[] hashBytes = SHA384.Hash(user.UserName.ToLower(), providedPassword);
             string hash = hashBytes.ToHex();
             if (hashedPassword == hash)
             {
