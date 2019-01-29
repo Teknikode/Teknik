@@ -45,7 +45,7 @@ namespace Teknik.Areas.Paste.Controllers
             Models.Paste paste = _dbContext.Pastes.Where(p => p.Url == url).FirstOrDefault();
             if (paste != null)
             {
-                ViewBag.Title = paste.Title + " | Pastebin";
+                ViewBag.Title = (string.IsNullOrEmpty(paste.Title)) ? "Untitled Paste" : paste.Title + " | Pastebin";
                 ViewBag.Description = "Paste your code or text easily and securely.  Set an expiration, set a password, or leave it open for the world to see.";
                 // Increment Views
                 paste.Views += 1;
