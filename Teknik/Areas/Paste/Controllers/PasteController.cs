@@ -76,8 +76,8 @@ namespace Teknik.Areas.Paste.Controllers
                     }
                 }
 
-                byte[] ivBytes = Encoding.Unicode.GetBytes(paste.IV);
-                byte[] keyBytes = AesCounterManaged.CreateKey(paste.Key, ivBytes, paste.KeySize);
+                byte[] ivBytes = (string.IsNullOrEmpty(paste.IV)) ? new byte[paste.BlockSize] : Encoding.Unicode.GetBytes(paste.IV);
+                byte[] keyBytes = (string.IsNullOrEmpty(paste.Key)) ? new byte[paste.KeySize] : AesCounterManaged.CreateKey(paste.Key, ivBytes, paste.KeySize);
 
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
