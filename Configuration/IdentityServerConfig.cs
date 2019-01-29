@@ -6,6 +6,7 @@ namespace Teknik.Configuration
 {
     public class IdentityServerConfig
     {
+        public string Host { get; set; }
         public string Authority { get; set; }
 
         public string ClientId { get; set; }
@@ -19,6 +20,7 @@ namespace Teknik.Configuration
 
         public IdentityServerConfig()
         {
+            Host = "localhost:5002";
             Authority = "https://localhost:5002";
             ClientId = "mvc.client";
             ClientSecret = "mysecret";

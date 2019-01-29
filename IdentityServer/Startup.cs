@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Authorization;
 using Teknik.IdentityServer.Models;
 using IdentityServer4.Services;
 using System.Collections.Generic;
+using Teknik.Utilities;
 
 namespace Teknik.IdentityServer
 {
@@ -54,8 +55,14 @@ namespace Teknik.IdentityServer
             // Resolve the services from the service provider
             var config = sp.GetService<Config>();
 
+            if (config.DevEnvironment)
+            {
+                Environment.EnvironmentName = EnvironmentName.Development;
+            }
+
             services.ConfigureApplicationCookie(options =>
             {
+                options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.UserConfig.IdentityServerConfig.Host, false, Environment.IsDevelopment());
                 options.Cookie.Name = "TeknikAuth";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
@@ -65,7 +72,12 @@ namespace Teknik.IdentityServer
 
             services.AddHttpsRedirection(options =>
             {
-                options.RedirectStatusCode = StatusCodes.Status301MovedPermanently;
+                options.RedirectStatusCode = (Environment.IsDevelopment()) ? StatusCodes.Status307TemporaryRedirect : StatusCodes.Status308PermanentRedirect;
+#if DEBUG
+                options.HttpsPort = 5050;
+#else
+                options.HttpsPort = 443;
+#endif
             });
 
             // Sessions
@@ -76,6 +88,7 @@ namespace Teknik.IdentityServer
             // Set the anti-forgery cookie name
             services.AddAntiforgery(options =>
             {
+                options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.UserConfig.IdentityServerConfig.Host, false, Environment.IsDevelopment());
                 options.Cookie.Name = "TeknikAuthAntiForgery";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
@@ -165,7 +178,7 @@ namespace Teknik.IdentityServer
                 IdleTimeout = TimeSpan.FromMinutes(30),
                 Cookie = new CookieBuilder()
                 {
-                    Domain = null,
+                    Domain = CookieHelper.GenerateCookieDomain(config.UserConfig.IdentityServerConfig.Host, false, Environment.IsDevelopment()),
                     Name = "TeknikAuthSession",
                     SecurePolicy = CookieSecurePolicy.Always,
                     SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict

@@ -82,6 +82,16 @@ namespace Teknik
                 Environment.EnvironmentName = EnvironmentName.Development;
             }
 
+            services.AddHttpsRedirection(options =>
+            {
+                options.RedirectStatusCode = (Environment.IsDevelopment()) ? StatusCodes.Status307TemporaryRedirect : StatusCodes.Status308PermanentRedirect;
+#if DEBUG
+                options.HttpsPort = 5050;
+#else
+                options.HttpsPort = 443;
+#endif
+            });
+
             // Add Tracking Filter scopes
             //services.AddScoped<TrackDownload>();
             //services.AddScoped<TrackLink>();
@@ -102,6 +112,7 @@ namespace Teknik
 
             services.ConfigureApplicationCookie(options =>
             {
+                options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment());
                 options.Cookie.Name = "TeknikWeb";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
