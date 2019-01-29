@@ -117,7 +117,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(username))
                 return new JsonResult(new { success = false, message = "Username is required" });
             
-            var foundUser = await GetCachedUser(username);
+            var foundUser = await _userManager.FindByNameAsync(username);
             return new JsonResult(new { success = true, data = foundUser != null });
         }
 
@@ -143,7 +143,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Password))
                 return new JsonResult(new { success = false, message = "Password is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 bool valid = await _userManager.CheckPasswordAsync(foundUser, model.Password);
@@ -159,7 +159,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 string token = await _userManager.GeneratePasswordResetTokenAsync(foundUser);
@@ -179,7 +179,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Password))
                 return new JsonResult(new { success = false, message = "Password is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 var result = await _userManager.ResetPasswordAsync(foundUser, model.Token, model.Password);
@@ -202,7 +202,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.NewPassword))
                 return new JsonResult(new { success = false, message = "New Password is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 var result = await _userManager.ChangePasswordAsync(foundUser, model.CurrentPassword, model.NewPassword);
@@ -221,7 +221,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 var result = await _userManager.SetEmailAsync(foundUser, model.Email);
@@ -248,7 +248,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Token))
                 return new JsonResult(new { success = false, message = "Token is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 // Remove the UserInfo Cache
@@ -270,7 +270,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 foundUser.AccountStatus = model.AccountStatus;
@@ -296,7 +296,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 foundUser.AccountType = model.AccountType;
@@ -322,7 +322,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 foundUser.PGPPublicKey = model.PGPPublicKey;
@@ -348,7 +348,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await GetCachedUser(username);
+            var foundUser = await _userManager.FindByNameAsync(username);
             if (foundUser != null)
             {
                 string unformattedKey = await _userManager.GetAuthenticatorKeyAsync(foundUser);
@@ -365,7 +365,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 // Remove the UserInfo Cache
@@ -388,7 +388,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Code))
                 return new JsonResult(new { success = false, message = "Code is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 // Strip spaces and hypens
@@ -424,7 +424,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 var result = await _userManager.SetTwoFactorEnabledAsync(foundUser, false);
@@ -448,7 +448,7 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = await GetCachedUser(model.Username);
+            var foundUser = await _userManager.FindByNameAsync(model.Username);
             if (foundUser != null)
             {
                 if (foundUser.TwoFactorEnabled)
