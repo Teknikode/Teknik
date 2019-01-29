@@ -110,6 +110,9 @@ namespace Teknik.IdentityServer.Controllers
 
                     if (result.Succeeded)
                     {
+                        foundUser.LastSeen = DateTime.Now;
+                        await _userManager.UpdateAsync(foundUser);
+
                         // make sure the returnUrl is still valid, and if so redirect back to authorize endpoint or a local page
                         if (_interaction.IsValidReturnUrl(returnUrl) || Url.IsLocalUrl(returnUrl))
                         {
@@ -179,6 +182,9 @@ namespace Teknik.IdentityServer.Controllers
 
             if (result.Succeeded)
             {
+                user.LastSeen = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+
                 return RedirectToLocal(returnUrl);
             }
             else if (result.IsLockedOut)
