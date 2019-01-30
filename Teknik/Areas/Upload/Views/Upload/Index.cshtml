@@ -46,7 +46,7 @@
             </div>
         </div>
         <div class="col-sm-1 upload__help-icon">
-            <a href="@Url.SubRouteUrl("help", "Help.Upload")"><i class="fa fa-question-circle-o"></i></a>
+            <a href="@Url.SubRouteUrl("help", "Help.Upload")" target="_blank"><i class="fa fa-question-circle-o"></i></a>
         </div>
     </div>
 
@@ -61,12 +61,20 @@
         </div>
         <div class="col-sm-5">
             <div class="form-group form-group-sm">
-                <label class="col-sm-2 control-label">Expiration</label>
-                <fieldset @(User.Identity.IsAuthenticated ? "" : "disabled")>
+                @if (!User.Identity.IsAuthenticated)
+                {
+                    @:<label class="col-sm-3 control-label" data-toggle="tooltip" data-placement="top" title="You must be logged in to modify the expiration">Expiration*</label>
+                }
+                else
+                {
+                    @:<label class="col-sm-3 control-label">Expiration</label>
+                }
+                <fieldset @if (!User.Identity.IsAuthenticated) { @: disabled
+                          }>
                     <div class="col-sm-4 hidden" id="length-div">
-                        <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength" )>
+                        <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
                     </div>
-                    <div class="col-sm-10" id="unit-div">
+                    <div class="col-sm-9" id="unit-div">
                         <select class="form-control" name="expireunit" id="expireunit">
                             @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
                             {
