@@ -173,13 +173,13 @@ function linkAddToVault(element) {
 function setExpireWidth(unit) {
     if (unit === "Never") {
         $('#length-div').addClass("hidden");
-        $('#unit-div').removeClass("col-sm-5");
-        $('#unit-div').addClass("col-sm-9");
+        $('#unit-div').removeClass("col-xs-5");
+        $('#unit-div').addClass("col-xs-9");
     }
     else {
         $('#length-div').removeClass("hidden");
-        $('#unit-div').removeClass("col-sm-9");
-        $('#unit-div').addClass("col-sm-5");
+        $('#unit-div').removeClass("col-xs-9");
+        $('#unit-div').addClass("col-xs-5");
     }
 }
 

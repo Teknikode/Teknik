@@ -20,7 +20,7 @@
         }
 
 .upload__help-icon {
-    margin-top: 20px;
+    margin: 20px 0;
 }
 
     .upload__help-icon a {
@@ -30,7 +30,3 @@
         .upload__help-icon a i {
             font-size: 18px;
         }
-
-.control-label {
-    font-size: 12px;
-}

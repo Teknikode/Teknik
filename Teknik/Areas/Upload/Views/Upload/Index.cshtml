@@ -45,7 +45,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-1 upload__help-icon">
+        <div class="col-sm-1 hidden-xs upload__help-icon">
             <a href="@Url.SubRouteUrl("help", "Help.Upload")" target="_blank"><i class="fa fa-question-circle-o"></i></a>
         </div>
     </div>
@@ -53,8 +53,8 @@
     <div class="row form-horizontal">
         <div class="col-sm-5 col-sm-offset-1">
             <div class="form-group form-group-sm">
-                <label for="encrypt" class="col-sm-6 control-label">Encrypt in Browser</label>
-                <div class="col-sm-6">
+                <label for="encrypt" class="col-sm-6 col-xs-3 control-label">Encrypt in Browser</label>
+                <div class="col-sm-6 col-xs-9">
                     <input type="checkbox" class="center-block" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
                 </div>
             </div>
@@ -63,18 +63,18 @@
             <div class="form-group form-group-sm">
                 @if (!User.Identity.IsAuthenticated)
                 {
-                    @:<label class="col-sm-3 control-label" data-toggle="tooltip" data-placement="top" title="You must be logged in to modify the expiration">Expiration*</label>
+                    @:<label class="col-xs-3 control-label" data-toggle="tooltip" data-placement="top" title="Uploads expire after 1 day for unregistered users">Expiration*</label>
                 }
                 else
                 {
-                    @:<label class="col-sm-3 control-label">Expiration</label>
+                    @:<label class="col-xs-3 control-label">Expiration</label>
                 }
                 <fieldset @if (!User.Identity.IsAuthenticated) { @: disabled
                           }>
-                    <div class="col-sm-4 hidden" id="length-div">
+                    <div class="col-xs-4 hidden" id="length-div">
                         <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
                     </div>
-                    <div class="col-sm-9" id="unit-div">
+                    <div class="col-xs-9" id="unit-div">
                         <select class="form-control" name="expireunit" id="expireunit">
                             @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
                             {
