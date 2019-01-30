@@ -1,0 +1,36 @@
+﻿.upload__drop-container {
+    border: 2px dashed #CACACA;
+    background-color: #f5f5f5;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin: 20px;
+}
+
+    .upload__drop-container .upload__drop-text {
+        opacity: 1;
+        margin: 0;
+    }
+
+    .upload__drop-container:hover {
+        background-color: #F0F0F0;
+    }
+
+        .upload__drop-container:hover .upload__drop-text {
+            opacity: 1;
+        }
+
+.upload__help-icon {
+    margin-top: 20px;
+}
+
+    .upload__help-icon a {
+        color: #333;
+    }
+
+        .upload__help-icon a i {
+            font-size: 18px;
+        }
+
+.control-label {
+    font-size: 12px;
+}

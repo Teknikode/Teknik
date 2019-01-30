@@ -33,22 +33,32 @@ namespace Teknik.Areas.Upload.Controllers
         
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             ViewBag.Title = "Upload Files";
             UploadViewModel model = new UploadViewModel();
             model.CurrentSub = Subdomain;
-            Users.Models.User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-            if (user != null)
+            model.Encrypt = false;
+            model.ExpirationLength = 1;
+            model.ExpirationUnit = ExpirationUnit.Days;
+            model.MaxUploadSize = _config.UploadConfig.MaxUploadSize;
+            if (User.Identity.IsAuthenticated)
             {
-                model.Encrypt = user.UploadSettings.Encrypt;
-                model.ExpirationLength = user.UploadSettings.ExpirationLength;
-                model.ExpirationUnit = user.UploadSettings.ExpirationUnit;
-                model.Vaults = user.Vaults.ToList();
-            }
-            else
-            {
-                model.Encrypt = false;
+                User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                if (user != null)
+                {
+                    model.Encrypt = user.UploadSettings.Encrypt;
+                    model.ExpirationLength = user.UploadSettings.ExpirationLength;
+                    model.ExpirationUnit = user.UploadSettings.ExpirationUnit;
+                    model.Vaults = user.Vaults.ToList();
+
+                    model.MaxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
+                    IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
+                    if (userInfo.AccountType == AccountType.Premium)
+                    {
+                        model.MaxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
+                    }
+                }
             }
             return View(model);
         }

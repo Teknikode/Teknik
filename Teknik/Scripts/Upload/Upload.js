@@ -12,20 +12,18 @@ $(document).ready(function () {
         }, 3000);
     });
 
-    $("[name='encrypt']").bootstrapSwitch();
+    $("[name='encrypt']").bootstrapSwitch({ size: "small" });
+
+    // Initialize the widths
+    setExpireWidth($("#expireunit").val());
+
+    linkExpireSelect($("#expireunit"));
 
     linkCopyAll($('#copy-all'));
     linkCreateVault($('#create-vault'));
 
     $('#add-to-vault-menu').find('.add-to-vault').each(function () {
         linkAddToVault($(this));
-    });
-
-    $('#uploadSettings').on('shown.bs.modal', function () {
-        // Initialize the widths
-        setExpireWidth($('#uploadSettings').find("#expireunit").val());
-
-        linkExpireSelect($('#uploadSettings').find("#expireunit"));
     });
 
     document.onpaste = function (event) {
@@ -257,9 +255,9 @@ function processFile(fileBlob, fileName, contentType, contentSize, fileID, token
         var fileExt = getFileExtension(fileName);
 
         // Get session settings
-        var encrypt = $('#uploadSettings').find('#encrypt').is(':checked');
-        var expireUnit = $('#uploadSettings').find("#expireunit").val();
-        var expireLength = $('#uploadSettings').find("#expirelength").val();
+        var encrypt = $('#encrypt').is(':checked');
+        var expireUnit = $("#expireunit").val();
+        var expireLength = $("#expirelength").val();
 
         var options = {
             encrypt: encrypt,

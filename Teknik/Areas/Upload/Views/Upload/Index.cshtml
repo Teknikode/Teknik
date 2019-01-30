@@ -2,23 +2,11 @@
 
 @using Teknik.Areas.Vault.Models
 
-@{
-    long maxUploadSize = Config.UploadConfig.MaxUploadSize;
-    if (User.Identity.IsAuthenticated)
-    {
-        maxUploadSize = Config.UploadConfig.MaxUploadSizeBasic;
-        //if (User.Info.AccountType == AccountType.Premium)
-        //{
-        //    maxUploadSize = Config.UploadConfig.MaxUploadSizePremium;
-        //}
-    }
-}
-
 <script>
     var encScriptSrc = '@Url.FullURL("~/js/cryptoWorker.min.js")';
     var aesScriptSrc = '@Url.FullURL("~/js/crypto.min.js")';
     var uploadFileURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action = "Upload" })';
-    var maxUploadSize = @maxUploadSize;
+    var maxUploadSize = @Model.MaxUploadSize;
     var chunkSize = @Config.UploadConfig.ChunkSize;
     var keySize = @Config.UploadConfig.KeySize;
     var blockSize = @Config.UploadConfig.BlockSize;
@@ -32,30 +20,66 @@
     <div class="row text-center">
         <div class="col-sm-10 col-sm-offset-1">
             <div class="row text-center">
-                <div class="well well-lg text-center" id="uploadButton" style="cursor: pointer">
+                <div class="text-center upload__drop-container" id="uploadButton" style="cursor: pointer">
                     <div class="row">
                         <div class="col-sm-12">
-                            <h1>Drop your files here</h1>
+                            <h3 class="upload__drop-text"><span class="fa fa-cloud-upload fa-5x"></span></h3>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <h2>Or paste them</h2>
+                            <h2 class="upload__drop-text">DRAG &amp; DROP</h2>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <h3>Or click</h3>
+                            <span class="upload__drop-text">Or select files from your system</span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <small class="upload__drop-text text-muted">(Individual file size limit @StringHelper.GetBytesReadable(Model.MaxUploadSize))</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-sm-1">
-            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#uploadSettings"><i class="fa fa-gear"></i></button>
+        <div class="col-sm-1 upload__help-icon">
+            <a href="@Url.SubRouteUrl("help", "Help.Upload")"><i class="fa fa-question-circle-o"></i></a>
         </div>
     </div>
-    <div class="row" id="upload-action-buttons" style="display: none">
+
+    <div class="row form-horizontal">
+        <div class="col-sm-5 col-sm-offset-1">
+            <div class="form-group form-group-sm">
+                <label for="encrypt" class="col-sm-6 control-label">Encrypt in Browser</label>
+                <div class="col-sm-6">
+                    <input type="checkbox" class="center-block" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="form-group form-group-sm">
+                <label class="col-sm-2 control-label">Expiration</label>
+                <fieldset @(User.Identity.IsAuthenticated ? "" : "disabled")>
+                    <div class="col-sm-4 hidden" id="length-div">
+                        <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength" )>
+                    </div>
+                    <div class="col-sm-10" id="unit-div">
+                        <select class="form-control" name="expireunit" id="expireunit">
+                            @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+                            {
+                                <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
+                            }
+                        </select>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    <div class="row upload__action-buttons" id="upload-action-buttons" style="display: none">
         <div class="col-sm-12">
             <div class="btn-group pull-right" role="group">
                 <button type="button" class="btn btn-default btn-sm" id="copy-all" data-toggle="popover" data-trigger="manual" data-placement="top" data-content="Copied to Clipboard" data-container="body"><i class="fa fa-clipboard"></i>&nbsp;Copy All Links</button>
@@ -78,61 +102,12 @@
     <br />
     <div class="well text-center">
         <p>
-            The maximum file size per upload is <b>@StringHelper.GetBytesReadable(maxUploadSize)</b>
-        </p>
-        <p>
             Each file is encrypted after upload using an AES-256-CTR cipher.  You can encrypt it within your browser for extra security by setting the option <strong>Encrypt in Browser</strong> in the options pane.
         </p>
     </div>
     <div class="text-center">
         Useful Tools: <a href="@Url.SubRouteUrl("help", "Help.Tools")">Upload Scripts and Utilities</a>
     </div>
-</div>
-
-<div class="modal fade" id="uploadSettings" tabindex="-1" role="dialog" aria-labelledby="uploadSettingsLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="row">
-                            <div class="col-sm-12 text-center">
-                                <h4 class="text-center">Encrypt in Browser</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <input type="checkbox" class="center-block" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
-                            </div>
-                        </div>
-                    </div>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                    <div class="col-sm-6">
-                        <div class="row">
-                            <div class="col-sm-12 text-center">
-                                <h4 class="text-center">Expiration</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4 hidden" id="length-div">
-                                <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
-                            </div>
-                            <div class="col-sm-12" id="unit-div">
-                                <select class="form-control" name="expireunit" id="expireunit">
-                                    @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
-                                    {
-                                        <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    }
-                </div>
-            </div>
-        </div>
-     </div>
 </div>
 
 <div id="templates" style="display: none">

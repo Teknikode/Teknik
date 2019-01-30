@@ -193,7 +193,8 @@
         "outputFileName": "./wwwroot/css/upload.min.css",
         "inputFiles": [
             "./wwwroot/lib/dropzone/css/dropzone.css",
-            "./wwwroot/lib/bootstrap/css/bootstrap-switch.css"
+            "./wwwroot/lib/bootstrap/css/bootstrap-switch.css",
+            "./wwwroot/css/app/Upload/Upload.css"
         ]
     },
     {
