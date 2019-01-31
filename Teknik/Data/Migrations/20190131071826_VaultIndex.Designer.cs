@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Teknik.Data;
 
 namespace Teknik.Data.Migrations
 {
     [DbContext(typeof(TeknikEntities))]
-    partial class TeknikEntitiesModelSnapshot : ModelSnapshot
+    [Migration("20190131071826_VaultIndex")]
+    partial class VaultIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -59,7 +59,7 @@ namespace Teknik.Areas.Vault.Controllers
 
                 if (foundVault.VaultItems.Any())
                 {
-                    foreach (VaultItem item in foundVault.VaultItems)
+                    foreach (VaultItem item in foundVault.VaultItems.OrderBy(v => v.Index))
                     {
                         if (item.GetType().BaseType == typeof(UploadVaultItem))
                         {
@@ -200,7 +200,7 @@ namespace Teknik.Areas.Vault.Controllers
 
                     int index = 0;
                     // Add all their existing items for the vault
-                    foreach (VaultItem item in foundVault.VaultItems)
+                    foreach (VaultItem item in foundVault.VaultItems.OrderBy(v => v.Index))
                     {
                         ModifyVaultItemViewModel itemModel = new ModifyVaultItemViewModel();
                         itemModel.index = index;
@@ -296,6 +296,7 @@ namespace Teknik.Areas.Vault.Controllers
                     // Add/Verify items
                     if (model.items.Any())
                     {
+                        int index = 0;
                         foreach (ModifyVaultItemViewModel item in model.items)
                         {
                             if (IsValidItem(item.type, item.url))
@@ -304,19 +305,23 @@ namespace Teknik.Areas.Vault.Controllers
                                 {
                                     case "upload":
                                         UploadVaultItem newUpload = new UploadVaultItem();
+                                        newUpload.Index = index;
                                         newUpload.DateAdded = DateTime.Now;
                                         newUpload.Title = item.title;
                                         newUpload.Description = item.description;
                                         newUpload.UploadId = _dbContext.Uploads.Where(u => u.Url == item.url).FirstOrDefault().UploadId;
                                         newVault.VaultItems.Add(newUpload);
+                                        index++;
                                         break;
                                     case "paste":
                                         PasteVaultItem newPaste = new PasteVaultItem();
+                                        newPaste.Index = index;
                                         newPaste.DateAdded = DateTime.Now;
                                         newPaste.Title = item.title;
                                         newPaste.Description = item.description;
                                         newPaste.PasteId = _dbContext.Pastes.Where(p => p.Url == item.url).FirstOrDefault().PasteId;
                                         newVault.VaultItems.Add(newPaste);
+                                        index++;
                                         break;
                                     default:
                                         return Json(new { error = new { message = "You have an invalid item type: " + item.type } });
@@ -368,6 +373,7 @@ namespace Teknik.Areas.Vault.Controllers
                         // Add/Verify items
                         if (model.items.Any())
                         {
+                            int index = 0;
                             foreach (ModifyVaultItemViewModel item in model.items)
                             {
                                 if (IsValidItem(item.type, item.url))
@@ -376,19 +382,23 @@ namespace Teknik.Areas.Vault.Controllers
                                     {
                                         case "upload":
                                             UploadVaultItem newUpload = new UploadVaultItem();
+                                            newUpload.Index = index;
                                             newUpload.DateAdded = DateTime.Now;
                                             newUpload.Title = item.title;
                                             newUpload.Description = item.description;
                                             newUpload.UploadId = _dbContext.Uploads.Where(u => u.Url == item.url).FirstOrDefault().UploadId;
                                             foundVault.VaultItems.Add(newUpload);
+                                            index++;
                                             break;
                                         case "paste":
                                             PasteVaultItem newPaste = new PasteVaultItem();
+                                            newPaste.Index = index;
                                             newPaste.DateAdded = DateTime.Now;
                                             newPaste.Title = item.title;
                                             newPaste.Description = item.description;
                                             newPaste.PasteId = _dbContext.Pastes.Where(p => p.Url == item.url).FirstOrDefault().PasteId;
                                             foundVault.VaultItems.Add(newPaste);
+                                            index++;
                                             break;
                                         default:
                                             return Json(new { error = new { message = "You have an invalid item type: " + item.type } });
