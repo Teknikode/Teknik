@@ -52,7 +52,7 @@
 
     <div class="row form-horizontal">
         <div class="col-sm-5 col-sm-offset-1">
-            <div class="form-group form-group-sm">
+            <div class="form-group form-group-sm" data-toggle="tooltip" data-placement="top" title="When enabled, each file is encrypted before upload using an AES-256-CTR cipher.  A key is generated and required to download the file later.">
                 <label for="encrypt" class="col-sm-6 col-xs-3 control-label">Encrypt in Browser</label>
                 <div class="col-sm-6 col-xs-9">
                     <input type="checkbox" class="center-block" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
@@ -108,11 +108,6 @@
     <div class="container" id="upload-links">
     </div>
     <br />
-    <div class="well text-center">
-        <p>
-            Each file is encrypted after upload using an AES-256-CTR cipher.  You can encrypt it within your browser for extra security by setting the option <strong>Encrypt in Browser</strong> in the options pane.
-        </p>
-    </div>
     <div class="text-center">
         Useful Tools: <a href="@Url.SubRouteUrl("help", "Help.Tools")">Upload Scripts and Utilities</a>
     </div>

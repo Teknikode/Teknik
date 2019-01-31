@@ -13,30 +13,41 @@
 <bundle src="css/user.settings.upload.min.css" append-version="true"></bundle>
 
 <!form class="form" action="##" method="post" id="updateForm">
-    <div class="row">
-        <div class="col-sm-3">
-            <h4>Encrypt in Browser</h4>
-        </div>
-        <div class="col-sm-9">
-            <div class="checkbox">
-                <input id="update_upload_encrypt" name="update_upload_encrypt" title="whether the file should be encrypted in the browser before upload" type="checkbox" value="true" @(Model.Encrypt ? "checked" : string.Empty) />
+
+    <div class="row form-horizontal">
+        <div class="col-sm-6">
+            <div class="form-group form-group-sm" data-toggle="tooltip" data-placement="top" title="When enabled, each file is encrypted before upload using an AES-256-CTR cipher.  A key is generated and required to download the file later.">
+                <label for="encrypt" class="col-sm-6 col-xs-3 control-label">Encrypt in Browser</label>
+                <div class="col-sm-6 col-xs-9">
+                    <input id="update_upload_encrypt" name="update_upload_encrypt" title="whether the file should be encrypted in the browser before upload" type="checkbox" value="true" @(Model.Encrypt ? "checked" : string.Empty) />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-3">
-            <h4 class="text-center">Expiration</h4>
-        </div>
-        <div class="col-sm-2 hidden" id="length-div">
-            <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
-        </div>
-        <div class="col-sm-4" id="unit-div">
-            <select class="form-control" name="expireunit" id="expireunit">
-                @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+        <div class="col-sm-6">
+            <div class="form-group form-group-sm">
+                @if (!User.Identity.IsAuthenticated)
                 {
-                    <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
+                    @:<label class="col-xs-3 control-label" data-toggle="tooltip" data-placement="top" title="Uploads expire after 1 day for unregistered users">Expiration*</label>
                 }
-            </select>
+                else
+                {
+                    @:<label class="col-xs-3 control-label">Expiration</label>
+                }
+                <fieldset @if (!User.Identity.IsAuthenticated) { @: disabled
+                          }>
+                    <div class="col-xs-4 hidden" id="length-div">
+                        <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
+                    </div>
+                    <div class="col-xs-9" id="unit-div">
+                        <select class="form-control" name="expireunit" id="expireunit">
+                            @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+                            {
+                                <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
+                            }
+                        </select>
+                    </div>
+                </fieldset>
+            </div>
         </div>
     </div>
     <div class="row">

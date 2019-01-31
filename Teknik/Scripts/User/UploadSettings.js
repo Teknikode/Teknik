@@ -1,6 +1,6 @@
 /* globals editURL */
 $(document).ready(function () {
-    $("[name='update_upload_encrypt']").bootstrapSwitch();
+    $("[name='update_upload_encrypt']").bootstrapSwitch({ size: "small" });
 
     $("[name='expireunit']").change(function () {
         setExpireWidth($(this).val());
@@ -48,12 +48,12 @@ $(document).ready(function () {
 function setExpireWidth(unit) {
     if (unit === "Never") {
         $('#length-div').addClass("hidden");
-        $('#unit-div').removeClass("col-sm-2");
-        $('#unit-div').addClass("col-sm-4");
+        $('#unit-div').removeClass("col-xs-5");
+        $('#unit-div').addClass("col-xs-9");
     }
     else {
         $('#length-div').removeClass("hidden");
-        $('#unit-div').removeClass("col-sm-4");
-        $('#unit-div').addClass("col-sm-2");
+        $('#unit-div').removeClass("col-xs-9");
+        $('#unit-div').addClass("col-xs-5");
     }
 }
