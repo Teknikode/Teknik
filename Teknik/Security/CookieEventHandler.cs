@@ -13,13 +13,10 @@ namespace Teknik.Security
 {
     public class CookieEventHandler : CookieAuthenticationEvents
     {
-        public CookieEventHandler(LogoutSessionManager logoutSessions)
+        public CookieEventHandler()
         {
-            _LogoutSessions = logoutSessions;
         }
-
-        private static LogoutSessionManager _LogoutSessions;
-
+        
         public override async Task RedirectToAccessDenied(RedirectContext<CookieAuthenticationOptions> context)
         {
             context.Response.StatusCode = 403;

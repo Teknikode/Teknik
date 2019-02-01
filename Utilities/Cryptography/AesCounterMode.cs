@@ -101,6 +101,9 @@ namespace Teknik.Utilities.Cryptography
 
             _SymmetricAlgorithm = symmetricAlgorithm;
 
+            // Initialize the encrypted counter
+            _EncryptedCounter = new byte[_SymmetricAlgorithm.BlockSize / 8];
+
             _IV = new byte[iv.Length];
             iv.CopyTo(_IV, 0);
 
@@ -157,7 +160,7 @@ namespace Teknik.Utilities.Cryptography
         public void EncryptCounter()
         {
             // Clear the encrypted counter
-            _EncryptedCounter = new byte[_SymmetricAlgorithm.BlockSize / 8];
+            Array.Clear(_EncryptedCounter, 0, _EncryptedCounter.Length);
 
             // Encrypt the current counter to the encrypted counter
             _CounterEncryptor.TransformBlock(_Counter, 0, _Counter.Length, _EncryptedCounter, 0);

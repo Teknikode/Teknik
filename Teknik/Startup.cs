@@ -136,7 +136,7 @@ namespace Teknik
             });
 
             // Sessions
-            services.AddResponseCaching();
+            //services.AddResponseCaching();
             services.AddMemoryCache();
             services.AddSession();
 
@@ -153,7 +153,6 @@ namespace Teknik
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddTransient<CookieEventHandler>();
-            services.AddSingleton<LogoutSessionManager>();
 
             services.AddAuthentication(options =>
             {
@@ -285,6 +284,15 @@ namespace Teknik
                 }
             });
 
+            // Compress Reponse
+            //app.UseResponseCompression();
+
+            // Cache Responses
+            //app.UseResponseCaching();
+
+            // Force a HTTPS redirection (301)
+            app.UseHttpsRedirection();
+
             // Use Exception Handling
             app.UseErrorHandler(config);
 
@@ -297,13 +305,7 @@ namespace Teknik
             app.UseCSP();
             app.UseSecurityHeaders();
 
-            // Cache Responses
-            app.UseResponseCaching();
-
-            // Force a HTTPS redirection (301)
-            app.UseHttpsRedirection();
-
-            // Setup static files anc cache them client side
+            // Setup static files and cache them client side
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = ctx =>

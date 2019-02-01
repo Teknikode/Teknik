@@ -49,11 +49,8 @@ namespace Teknik.Areas.Users.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private ISession _session => _httpContextAccessor.HttpContext.Session;
 
-        private readonly LogoutSessionManager _logoutSessions;
-
-        public UserController(ILogger<Logger> logger, Config config, TeknikEntities dbContext, LogoutSessionManager logoutSessions, IHttpContextAccessor httpContextAccessor) : base(logger, config, dbContext)
+        public UserController(ILogger<Logger> logger, Config config, TeknikEntities dbContext, IHttpContextAccessor httpContextAccessor) : base(logger, config, dbContext)
         {
-            _logoutSessions = logoutSessions;
             _httpContextAccessor = httpContextAccessor;
         }
 
