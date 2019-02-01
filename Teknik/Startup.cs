@@ -97,9 +97,9 @@ namespace Teknik
             });
 
             // Add Tracking Filter scopes
-            //services.AddScoped<TrackDownload>();
+            services.AddScoped<TrackDownload>();
             //services.AddScoped<TrackLink>();
-            //services.AddScoped<TrackPageView>();
+            services.AddScoped<TrackPageView>();
 
             // Create the Database Context
             services.AddDbContext<TeknikEntities>(options => options

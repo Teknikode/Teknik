@@ -17,6 +17,7 @@ using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Configuration;
 using Teknik.Data;
+using Teknik.Filters;
 using Teknik.Logging;
 using Teknik.Utilities;
 
@@ -29,6 +30,7 @@ namespace Teknik.Areas.API.V1.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> Upload(UploadAPIv1Model model)
         {
             try

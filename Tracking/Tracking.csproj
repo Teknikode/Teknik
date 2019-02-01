@@ -8,12 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="lib\Piwik.Tracker.NetStandard1.4.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Configuration\Configuration.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Piwik.Tracker.NetStandard1.4">
-      <HintPath>lib\Piwik.Tracker.NetStandard1.4.dll</HintPath>
+    <Reference Include="Piwik.Tracker">
+      <HintPath>lib\Piwik.Tracker.dll</HintPath>
     </Reference>
   </ItemGroup>
 

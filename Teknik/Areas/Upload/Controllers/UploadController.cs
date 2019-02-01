@@ -33,6 +33,7 @@ namespace Teknik.Areas.Upload.Controllers
         
         [HttpGet]
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> Index()
         {
             ViewBag.Title = "Upload Files";
@@ -180,6 +181,8 @@ namespace Teknik.Areas.Upload.Controllers
         
         [HttpGet]
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackDownload))]
+        [ServiceFilter(typeof(TrackPageView))]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> Download(string file)
         {

@@ -22,6 +22,7 @@ namespace Teknik.Areas.Abuse.Controllers
         public AbuseController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Index()
         {
             ViewBag.Title = "Abuse Reporting";

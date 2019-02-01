@@ -23,6 +23,7 @@ namespace Teknik.Areas.Home.Controllers
         public HomeController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Index()
         {
             HomeViewModel model = new HomeViewModel();

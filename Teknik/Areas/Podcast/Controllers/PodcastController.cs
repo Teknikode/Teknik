@@ -29,6 +29,7 @@ namespace Teknik.Areas.Podcast.Controllers
         public PodcastController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Index()
         {
             MainViewModel model = new MainViewModel();
@@ -63,6 +64,7 @@ namespace Teknik.Areas.Podcast.Controllers
 
         #region Podcasts
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult View(int episode)
         {
             PodcastViewModel model = new PodcastViewModel();
@@ -84,6 +86,7 @@ namespace Teknik.Areas.Podcast.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        [ServiceFilter(typeof(TrackDownload))]
         public IActionResult Download(int episode, string fileName)
         {
             string path = string.Empty;

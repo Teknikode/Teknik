@@ -18,6 +18,7 @@ namespace Teknik.Areas.Privacy.Controllers
         public PrivacyController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Index()
         {
             ViewBag.Title = "Privacy Policy";

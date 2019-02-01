@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Teknik.Configuration;
 using Teknik.Data;
+using Teknik.Filters;
 using Teknik.Logging;
 
 namespace Teknik.Areas.API.V1.Controllers
@@ -18,6 +19,7 @@ namespace Teknik.Areas.API.V1.Controllers
         public AccountAPIv1Controller(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
         [HttpGet]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult GetClaims()
         {
             return new JsonResult(from c in User.Claims select new { c.Type, c.Value });

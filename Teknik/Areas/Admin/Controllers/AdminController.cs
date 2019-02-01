@@ -29,6 +29,7 @@ namespace Teknik.Areas.Admin.Controllers
         public AdminController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base (logger, config, dbContext) { }
 
         [HttpGet]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Dashboard()
         {
             DashboardViewModel model = new DashboardViewModel();
@@ -36,6 +37,7 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult UserSearch()
         {
             UserSearchViewModel model = new UserSearchViewModel();
@@ -43,6 +45,7 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> UserInfo(string username)
         {
             if (UserHelper.UserExists(_dbContext, username))
@@ -63,6 +66,7 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult UploadSearch()
         {
             UploadSearchViewModel model = new UploadSearchViewModel();

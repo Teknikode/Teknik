@@ -31,6 +31,7 @@ namespace Teknik.Areas.Paste.Controllers
         public PasteController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Index()
         {
             ViewBag.Title = "Pastebin";
@@ -40,6 +41,7 @@ namespace Teknik.Areas.Paste.Controllers
         }
         
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> ViewPaste(string type, string url, string password)
         {
             Models.Paste paste = _dbContext.Pastes.Where(p => p.Url == url).FirstOrDefault();
@@ -202,7 +204,8 @@ namespace Teknik.Areas.Paste.Controllers
             }
             return View("~/Areas/Paste/Views/Paste/Index.cshtml", model);
         }
-        
+
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> Edit(string url, string password)
         {
             Models.Paste paste = _dbContext.Pastes.Where(p => p.Url == url).FirstOrDefault();

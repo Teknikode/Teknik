@@ -22,6 +22,7 @@ namespace Teknik.Areas.About.Controllers
         public AboutController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Index([FromServices] Config config)
         {
             ViewBag.Title = "About";

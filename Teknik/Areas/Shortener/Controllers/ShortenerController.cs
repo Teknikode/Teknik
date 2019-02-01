@@ -24,6 +24,7 @@ namespace Teknik.Areas.Shortener.Controllers
         public ShortenerController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Index()
         {
             ViewBag.Title = "Url Shortener";
@@ -32,6 +33,7 @@ namespace Teknik.Areas.Shortener.Controllers
         }
         
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult RedirectToUrl(string url)
         {
             ShortenedUrl shortUrl = _dbContext.ShortenedUrls.Where(s => s.ShortUrl == url).FirstOrDefault();

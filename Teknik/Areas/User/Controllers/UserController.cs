@@ -62,6 +62,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Login(string returnUrl)
         {
             // Let's double check their email and git accounts to make sure they exist
@@ -85,6 +86,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task Logout()
         {
             // these are the sub & sid to signout
@@ -98,6 +100,7 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult GetPremium()
         {
             ViewBag.Title = "Get a Premium Account";
@@ -109,6 +112,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Register(string inviteCode, string ReturnUrl)
         {
             RegisterViewModel model = new RegisterViewModel();
@@ -202,6 +206,7 @@ namespace Teknik.Areas.Users.Controllers
 
         // GET: Profile/Profile
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> ViewProfile(string username)
         {
             if (string.IsNullOrEmpty(username))
@@ -259,6 +264,7 @@ namespace Teknik.Areas.Users.Controllers
             return View(model);
         }
 
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult ViewServiceData()
         {
             string username = User.Identity.Name;
@@ -297,11 +303,13 @@ namespace Teknik.Areas.Users.Controllers
             return View(model);
         }
 
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Settings()
         {
             return Redirect(Url.SubRouteUrl("account", "User.ProfileSettings"));
         }
-        
+
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult ProfileSettings()
         {
             string username = User.Identity.Name;
@@ -326,6 +334,7 @@ namespace Teknik.Areas.Users.Controllers
             return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult AccountSettings()
         {
             string username = User.Identity.Name;
@@ -347,6 +356,7 @@ namespace Teknik.Areas.Users.Controllers
             return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> SecuritySettings()
         {
             string username = User.Identity.Name;
@@ -389,6 +399,7 @@ namespace Teknik.Areas.Users.Controllers
             return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> DeveloperSettings()
         {
             string username = User.Identity.Name;
@@ -436,6 +447,7 @@ namespace Teknik.Areas.Users.Controllers
             return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
 
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult InviteSettings()
         {
             string username = User.Identity.Name;
@@ -480,7 +492,8 @@ namespace Teknik.Areas.Users.Controllers
 
             return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
-        
+
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult BlogSettings()
         {
             string username = User.Identity.Name;
@@ -503,7 +516,8 @@ namespace Teknik.Areas.Users.Controllers
 
             return new StatusCodeResult(StatusCodes.Status403Forbidden);
         }
-        
+
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult UploadSettings()
         {
             string username = User.Identity.Name;
@@ -530,6 +544,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> ViewRawPGP(string username)
         {
             ViewBag.Title = username + "'s Public Key";
@@ -824,6 +839,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult ResetPassword(string username)
         {
             ResetPasswordViewModel model = new ResetPasswordViewModel();
@@ -867,6 +883,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public async Task<IActionResult> VerifyResetPassword(string username, string code)
         {
             bool verified = true;

@@ -13,6 +13,7 @@ using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.Configuration;
 using Teknik.Data;
+using Teknik.Filters;
 using Teknik.Logging;
 using Teknik.Utilities;
 
@@ -25,6 +26,7 @@ namespace Teknik.Areas.API.V1.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ServiceFilter(typeof(TrackPageView))]
         public IActionResult Shorten(ShortenAPIv1Model model)
         {
             try

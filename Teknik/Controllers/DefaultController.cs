@@ -24,8 +24,9 @@ using Teknik.Utilities;
 
 namespace Teknik.Controllers
 {
-    [CORSActionFilter]
     [Area("Default")]
+    [CORSActionFilter]
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
     public class DefaultController : Controller
     {
         protected string Subdomain
