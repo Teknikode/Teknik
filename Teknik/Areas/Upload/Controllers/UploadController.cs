@@ -181,7 +181,6 @@ namespace Teknik.Areas.Upload.Controllers
         
         [HttpGet]
         [AllowAnonymous]
-        [TrackDownload]
         [TrackPageView]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> Download(string file)
