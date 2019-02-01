@@ -25,7 +25,7 @@ namespace Teknik.Areas.API.V1.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Paste(PasteAPIv1Model model)
         {
             try

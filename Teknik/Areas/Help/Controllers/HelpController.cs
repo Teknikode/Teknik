@@ -14,7 +14,7 @@ namespace Teknik.Areas.Help.Controllers
 {
     [Authorize]
     [Area("Help")]
-    [ServiceFilter(typeof(TrackPageView))]
+    [TrackPageView]
     public class HelpController : DefaultController
     {
         public HelpController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }

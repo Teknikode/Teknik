@@ -14,53 +14,64 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Teknik.Filters
 {
-    public class TrackPageView : ActionFilterAttribute
+    public class TrackPageViewAttribute : TypeFilterAttribute
     {
-        private readonly Config _config;
-
-        public TrackPageView(Config config)
-        {
-            _config = config;
-        }
-
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        public TrackPageViewAttribute() : base(typeof(TrackPageView))
         {
         }
-
-        public override void OnActionExecuted(ActionExecutedContext filterContext)
+        public class TrackPageView : ActionFilterAttribute
         {
-            HttpRequest request = filterContext.HttpContext.Request;
+            private readonly IBackgroundTaskQueue _queue;
+            private readonly Config _config;
 
-            string doNotTrack = request.Headers["DNT"];
-            if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
+            public TrackPageView(IBackgroundTaskQueue queue, Config config)
             {
-                string title = (filterContext.Controller as Controller)?.ViewBag?.Title;
+                _queue = queue;
+                _config = config;
+            }
 
-                string sub = filterContext.RouteData.Values["sub"].ToString();
-                if (string.IsNullOrEmpty(sub))
+            public override void OnActionExecuting(ActionExecutingContext filterContext)
+            {
+            }
+
+            public override void OnActionExecuted(ActionExecutedContext filterContext)
+            {
+                HttpRequest request = filterContext.HttpContext.Request;
+
+                string doNotTrack = request.Headers["DNT"];
+                if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
                 {
-                    sub = request.Host.ToUriComponent().GetSubdomain();
+                    string title = (filterContext.Controller as Controller)?.ViewBag?.Title;
+
+                    string sub = filterContext.RouteData.Values["sub"].ToString();
+                    if (string.IsNullOrEmpty(sub))
+                    {
+                        sub = request.Host.ToUriComponent().GetSubdomain();
+                    }
+
+                    string clientIp = request.ClientIPFromRequest(true);
+
+                    string url = UriHelper.GetEncodedUrl(request);
+
+                    string urlReferrer = request.Headers["Referer"].ToString();
+
+                    string userAgent = request.Headers["User-Agent"].ToString();
+
+                    int pixelWidth = 0;
+                    int pixelHeight = 0;
+
+                    bool hasCookies = false;
+
+                    string acceptLang = request.Headers["Accept-Language"];
+
+                    bool hasJava = false;
+
+                    // Fire and forget.  Don't need to wait for it.
+                    _queue.QueueBackgroundWorkItem(async token =>
+                    {
+                        Tracking.Tracking.TrackPageView(filterContext.HttpContext, _config, title, sub, clientIp, url, urlReferrer, userAgent, pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava);
+                    });
                 }
-
-                string clientIp = request.ClientIPFromRequest(true);
-
-                string url = UriHelper.GetEncodedUrl(request);
-
-                string urlReferrer = request.Headers["Referer"].ToString();
-
-                string userAgent = request.Headers["User-Agent"].ToString();
-
-                int pixelWidth = 0;
-                int pixelHeight = 0;
-
-                bool hasCookies = false;
-
-                string acceptLang = request.Headers["Accept-Language"];
-
-                bool hasJava = false;
-
-                // Fire and forget.  Don't need to wait for it.
-                Tracking.Tracking.TrackPageView(filterContext.HttpContext, _config, title, sub, clientIp, url, urlReferrer, userAgent, pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava);
             }
         }
     }

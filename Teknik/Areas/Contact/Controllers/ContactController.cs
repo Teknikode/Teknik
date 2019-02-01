@@ -26,7 +26,7 @@ namespace Teknik.Areas.Contact.Controllers
         public ContactController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Index()
         {
             ViewBag.Title = "Contact Us";

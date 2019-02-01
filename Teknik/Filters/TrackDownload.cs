@@ -10,39 +10,52 @@ using Teknik.Tracking;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Teknik.Filters
 {
-    public class TrackDownload : ActionFilterAttribute
+    public class TrackDownloadAttribute : TypeFilterAttribute
     {
-        private readonly Config _config;
-
-        public TrackDownload(Config config)
-        {
-            _config = config;
-        }
-
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        public TrackDownloadAttribute() : base(typeof(TrackDownload))
         {
         }
 
-        public override void OnActionExecuted(ActionExecutedContext filterContext)
+        public class TrackDownload : ActionFilterAttribute
         {
-            HttpRequest request = filterContext.HttpContext.Request;
+            private readonly IBackgroundTaskQueue _queue;
+            private readonly Config _config;
 
-            string doNotTrack = request.Headers["DNT"];
-            if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
+            public TrackDownload(IBackgroundTaskQueue queue, Config config)
             {
-                string userAgent = request.Headers["User-Agent"].ToString();
+                _queue = queue;
+                _config = config;
+            }
 
-                string clientIp = request.ClientIPFromRequest(true);
+            public override void OnActionExecuting(ActionExecutingContext filterContext)
+            {
+            }
 
-                string urlReferrer = request.Headers["Referer"].ToString();
+            public override void OnActionExecuted(ActionExecutedContext filterContext)
+            {
+                HttpRequest request = filterContext.HttpContext.Request;
 
-                string url = UriHelper.GetEncodedUrl(request);
+                string doNotTrack = request.Headers["DNT"];
+                if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
+                {
+                    string userAgent = request.Headers["User-Agent"].ToString();
 
-                // Fire and forget.  Don't need to wait for it.
-                Tracking.Tracking.TrackDownload(filterContext.HttpContext, _config, userAgent, clientIp, url, urlReferrer);
+                    string clientIp = request.ClientIPFromRequest(true);
+
+                    string urlReferrer = request.Headers["Referer"].ToString();
+
+                    string url = UriHelper.GetEncodedUrl(request);
+
+                    // Fire and forget.  Don't need to wait for it.
+                    _queue.QueueBackgroundWorkItem(async token =>
+                    {
+                        Tracking.Tracking.TrackDownload(filterContext.HttpContext, _config, userAgent, clientIp, url, urlReferrer);
+                    });
+                }
             }
         }
     }

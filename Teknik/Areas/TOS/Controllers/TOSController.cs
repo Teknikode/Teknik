@@ -18,7 +18,7 @@ namespace Teknik.Areas.TOS.Controllers
         public TOSController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Index()
         {
             ViewBag.Title = "Terms of Service";

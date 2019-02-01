@@ -30,7 +30,7 @@ namespace Teknik.Areas.Blog.Controllers
         public BlogController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Blog(string username)
         {
             BlogViewModel model = new BlogViewModel();
@@ -120,7 +120,7 @@ namespace Teknik.Areas.Blog.Controllers
 
         #region Posts
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Post(string username, int id)
         {
             if (string.IsNullOrEmpty(username))
@@ -163,7 +163,7 @@ namespace Teknik.Areas.Blog.Controllers
             return View("~/Areas/Blog/Views/Blog/ViewPost.cshtml", model);
         }
 
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult NewPost(string username, int blogID)
         {
             if (string.IsNullOrEmpty(username))
@@ -203,7 +203,7 @@ namespace Teknik.Areas.Blog.Controllers
             return View("~/Areas/Blog/Views/Blog/Blog.cshtml", model);
         }
 
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult EditPost(string username, int id)
         {
             if (string.IsNullOrEmpty(username))

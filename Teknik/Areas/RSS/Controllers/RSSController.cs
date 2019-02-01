@@ -32,7 +32,7 @@ namespace Teknik.Areas.RSS.Controllers
         public RSSController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public async Task Index()
         {
             Response.ContentType = "application/rss+xml";
@@ -50,7 +50,7 @@ namespace Teknik.Areas.RSS.Controllers
         }
         
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public async Task Blog(string username)
         {
             Response.ContentType = "application/rss+xml";
@@ -156,7 +156,7 @@ namespace Teknik.Areas.RSS.Controllers
         }
         
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public async Task Podcast()
         {
             Response.ContentType = "application/rss+xml";

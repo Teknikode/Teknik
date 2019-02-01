@@ -30,7 +30,7 @@ namespace Teknik.Areas.API.V1.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public async Task<IActionResult> Upload(UploadAPIv1Model model)
         {
             try

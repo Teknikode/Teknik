@@ -18,7 +18,7 @@ namespace Teknik.Areas.FAQ.Controllers
         public FAQController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Index()
         {
             ViewBag.Title = "Frequently Asked Questions";

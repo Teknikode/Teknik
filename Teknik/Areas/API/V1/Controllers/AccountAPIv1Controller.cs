@@ -19,7 +19,7 @@ namespace Teknik.Areas.API.V1.Controllers
         public AccountAPIv1Controller(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
         [HttpGet]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult GetClaims()
         {
             return new JsonResult(from c in User.Claims select new { c.Type, c.Value });

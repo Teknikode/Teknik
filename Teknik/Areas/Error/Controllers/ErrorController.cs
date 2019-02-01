@@ -28,7 +28,7 @@ namespace Teknik.Areas.Error.Controllers
         public ErrorController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult HttpError(int statusCode)
         {
             switch (statusCode)
@@ -45,7 +45,7 @@ namespace Teknik.Areas.Error.Controllers
         }
 
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult HttpGeneral(int statusCode)
         {
             ViewBag.Title = statusCode;
@@ -59,7 +59,7 @@ namespace Teknik.Areas.Error.Controllers
         }
 
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Http401()
         {
             Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -76,7 +76,7 @@ namespace Teknik.Areas.Error.Controllers
         }
 
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Http403()
         {
             Response.StatusCode = StatusCodes.Status403Forbidden;
@@ -93,7 +93,7 @@ namespace Teknik.Areas.Error.Controllers
         }
 
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Http404()
         {
             Response.StatusCode = StatusCodes.Status404NotFound;
@@ -110,7 +110,7 @@ namespace Teknik.Areas.Error.Controllers
         }
         
         [AllowAnonymous]
-        [ServiceFilter(typeof(TrackPageView))]
+        [TrackPageView]
         public IActionResult Http500(Exception exception)
         {
             try

@@ -39,6 +39,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Encodings.Web;
+using Teknik.Tracking;
 
 namespace Teknik
 {
@@ -96,10 +97,13 @@ namespace Teknik
 #endif
             });
 
+            services.AddHostedService<TrackingService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
             // Add Tracking Filter scopes
-            services.AddScoped<TrackDownload>();
+            //services.AddScoped<TrackDownload>();
             //services.AddScoped<TrackLink>();
-            services.AddScoped<TrackPageView>();
+            //services.AddScoped<TrackPageView>();
 
             // Create the Database Context
             services.AddDbContext<TeknikEntities>(options => options
