@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IdentityServer4;
+using IdentityServer4.Configuration;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
+using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -31,6 +33,7 @@ namespace Teknik.IdentityServer.Controllers
     [ApiController]
     public class ManageController : DefaultController
     {
+        private const string _KeySeparator = ":";
         private const string _UserInfoCacheKey = "UserInfo";
 
         private readonly UserManager<ApplicationUser> _userManager;
@@ -583,6 +586,7 @@ namespace Teknik.IdentityServer.Controllers
                 foundClient.ClientName = model.Name;
                 foundClient.ClientUri = model.HomepageUrl;
                 foundClient.LogoUri = model.LogoUrl;
+                foundClient.Updated = DateTime.Now;
                 configContext.Entry(foundClient).State = EntityState.Modified;
 
                 // Update the redirect URL for this client
@@ -616,6 +620,9 @@ namespace Teknik.IdentityServer.Controllers
                 // Save all the changed
                 configContext.SaveChanges();
 
+                // Clear the client cache
+                RemoveCachedClient(model.ClientId);
+
                 return new JsonResult(new { success = true });
             }
 
@@ -630,6 +637,9 @@ namespace Teknik.IdentityServer.Controllers
             {
                 configContext.Clients.Remove(foundClient);
                 configContext.SaveChanges();
+
+                // Clear the client cache
+                RemoveCachedClient(model.ClientId);
 
                 return new JsonResult(new { success = true });
             }
@@ -660,7 +670,7 @@ namespace Teknik.IdentityServer.Controllers
                 throw new ArgumentNullException("username");
 
             // Check the cache
-            string cacheKey = _UserInfoCacheKey + username;
+            string cacheKey = GetKey<ApplicationUser>(username);
             ApplicationUser foundUser;
             if (!_cache.TryGetValue(cacheKey, out foundUser))
             {
@@ -679,8 +689,25 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(username))
                 throw new ArgumentNullException("username");
 
-            string cacheKey = _UserInfoCacheKey + username;
+            string cacheKey = GetKey<ApplicationUser>(username);
             _cache.Remove(cacheKey);
+        }
+
+        private void RemoveCachedClient(string clientId)
+        {
+            if (string.IsNullOrEmpty(clientId))
+                throw new ArgumentNullException("clientId");
+
+            string key = GetKey<IdentityServer4.Models.Client>(clientId);
+            _cache.Remove(key);
+        }
+
+        private string GetKey<T>(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException("key");
+
+            return typeof(T).FullName + _KeySeparator + key;
         }
     }
 }
