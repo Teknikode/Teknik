@@ -26,8 +26,8 @@
             <label for="registerConfirmPassword">Confirm Password <span class="text-danger">*</span></label>
             <input type="password" class="form-control" id="registerConfirmPassword" value="" placeholder="********" name="Register.ConfirmPassword" data-val-required="The Confirm Password field is required." data-val="true"/>
         </div>
-        <div class="form-group">
-            <label for="registerInviteCode">Invite Code@(Html.Raw(Config.UserConfig.InviteCodeRequired ? " <span class=\"text-danger\">*</span>" : string.Empty))</label>
+        <div class="form-group@(Html.Raw(Config.UserConfig.InviteCodeRequired ? string.Empty : " hidden"))">
+            <label for="registerInviteCode">Invite Code <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="registerInviteCode" value="@Model.InviteCode" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" name="Register.InviteCode"/>
         </div>
         <div class="form-group">

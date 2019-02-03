@@ -142,6 +142,9 @@ namespace Teknik.Areas.Users.Utility
                 var result = await IdentityHelper.CreateUser(config, username, password, recoveryEmail);
                 if (result.Success)
                 {
+                    // Get the userId passed back
+                    string userId = (string)result.Data;
+
                     // Create an Email Account
                     CreateUserEmail(config, GetUserEmailAddress(config, username), password);
 
@@ -149,7 +152,7 @@ namespace Teknik.Areas.Users.Utility
                     DisableUserEmail(config, GetUserEmailAddress(config, username));
 
                     // Create a Git Account
-                    CreateUserGit(config, username, password);
+                    CreateUserGit(config, username, password, userId);
 
                     // Add User
                     User newUser = CreateUser(db, config, username, inviteCode);
@@ -217,21 +220,17 @@ namespace Teknik.Areas.Users.Utility
             {
                 // Make sure they have a git and email account before resetting their password
                 string email = GetUserEmailAddress(config, username);
-                if (config.EmailConfig.Enabled && !UserEmailExists(config, email))
+                if (config.EmailConfig.Enabled && UserEmailExists(config, email))
                 {
-                    CreateUserEmail(config, email, newPassword);
+                    // Change email password
+                    EditUserEmailPassword(config, GetUserEmailAddress(config, username), newPassword);
                 }
 
-                if (config.GitConfig.Enabled && !UserGitExists(config, username))
+                if (config.GitConfig.Enabled && UserGitExists(config, username))
                 {
-                    CreateUserGit(config, username, newPassword);
+                    // Update Git password
+                    EditUserGitPassword(config, username, newPassword);
                 }
-
-                // Change email password
-                EditUserEmailPassword(config, GetUserEmailAddress(config, username), newPassword);
-
-                // Update Git password
-                EditUserGitPassword(config, username, newPassword);
             }
             catch (Exception ex)
             {
@@ -854,7 +853,7 @@ If you recieved this email and you did not reset your password, you can ignore t
             return lastActive;
         }
 
-        public static void CreateUserGit(Config config, string username, string password)
+        public static void CreateUserGit(Config config, string username, string password, string authId)
         {
             try
             {
@@ -864,7 +863,7 @@ If you recieved this email and you did not reset your password, you can ignore t
                     string email = GetUserEmailAddress(config, username);
 
                     var svc = CreateGitService(config);
-                    svc.CreateAccount(username, email, password);
+                    svc.CreateAccount(username, email, password, authId);
                 }
             }
             catch (Exception ex)

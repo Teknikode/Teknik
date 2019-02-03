@@ -41,6 +41,7 @@ namespace Teknik.Areas.Users.Controllers
 {
     [Authorize]
     [Area("User")]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class UserController : DefaultController
     {
         private static readonly UsedCodesManager usedCodesManager = new UsedCodesManager();
@@ -62,7 +63,6 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
-        [TrackPageView]
         public IActionResult Login(string returnUrl)
         {
             // Let's double check their email and git accounts to make sure they exist

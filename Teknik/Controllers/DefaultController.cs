@@ -75,8 +75,10 @@ namespace Teknik.Controllers
         [AllowAnonymous]
         public IActionResult Robots([FromServices] IHostingEnvironment env)
         {
-            //string file = FileHelper.MapPath(env, Constants.ROBOTS_PATH);
-            return File(Constants.ROBOTS_PATH, "text/plain");
+            string dataDir = (string)AppDomain.CurrentDomain.GetData("DataDirectory");
+            string file = Path.Combine(dataDir, Constants.ROBOTS_PATH);
+            FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
+            return File(fs, "text/plain");
         }
 
         protected IActionResult GenerateActionResult(object json)

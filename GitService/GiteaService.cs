@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -46,7 +48,7 @@ namespace Teknik.GitService
             return false;
         }
 
-        public void CreateAccount(string username, string email, string password)
+        public void CreateAccount(string username, string email, string password, string authId)
         {
             // Add gogs user
             using (var client = new WebClient())
@@ -57,6 +59,13 @@ namespace Teknik.GitService
                 Uri baseUri = new Uri(_host);
                 Uri finalUri = new Uri(baseUri, "api/v1/admin/users?token=" + _accessToken);
                 string result = client.UploadString(finalUri, "POST", json);
+
+                JObject resultJson = JObject.Parse(result);
+
+                // Add an external auth for them
+                MysqlDatabase mySQL = new MysqlDatabase(_server, _database, _username, _password, _port);
+                string sql = @"INSERT INTO gogs.external_login_user (external_id, user_id, login_source_id) VALUES ({0}, {1}, {2})";
+                var results = mySQL.Query(sql, new object[] { authId, resultJson["id"], _sourceId });
             }
         }
 

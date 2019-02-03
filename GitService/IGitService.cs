@@ -10,7 +10,7 @@ namespace Teknik.GitService
 
         DateTime LastActive(string username);
 
-        void CreateAccount(string username, string email, string password);
+        void CreateAccount(string username, string email, string password, string authId);
 
         void EditPassword(string username, string email, string password);
 

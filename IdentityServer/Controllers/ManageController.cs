@@ -73,7 +73,7 @@ namespace Teknik.IdentityServer.Controllers
             var result = await _userManager.CreateAsync(identityUser, model.Password);
             if (result.Succeeded)
             {
-                return new JsonResult(new { success = true });
+                return new JsonResult(new { success = true, data = identityUser.Id });
             }
 
             return new JsonResult(new { success = false, message = "Unable to create user.", identityErrors = result.Errors });

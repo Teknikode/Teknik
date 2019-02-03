@@ -41,6 +41,11 @@ namespace Teknik.IdentityServer
         public void ConfigureServices(IServiceCollection services)
         {
             string dataDir = Configuration["ConfigDirectory"];
+            if (string.IsNullOrEmpty(dataDir))
+            {
+                string baseDir = Environment.ContentRootPath;
+                dataDir = Path.Combine(baseDir, "App_Data");
+            }
             AppDomain.CurrentDomain.SetData("DataDirectory", dataDir);
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;

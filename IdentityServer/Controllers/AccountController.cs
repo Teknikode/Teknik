@@ -23,6 +23,7 @@ using Teknik.IdentityServer.Models;
 using Microsoft.Extensions.Logging;
 using Teknik.Logging;
 using Teknik.Configuration;
+using Teknik.Utilities;
 
 namespace Teknik.IdentityServer.Controllers
 {
@@ -306,12 +307,16 @@ namespace Teknik.IdentityServer.Controllers
         [HttpOptions]
         public async Task Logout()
         {
-            if (User?.Identity.IsAuthenticated == true)
+            try
             {
-                await _signInManager.SignOutAsync();
-
-                // raise the logout event
-                await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+                if (User?.Identity?.IsAuthenticated == true)
+                {
+                    await _signInManager.SignOutAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.GetFullMessage(true, true));
             }
         }
 
