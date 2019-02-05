@@ -353,7 +353,8 @@ namespace Teknik.Areas.Paste.Controllers
                         paste.IV = iv;
                         paste.BlockSize = _config.PasteConfig.BlockSize;
 
-                        paste.HashedPassword = PasteHelper.HashPassword(paste.Key, password);
+                        if (!string.IsNullOrEmpty(password))
+                            paste.HashedPassword = PasteHelper.HashPassword(paste.Key, password);
                         paste.FileName = fileName;
                         paste.Title = model.Title;
                         paste.Syntax = model.Syntax;
