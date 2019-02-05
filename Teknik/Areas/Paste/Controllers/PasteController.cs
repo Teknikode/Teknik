@@ -333,11 +333,9 @@ namespace Teknik.Areas.Paste.Controllers
                             }
                         }
 
-                        // Delete the old file
+                        // get the old file
                         string subDir = paste.FileName[0].ToString();
-                        string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.FileName);
-                        if (System.IO.File.Exists(filePath))
-                            System.IO.File.Delete(filePath);
+                        string oldFile = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.FileName);
 
                         // Generate a unique file name that does not currently exist
                         string newFilePath = FileHelper.GenerateRandomFileName(_config.PasteConfig.PasteDirectory, _config.PasteConfig.FileExtension, 10);
@@ -362,6 +360,10 @@ namespace Teknik.Areas.Paste.Controllers
 
                         _dbContext.Entry(paste).State = EntityState.Modified;
                         _dbContext.SaveChanges();
+
+                        // Delete the old file
+                        if (System.IO.File.Exists(oldFile))
+                            System.IO.File.Delete(oldFile);
 
                         return Redirect(Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url }));
                     }
