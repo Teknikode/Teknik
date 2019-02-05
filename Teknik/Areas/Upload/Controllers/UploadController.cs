@@ -203,8 +203,17 @@ namespace Teknik.Areas.Upload.Controllers
                     // Check Expiration
                     if (UploadHelper.CheckExpiration(upload))
                     {
+                        string subDir = upload.FileName[0].ToString();
+                        string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, upload.FileName);
+                        // Delete from the DB
                         _dbContext.Uploads.Remove(upload);
                         _dbContext.SaveChanges();
+
+                        // Delete the File
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            System.IO.File.Delete(filePath);
+                        }
                         return new StatusCodeResult(StatusCodes.Status404NotFound);
                     }
 
@@ -423,8 +432,17 @@ namespace Teknik.Areas.Upload.Controllers
                     // Check Expiration
                     if (UploadHelper.CheckExpiration(upload))
                     {
+                        string delDir = upload.FileName[0].ToString();
+                        string delPath = Path.Combine(_config.UploadConfig.UploadDirectory, delDir, upload.FileName);
+                        // Delete from the DB
                         _dbContext.Uploads.Remove(upload);
                         _dbContext.SaveChanges();
+
+                        // Delete the File
+                        if (System.IO.File.Exists(delPath))
+                        {
+                            System.IO.File.Delete(delPath);
+                        }
                         return Json(new { error = new { message = "File Does Not Exist" } });
                     }
 
@@ -482,7 +500,8 @@ namespace Teknik.Areas.Upload.Controllers
                 model.File = file;
                 if (!string.IsNullOrEmpty(upload.DeleteKey) && upload.DeleteKey == key)
                 {
-                    string filePath = upload.FileName;
+                    string subDir = upload.FileName[0].ToString();
+                    string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, upload.FileName);
                     // Delete from the DB
                     _dbContext.Uploads.Remove(upload);
                     _dbContext.SaveChanges();
@@ -523,6 +542,7 @@ namespace Teknik.Areas.Upload.Controllers
         }
 
         [HttpPost]
+        [HttpOptions]
         public IActionResult Delete(string id)
         {
             Models.Upload foundUpload = _dbContext.Uploads.Where(u => u.Url == id).FirstOrDefault();
@@ -530,7 +550,8 @@ namespace Teknik.Areas.Upload.Controllers
             {
                 if (foundUpload.User.Username == User.Identity.Name)
                 {
-                    string filePath = foundUpload.FileName;
+                    string subDir = foundUpload.FileName[0].ToString();
+                    string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, foundUpload.FileName);
                     // Delete from the DB
                     _dbContext.Uploads.Remove(foundUpload);
                     _dbContext.SaveChanges();

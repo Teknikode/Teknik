@@ -428,6 +428,7 @@ namespace Teknik.Areas.Vault.Controllers
         }
 
         [HttpPost]
+        [HttpOptions]
         public IActionResult Delete(string id)
         {
             Vault.Models.Vault foundVault = _dbContext.Vaults.Where(v => v.Url == id).FirstOrDefault();

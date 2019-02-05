@@ -57,6 +57,17 @@ namespace Teknik.Areas.Paste.Controllers
                 // Check Expiration
                 if (PasteHelper.CheckExpiration(paste))
                 {
+                    if (!string.IsNullOrEmpty(paste.FileName))
+                    {
+                        string delSub = paste.FileName[0].ToString();
+                        string delPath = Path.Combine(_config.PasteConfig.PasteDirectory, delSub, paste.FileName);
+
+                        // Delete the File
+                        if (System.IO.File.Exists(delPath))
+                        {
+                            System.IO.File.Delete(delPath);
+                        }
+                    }
                     _dbContext.Pastes.Remove(paste);
                     _dbContext.SaveChanges();
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
@@ -220,6 +231,18 @@ namespace Teknik.Areas.Paste.Controllers
                 // Check Expiration
                 if (PasteHelper.CheckExpiration(paste))
                 {
+                    if (!string.IsNullOrEmpty(paste.FileName))
+                    {
+                        string delSub = paste.FileName[0].ToString();
+                        string delPath = Path.Combine(_config.PasteConfig.PasteDirectory, delSub, paste.FileName);
+
+                        // Delete the File
+                        if (System.IO.File.Exists(delPath))
+                        {
+                            System.IO.File.Delete(delPath);
+                        }
+                    }
+                    // Delete from the DB
                     _dbContext.Pastes.Remove(paste);
                     _dbContext.SaveChanges();
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
@@ -377,6 +400,7 @@ namespace Teknik.Areas.Paste.Controllers
         }
 
         [HttpPost]
+        [HttpOptions]
         public IActionResult Delete(string id)
         {
             Models.Paste foundPaste = _dbContext.Pastes.Where(p => p.Url == id).FirstOrDefault();
@@ -384,7 +408,8 @@ namespace Teknik.Areas.Paste.Controllers
             {
                 if (foundPaste.User.Username == User.Identity.Name)
                 {
-                    string filePath = foundPaste.FileName;
+                    string subDir = foundPaste.FileName[0].ToString();
+                    string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, foundPaste.FileName);
                     // Delete from the DB
                     _dbContext.Pastes.Remove(foundPaste);
                     _dbContext.SaveChanges();

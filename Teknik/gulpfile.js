@@ -42,6 +42,7 @@ var assets = [
     { './node_modules/marked/lib/marked.js': 'lib/marked/js' },
     { './node_modules/sanitize-html/dist/sanitize-html.js': 'lib/sanitize-html/js' },
     { './node_modules/underscore/underscore.js': 'lib/underscore/js' },
+    { './node_modules/oidc-client/dist/oidc-client.js': 'lib/oidc-client/js' },
 
     // App JS Files
     { './Scripts/**/*': 'js/app' },

@@ -1,27 +1,27 @@
-/* globals deleteUploadURL, deletePasteURL, deleteShortenURL, deleteVaultURL */
+/* globals deleteDataURL */
 $(document).ready(function () {
     $('.delete-upload-button').click(function () {
         var id = $(this).data('upload-id');
         var element = $('#uploads [id="' + id + '"');
-        deleteItem(deleteUploadURL, id, element, "Are you sure you want to delete this upload?");
+        deleteItem('upload', id, element, "Are you sure you want to delete this upload?");
     });
 
     $('.delete-paste-button').click(function () {
         var id = $(this).data('paste-id');
         var element = $('#pastes [id="' + id + '"');
-        deleteItem(deletePasteURL, id, element, "Are you sure you want to delete this paste?");
+        deleteItem('paste', id, element, "Are you sure you want to delete this paste?");
     });
 
     $('.delete-shorten-button').click(function () {
         var id = $(this).data('shorten-id');
         var element = $('#shortenedUrls [id="' + id + '"');
-        deleteItem(deleteShortenURL, id, element, "Are you sure you want to delete this shortened url?");
+        deleteItem('shortenedUrl', id, element, "Are you sure you want to delete this shortened url?");
     });
 
     $('.delete-vault-button').click(function () {
         var id = $(this).data('vault-id');
         var element = $('#vaults [id="' + id + '"');
-        deleteItem(deleteVaultURL, id, element, "Are you sure you want to delete this vault?");
+        deleteItem('vault', id, element, "Are you sure you want to delete this vault?");
     });
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
@@ -36,14 +36,16 @@ $(document).ready(function () {
     }
 });
 
-function deleteItem(url, id, element, confirmationMsg) {
+function deleteItem(type, id, element, confirmationMsg) {
     deleteConfirm(confirmationMsg, function (result) {
         if (result) {
             $.ajax({
                 type: "POST",
-                url: url,
-                data: { id: id },
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                url: deleteDataURL,
+                data: AddAntiForgeryToken({ type: type, id: id }),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 xhrFields: {
                     withCredentials: true
                 },

@@ -1,10 +1,7 @@
 ﻿@model Teknik.Areas.Users.ViewModels.ViewServiceDataViewModel
 
 <script>
-    var deleteUploadURL = '@Url.SubRouteUrl("u", "Upload.Delete")';
-    var deletePasteURL = '@Url.SubRouteUrl("p", "Paste.Delete")';
-    var deleteShortenURL = '@Url.SubRouteUrl("s", "Shortener.Delete")';
-    var deleteVaultURL = '@Url.SubRouteUrl("v", "Vault.Delete")';
+    var deleteDataURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "DeleteData" })';
 </script>
 
 <div class="container">

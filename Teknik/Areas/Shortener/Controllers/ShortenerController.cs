@@ -79,6 +79,7 @@ namespace Teknik.Areas.Shortener.Controllers
         }
 
         [HttpPost]
+        [HttpOptions]
         public IActionResult Delete(string id)
         {
             ShortenedUrl shortenedUrl = _dbContext.ShortenedUrls.Where(s => s.ShortUrl == id).FirstOrDefault();

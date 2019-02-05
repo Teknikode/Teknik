@@ -222,11 +222,36 @@ namespace Teknik.ServiceWorker
 
             // Process uploads
             List<Upload> uploads = db.Uploads.Where(u => u.ExpireDate != null && u.ExpireDate < curDate).ToList();
+
+            foreach (Upload upload in uploads)
+            {
+                string subDir = upload.FileName[0].ToString();
+                string filePath = Path.Combine(config.UploadConfig.UploadDirectory, subDir, upload.FileName);
+
+                // Delete the File
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+
             db.RemoveRange(uploads);
             db.SaveChanges();
 
             // Process Pastes
             List<Paste> pastes = db.Pastes.Where(p => p.ExpireDate != null && p.ExpireDate < curDate).ToList();
+
+            foreach (Paste paste in pastes)
+            {
+                string subDir = paste.FileName[0].ToString();
+                string filePath = Path.Combine(config.PasteConfig.PasteDirectory, subDir, paste.FileName);
+
+                // Delete the File
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
             db.RemoveRange(pastes);
             db.SaveChanges();
         }
