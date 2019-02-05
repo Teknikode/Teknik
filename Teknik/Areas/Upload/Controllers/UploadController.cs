@@ -203,17 +203,7 @@ namespace Teknik.Areas.Upload.Controllers
                     // Check Expiration
                     if (UploadHelper.CheckExpiration(upload))
                     {
-                        string subDir = upload.FileName[0].ToString();
-                        string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-                        // Delete from the DB
-                        _dbContext.Uploads.Remove(upload);
-                        _dbContext.SaveChanges();
-
-                        // Delete the File
-                        if (System.IO.File.Exists(filePath))
-                        {
-                            System.IO.File.Delete(filePath);
-                        }
+                        DeleteFile(upload);
                         return new StatusCodeResult(StatusCodes.Status404NotFound);
                     }
 
@@ -432,17 +422,7 @@ namespace Teknik.Areas.Upload.Controllers
                     // Check Expiration
                     if (UploadHelper.CheckExpiration(upload))
                     {
-                        string delDir = upload.FileName[0].ToString();
-                        string delPath = Path.Combine(_config.UploadConfig.UploadDirectory, delDir, upload.FileName);
-                        // Delete from the DB
-                        _dbContext.Uploads.Remove(upload);
-                        _dbContext.SaveChanges();
-
-                        // Delete the File
-                        if (System.IO.File.Exists(delPath))
-                        {
-                            System.IO.File.Delete(delPath);
-                        }
+                        DeleteFile(upload);
                         return Json(new { error = new { message = "File Does Not Exist" } });
                     }
 
@@ -500,17 +480,7 @@ namespace Teknik.Areas.Upload.Controllers
                 model.File = file;
                 if (!string.IsNullOrEmpty(upload.DeleteKey) && upload.DeleteKey == key)
                 {
-                    string subDir = upload.FileName[0].ToString();
-                    string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-                    // Delete from the DB
-                    _dbContext.Uploads.Remove(upload);
-                    _dbContext.SaveChanges();
-
-                    // Delete the File
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
+                    DeleteFile(upload);
                     model.Deleted = true;
                 }
                 else
@@ -550,23 +520,28 @@ namespace Teknik.Areas.Upload.Controllers
             {
                 if (foundUpload.User.Username == User.Identity.Name)
                 {
-                    string subDir = foundUpload.FileName[0].ToString();
-                    string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, foundUpload.FileName);
-                    // Delete from the DB
-                    _dbContext.Uploads.Remove(foundUpload);
-                    _dbContext.SaveChanges();
-
-                    // Delete the File
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-
+                    DeleteFile(foundUpload);
                     return Json(new { result = true });
                 }
                 return Json(new { error = new { message = "You do not have permission to edit this Paste" } });
             }
-            return Json(new { error = new { message = "This Paste does not exist" } });
+            return Json(new { error = new { message = "This Upload does not exist" } });
+        }
+
+        private void DeleteFile(Models.Upload upload)
+        {
+            string subDir = upload.FileName[0].ToString();
+            string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, upload.FileName);
+
+            // Delete the File
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            // Delete from the DB
+            _dbContext.Uploads.Remove(upload);
+            _dbContext.SaveChanges();
         }
     }
 }
