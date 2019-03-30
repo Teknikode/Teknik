@@ -15,33 +15,6 @@
         <p>This is a description of the API commands available for the Upload service.</p>
         <h3>Upload a File</h3>
         <pre><code>POST @Url.SubRouteUrl("api", "API.v1.Upload")</code></pre>
-        <h4>Headers</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Default Value</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <code>Authorization</code>
-                    </td>
-                    <td>
-                        <code>Basic <i>Encoding.Base64</i>(&lt;username&gt;:&lt;token&gt;)</code>
-                    </td>
-                    <td>
-                        <var>NULL</var>
-                    </td>
-                    <td>
-                        Basic Authentication to associate the upload with your account.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
         <h4>Parameters</h4>
         <table>
             <thead>
@@ -168,6 +141,34 @@
                 </tr>
                 <tr>
                     <td>
+                        <code>expireUnit</code>
+                    </td>
+                    <td>
+                        <code>string</code>
+                    </td>
+                    <td>
+                        <var>never</var>
+                    </td>
+                    <td>
+                        The expiration type for the paste.  Possible values are <code>view</code> (Max number of Downloads) or a date value <code>minute</code>, <code>hour</code>, <code>day</code>, <code>month</code>, <code>year</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>expireLength</code>
+                    </td>
+                    <td>
+                        <code>int</code>
+                    </td>
+                    <td>
+                        <var>1</var>
+                    </td>
+                    <td>
+                        The length of whatever unit you choose before the paste is deleted.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
                         <code>genDeletionKey</code>
                     </td>
                     <td>
@@ -178,20 +179,6 @@
                     </td>
                     <td>
                         Generates a deletion key.
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <code>doNotTrack</code>
-                    </td>
-                    <td>
-                        <code>bool</code>
-                    </td>
-                    <td>
-                        <var>false</var>
-                    </td>
-                    <td>
-                        If you do not want the api request to be tracked as defined in the privacy policy.
                     </td>
                 </tr>
             </tbody>
@@ -295,6 +282,28 @@
                     </td>
                     <td>
                         The size of the iv used in bits.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>maxDownloads</code>
+                    </td>
+                    <td>
+                        <code>int</code>
+                    </td>
+                    <td>
+                        The maximum number of uploads before the upload is deleted.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>expirationDate</code>
+                    </td>
+                    <td>
+                        <code>datetime</code>
+                    </td>
+                    <td>
+                        The date of expiration of the upload.
                     </td>
                 </tr>
                 <tr>

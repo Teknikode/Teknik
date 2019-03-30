@@ -17,33 +17,6 @@
         <p>This is a description of the API commands available for the Paste service.</p>
         <h3>Submit a Paste</h3>
         <pre><code>POST @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
-        <h4>Headers</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Default Value</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <code>Authorization</code>
-                    </td>
-                    <td>
-                        <code>Basic <i>Encoding.Base64</i>(&lt;username&gt;:&lt;token&gt;)</code>
-                    </td>
-                    <td>
-                        <var>NULL</var>
-                    </td>
-                    <td>
-                        Basic Authentication to associate the paste with your account.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
         <h4>Parameters</h4>
         <table>
             <thead>
@@ -152,20 +125,6 @@
                     </td>
                     <td>
                         Specify a password to encrypt and lock the paste with.
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <code>doNotTrack</code>
-                    </td>
-                    <td>
-                        <code>bool</code>
-                    </td>
-                    <td>
-                        <var>false</var>
-                    </td>
-                    <td>
-                        If you do not want the api request to be tracked as defined in the privacy policy.
                     </td>
                 </tr>
             </tbody>

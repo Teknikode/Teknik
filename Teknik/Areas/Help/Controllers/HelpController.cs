@@ -2,13 +2,17 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using Teknik.Areas.Help.ViewModels;
+using Teknik.Areas.Users.Models;
+using Teknik.Areas.Users.Utility;
 using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Controllers;
 using Teknik.Data;
 using Teknik.Filters;
 using Teknik.Logging;
+using Teknik.Utilities;
 
 namespace Teknik.Areas.Help.Controllers
 {
@@ -109,10 +113,25 @@ namespace Teknik.Areas.Help.Controllers
         }
         
         [AllowAnonymous]
-        public IActionResult Upload()
+        public async Task<IActionResult> Upload()
         {
             ViewBag.Title = "Upload Service Help";
-            HelpViewModel model = new HelpViewModel();
+            UploadHelpViewModel model = new UploadHelpViewModel();
+
+            model.MaxUploadSize = _config.UploadConfig.MaxUploadSize;
+            if (User.Identity.IsAuthenticated)
+            {
+                User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                if (user != null)
+                {
+                    model.MaxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
+                    IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
+                    if (userInfo.AccountType == AccountType.Premium)
+                    {
+                        model.MaxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
+                    }
+                }
+            }
             return View("~/Areas/Help/Views/Help/Upload.cshtml", model);
         }
     }

@@ -15,33 +15,6 @@
         <p>This is a description of the API commands available for the Url Shortening service.</p>
         <h3>Shorten a Url</h3>
         <pre><code>POST @Url.SubRouteUrl("api", "API.v1.Shorten")</code></pre>
-        <h4>Headers</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Default Value</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <code>Authorization</code>
-                    </td>
-                    <td>
-                        <code>Basic <i>Encoding.Base64</i>(&lt;username&gt;:&lt;token&gt;)</code>
-                    </td>
-                    <td>
-                        <var>NULL</var>
-                    </td>
-                    <td>
-                        Basic Authentication to associate the shortened url with your account.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
         <h4>Parameters</h4>
         <table>
             <thead>
