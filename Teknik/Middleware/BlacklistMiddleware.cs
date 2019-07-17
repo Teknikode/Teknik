@@ -48,12 +48,22 @@ namespace Teknik.Middleware
             if (!blocked)
             {
                 string referrer = context.Request.Headers["Referer"].ToString();
+                string referrerHost = referrer;
+                try
+                {
+                    var referrerUri = new Uri(referrer);
+                    referrerHost = referrerUri.Host;
+                } catch
+                { }
                 if (!string.IsNullOrEmpty(referrer))
                 {
                     StringDictionary badReferrers = GetFileData(context, "BlockedReferrers", config.ReferrerBlacklistFile);
 
-                    blocked |= (badReferrers != null && badReferrers.ContainsKey(referrer));
-                    blockReason = $"This referrer ({referrer}) has been blacklisted.  If you feel this is in error, please contact support@teknik.io for assistance.";
+                    if (badReferrers != null)
+                    {
+                        blocked |= badReferrers.ContainsKey(referrer) || badReferrers.ContainsKey(referrerHost);
+                        blockReason = $"This referrer ({referrer}) has been blacklisted.  If you feel this is in error, please contact support@teknik.io for assistance.";
+                    }
                 }
             }
             #endregion
