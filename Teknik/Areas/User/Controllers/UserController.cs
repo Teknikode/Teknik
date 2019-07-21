@@ -860,11 +860,11 @@ namespace Teknik.Areas.Users.Controllers
                     User user = UserHelper.GetUser(_dbContext, username);
                     if (user != null)
                     {
-                        IdentityUserInfo userClaims = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
+                        IdentityUserInfo userClaims = await IdentityHelper.GetIdentityUserInfo(_config, user.Username);
                         // If they have a recovery email, let's send a verification
                         if (!string.IsNullOrEmpty(userClaims.RecoveryEmail) && userClaims.RecoveryVerified.HasValue && userClaims.RecoveryVerified.Value)
                         {
-                            string verifyCode = await IdentityHelper.GeneratePasswordResetToken(_config, User.Identity.Name);
+                            string verifyCode = await IdentityHelper.GeneratePasswordResetToken(_config, user.Username);
                             string resetUrl = Url.SubRouteUrl("account", "User.VerifyResetPassword", new { Username = user.Username, Code = WebUtility.UrlEncode(verifyCode) });
                             UserHelper.SendResetPasswordVerification(_config, user.Username, userClaims.RecoveryEmail, resetUrl);
                             return Json(new { result = true });
