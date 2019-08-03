@@ -264,6 +264,12 @@
         ]
     },
     {
+        "outputFileName": "./wwwroot/css/user.settings.developer.min.css",
+        "inputFiles": [
+            "./wwwroot/css/app/User/Settings/Developer.css"
+        ]
+    },
+    {
         "outputFileName": "./wwwroot/js/user.settings.upload.min.js",
         "inputFiles": [
             "./wwwroot/lib/bootstrap/js/bootstrap-switch.js",

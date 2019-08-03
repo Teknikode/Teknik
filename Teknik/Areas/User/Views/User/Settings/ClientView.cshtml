@@ -30,6 +30,33 @@
             <div class="col-sm-4">
                 <div class="row">
                     <div class="col-sm-12">
+                        <strong>Allowed Scopes</strong>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        @(string.Join(", ", Model.AllowedScopes))
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <strong>Grant Type</strong>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        @Model.GrantType.GetDescription()
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="row">
+                    <div class="col-sm-12">
                         <strong>Homepage Url</strong>
                     </div>
                 </div>
@@ -39,7 +66,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-8">
                 <div class="row">
                     <div class="col-sm-12">
                         <strong>Authorization Callback Url</strong>

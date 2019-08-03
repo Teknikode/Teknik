@@ -155,6 +155,9 @@ function clearInputs(parent) {
     $(parent).find('textarea').each(function () {
         $(this).val('');
     });
+    $(parent).find('input:checkbox').each(function () {
+        $(this).prop('checked', false);
+    });
 }
 
 String.prototype.hashCode = function () {

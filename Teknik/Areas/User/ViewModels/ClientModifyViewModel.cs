@@ -7,7 +7,7 @@ using Teknik.ViewModels;
 
 namespace Teknik.Areas.Users.ViewModels
 {
-    public class ClientViewModel : ViewModelBase
+    public class ClientModifyViewModel : ViewModelBase
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -15,6 +15,6 @@ namespace Teknik.Areas.Users.ViewModels
         public string LogoUrl { get; set; }
         public string CallbackUrl { get; set; }
         public ICollection<string> AllowedScopes { get; set; }
-        public IdentityClientGrant GrantType { get; set; }
+        public string GrantType { get; set; }
     }
 }

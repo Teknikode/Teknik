@@ -21,7 +21,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:6002/"
+      "applicationUrl": "https://localhost:9002/"
     },
     "IdentityServer - Prod": {
       "commandName": "Project",
@@ -29,7 +29,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
-      "applicationUrl": "https://localhost:6002/"
+      "applicationUrl": "https://localhost:9002/"
     }
   }
 }

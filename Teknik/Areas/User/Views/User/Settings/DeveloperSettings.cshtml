@@ -6,6 +6,8 @@
     Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
 }
 
+<bundle src="css/user.settings.developer.min.css" append-version="true"></bundle>
+
 <script>
     var createClientURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "CreateClient" })';
     var editClientURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "EditClient" })';
@@ -78,6 +80,47 @@
                 <div class="form-group">
                     <label for="clientCallbackUrl">Authorization callback URL <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="clientCallbackUrl" name="clientCallbackUrl" data-val-required="The Authorization callback URL field is required." data-val="true" />
+                </div>
+                <div class="form-group" id="grantSection">
+                    <label for="grantType">Grant Type</label>
+                    <select class="form-control" name="grantType" id="grantType">
+                        @foreach (IdentityClientGrant grant in Enum.GetValues(typeof(IdentityClientGrant)))
+                        {
+                            <!option value="@grant">@grant.GetDescription()</!option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group" id="scopeSection">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <span class="glyphicon glyphicon-tasks"></span>
+                            Allowed Scopes
+                        </div>
+                        <ul class="list-group">
+                            @foreach (IdentityClientScope scope in Enum.GetValues(typeof(IdentityClientScope)))
+                            {
+
+                                <li class="list-group-item abc-checkbox">
+                                    <input class="consent-scopecheck @(scope.IsReadOnly() ? "default" : string.Empty)"
+                                           type="checkbox"
+                                           name="allowedScope"
+                                           id="scopes_@scope.GetDisplayName()"
+                                           value="@scope.GetDisplayName()"
+                                           checked="@scope.IsReadOnly()"
+                                           disabled="@scope.IsReadOnly()" />
+                                    <label for="ScopesConsented">
+                                        <strong>@scope.GetDisplayName()</strong>
+                                    </label>
+                                    @if (!string.IsNullOrEmpty(scope.GetDescription()))
+                                    {
+                                        <div class="consent-description">
+                                            <label for="scopes_@scope.GetDisplayName()">@scope.GetDescription()</label>
+                                        </div>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">

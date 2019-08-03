@@ -71,6 +71,47 @@ namespace Teknik.Areas.Users.Utility
             return new IdentityResult() { Success = false, Message = "HTTP Error: " + response.StatusCode + " | " + (await response.Content.ReadAsStringAsync()) };
         }
 
+        public static string[] GrantTypeToGrants(IdentityClientGrant grantType)
+        {
+            List<string> grants = new List<string>();
+            switch (grantType)
+            {
+                case IdentityClientGrant.Implicit:
+                    grants.Add(GrantType.Implicit);
+                    break;
+                case IdentityClientGrant.AuthorizationCode:
+                    grants.Add(GrantType.AuthorizationCode);
+                    break;
+                case IdentityClientGrant.ClientCredentials:
+                    grants.Add(GrantType.ClientCredentials);
+                    break;
+                default:
+                    grants.Add(GrantType.Hybrid);
+                    break;
+            }
+            return grants.ToArray();
+        }
+
+        public static IdentityClientGrant GrantsToGrantType(string[] grants)
+        {
+            if (grants.Contains(GrantType.Implicit))
+            {
+                return IdentityClientGrant.Implicit;
+            }
+            else if (grants.Contains(GrantType.AuthorizationCode))
+            {
+                return IdentityClientGrant.AuthorizationCode;
+            }
+            else if (grants.Contains(GrantType.ClientCredentials))
+            {
+                return IdentityClientGrant.ClientCredentials;
+            }
+            else
+            {
+                return IdentityClientGrant.ClientCredentials;
+            }
+        }
+
         // API Functions
 
         public static async Task<IdentityResult> CreateUser(Config config, string username, string password, string recoveryEmail)
@@ -350,7 +391,7 @@ namespace Teknik.Areas.Users.Utility
             throw new Exception(result.Message);
         }
 
-        public static async Task<IdentityResult> CreateClient(Config config, string username, string name, string homepageUrl, string logoUrl, string callbackUrl, params string[] allowedScopes)
+        public static async Task<IdentityResult> CreateClient(Config config, string username, string name, string homepageUrl, string logoUrl, string callbackUrl, string[] allowedGrants, string[] allowedScopes)
         {
             var manageUrl = CreateUrl(config, $"Manage/CreateClient");
 
@@ -362,12 +403,13 @@ namespace Teknik.Areas.Users.Utility
                     homepageUrl = homepageUrl,
                     logoUrl = logoUrl,
                     callbackUrl = callbackUrl,
-                    allowedScopes = allowedScopes
+                    allowedScopes = allowedScopes,
+                    allowedGrants = allowedGrants
                 });
             return response;
         }
 
-        public static async Task<IdentityResult> EditClient(Config config, string username, string clientId, string name, string homepageUrl, string logoUrl, string callbackUrl)
+        public static async Task<IdentityResult> EditClient(Config config, string username, string clientId, string name, string homepageUrl, string logoUrl, string callbackUrl, string[] allowedGrants, string[] allowedScopes)
         {
             var manageUrl = CreateUrl(config, $"Manage/EditClient");
 
@@ -379,7 +421,9 @@ namespace Teknik.Areas.Users.Utility
                     name = name,
                     homepageUrl = homepageUrl,
                     logoUrl = logoUrl,
-                    callbackUrl = callbackUrl
+                    callbackUrl = callbackUrl,
+                    allowedScopes = allowedScopes,
+                    allowedGrants = allowedGrants
                 });
             return response;
         }

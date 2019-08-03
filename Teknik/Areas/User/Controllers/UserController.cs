@@ -437,7 +437,8 @@ namespace Teknik.Areas.Users.Controllers
                         HomepageUrl = client.ClientUri,
                         LogoUrl = client.LogoUri,
                         CallbackUrl = string.Join(',', client.RedirectUris),
-                        AllowedScopes = client.AllowedScopes
+                        AllowedScopes = client.AllowedScopes,
+                        GrantType = IdentityHelper.GrantsToGrantType(client.AllowedGrantTypes.ToArray())
                     });
                 }
 
@@ -1239,7 +1240,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateClient(string name, string homepageUrl, string logoUrl, string callbackUrl, [FromServices] ICompositeViewEngine viewEngine)
+        public async Task<IActionResult> CreateClient(string name, string homepageUrl, string logoUrl, string callbackUrl, IdentityClientGrant grantType, string scopes, [FromServices] ICompositeViewEngine viewEngine)
         {
             try
             {
@@ -1255,7 +1256,15 @@ namespace Teknik.Areas.Users.Controllers
                     return Json(new { error = "Invalid logo URL" });
 
                 // Validate the code with the identity server
-                var result = await IdentityHelper.CreateClient(_config, User.Identity.Name, name, homepageUrl, logoUrl, callbackUrl, "openid", "role", "account-info", "security-info", "teknik-api.read", "teknik-api.write");
+                var result = await IdentityHelper.CreateClient(
+                    _config, 
+                    User.Identity.Name, 
+                    name, 
+                    homepageUrl, 
+                    logoUrl, 
+                    callbackUrl,
+                    IdentityHelper.GrantTypeToGrants(grantType),
+                    scopes.Split(','));
 
                 if (result.Success)
                 {
@@ -1267,6 +1276,8 @@ namespace Teknik.Areas.Users.Controllers
                     model.HomepageUrl = homepageUrl;
                     model.LogoUrl = logoUrl;
                     model.CallbackUrl = callbackUrl;
+                    model.GrantType = grantType;
+                    model.AllowedScopes = scopes.Split(',');
 
                     string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/User/Views/User/Settings/ClientView.cshtml", model);
 
@@ -1287,14 +1298,15 @@ namespace Teknik.Areas.Users.Controllers
             Client foundClient = await IdentityHelper.GetClient(_config, User.Identity.Name, clientId);
             if (foundClient != null)
             {
-                ClientViewModel model = new ClientViewModel()
+                ClientModifyViewModel model = new ClientModifyViewModel()
                 {
                     Id = foundClient.ClientId,
                     Name = foundClient.ClientName,
                     HomepageUrl = foundClient.ClientUri,
                     LogoUrl = foundClient.LogoUri,
                     CallbackUrl = string.Join(',', foundClient.RedirectUris),
-                    AllowedScopes = foundClient.AllowedScopes
+                    AllowedScopes = foundClient.AllowedScopes,
+                    GrantType = IdentityHelper.GrantsToGrantType(foundClient.AllowedGrantTypes.ToArray()).ToString()
                 };
 
                 return Json(new { result = true, client = model });
@@ -1304,7 +1316,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditClient(string clientId, string name, string homepageUrl, string logoUrl, string callbackUrl, [FromServices] ICompositeViewEngine viewEngine)
+        public async Task<IActionResult> EditClient(string clientId, string name, string homepageUrl, string logoUrl, string callbackUrl, IdentityClientGrant grantType, string scopes, [FromServices] ICompositeViewEngine viewEngine)
         {
             try
             {
@@ -1325,7 +1337,16 @@ namespace Teknik.Areas.Users.Controllers
                     return Json(new { error = "Client does not exist" });
 
                 // Validate the code with the identity server
-                var result = await IdentityHelper.EditClient(_config, User.Identity.Name, clientId, name, homepageUrl, logoUrl, callbackUrl);
+                var result = await IdentityHelper.EditClient(
+                    _config, 
+                    User.Identity.Name, 
+                    clientId, 
+                    name, 
+                    homepageUrl, 
+                    logoUrl, 
+                    callbackUrl,
+                    IdentityHelper.GrantTypeToGrants(grantType),
+                    scopes.Split(','));
 
                 if (result.Success)
                 {
@@ -1337,6 +1358,8 @@ namespace Teknik.Areas.Users.Controllers
                     model.HomepageUrl = homepageUrl;
                     model.LogoUrl = logoUrl;
                     model.CallbackUrl = callbackUrl;
+                    model.GrantType = grantType;
+                    model.AllowedScopes = scopes.Split(',');
 
                     string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/User/Views/User/Settings/ClientView.cshtml", model);
 

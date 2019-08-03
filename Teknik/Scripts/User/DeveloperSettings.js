@@ -25,6 +25,11 @@ $(document).ready(function () {
     $("#createClient").click(function () {
         $('#clientModal').find('#clientCreateSubmit').removeClass('hidden');
         $('#clientModal').find('#clientCreateSubmit').text('Create Client');
+        _.forEach($('#clientModal').find('#scopeSection :checkbox'), function (cb) {
+            if ($(cb).hasClass('default')) {
+                $(cb).prop('checked', true);
+            }
+        });
 
         $('#clientModal').modal('show');
     });
@@ -101,6 +106,11 @@ function editClient(clientId) {
                 $('#clientModal').find('#clientHomepageUrl').val(data.client.homepageUrl);
                 $('#clientModal').find('#clientLogoUrl').val(data.client.logoUrl);
                 $('#clientModal').find('#clientCallbackUrl').val(data.client.callbackUrl);
+                $('#clientModal').find('#grantType').val(data.client.grantType);
+
+                _.forEach(data.client.allowedScopes, function (scope) {
+                    $('#clientModal').find('#scopes_' + scope).prop('checked', true);
+                });
 
                 $('#clientModal').find('#clientEditSubmit').removeClass('hidden');
                 $('#clientModal').find('#clientEditSubmit').text('Save Client');
@@ -168,7 +178,7 @@ function deleteClient(clientId) {
 }
 
 function saveClientInfo(url, submitText, submitActionText, callback) {
-    var clientId, name, homepageUrl, logoUrl, callbackUrl;
+    var clientId, name, homepageUrl, logoUrl, callbackUrl, grantType, scopes;
     disableButton('.clientSubmit', submitActionText);
 
     clientId = $('#clientModal').find('#clientId').val();
@@ -176,11 +186,17 @@ function saveClientInfo(url, submitText, submitActionText, callback) {
     homepageUrl = $('#clientModal').find('#clientHomepageUrl').val();
     logoUrl = $('#clientModal').find('#clientLogoUrl').val();
     callbackUrl = $('#clientModal').find('#clientCallbackUrl').val();
+    grantType = $('#clientModal').find('#grantType').val();
+    scopes = $('#clientModal').find('#scopeSection :checkbox:checked');
+    scopes = _.map(scopes, function (cb) {
+        return cb.value;
+    });
+    scopes = scopes.join(',');
 
     $.ajax({
         type: "POST",
         url: url,
-        data: AddAntiForgeryToken({ clientId: clientId, name: name, homepageUrl: homepageUrl, logoUrl: logoUrl, callbackUrl: callbackUrl }),
+        data: AddAntiForgeryToken({ clientId: clientId, name: name, homepageUrl: homepageUrl, logoUrl: logoUrl, callbackUrl: callbackUrl, grantType: grantType, scopes: scopes }),
         success: function (response) {
             if (response.result) {
                 if (callback) {

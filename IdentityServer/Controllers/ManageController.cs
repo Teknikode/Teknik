@@ -542,18 +542,14 @@ namespace Teknik.IdentityServer.Controllers
                 ClientName = model.Name,
                 ClientUri = model.HomepageUrl,
                 LogoUri = model.LogoUrl,
-                AllowedGrantTypes = new List<string>()
-                {
-                    GrantType.AuthorizationCode,
-                    GrantType.ClientCredentials
-                },
+
+                AllowedGrantTypes = model.AllowedGrants,
+                AllowedScopes = model.AllowedScopes,
 
                 ClientSecrets =
                 {
                     new IdentityServer4.Models.Secret(clientSecret.Sha256())
                 },
-
-                RequireConsent = true,
 
                 RedirectUris =
                 {
@@ -565,8 +561,7 @@ namespace Teknik.IdentityServer.Controllers
                     origin
                 },
 
-                AllowedScopes = model.AllowedScopes,
-
+                RequireConsent = true,
                 AllowOfflineAccess = true
             };
 
@@ -616,6 +611,36 @@ namespace Teknik.IdentityServer.Controllers
                 newOrigin.ClientId = foundClient.Id;
                 newOrigin.Origin = origin;
                 configContext.Add(newUri);
+
+                // Update their allowed grants
+                var curGrants = configContext.Set<ClientGrantType>().Where(c => c.ClientId == foundClient.Id).ToList();
+                if (curGrants != null)
+                {
+                    configContext.RemoveRange(curGrants);
+                }
+                foreach (var grantType in model.AllowedGrants)
+                {
+                    var newGrant = new ClientGrantType();
+                    newGrant.Client = foundClient;
+                    newGrant.ClientId = foundClient.Id;
+                    newGrant.GrantType = grantType;
+                    configContext.Add(newGrant);
+                }
+
+                // Update their allowed scopes
+                var curScopes = configContext.Set<ClientScope>().Where(c => c.ClientId == foundClient.Id).ToList();
+                if (curScopes != null)
+                {
+                    configContext.RemoveRange(curScopes);
+                }
+                foreach (var scope in model.AllowedScopes)
+                {
+                    var newScope = new ClientScope();
+                    newScope.Client = foundClient;
+                    newScope.ClientId = foundClient.Id;
+                    newScope.Scope = scope;
+                    configContext.Add(newScope);
+                }
 
                 // Save all the changed
                 configContext.SaveChanges();

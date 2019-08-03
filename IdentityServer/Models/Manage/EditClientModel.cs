@@ -13,5 +13,7 @@ namespace Teknik.IdentityServer.Models.Manage
         public string HomepageUrl { get; set; }
         public string LogoUrl { get; set; }
         public string CallbackUrl { get; set; }
+        public ICollection<string> AllowedScopes { get; set; }
+        public ICollection<string> AllowedGrants { get; set; }
     }
 }

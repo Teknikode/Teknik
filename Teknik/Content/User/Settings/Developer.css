@@ -1,0 +1,12 @@
+﻿.consent-scopecheck {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.consent-description {
+    margin-left: 25px;
+}
+
+    .consent-description label {
+        font-weight: normal;
+    }
