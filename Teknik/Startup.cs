@@ -131,6 +131,7 @@ namespace Teknik
             // Compression Response
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
             services.AddResponseCompression(options => {
+                options.Providers.Add<BrotliCompressionProvider>();
                 options.Providers.Add<GzipCompressionProvider>();
             });
 
@@ -264,13 +265,10 @@ namespace Teknik
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, TeknikEntities dbContext, Config config)
+        public void Configure(IApplicationBuilder app, TeknikEntities dbContext, Config config)
         {
             // Create and Migrate the database
             dbContext.Database.Migrate();
-
-            // Initiate Logging
-            loggerFactory.AddLogger(config);
 
             // Setup the HttpContext
             app.UseHttpContextSetup();
@@ -289,7 +287,7 @@ namespace Teknik
             });
 
             // Compress Reponse
-            //app.UseResponseCompression();
+            app.UseResponseCompression();
 
             // Cache Responses
             //app.UseResponseCaching();

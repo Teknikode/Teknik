@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.TagHelpers.Internal;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -75,8 +76,8 @@ namespace Teknik.Utilities.TagHelpers
 
                 if (AppendVersion)
                 {
-                    var versionProvider = new FileVersionProvider(_env.WebRootFileProvider, _cache, ViewContext.HttpContext.Request.Path);
-                    fullPath = versionProvider.AddFileVersionToPath(fullPath);
+                    var _fileVersionProvider = ViewContext.HttpContext.RequestServices.GetRequiredService<IFileVersionProvider>();
+                    fullPath = _fileVersionProvider.AddFileVersionToPath(ViewContext.HttpContext.Request.Path, fullPath);
                 }
 
                 if (file.EndsWith(".js"))

@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System.IO;
+using Teknik.Configuration;
+using Teknik.Logging;
 
 namespace Teknik.IdentityServer
 {
@@ -21,6 +25,12 @@ namespace Teknik.IdentityServer
             return WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(config)
                 .UseStartup<Startup>()
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    string baseDir = hostingContext.HostingEnvironment.ContentRootPath;
+                    string dataDir = Path.Combine(baseDir, "App_Data");
+                    logging.AddProvider(new LoggerProvider(Config.Load(dataDir)));
+                })
                 .Build();
         }
     }

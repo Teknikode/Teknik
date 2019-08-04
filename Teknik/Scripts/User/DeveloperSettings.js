@@ -109,7 +109,7 @@ function editClient(clientId) {
                 $('#clientModal').find('#grantType').val(data.client.grantType);
 
                 _.forEach(data.client.allowedScopes, function (scope) {
-                    $('#clientModal').find('#scopes_' + scope).prop('checked', true);
+                    $('#clientModal').find('input[id="scopes_' + scope + '"]').prop('checked', true);
                 });
 
                 $('#clientModal').find('#clientEditSubmit').removeClass('hidden');

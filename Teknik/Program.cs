@@ -7,6 +7,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Teknik.Configuration;
+using Teknik.Logging;
 
 namespace Teknik
 {
@@ -28,6 +30,12 @@ namespace Teknik
                 .UseConfiguration(config)
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    string baseDir = hostingContext.HostingEnvironment.ContentRootPath;
+                    string dataDir = Path.Combine(baseDir, "App_Data");
+                    logging.AddProvider(new LoggerProvider(Config.Load(dataDir)));
+                })
                 .Build();
         }
     }

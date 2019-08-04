@@ -172,11 +172,8 @@ namespace Teknik.IdentityServer
             services.AddTransient<IProfileService, TeknikProfileService>();
         }
         
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, Config config)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, Config config)
         {
-            // Initiate Logging
-            loggerFactory.AddLogger(config);
-
             // Setup the HttpContext
             app.UseHttpContextSetup();
 
