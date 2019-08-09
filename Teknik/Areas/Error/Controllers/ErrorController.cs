@@ -225,7 +225,7 @@ User Message:
                 message += " | User Agent: " + Request.Headers["User-Agent"].ToString();
             }
 
-            _logger.Log(level, message, exception);
+            _logger.Log(level, exception, message);
         }
     }
 }

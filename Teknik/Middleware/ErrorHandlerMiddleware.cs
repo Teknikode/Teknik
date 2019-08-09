@@ -45,7 +45,6 @@ namespace Teknik.Middleware
             }
             catch (Exception ex)
             {
-                httpContext.Response.StatusCode = 500;
                 exception = ex;
             }
 
@@ -78,7 +77,7 @@ namespace Teknik.Middleware
                 ErrorController errorController = new ErrorController(logger, config, dbContext);
                 errorController.ControllerContext = context;
 
-                if (httpContext.Response.StatusCode == 500)
+                if (httpContext.Response.StatusCode == 500 || exception != null)
                 {
                     await errorController.Http500(exception).ExecuteResultAsync(context);
                 }
