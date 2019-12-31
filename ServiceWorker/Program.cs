@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Teknik.Areas.Paste.Models;
 using Teknik.Areas.Stats.Models;
@@ -25,6 +26,7 @@ namespace Teknik.ServiceWorker
         private static string currentPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         private static string virusFile = Path.Combine(currentPath, "virusLogs.txt");
         private static string errorFile = Path.Combine(currentPath, "errorLogs.txt");
+        private static string orphansFile = Path.Combine(currentPath, "orphanedFiles.txt");
         private static string configPath = currentPath;
 
         private const string TAKEDOWN_REPORTER = "Teknik Automated System";
@@ -70,6 +72,11 @@ namespace Teknik.ServiceWorker
                             {
                                 ProcessExpirations(config, db);
                             }
+
+                            if (options.Clean)
+                            {
+                                CleanStorage(config, db);
+                            }
                         }
 
                         Output(string.Format("[{0}] Finished Server Maintenance Process.", DateTime.Now));
@@ -96,30 +103,53 @@ namespace Teknik.ServiceWorker
             Output(string.Format("[{0}] Started Virus Scan.", DateTime.Now));
             List<Upload> uploads = db.Uploads.ToList();
 
+            int maxConcurrency = 100;
             int totalCount = uploads.Count();
             int totalScans = 0;
+            int currentScan = 0;
             int totalViruses = 0;
-            List<Task> runningTasks = new List<Task>();
-            foreach (Upload upload in uploads)
+
+            using (SemaphoreSlim concurrencySemaphore = new SemaphoreSlim(maxConcurrency))
             {
-                int currentScan = totalScans++;
-                Task scanTask = Task.Factory.StartNew(async () =>
+                List<Task> runningTasks = new List<Task>();
+                foreach (Upload upload in uploads)
                 {
-                    var virusDetected = await ScanUpload(config, db, upload, totalCount, currentScan);
-                    if (virusDetected)
-                        totalViruses++;
-                });
-                if (scanTask != null)
-                {
-                    runningTasks.Add(scanTask);
+                    concurrencySemaphore.Wait();
+
+                    currentScan++;
+
+                    Task scanTask = Task.Factory.StartNew(async () =>
+                    {
+                        try
+                        {
+                            var virusDetected = await ScanUpload(config, db, upload, totalCount, currentScan);
+                            if (virusDetected)
+                                totalViruses++;
+                            totalScans++;
+                        }
+                        catch (Exception ex)
+                        {
+                            string errorMsg = string.Format("[{0}] Scan Error: {1}", DateTime.Now, ex.GetFullMessage(true, true));
+                            File.AppendAllLines(errorFile, new List<string> { errorMsg });
+                        }
+                        finally
+                        {
+                            concurrencySemaphore.Release();
+                        }
+                    });
+                    if (scanTask != null)
+                    {
+                        runningTasks.Add(scanTask);
+                    }
                 }
+                Task.WaitAll(runningTasks.ToArray());
             }
             bool running = true;
 
-            while (running)
-            {
-                running = runningTasks.Exists(s => s != null && !s.IsCompleted && !s.IsCanceled && !s.IsFaulted);
-            }
+            //while (running)
+            //{
+            //    running = runningTasks.Exists(s => s != null && !s.IsCompleted && !s.IsCanceled && !s.IsFaulted);
+            //}
 
             Output(string.Format("Scanning Complete.  {0} Scanned | {1} Viruses Found | {2} Total Files", totalScans, totalViruses, totalCount));
         }
@@ -254,6 +284,23 @@ namespace Teknik.ServiceWorker
             }
             db.RemoveRange(pastes);
             db.SaveChanges();
+        }
+
+        public static void CleanStorage(Config config, TeknikEntities db)
+        {
+            var curDate = DateTime.Now;
+
+            // Process upload data
+            Output(string.Format("[{0}] Starting processing upload storage cleaning.", DateTime.Now));
+
+            List<string> uploads = db.Uploads.Select(u => Path.Combine(config.UploadConfig.UploadDirectory, u.FileName[0].ToString(), u.FileName)).Select(u => u.ToLower()).ToList();
+            List<string> files = Directory.GetFiles(config.UploadConfig.UploadDirectory, "*.*", SearchOption.AllDirectories).Select(f => f.ToLower()).ToList();
+            var orphans = files.Except(uploads);
+            File.AppendAllLines(orphansFile, orphans);
+            foreach (var orphan in orphans)
+            {
+                File.Delete(orphan);
+            }
         }
 
         public static void Output(string message)

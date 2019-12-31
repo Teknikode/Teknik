@@ -22,6 +22,9 @@ namespace Teknik.ServiceWorker
         [Option('e', "expire", Default = false, Required = false, HelpText = "Process Expirations")]
         public bool Expire { get; set; }
 
+        [Option('C', "clean", Default = false, Required = false, HelpText = "Clean Storage")]
+        public bool Clean { get; set; }
+
         // Omitting long name, default --verbose
         [Option(HelpText = "Prints all messages to standard output.")]
         public bool Verbose { get; set; }
