@@ -1,4 +1,4 @@
-/* globals shortenURL, createVaultURL, uploadFileURL, maxUploadSize, keySize, blockSize, encScriptSrc, aesScriptSrc, chunkSize */
+/* globals shortenURL, createVaultURL, uploadFileURL, maxUploadSize, maxTotalSize, curTotalSize:true, keySize, blockSize, encScriptSrc, aesScriptSrc, chunkSize */
 $(document).ready(function () {
     $("#upload-links").css('display', 'none', 'important');
     $("#upload-links").html('');
@@ -42,6 +42,22 @@ $(document).ready(function () {
             }
         }
     }
+
+    $(document.body).dropzone({
+        url: uploadFileURL,
+        maxFilesize: maxUploadSize, // MB
+        addRemoveLinks: true,
+        autoProcessQueue: false,
+        clickable: "#uploadButton",
+        previewTemplate: function () { },
+        addedfile: function (file) {
+            // Upload the file to the server
+            upload(file);
+
+            // Remove this file from the dropzone set
+            this.removeFile(file);
+        }
+    });
 });
 
 function linkExpireSelect(element) {
@@ -183,22 +199,6 @@ function setExpireWidth(unit) {
     }
 }
 
-$(document.body).dropzone({
-    url: uploadFileURL, 
-    maxFilesize: maxUploadSize, // MB
-    addRemoveLinks: true,
-    autoProcessQueue: false,
-    clickable: "#uploadButton",
-    previewTemplate: function () { },
-    addedfile: function (file) {
-        // Upload the file to the server
-        upload(file);
-
-        // Remove this file from the dropzone set
-        this.removeFile(file);
-    }
-});
-
 function upload(file) {
     // Convert file to blob
     var blob = file.slice(0, file.size);
@@ -249,6 +249,20 @@ function createUpload(fileName, token) {
 }
 
 function processFile(fileBlob, fileName, contentType, contentSize, fileID, token) {
+    // Check to see if they have reached their max upload size
+    if (maxTotalSize >= 0 && contentSize + curTotalSize > maxTotalSize) {
+        setProgress(
+            fileID,
+            100,
+            'progress-bar-danger',
+            '',
+            'Account storage limit exceeded: ' +
+                getReadableFileSizeString(contentSize + curTotalSize) +
+                ' / ' +
+                getReadableFileSizeString(maxTotalSize));
+        return;
+    }
+
     // Check the file size
     if (contentSize <= maxUploadSize) {
 
@@ -440,6 +454,7 @@ function uploadComplete(fileID, key, options, token, evt) {
                 }
                 var contentType = obj.result.contentType;
                 var contentLength = obj.result.contentLength;
+                var contentLengthRaw = obj.result.contentLengthRaw;
                 var deleteUrl = obj.result.deleteUrl;
                 var expirationUnit = obj.result.expirationUnit;
                 var expirationLength = obj.result.expirationLength;
@@ -475,6 +490,9 @@ function uploadComplete(fileID, key, options, token, evt) {
 
                 // Allow actions for all uploads
                 $('#upload-action-buttons').show();
+
+                // Update the current content size
+                curTotalSize += contentLengthRaw;
             }
         }
         else {

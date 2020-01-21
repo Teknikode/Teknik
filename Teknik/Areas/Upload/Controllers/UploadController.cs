@@ -53,11 +53,23 @@ namespace Teknik.Areas.Upload.Controllers
                     model.ExpirationUnit = user.UploadSettings.ExpirationUnit;
                     model.Vaults = user.Vaults.ToList();
 
+                    model.CurrentTotalSize = user.Uploads.Sum(u => u.ContentLength);
+
                     model.MaxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
+                    model.MaxTotalSize = _config.UploadConfig.MaxTotalSizeBasic;
                     IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
                     if (userInfo.AccountType == AccountType.Premium)
                     {
                         model.MaxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
+                        model.MaxTotalSize = _config.UploadConfig.MaxTotalSizePremium;
+                    }
+                    if (user.UploadSettings.MaxUploadStorage != null)
+                        model.MaxTotalSize = user.UploadSettings.MaxUploadStorage.Value;
+
+                    if (model.CurrentTotalSize >= model.MaxTotalSize)
+                    {
+                        model.Error = true;
+                        model.ErrorMessage = string.Format("Account storage limit exceeded: {0} / {1}", StringHelper.GetBytesReadable(model.CurrentTotalSize), StringHelper.GetBytesReadable(model.MaxTotalSize));
                     }
                 }
             }
@@ -77,10 +89,22 @@ namespace Teknik.Areas.Upload.Controllers
                     if (User.Identity.IsAuthenticated)
                     {
                         maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
+                        long maxTotalSize = _config.UploadConfig.MaxTotalSizeBasic;
                         IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
                         if (userInfo.AccountType == AccountType.Premium)
                         {
                             maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
+                            maxTotalSize = _config.UploadConfig.MaxTotalSizePremium;
+                        }
+
+                        // Check account total limits
+                        var user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                        if (user.UploadSettings.MaxUploadStorage != null)
+                            maxTotalSize = user.UploadSettings.MaxUploadStorage.Value;
+                        var userUploadSize = user.Uploads.Sum(u => u.ContentLength);
+                        if (userUploadSize + uploadFile.file.Length > maxTotalSize)
+                        {
+                            return Json(new { error = new { message = string.Format("Account storage limit exceeded.  {0} / {1}", StringHelper.GetBytesReadable(userUploadSize + uploadFile.file.Length), StringHelper.GetBytesReadable(maxTotalSize)) } });
                         }
                     }
                     else
@@ -158,6 +182,7 @@ namespace Teknik.Areas.Upload.Controllers
                                     url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }),
                                     contentType = upload.ContentType,
                                     contentLength = StringHelper.GetBytesReadable(upload.ContentLength),
+                                    contentLengthRaw = upload.ContentLength,
                                     deleteUrl = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = upload.Url, key = upload.DeleteKey }),
                                     expirationUnit = uploadFile.options.ExpirationUnit.ToString(),
                                     expirationLength = uploadFile.options.ExpirationLength
@@ -168,7 +193,7 @@ namespace Teknik.Areas.Upload.Controllers
                     }
                     else
                     {
-                        return Json(new { error = new { message = "File Too Large" } });
+                        return Json(new { error = new { message = "File Too Large.  Max file size is " + StringHelper.GetBytesReadable(maxUploadSize) } });
                     }
                 }
                 return Json(new { error = new { message = "Uploads are disabled" } });

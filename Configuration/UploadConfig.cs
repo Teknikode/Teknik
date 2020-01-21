@@ -15,6 +15,10 @@ namespace Teknik.Configuration
         public long MaxUploadSizePremium { get; set; }
         // Gets the maximum download size before they are forced to the download page
         public long MaxDownloadSize { get; set; }
+        // Maximum total size for basic users
+        public long MaxTotalSizeBasic { get; set; }
+        // Maximum total size for basic users
+        public long MaxTotalSizePremium { get; set; }
         // Location of the upload directory
         public string UploadDirectory { get; set; }
         // File Extension for saved files
@@ -47,6 +51,8 @@ namespace Teknik.Configuration
             MaxUploadSizeBasic = 100000000;
             MaxUploadSizePremium = 100000000;
             MaxDownloadSize = 100000000;
+            MaxTotalSizeBasic = 1000000000;
+            MaxTotalSizePremium = 5000000000;
             UploadDirectory = Directory.GetCurrentDirectory();
             FileExtension = "enc";
             UrlLength = 5;

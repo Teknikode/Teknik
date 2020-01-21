@@ -20,11 +20,15 @@ namespace Teknik.Areas.Users.Models
         [Column("ExpirationUnit")]
         public ExpirationUnit ExpirationUnit { get; set; }
 
+        [Column("MaxUploadStorage")]
+        public long? MaxUploadStorage { get; set; }
+
         public UploadSettings()
         {
             Encrypt = false;
             ExpirationLength = 1;
             ExpirationUnit = ExpirationUnit.Never;
+            MaxUploadStorage = null;
         }
     }
 }

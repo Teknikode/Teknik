@@ -15,6 +15,11 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="uploads">
+                    <br />
+                    <div class="row">
+                        <div class="col col-sm-12"><p>Total Upload Size: @StringHelper.GetBytesReadable(Model.Uploads.Sum(u => u.ContentLength))</p></div>
+                    </div>
+                    <br />
                     @foreach (Teknik.Areas.Upload.Models.Upload upload in Model.Uploads)
                     {
                         <div class="panel panel-default" id="@upload.Url">

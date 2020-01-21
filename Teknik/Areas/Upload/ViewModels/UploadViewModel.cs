@@ -21,6 +21,10 @@ namespace Teknik.Areas.Upload.ViewModels
 
         public long MaxUploadSize { get; set; }
 
+        public long MaxTotalSize { get; set; }
+
+        public long CurrentTotalSize { get; set; }
+
         public UploadViewModel()
         {
             CurrentSub = string.Empty;
@@ -29,6 +33,8 @@ namespace Teknik.Areas.Upload.ViewModels
             ExpirationUnit = ExpirationUnit.Never;
             Vaults = new List<Vault.Models.Vault>();
             MaxUploadSize = 0;
+            MaxTotalSize = -1;
+            CurrentTotalSize = 0;
         }
     }
 }

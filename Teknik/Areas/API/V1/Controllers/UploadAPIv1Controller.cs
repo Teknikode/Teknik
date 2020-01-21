@@ -43,10 +43,22 @@ namespace Teknik.Areas.API.V1.Controllers
                         if (User.Identity.IsAuthenticated)
                         {
                             maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
+                            long maxTotalSize = _config.UploadConfig.MaxTotalSizeBasic;
                             IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
                             if (userInfo.AccountType == AccountType.Premium)
                             {
                                 maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
+                                maxTotalSize = _config.UploadConfig.MaxTotalSizePremium;
+                            }
+
+                            // Check account total limits
+                            var user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                            if (user.UploadSettings.MaxUploadStorage != null)
+                                maxTotalSize = user.UploadSettings.MaxUploadStorage.Value;
+                            var userUploadSize = user.Uploads.Sum(u => u.ContentLength);
+                            if (userUploadSize + model.file.Length > maxTotalSize)
+                            {
+                                return Json(new { error = new { message = string.Format("Account storage limit exceeded: {0} / {1}", StringHelper.GetBytesReadable(userUploadSize + model.file.Length), StringHelper.GetBytesReadable(maxTotalSize)) } });
                             }
                         }
                         else
@@ -176,7 +188,7 @@ namespace Teknik.Areas.API.V1.Controllers
                         }
                         else
                         {
-                            return Json(new { error = new { message = "File Too Large" } });
+                            return Json(new { error = new { message = "File Too Large.  Max file size is " + StringHelper.GetBytesReadable(maxUploadSize) } });
                         }
                     }
                     return Json(new { error = new { message = "Invalid Upload Request" } });

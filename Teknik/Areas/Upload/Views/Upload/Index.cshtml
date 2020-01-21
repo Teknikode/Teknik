@@ -7,6 +7,8 @@
     var aesScriptSrc = '@Url.FullURL("~/js/crypto.min.js")';
     var uploadFileURL = '@Url.SubRouteUrl(Model.CurrentSub, "Upload.Action", new { action = "Upload" })';
     var maxUploadSize = @Model.MaxUploadSize;
+    var maxTotalSize = @Model.MaxTotalSize;
+    var curTotalSize = @Model.CurrentTotalSize;
     var chunkSize = @Config.UploadConfig.ChunkSize;
     var keySize = @Config.UploadConfig.KeySize;
     var blockSize = @Config.UploadConfig.BlockSize;
@@ -16,157 +18,186 @@
 
 <bundle src="css/upload.min.css" append-version="true" />
 
-<div class="container">
-    <div class="row text-center">
-        <div class="col-sm-10 col-sm-offset-1">
-            <div class="row text-center">
-                <div class="text-center upload__drop-container" id="uploadButton" style="cursor: pointer">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <h3 class="upload__drop-text"><span class="fa fa-cloud-upload fa-5x"></span></h3>
+@if (!Model.Error)
+{
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-sm-10 col-sm-offset-1">
+                <div class="row text-center">
+                    <div class="text-center upload__drop-container" id="uploadButton" style="cursor: pointer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="upload__drop-text"><span class="fa fa-cloud-upload fa-5x"></span></h3>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <h2 class="upload__drop-text">DRAG &amp; DROP</h2>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h2 class="upload__drop-text">DRAG &amp; DROP</h2>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <span class="upload__drop-text">Or select files from your system</span>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <span class="upload__drop-text">Or select files from your system</span>
+                            </div>
                         </div>
-                    </div>
-                    <br />
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <small class="upload__drop-text text-muted">(Individual file size limit @StringHelper.GetBytesReadable(Model.MaxUploadSize))</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-1 hidden-xs upload__help-icon">
-            <a href="@Url.SubRouteUrl("help", "Help.Upload")" target="_blank"><i class="fa fa-question-circle-o"></i></a>
-        </div>
-    </div>
-
-    <div class="row form-horizontal">
-        <div class="col-sm-5 col-sm-offset-1">
-            <div class="form-group form-group-sm" data-toggle="tooltip" data-placement="top" title="When enabled, each file is encrypted before upload using an AES-256-CTR cipher.  A key is generated and required to download the file later.">
-                <label for="encrypt" class="col-sm-6 col-xs-3 control-label">Encrypt in Browser</label>
-                <div class="col-sm-6 col-xs-9">
-                    <input type="checkbox" class="center-block" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-5">
-            <div class="form-group form-group-sm">
-                @if (!User.Identity.IsAuthenticated)
-                {
-                    @:<label class="col-xs-3 control-label" data-toggle="tooltip" data-placement="top" title="Uploads expire after 1 day for unregistered users">Expiration*</label>
-                }
-                else
-                {
-                    @:<label class="col-xs-3 control-label">Expiration</label>
-                }
-                <fieldset @if (!User.Identity.IsAuthenticated) { @: disabled
-                          }>
-                    <div class="col-xs-4 hidden" id="length-div">
-                        <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
-                    </div>
-                    <div class="col-xs-9" id="unit-div">
-                        <select class="form-control" name="expireunit" id="expireunit">
-                            @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
-                            {
-                                <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
-                            }
-                        </select>
-                    </div>
-                </fieldset>
-            </div>
-        </div>
-    </div>
-
-    <div class="row upload__action-buttons" id="upload-action-buttons" style="display: none">
-        <div class="col-sm-12">
-            <div class="btn-group pull-right" role="group">
-                <button type="button" class="btn btn-default btn-sm" id="copy-all" data-toggle="popover" data-trigger="manual" data-placement="top" data-content="Copied to Clipboard" data-container="body"><i class="fa fa-clipboard"></i>&nbsp;Copy All Links</button>
-                <button type="button" class="btn btn-default btn-sm" id="create-vault"><i class="fa fa-folder"></i>&nbsp;Create Vault</button>
-                @if (User.Identity.IsAuthenticated && Model.Vaults != null && Model.Vaults.Any())
-                {
-                    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-plus"></i>&nbsp;Add to Vault <span class="caret"></span></button>
-                    <ul class="dropdown-menu" id="add-to-vault-menu">
-                        @foreach (Vault item in Model.Vaults)
-                        {
-                            <li><a href="#" class="add-to-vault" data-add-to-vault-url="@Url.SubRouteUrl("vault", "Vault.EditVault", new { url = item.Url, type = "Upload" })">@item.Title</a></li>
-                        }
-                    </ul>
-                }
-            </div>
-        </div>
-    </div>
-    <div class="container" id="upload-links">
-    </div>
-    <br />
-    <div class="text-center">
-        Useful Tools: <a href="@Url.SubRouteUrl("help", "Help.Tools")">Upload Scripts and Utilities</a>
-    </div>
-</div>
-
-<div id="templates" style="display: none">
-    <div class="row" id="upload-template">
-        <div class="col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading text-center" id="upload-header">
-                    <div class="row">
-                        <div class="col-sm-10 col-sm-offset-1" id="upload-title"></div>
-                        <div class="col-sm-1">
-                            <button type="button" class="close pull-right" id="upload-close"><i class="fa fa-times-circle"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-body" id="upload-details">
-                    <div class="row" id="upload-link-panel">
-                        <input type="hidden" id="upload-url" />
-                        <div class="col-sm-8">
-                            <dl class="dl-horizontal" style="margin-bottom: 0;">
-                                <dt>Url</dt>
-                                <dd><a href="#" id="upload-link" target="_blank" class="alert-link"></a></dd>
-                                <dt>Content-Type</dt>
-                                <dd id="upload-contentType"></dd>
-                                <dt>File Size</dt>
-                                <dd id="upload-contentLength"></dd>
-                                <dt>Expiration</dt>
-                                <dd id="upload-expiration"></dd>
-                            </dl>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="btn-group pull-right" role="group">
-                                <button type="button" class="btn btn-default btn-sm" id="shortenUrl"><i class="fa fa-link"></i>&nbsp;Shorten</button>
-                                <button type="button" class="btn btn-default btn-sm" id="delete-link"><i class="fa fa-trash"></i>&nbsp;Deletion Link</button>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <small class="upload__drop-text text-muted">(Individual file size limit @StringHelper.GetBytesReadable(Model.MaxUploadSize))</small>
                             </div>
                         </div>
                     </div>
-                    <div class="row" id="upload-progress-panel">
-                        <div class="col-sm-12">
-                            <div class="row">
-                                <div class="col-sm-12 text-center">
-                                    <div class="progress" id="progress">
-                                        <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="col-sm-1 hidden-xs upload__help-icon">
+                <a href="@Url.SubRouteUrl("help", "Help.Upload")" target="_blank"><i class="fa fa-question-circle-o"></i></a>
+            </div>
+        </div>
+
+        <div class="row form-horizontal">
+            <div class="col-sm-5 col-sm-offset-1">
+                <div class="form-group form-group-sm" data-toggle="tooltip" data-placement="top" title="When enabled, each file is encrypted before upload using an AES-256-CTR cipher.  A key is generated and required to download the file later.">
+                    <label for="encrypt" class="col-sm-6 col-xs-3 control-label">Encrypt in Browser</label>
+                    <div class="col-sm-6 col-xs-9">
+                        <input type="checkbox" class="center-block" name="encrypt" id="encrypt" @(Model.Encrypt ? "checked" : string.Empty) />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <div class="form-group form-group-sm">
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        @:<label class="col-xs-3 control-label" data-toggle="tooltip" data-placement="top" title="Uploads expire after 1 day for unregistered users">Expiration*</label>
+                    }
+                    else
+                    {
+                        @:<label class="col-xs-3 control-label">Expiration</label>
+                    }
+                    <fieldset @if (!User.Identity.IsAuthenticated) { @: disabled
+                              }>
+                        <div class="col-xs-4 hidden" id="length-div">
+                            <input type="number" min="1" step="1" class="form-control" name="expirelength" id="expirelength" value="@Model.ExpirationLength">
+                        </div>
+                        <div class="col-xs-9" id="unit-div">
+                            <select class="form-control" name="expireunit" id="expireunit">
+                                @foreach (ExpirationUnit unit in Enum.GetValues(typeof(ExpirationUnit)))
+                                {
+                                    <!option value="@unit" @(Model.ExpirationUnit == unit ? "selected" : string.Empty)>@unit.ToString()</!option>
+                                }
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+
+        <div class="row upload__action-buttons" id="upload-action-buttons" style="display: none">
+            <div class="col-sm-12">
+                <div class="btn-group pull-right" role="group">
+                    <button type="button" class="btn btn-default btn-sm" id="copy-all" data-toggle="popover" data-trigger="manual" data-placement="top" data-content="Copied to Clipboard" data-container="body"><i class="fa fa-clipboard"></i>&nbsp;Copy All Links</button>
+                    <button type="button" class="btn btn-default btn-sm" id="create-vault"><i class="fa fa-folder"></i>&nbsp;Create Vault</button>
+                    @if (User.Identity.IsAuthenticated && Model.Vaults != null && Model.Vaults.Any())
+                    {
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-plus"></i>&nbsp;Add to Vault <span class="caret"></span></button>
+                        <ul class="dropdown-menu" id="add-to-vault-menu">
+                            @foreach (Vault item in Model.Vaults)
+                            {
+                                <li><a href="#" class="add-to-vault" data-add-to-vault-url="@Url.SubRouteUrl("vault", "Vault.EditVault", new { url = item.Url, type = "Upload" })">@item.Title</a></li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="container" id="upload-links">
+        </div>
+        <br />
+        <div class="text-center">
+            Useful Tools: <a href="@Url.SubRouteUrl("help", "Help.Tools")">Upload Scripts and Utilities</a>
+        </div>
+    </div>
+
+    <div id="templates" style="display: none">
+        <div class="row" id="upload-template">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading text-center" id="upload-header">
+                        <div class="row">
+                            <div class="col-sm-10 col-sm-offset-1" id="upload-title"></div>
+                            <div class="col-sm-1">
+                                <button type="button" class="close pull-right" id="upload-close"><i class="fa fa-times-circle"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" id="upload-details">
+                        <div class="row" id="upload-link-panel">
+                            <input type="hidden" id="upload-url" />
+                            <div class="col-sm-8">
+                                <dl class="dl-horizontal" style="margin-bottom: 0;">
+                                    <dt>Url</dt>
+                                    <dd><a href="#" id="upload-link" target="_blank" class="alert-link"></a></dd>
+                                    <dt>Content-Type</dt>
+                                    <dd id="upload-contentType"></dd>
+                                    <dt>File Size</dt>
+                                    <dd id="upload-contentLength"></dd>
+                                    <dt>Expiration</dt>
+                                    <dd id="upload-expiration"></dd>
+                                </dl>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="btn-group pull-right" role="group">
+                                    <button type="button" class="btn btn-default btn-sm" id="shortenUrl"><i class="fa fa-link"></i>&nbsp;Shorten</button>
+                                    <button type="button" class="btn btn-default btn-sm" id="delete-link"><i class="fa fa-trash"></i>&nbsp;Deletion Link</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="upload-progress-panel">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-12 text-center">
+                                        <div class="progress" id="progress">
+                                            <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-10 col-sm-offset-1 text-center">
+                                        <span id="progress-info"></span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-10 col-sm-offset-1 text-center">
-                                    <span id="progress-info"></span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<bundle src="js/upload.min.js" append-version="true" />
+    <bundle src="js/upload.min.js" append-version="true" />
+}
+else
+{
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-sm-10 col-sm-offset-1">
+                <div class="row text-center">
+                    <div class="text-center upload__drop-container-error" id="uploadButton" style="cursor: not-allowed">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="upload__drop-text"><span class="fa fa-cloud-upload fa-5x"></span></h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h2 class="upload__drop-text">@Model.ErrorMessage</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-1 hidden-xs upload__help-icon">
+                <a href="@Url.SubRouteUrl("help", "Help.Upload")" target="_blank"><i class="fa fa-question-circle-o"></i></a>
+            </div>
+        </div>
+    </div>
+}
