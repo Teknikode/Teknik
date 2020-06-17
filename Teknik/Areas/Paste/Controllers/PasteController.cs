@@ -427,7 +427,14 @@ namespace Teknik.Areas.Paste.Controllers
                 // Delete the File
                 if (System.IO.File.Exists(delPath))
                 {
-                    System.IO.File.Delete(delPath);
+                    try
+                    {
+                        System.IO.File.Delete(delPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Unable to delete file: {0}", paste.FileName);
+                    }
                 }
             }
 

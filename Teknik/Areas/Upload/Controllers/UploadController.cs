@@ -561,7 +561,14 @@ namespace Teknik.Areas.Upload.Controllers
             // Delete the File
             if (System.IO.File.Exists(filePath))
             {
-                System.IO.File.Delete(filePath);
+                try
+                {
+                    System.IO.File.Delete(filePath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unable to delete file: {0}", upload.FileName);
+                }
             }
 
             // Delete from the DB
