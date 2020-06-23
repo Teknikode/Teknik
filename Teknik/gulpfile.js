@@ -136,7 +136,7 @@ gulp.task("watch", function (done) {
     });
 
     // Watch Bundle File Itself
-    gulp.watch('./bundleconfig.json', ["load-bundle", "min"]);
+    gulp.watch('./bundleconfig.json', gulp.series("load-bundle", "min"));
 
     // Watch Bundles
     getBundles(".js").forEach(function (bundle) {
