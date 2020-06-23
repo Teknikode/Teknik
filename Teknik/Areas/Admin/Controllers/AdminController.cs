@@ -83,9 +83,9 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpGet]
         [TrackPageView]
-        public IActionResult ShoretenedUrlSearch()
+        public IActionResult ShortenedUrlSearch()
         {
-            UploadSearchViewModel model = new UploadSearchViewModel();
+            ShortenedUrlSearchViewModel model = new ShortenedUrlSearchViewModel();
             return View(model);
         }
 

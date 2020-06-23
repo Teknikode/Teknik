@@ -115,6 +115,20 @@ namespace Teknik
               defaults: new { area = "Admin", controller = "Admin", action = "UploadSearch" }
             );
             routes.MapSubdomainRoute(
+              name: "Admin.PasteSearch",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "admin" },
+              template: "Search/Pastes",
+              defaults: new { area = "Admin", controller = "Admin", action = "PasteSearch" }
+            );
+            routes.MapSubdomainRoute(
+              name: "Admin.ShortenedUrlSearch",
+              domains: new List<string>() { config.Host },
+              subDomains: new List<string>() { "admin" },
+              template: "Search/ShortenedUrls",
+              defaults: new { area = "Admin", controller = "Admin", action = "ShortenedUrlSearch" }
+            );
+            routes.MapSubdomainRoute(
               name: "Admin.UserInfo",
               domains: new List<string>() { config.Host },
               subDomains: new List<string>() { "admin" },
