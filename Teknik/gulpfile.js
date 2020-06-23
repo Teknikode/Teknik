@@ -82,20 +82,20 @@ gulp.task("clean", function (cb) {
     return rimraf("./wwwroot/*", cb);
 });
 
-gulp.task('copy-assets', function () {
+gulp.task('copy-assets', function (done) {
     var streams = [];
     for (var asset in assets) {
         for (var item in assets[asset]) {
             streams.push(gulp.src(item).pipe(gulp.dest('./wwwroot/' + assets[asset][item])));
         }
     }
+    done();
 });
 
-gulp.task("load-bundle", function () {
+gulp.task("load-bundle", function (done) {
     bundleconfig = require("./bundleconfig.json");
+    done();
 });
-
-gulp.task("min", ["min:js", "min:css"]);
 
 gulp.task("min:js", function () {
     var tasks = getBundles(".js").map(function (bundle) {
@@ -117,6 +117,8 @@ gulp.task("min:css", function () {
     return merge(tasks);
 });
 
+gulp.task("min", gulp.parallel("min:js", "min:css"));
+
 gulp.task("update-version", function () {
     return gulp.src('./App_Data/version.template.json')
         .pipe(replace('{{git_ver}}', git.tag()))
@@ -125,7 +127,7 @@ gulp.task("update-version", function () {
         .pipe(gulp.dest('./App_Data'));
 });
 
-gulp.task("watch", function () {
+gulp.task("watch", function (done) {
     // Watch Source Files
     assets.forEach(function (src) {
         for (var key in src) {
@@ -144,6 +146,8 @@ gulp.task("watch", function () {
     getBundles(".css").forEach(function (bundle) {
         gulp.watch(bundle.inputFiles, ["min:css"]);
     });
+
+    done();
 });
 
 function getBundles(extension) {
