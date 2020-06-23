@@ -1,0 +1,27 @@
+@model Teknik.Areas.Admin.ViewModels.ShortenedUrlSearchViewModel
+
+<script>
+    // We need to define the action URLs for the script
+    var homeUrl = '@Url.SubRouteUrl("admin", "Admin.ShortenedUrlSearch")';
+    var searchResultsURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "GetShortenedUrlSearchResults" })';
+    var deleteShortenedURL = '@Url.SubRouteUrl("s", "Shortener.Delete")';
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <!form>
+                <div class="form-group center-block">
+                    <input type="text" class="form-control" id="Query" name="Query" placeholder="Shortened Url" />
+                </div>
+            </!form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <div class="results" id="results"></div>
+        </div>
+    </div>
+</div>
+
+<bundle src="js/shortenedUrlSearch.min.js" append-version="true"></bundle>

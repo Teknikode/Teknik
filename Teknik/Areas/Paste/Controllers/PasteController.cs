@@ -381,13 +381,14 @@ namespace Teknik.Areas.Paste.Controllers
             Models.Paste foundPaste = _dbContext.Pastes.Where(p => p.Url == id).FirstOrDefault();
             if (foundPaste != null)
             {
-                if (foundPaste.User.Username == User.Identity.Name)
+                if (foundPaste.User.Username == User.Identity.Name ||
+                    User.IsInRole("Admin"))
                 {
                     DeleteFile(foundPaste);
 
                     return Json(new { result = true, redirect = Url.SubRouteUrl("p", "Paste.Index") });
                 }
-                return Json(new { error = new { message = "You do not have permission to edit this Paste" } });
+                return Json(new { error = new { message = "You do not have permission to delete this Paste" } });
             }
             return Json(new { error = new { message = "This Paste does not exist" } });
         }

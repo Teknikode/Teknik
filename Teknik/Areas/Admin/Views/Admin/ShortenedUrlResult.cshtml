@@ -1,0 +1,33 @@
+@model Teknik.Areas.Admin.ViewModels.ShortenedUrlResultViewModel
+
+<div class="panel panel-default">
+    <div class="panel-heading text-center">
+        <a id="paste-url" href="@Url.SubRouteUrl("shortened", "Shortener.View", new { url = Model.ShortenedUrl })">@Url.SubRouteUrl("shortened", "Shortener.View", new { url = Model.ShortenedUrl })</a>
+    </div>
+    <div class="panel-body">
+        <div class="col-sm-2 text-center">
+            <label for="type">Username</label>
+            <p id="type">
+            @if (!string.IsNullOrEmpty(Model.Username))
+            { 
+                @:<a href="@Url.SubRouteUrl("admin", "Admin.UserInfo", new { username = Model.Username })">@Model.Username</a>
+            }
+            </p>
+        </div>
+        <div class="col-sm-2 text-center">
+            <label for="size">Original Url</label>
+            <p id="size">@Model.OriginalUrl</p>
+        </div>
+        <div class="col-sm-2 text-center">
+            <label for="dateCreated">Date Created</label>
+            <p id="dateCreated"><time datetime="@Model.CreationDate.ToString("s")">@Model.CreationDate.ToString("MMMM dd, yyyy")</time></p>
+        </div>
+        <div class="col-sm-2 text-center">
+            <label for="views">Views</label>
+            <p id="views">@Model.Views</p>
+        </div>
+        <div class="col-sm-2 text-center">
+            <p id="delete-short"><button role="button" class="btn btn-danger delete-short-url-button" data-short-id="@Model.ShortenedUrl">Delete</button></p>
+        </div>
+    </div>
+</div>

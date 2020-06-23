@@ -12,6 +12,18 @@
         ]
     },
     {
+        "outputFileName": "./wwwroot/js/pasteSearch.min.js",
+        "inputFiles": [
+            "./wwwroot/js/App/Admin/PasteSearch.js"
+        ]
+    },
+    {
+        "outputFileName": "./wwwroot/js/shortenedUrlSearch.min.js",
+        "inputFiles": [
+            "./wwwroot/js/App/Admin/ShortenedUrlSearch.js"
+        ]
+    },
+    {
         "outputFileName": "./wwwroot/js/userInfo.min.js",
         "inputFiles": [
             "./wwwroot/js/app/Admin/UserInfo.js"
@@ -219,12 +231,6 @@
         "outputFileName": "./wwwroot/js/user.reset.min.js",
         "inputFiles": [
             "./wwwroot/js/app/User/ResetPass.js"
-        ]
-    },
-    {
-        "outputFileName": "./wwwroot/js/user.settings.min.js",
-        "inputFiles": [
-            "./wwwroot/js/app/User/Settings.js"
         ]
     },
     {

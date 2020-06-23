@@ -73,6 +73,22 @@ namespace Teknik.Areas.Admin.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [TrackPageView]
+        public IActionResult PasteSearch()
+        {
+            PasteSearchViewModel model = new PasteSearchViewModel();
+            return View(model);
+        }
+
+        [HttpGet]
+        [TrackPageView]
+        public IActionResult ShoretenedUrlSearch()
+        {
+            UploadSearchViewModel model = new UploadSearchViewModel();
+            return View(model);
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetUserSearchResults(string query, [FromServices] ICompositeViewEngine viewEngine)
         {
@@ -131,6 +147,48 @@ namespace Teknik.Areas.Admin.Controllers
                 return Json(new { result = new { html = renderedView } });
             }
             return Json(new { error = new { message = "Upload does not exist" } });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPasteSearchResults(string url, [FromServices] ICompositeViewEngine viewEngine)
+        {
+            Paste.Models.Paste foundPaste = _dbContext.Pastes.Where(u => u.Url == url).FirstOrDefault();
+            if (foundPaste != null)
+            {
+                PasteResultViewModel model = new PasteResultViewModel();
+
+                model.Url = foundPaste.Url;
+                model.DatePosted = foundPaste.DatePosted;
+                model.Views = foundPaste.Views;
+                model.DeleteKey = foundPaste.DeleteKey;
+                model.Username = foundPaste.User?.Username;
+
+                string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/Admin/Views/Admin/PasteResult.cshtml", model);
+
+                return Json(new { result = new { html = renderedView } });
+            }
+            return Json(new { error = new { message = "Paste does not exist" } });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetShortenedUrlSearchResults(string url, [FromServices] ICompositeViewEngine viewEngine)
+        {
+            Shortener.Models.ShortenedUrl foundUrl = _dbContext.ShortenedUrls.Where(u => u.ShortUrl == url).FirstOrDefault();
+            if (foundUrl != null)
+            {
+                ShortenedUrlResultViewModel model = new ShortenedUrlResultViewModel();
+
+                model.OriginalUrl = foundUrl.OriginalUrl;
+                model.ShortenedUrl = foundUrl.ShortUrl;
+                model.CreationDate = foundUrl.DateAdded;
+                model.Views = foundUrl.Views;
+                model.Username = foundUrl.User?.Username;
+
+                string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/Admin/Views/Admin/ShortenedUrlResult.cshtml", model);
+
+                return Json(new { result = new { html = renderedView } });
+            }
+            return Json(new { error = new { message = "Shortened Url does not exist" } });
         }
 
         [HttpPost]

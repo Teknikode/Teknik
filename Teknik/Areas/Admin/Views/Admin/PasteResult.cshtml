@@ -1,0 +1,33 @@
+@model Teknik.Areas.Admin.ViewModels.PasteResultViewModel
+
+<div class="panel panel-default">
+    <div class="panel-heading text-center">
+        <a id="paste-url" href="@Url.SubRouteUrl("p", "Paste.Raw", new { url = Model.Url })">@Url.SubRouteUrl("u", "Paste.Raw", new { url = Model.Url })</a>
+    </div>
+    <div class="panel-body">
+        <div class="col-sm-2 text-center">
+            <label for="type">Username</label>
+            <p id="type">
+            @if (!string.IsNullOrEmpty(Model.Username))
+            { 
+                @:<a href="@Url.SubRouteUrl("admin", "Admin.UserInfo", new { username = Model.Username })">@Model.Username</a>
+            }
+            </p>
+        </div>
+        <div class="col-sm-2 text-center">
+            <label for="size">Title</label>
+            <p id="size">@Model.Title</p>
+        </div>
+        <div class="col-sm-2 text-center">
+            <label for="dateCreated">Date Created</label>
+            <p id="dateCreated"><time datetime="@Model.DatePosted.ToString("s")">@Model.DatePosted.ToString("MMMM dd, yyyy")</time></p>
+        </div>
+        <div class="col-sm-2 text-center">
+            <label for="views">Views</label>
+            <p id="views">@Model.Views</p>
+        </div>
+        <div class="col-sm-2 text-center">
+            <p id="delete-paste"><button role="button" class="btn btn-danger delete-paste-button" data-paste-id="@Model.Url">Delete</button></p>
+        </div>
+    </div>
+</div>
