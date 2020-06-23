@@ -13,7 +13,7 @@
         "font-awesome": "^4.7.0",
         "highcharts": "^6.2.0",
         "highlight.js": "^9.15.9",
-        "jquery": "^3.4.1",
+        "jquery": "^3.5.0",
         "jquery-validation": "^1.19.1",
         "marked": "^0.4.0",
         "oidc-client": "^1.8.2",
