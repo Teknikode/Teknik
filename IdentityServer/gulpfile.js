@@ -106,20 +106,20 @@ gulp.task("watch", function (done) {
     // Watch Source Files
     assets.forEach(function (src) {
         for (var key in src) {
-            gulp.watch(key, ["copy-assets"]);
+            gulp.watch(key, gulp.parallel("copy-assets"));
         }
     });
 
     // Watch Bundle File Itself
-    gulp.watch('./bundleconfig.json', ["load-bundle", "min"]);
+    gulp.watch('./bundleconfig.json', gulp.series("load-bundle", "min"));
 
     // Watch Bundles
     getBundles(".js").forEach(function (bundle) {
-        gulp.watch(bundle.inputFiles, ["min:js"]);
+        gulp.watch(bundle.inputFiles, gulp.parallel("min:js"));
     });
 
     getBundles(".css").forEach(function (bundle) {
-        gulp.watch(bundle.inputFiles, ["min:css"]);
+        gulp.watch(bundle.inputFiles, gulp.parallel("min:css"));
     });
 
     done();
