@@ -22,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Teknik.Logging;
 using Teknik.Areas.Users.Models;
+using Teknik.ContentScanningService;
 
 namespace Teknik.Areas.Upload.Controllers
 {
@@ -32,7 +33,6 @@ namespace Teknik.Areas.Upload.Controllers
         public UploadController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [HttpGet]
-        [AllowAnonymous]
         [TrackPageView]
         public async Task<IActionResult> Index()
         {
@@ -77,7 +77,6 @@ namespace Teknik.Areas.Upload.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload([FromForm] UploadFileViewModel uploadFile)
         {
@@ -118,51 +117,58 @@ namespace Teknik.Areas.Upload.Controllers
                         // convert file to bytes
                         long contentLength = uploadFile.file.Length;
 
-                        // Scan the file to detect a virus
-                        if (_config.UploadConfig.VirusScanEnable)
-                        {
-                            using (Stream fs = uploadFile.file.OpenReadStream())
-                            {
-                                ClamClient clam = new ClamClient(_config.UploadConfig.ClamServer, _config.UploadConfig.ClamPort);
-                                clam.MaxStreamSize = maxUploadSize;
-                                ClamScanResult scanResult = await clam.SendAndScanFileAsync(fs);
-
-                                switch (scanResult.Result)
-                                {
-                                    case ClamScanResults.Clean:
-                                        break;
-                                    case ClamScanResults.VirusDetected:
-                                        return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.InfectedFiles.First().VirusName, Url.SubRouteUrl("tos", "TOS.Index")) } });
-                                    case ClamScanResults.Error:
-                                        return Json(new { error = new { message = string.Format("Error scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
-                                    case ClamScanResults.Unknown:
-                                        return Json(new { error = new { message = string.Format("Unknown result while scanning the file upload for viruses.  {0}", scanResult.RawResult) } });
-                                }
-                            }
-                        }
-
-                        // Check content type restrictions (Only for encrypting server side
-                        if (!uploadFile.options.Encrypt)
-                        {
-                            if (_config.UploadConfig.RestrictedContentTypes.Contains(uploadFile.fileType) || _config.UploadConfig.RestrictedExtensions.Contains(uploadFile.fileExt))
-                            {
-                                return Json(new { error = new { message = "File Type Not Allowed" } });
-                            }
-                        }
-
                         using (Stream fs = uploadFile.file.OpenReadStream())
                         {
-                            Models.Upload upload = UploadHelper.SaveFile(_dbContext, 
-                                _config, 
-                                fs, 
-                                uploadFile.fileType, 
-                                contentLength, 
-                                !uploadFile.options.Encrypt, 
-                                uploadFile.options.ExpirationUnit, 
-                                uploadFile.options.ExpirationLength, 
-                                uploadFile.fileExt, 
-                                uploadFile.iv, null, 
-                                uploadFile.keySize, 
+                            ScanResult scanResult = null;
+
+                            // Scan the file to detect a virus
+                            if (_config.UploadConfig.ClamConfig.Enabled)
+                            {
+                                var clamScanner = new ClamScanner(_config);
+                                scanResult = await clamScanner.ScanFile(fs);
+                            }
+
+                            // Scan the files against an endpoint based on hash
+                            if (_config.UploadConfig.HashScanConfig.Enabled && (scanResult == null || scanResult.ResultType == ScanResultType.Clean))
+                            {
+                                var hashScanner = new HashScanner(_config);
+                                scanResult = await hashScanner.ScanFile(fs);
+                            }
+
+                            switch (scanResult?.ResultType)
+                            {
+                                case ScanResultType.Clean:
+                                    break;
+                                case ScanResultType.VirusDetected:
+                                    return Json(new { error = new { message = string.Format("Virus Detected: {0}. As per our <a href=\"{1}\">Terms of Service</a>, Viruses are not permited.", scanResult.RawResult, Url.SubRouteUrl("tos", "TOS.Index")) } });
+                                case ScanResultType.ChildPornography:
+                                    return Json(new { error = new { message = string.Format("Child Pornography Detected: As per our <a href=\"{0}\">Terms of Service</a>, Child Pornography is not permited.", Url.SubRouteUrl("tos", "TOS.Index")) } });
+                                case ScanResultType.Error:
+                                    return Json(new { error = new { message = string.Format("Error scanning the file upload.  {0}", scanResult.RawResult) } });
+                                case ScanResultType.Unknown:
+                                    return Json(new { error = new { message = string.Format("Unknown result while scanning the file upload.  {0}", scanResult.RawResult) } });
+                            }
+
+                            // Check content type restrictions (Only for encrypting server side
+                            if (!uploadFile.options.Encrypt)
+                            {
+                                if (_config.UploadConfig.RestrictedContentTypes.Contains(uploadFile.fileType) || _config.UploadConfig.RestrictedExtensions.Contains(uploadFile.fileExt))
+                                {
+                                    return Json(new { error = new { message = "File Type Not Allowed" } });
+                                }
+                            }
+
+                            Models.Upload upload = UploadHelper.SaveFile(_dbContext,
+                                _config,
+                                fs,
+                                uploadFile.fileType,
+                                contentLength,
+                                !uploadFile.options.Encrypt,
+                                uploadFile.options.ExpirationUnit,
+                                uploadFile.options.ExpirationLength,
+                                uploadFile.fileExt,
+                                uploadFile.iv, null,
+                                uploadFile.keySize,
                                 uploadFile.blockSize);
                             if (upload != null)
                             {
@@ -176,17 +182,20 @@ namespace Teknik.Areas.Upload.Controllers
                                         _dbContext.SaveChanges();
                                     }
                                 }
-                                return Json(new { result = new
+                                return Json(new
                                 {
-                                    name = upload.Url,
-                                    url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }),
-                                    contentType = upload.ContentType,
-                                    contentLength = StringHelper.GetBytesReadable(upload.ContentLength),
-                                    contentLengthRaw = upload.ContentLength,
-                                    deleteUrl = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = upload.Url, key = upload.DeleteKey }),
-                                    expirationUnit = uploadFile.options.ExpirationUnit.ToString(),
-                                    expirationLength = uploadFile.options.ExpirationLength
-                                } });
+                                    result = new
+                                    {
+                                        name = upload.Url,
+                                        url = Url.SubRouteUrl("u", "Upload.Download", new { file = upload.Url }),
+                                        contentType = upload.ContentType,
+                                        contentLength = StringHelper.GetBytesReadable(upload.ContentLength),
+                                        contentLengthRaw = upload.ContentLength,
+                                        deleteUrl = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = upload.Url, key = upload.DeleteKey }),
+                                        expirationUnit = uploadFile.options.ExpirationUnit.ToString(),
+                                        expirationLength = uploadFile.options.ExpirationLength
+                                    }
+                                });
                             }
                         }
                         return Json(new { error = new { message = "Unable to upload file" } });

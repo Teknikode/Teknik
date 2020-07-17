@@ -31,9 +31,9 @@ namespace Teknik.Configuration
         // The size of the chunk that the file will be encrypted/decrypted in (bytes)
         public int ChunkSize { get; set; }
         // Virus Scanning Settings
-        public bool VirusScanEnable { get; set; }
-        public string ClamServer { get; set; }
-        public int ClamPort { get; set; }
+        public ClamConfig ClamConfig { get; set; }
+        // Hash Scanning Settings
+        public HashScanConfig HashScanConfig { get; set; }
         // Content Type Restrictions
         public List<string> RestrictedContentTypes { get; set; }
         public List<string> RestrictedExtensions { get; set; }
@@ -61,9 +61,8 @@ namespace Teknik.Configuration
             BlockSize = 128;
             IncludeExtension = true;
             ChunkSize = 1024;
-            VirusScanEnable = false;
-            ClamServer = "localhost";
-            ClamPort = 3310;
+            ClamConfig = new ClamConfig();
+            HashScanConfig = new HashScanConfig();
             RestrictedContentTypes = new List<string>();
             RestrictedExtensions = new List<string>();
         }
