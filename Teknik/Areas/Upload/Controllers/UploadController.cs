@@ -33,6 +33,7 @@ namespace Teknik.Areas.Upload.Controllers
         public UploadController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
         [HttpGet]
+        [AllowAnonymous]
         [TrackPageView]
         public async Task<IActionResult> Index()
         {
@@ -77,6 +78,7 @@ namespace Teknik.Areas.Upload.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload([FromForm] UploadFileViewModel uploadFile)
         {
