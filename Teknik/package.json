@@ -15,7 +15,7 @@
         "highlight.js": "^9.15.9",
         "jquery": "^3.4.1",
         "jquery-validation": "^1.19.1",
-        "marked": "^0.4.0",
+        "marked": "^0.7.0",
         "oidc-client": "^1.8.2",
         "sanitize-html": "^1.20.1",
         "underscore": "^1.9.1"
