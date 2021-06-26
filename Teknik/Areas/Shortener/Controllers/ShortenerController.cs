@@ -14,6 +14,7 @@ using Teknik.Data;
 using Teknik.Filters;
 using Teknik.Logging;
 using Teknik.Utilities;
+using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.Shortener.Controllers
 {

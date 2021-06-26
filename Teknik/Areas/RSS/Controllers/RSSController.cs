@@ -22,6 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.SyndicationFeed;
 using Teknik.Logging;
+using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.RSS.Controllers
 {

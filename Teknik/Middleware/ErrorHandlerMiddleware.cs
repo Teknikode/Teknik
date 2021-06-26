@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,15 +24,13 @@ namespace Teknik.Middleware
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IRouter _router;
 
-        public ErrorHandlerMiddleware(RequestDelegate next, IRouter router)
+        public ErrorHandlerMiddleware(RequestDelegate next)
         {
             _next = next;
-            _router = router;
         }
 
-        public async Task Invoke(HttpContext httpContext, ILogger<Logger> logger, Config config, TeknikEntities dbContext)
+        public async Task Invoke(HttpContext httpContext, ILogger<Logger> logger, Config config, TeknikEntities dbContext, ErrorController errorController)
         {
             var statusCodeFeature = new StatusCodePagesFeature();
             httpContext.Features.Set<IStatusCodePagesFeature>(statusCodeFeature);
@@ -64,17 +61,13 @@ namespace Teknik.Middleware
             // Detect if there is a response code or exception occured
             if ((httpContext.Response.StatusCode >= 400 && httpContext.Response.StatusCode <= 600) || exception != null)
             {
-                RouteData routeData = new RouteData();
-                routeData.DataTokens.Add("area", "Error");
-                routeData.Values.Add("controller", "Error");
-                routeData.Routers.Add(_router);
+                var routeData = httpContext.GetRouteData() ?? new RouteData();
 
                 var context = new ControllerContext();
                 context.HttpContext = httpContext;
                 context.RouteData = routeData;
                 context.ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor();
 
-                ErrorController errorController = new ErrorController(logger, config, dbContext);
                 errorController.ControllerContext = context;
 
                 if (httpContext.Response.StatusCode == 500 || exception != null)
@@ -94,13 +87,7 @@ namespace Teknik.Middleware
     {
         public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder builder, Config config)
         {
-            var routes = new RouteBuilder(builder)
-            {
-                DefaultHandler = builder.ApplicationServices.GetRequiredService<MvcRouteHandler>(),
-            };
-            routes.BuildRoutes(config);
-
-            return builder.UseMiddleware<ErrorHandlerMiddleware>(routes.Build());
+            return builder.UseMiddleware<ErrorHandlerMiddleware>();
         }
     }
 }

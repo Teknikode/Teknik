@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.TagHelpers.Internal;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
@@ -19,7 +18,7 @@ namespace Teknik.Utilities.TagHelpers
         private const string VirtualFolder = "./wwwroot/";
         private const string ConfigPath = "bundleconfig.json";
 
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
         private readonly IMemoryCache _cache;
 
@@ -31,7 +30,7 @@ namespace Teknik.Utilities.TagHelpers
 
         public string Src { get; set; }
 
-        public BundleTagHelper(IHostingEnvironment env, IMemoryCache cache)
+        public BundleTagHelper(IWebHostEnvironment env, IMemoryCache cache)
         {
             _env = env;
             _cache = cache;

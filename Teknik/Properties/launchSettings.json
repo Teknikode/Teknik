@@ -11,7 +11,7 @@
     "TeknikCore": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "?sub=www",
+      "launchUrl": "Home",
       "environmentVariables": {
         "ASPNETCORE_URLS": "https://localhost:8050",
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -22,7 +22,7 @@
       "launchBrowser": true,
       "launchUrl": "?sub=www",
       "environmentVariables": {
-        "ASPNETCORE_URLS": "https://localhost:5050",
+        "ASPNETCORE_URLS": "https://localhost:8050",
         "ASPNETCORE_ENVIRONMENT": "Production"
       }
     },

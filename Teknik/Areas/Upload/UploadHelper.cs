@@ -135,5 +135,12 @@ namespace Teknik.Areas.Upload
 
             return false;
         }
+
+        public static Models.Upload GetUpload(TeknikEntities db, string url)
+        {
+            Models.Upload upload = db.Uploads.Where(up => up.Url == url).FirstOrDefault();
+
+            return upload;
+        }
     }
 }

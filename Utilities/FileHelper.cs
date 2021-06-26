@@ -96,7 +96,7 @@ namespace Teknik.Utilities
             return defaultExtension;
         }
 
-        public static string MapPath(IHostingEnvironment env, string file)
+        public static string MapPath(IWebHostEnvironment env, string file)
         {
             var webRoot = env.WebRootPath;
             return Path.Combine(webRoot, file);

@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Teknik.Logging;
+using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.Blog.Controllers
 {

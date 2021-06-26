@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -94,12 +93,7 @@ namespace Teknik.IdentityServer.Middleware
     {
         public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder builder, Config config)
         {
-            var routes = new RouteBuilder(builder)
-            {
-                DefaultHandler = builder.ApplicationServices.GetRequiredService<MvcRouteHandler>(),
-            };
-
-            return builder.UseMiddleware<ErrorHandlerMiddleware>(routes.Build());
+            return builder.UseMiddleware<ErrorHandlerMiddleware>();
         }
     }
 }

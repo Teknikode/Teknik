@@ -6,7 +6,7 @@ using System.Web;
 using Microsoft.AspNetCore.Routing;
 using Teknik.Utilities;
 
-namespace Teknik.Utilities
+namespace Teknik.Utilities.Routing
 {
     public class SubdomainRoute : Route
     {

@@ -1,0 +1,1137 @@
+[
+    {
+        "Name": "Default.Favicon",
+        "HostTypes": [ "Full", "Short" ],
+        "SubDomains": [ "*" ],
+        "Pattern": "favicon.ico",
+        "Area": "Default",
+        "Defaults": {
+            "controller": "Default",
+            "action": "Favicon"
+        }
+    },
+    {
+        "Name": "Default.Logo",
+        "HostTypes": [ "Full", "Short" ],
+        "SubDomains": [ "*" ],
+        "Pattern": "logo.svg",
+        "Area": "Default",
+        "Defaults": {
+            "controller": "Default",
+            "action": "Logo"
+        }
+    },
+    {
+        "Name": "Default.Robots",
+        "HostTypes": [ "Full", "Short" ],
+        "SubDomains": [ "*" ],
+        "Pattern": "robots.txt",
+        "Area": "Default",
+        "Defaults": {
+            "controller": "Default",
+            "action": "Robots"
+        }
+    },
+    {
+        "Name": "About.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "about" ],
+        "Pattern": "",
+        "Area": "About",
+        "Defaults": {
+            "controller": "About",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Abuse.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "abuse" ],
+        "Pattern": "",
+        "Area": "Abuse",
+        "Defaults": {
+            "controller": "Abuse",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Admin.Dashboard",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "admin" ],
+        "Pattern": "",
+        "Area": "Admin",
+        "Defaults": {
+            "controller": "Admin",
+            "action": "Dashboard"
+        }
+    },
+    {
+        "Name": "Admin.UserSearch",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "admin" ],
+        "Pattern": "Search/Users",
+        "Area": "Admin",
+        "Defaults": {
+            "controller": "Admin",
+            "action": "UserSearch"
+        }
+    },
+    {
+        "Name": "Admin.UploadSearch",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "admin" ],
+        "Pattern": "Search/Uploads",
+        "Area": "Admin",
+        "Defaults": {
+            "controller": "Admin",
+            "action": "UploadSearch"
+        }
+    },
+    {
+        "Name": "Admin.PasteSearch",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "admin" ],
+        "Pattern": "Search/Pastes",
+        "Area": "Admin",
+        "Defaults": {
+            "controller": "Admin",
+            "action": "PasteSearch"
+        }
+    },
+    {
+        "Name": "Admin.ShortenedUrlSearch",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "admin" ],
+        "Pattern": "Search/ShortenedUrls",
+        "Area": "Admin",
+        "Defaults": {
+            "controller": "Admin",
+            "action": "ShortenedUrlSearch"
+        }
+    },
+    {
+        "Name": "Admin.UserInfo",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "admin" ],
+        "Pattern": "User/{username}",
+        "Area": "Admin",
+        "Defaults": {
+            "controller": "Admin",
+            "action": "UserInfo",
+            "username": ""
+        }
+    },
+    {
+        "Name": "Admin.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "admin" ],
+        "Pattern": "Action/{action}",
+        "Area": "Admin",
+        "Defaults": {
+            "controller": "Admin",
+            "action": "Dashboard"
+        }
+    },
+    {
+        "Name": "API.v1.Claims",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "api" ],
+        "Pattern": "v1/Claims",
+        "Area": "API",
+        "Defaults": {
+            "controller": "AccountAPIv1",
+            "action": "GetClaims"
+        }
+    },
+    {
+        "Name": "API.v1.Upload",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "api" ],
+        "Pattern": "v1/Upload",
+        "Area": "API",
+        "Defaults": {
+            "controller": "UploadAPIv1",
+            "action": "Upload"
+        }
+    },
+    {
+        "Name": "API.v1.Paste",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "api" ],
+        "Pattern": "v1/Paste",
+        "Area": "API",
+        "Defaults": {
+            "controller": "PasteAPIv1",
+            "action": "Paste"
+        }
+    },
+    {
+        "Name": "API.v1.Shorten",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "api" ],
+        "Pattern": "v1/Shorten",
+        "Area": "API",
+        "Defaults": {
+            "controller": "ShortenAPIv1",
+            "action": "Shorten"
+        }
+    },
+    {
+        "Name": "API.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "api" ],
+        "Pattern": "",
+        "Area": "API",
+        "Defaults": {
+            "controller": "API",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Blog.Blog",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "blog" ],
+        "Pattern": "{username}",
+        "Area": "Blog",
+        "Defaults": {
+            "controller": "Blog",
+            "action": "Blog",
+            "username": ""
+        }
+    },
+    {
+        "Name": "Blog.New",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "blog" ],
+        "Pattern": "{username}/New",
+        "Area": "Blog",
+        "Defaults": {
+            "controller": "Blog",
+            "action": "NewPost",
+            "username": ""
+        }
+    },
+    {
+        "Name": "Blog.Edit",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "blog" ],
+        "Pattern": "{username}/Edit/{id}",
+        "Area": "Blog",
+        "Defaults": {
+            "controller": "Blog",
+            "action": "EditPost",
+            "username": "",
+            "id": -1
+        }
+    },
+    {
+        "Name": "Blog.Post",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "blog" ],
+        "Pattern": "{username}/p/{id}",
+        "Area": "Blog",
+        "Defaults": {
+            "controller": "Blog",
+            "action": "Post",
+            "username": "",
+            "id": -1
+        }
+    },
+    {
+        "Name": "Blog.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "blog" ],
+        "Pattern": "Action/{action}",
+        "Area": "Blog",
+        "Defaults": {
+            "controller": "Blog",
+            "action": "Blog"
+        }
+    },
+    {
+        "Name": "Contact.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "contact" ],
+        "Pattern": "",
+        "Area": "Contact",
+        "Defaults": {
+            "controller": "Contact",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Contact.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "contact" ],
+        "Pattern": "Action/{action}",
+        "Area": "Contact",
+        "Defaults": {
+            "controller": "Contact",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Dev.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "dev" ],
+        "Pattern": "",
+        "Area": "Dev",
+        "Defaults": {
+            "controller": "Dev",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Error.HttpError",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "error" ],
+        "Pattern": "{statusCode:int}",
+        "Area": "Error",
+        "Defaults": {
+            "controller": "Error",
+            "action": "HttpError",
+            "statusCode": 500
+        }
+    },
+    {
+        "Name": "Error.Http401",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "error" ],
+        "Pattern": "401",
+        "Area": "Error",
+        "Defaults": {
+            "controller": "Error",
+            "action": "Http401"
+        }
+    },
+    {
+        "Name": "Error.Http403",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "error" ],
+        "Pattern": "403",
+        "Area": "Error",
+        "Defaults": {
+            "controller": "Error",
+            "action": "Http403"
+        }
+    },
+    {
+        "Name": "Error.Http404",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "error" ],
+        "Pattern": "404",
+        "Area": "Error",
+        "Defaults": {
+            "controller": "Error",
+            "action": "Http404"
+        }
+    },
+    {
+        "Name": "Error.Http500",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "error" ],
+        "Pattern": "500",
+        "Area": "Error",
+        "Defaults": {
+            "controller": "Error",
+            "action": "Http500"
+        }
+    },
+    {
+        "Name": "Error.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "error" ],
+        "Pattern": "Action/{action}",
+        "Area": "Error",
+        "Defaults": {
+            "controller": "Error",
+            "action": "HttpError"
+        }
+    },
+    {
+        "Name": "FAQ.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "faq" ],
+        "Pattern": "",
+        "Area": "FAQ",
+        "Defaults": {
+            "controller": "FAQ",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Help.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Help.API",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "API/{version?}/{service?}",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "API"
+        }
+    },
+    {
+        "Name": "Help.Blog",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "Blog",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "Blog"
+        }
+    },
+    {
+        "Name": "Help.Git",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "Git",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "Git"
+        }
+    },
+    {
+        "Name": "Help.IRC",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "IRC",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "IRC"
+        }
+    },
+    {
+        "Name": "Help.Mail",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "Mail",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "Mail"
+        }
+    },
+    {
+        "Name": "Help.Markdown",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "Markdown",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "Markdown"
+        }
+    },
+    {
+        "Name": "Help.Mumble",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "Mumble",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "Mumble"
+        }
+    },
+    {
+        "Name": "Help.RSS",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "RSS",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "RSS"
+        }
+    },
+    {
+        "Name": "Help.Tools",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "Tools",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "Tools"
+        }
+    },
+    {
+        "Name": "Help.Upload",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "help" ],
+        "Pattern": "Upload",
+        "Area": "Help",
+        "Defaults": {
+            "controller": "Help",
+            "action": "Upload"
+        }
+    },
+    {
+        "Name": "Home.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "www", "" ],
+        "Pattern": "",
+        "Area": "Home",
+        "Defaults": {
+            "controller": "Home",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Paste.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "paste", "p" ],
+        "Pattern": "",
+        "Area": "Paste",
+        "Defaults": {
+            "controller": "Paste",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Paste.Simple",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "paste", "p" ],
+        "Pattern": "Simple/{url}/{password?}",
+        "Area": "Paste",
+        "Defaults": {
+            "controller": "Paste",
+            "action": "ViewPaste",
+            "type": "Simple"
+        }
+    },
+    {
+        "Name": "Paste.Raw",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "paste", "p" ],
+        "Pattern": "Raw/{url}/{password?}",
+        "Area": "Paste",
+        "Defaults": {
+            "controller": "Paste",
+            "action": "ViewPaste",
+            "type": "Raw"
+        }
+    },
+    {
+        "Name": "Paste.Download",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "paste", "p" ],
+        "Pattern": "Download/{url}/{password?}",
+        "Area": "Paste",
+        "Defaults": {
+            "controller": "Paste",
+            "action": "ViewPaste",
+            "type": "Download"
+        }
+    },
+    {
+        "Name": "Paste.Edit",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "paste", "p" ],
+        "Pattern": "Edit/{url}/{password?}",
+        "Area": "Paste",
+        "Defaults": {
+            "controller": "Paste",
+            "action": "Edit"
+        }
+    },
+    {
+        "Name": "Paste.Delete",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "paste", "p" ],
+        "Pattern": "Delete",
+        "Area": "Paste",
+        "Defaults": {
+            "controller": "Paste",
+            "action": "Delete"
+        }
+    },
+    {
+        "Name": "Paste.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "paste", "p" ],
+        "Pattern": "Action/{action}",
+        "Area": "Paste",
+        "Defaults": {
+            "controller": "Paste",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Paste.View",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "paste", "p" ],
+        "Pattern": "{url}/{password?}",
+        "Area": "Paste",
+        "Defaults": {
+            "controller": "Paste",
+            "action": "ViewPaste",
+            "type": "Full"
+        }
+    },
+    {
+        "Name": "Podcast.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "podcast" ],
+        "Pattern": "",
+        "Area": "Podcast",
+        "Defaults": {
+            "controller": "Podcast",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Podcast.View",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "podcast" ],
+        "Pattern": "ep/{episode}",
+        "Area": "Podcast",
+        "Defaults": {
+            "controller": "Podcast",
+            "action": "View"
+        }
+    },
+    {
+        "Name": "Podcast.Download",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "podcast" ],
+        "Pattern": "File/{episode}/{fileName}",
+        "Area": "Podcast",
+        "Defaults": {
+            "controller": "Podcast",
+            "action": "Download"
+        }
+    },
+    {
+        "Name": "Podcast.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "podcast" ],
+        "Pattern": "Action/{action}",
+        "Area": "Podcast",
+        "Defaults": {
+            "controller": "Podcast",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Privacy.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "privacy" ],
+        "Pattern": "",
+        "Area": "Privacy",
+        "Defaults": {
+            "controller": "Privacy",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "RSS.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "rss" ],
+        "Pattern": "",
+        "Area": "RSS",
+        "Defaults": {
+            "controller": "RSS",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "RSS.Blog",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "rss" ],
+        "Pattern": "Blog/{username?}",
+        "Area": "RSS",
+        "Defaults": {
+            "controller": "RSS",
+            "action": "Blog"
+        }
+    },
+    {
+        "Name": "RSS.Podcast",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "rss" ],
+        "Pattern": "Podcast",
+        "Area": "RSS",
+        "Defaults": {
+            "controller": "RSS",
+            "action": "Podcast"
+        }
+    },
+    {
+        "Name": "Shortener.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "shorten", "s" ],
+        "Pattern": "",
+        "Area": "Shortener",
+        "Defaults": {
+            "controller": "Shortener",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Shortener.Delete",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "shorten", "s" ],
+        "Pattern": "Delete",
+        "Area": "Shortener",
+        "Defaults": {
+            "controller": "Shortener",
+            "action": "Delete"
+        }
+    },
+    {
+        "Name": "Shortener.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "shorten", "s" ],
+        "Pattern": "Action/{action}",
+        "Area": "Shortener",
+        "Defaults": {
+            "controller": "Shortener",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Shortener.View",
+        "HostTypes": [ "Short", "Full" ],
+        "SubDomains": [ "", "shortened" ],
+        "Pattern": "{url}",
+        "Area": "Shortener",
+        "Defaults": {
+            "controller": "Shortener",
+            "action": "RedirectToUrl"
+        }
+    },
+    {
+        "Name": "Shortener.Verify",
+        "HostTypes": [ "Short" ],
+        "SubDomains": [ "" ],
+        "Pattern": "",
+        "Area": "Shortener",
+        "Defaults": {
+            "controller": "Shortener",
+            "action": "Verify"
+        }
+    },
+    {
+        "Name": "Stats.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "stats" ],
+        "Pattern": "",
+        "Area": "Stats",
+        "Defaults": {
+            "controller": "Stats",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Stats.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "stats" ],
+        "Pattern": "Action/{action}",
+        "Area": "Stats",
+        "Defaults": {
+            "controller": "Stats",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "TOS.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "tos" ],
+        "Pattern": "",
+        "Area": "TOS",
+        "Defaults": {
+            "controller": "TOS",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Upload.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "upload", "u" ],
+        "Pattern": "",
+        "Area": "Upload",
+        "Defaults": {
+            "controller": "Upload",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Upload.GenerateDeleteKey",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "upload", "u", "user" ],
+        "Pattern": "GenerateDeleteKey",
+        "Area": "Upload",
+        "Defaults": {
+            "controller": "Upload",
+            "action": "GenerateDeleteKey"
+        }
+    },
+    {
+        "Name": "Upload.Delete",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "upload", "u" ],
+        "Pattern": "Delete",
+        "Area": "Upload",
+        "Defaults": {
+            "controller": "Upload",
+            "action": "Delete"
+        }
+    },
+    {
+        "Name": "Upload.Download",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "upload", "u" ],
+        "Pattern": "{file}",
+        "Area": "Upload",
+        "Defaults": {
+            "controller": "Upload",
+            "action": "Download"
+        }
+    },
+    {
+        "Name": "Upload.DeleteByKey",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "upload", "u" ],
+        "Pattern": "{file}/{key}",
+        "Area": "Upload",
+        "Defaults": {
+            "controller": "Upload",
+            "action": "DeleteByKey"
+        }
+    },
+    {
+        "Name": "Upload.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "upload", "u" ],
+        "Pattern": "Action/{action}",
+        "Area": "Upload",
+        "Defaults": {
+            "controller": "Upload",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "User.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "User.GetPremium",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "GetPremium",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "GetPremium"
+        }
+    },
+    {
+        "Name": "User.Register",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Register",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "Register"
+        }
+    },
+    {
+        "Name": "User.Login",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Login",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "Login"
+        }
+    },
+    {
+        "Name": "User.Logout",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Logout",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "Logout"
+        }
+    },
+    {
+        "Name": "User.Settings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "Settings"
+        }
+    },
+    {
+        "Name": "User.AccountSettings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings/Account",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "AccountSettings"
+        }
+    },
+    {
+        "Name": "User.SecuritySettings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings/Security",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "SecuritySettings"
+        }
+    },
+    {
+        "Name": "User.ProfileSettings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings/Profile",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "ProfileSettings"
+        }
+    },
+    {
+        "Name": "User.DeveloperSettings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings/Developer",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "DeveloperSettings"
+        }
+    },
+    {
+        "Name": "User.InviteSettings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings/Invites",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "InviteSettings"
+        }
+    },
+    {
+        "Name": "User.BlogSettings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings/Blog",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "BlogSettings"
+        }
+    },
+    {
+        "Name": "User.UploadSettings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings/Uploads",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "UploadSettings"
+        }
+    },
+    {
+        "Name": "User.ResetPassword",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "ResetPassword/{username?}",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "ResetPassword"
+        }
+    },
+    {
+        "Name": "User.VerifyResetPassword",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "SetPassword/{username}",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "VerifyResetPassword"
+        }
+    },
+    {
+        "Name": "User.VerifyRecoveryEmail",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "VerifyEmail/{username}",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "VerifyRecoveryEmail"
+        }
+    },
+    {
+        "Name": "User.ViewServiceData",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "ServiceData",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "ViewServiceData"
+        }
+    },
+    {
+        "Name": "User.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Action/{action}",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "User.ViewProfile",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "user" ],
+        "Pattern": "{username?}",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "ViewProfile"
+        }
+    },
+    {
+        "Name": "User.PGPKey",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "user" ],
+        "Pattern": "{username}/PGP",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "ViewRawPGP"
+        }
+    },
+    {
+        "Name": "Vault.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "vault", "v" ],
+        "Pattern": "",
+        "Area": "Vault",
+        "Defaults": {
+            "controller": "Vault",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Vault.NewVault",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "vault", "v" ],
+        "Pattern": "Create",
+        "Area": "Vault",
+        "Defaults": {
+            "controller": "Vault",
+            "action": "NewVault"
+        }
+    },
+    {
+        "Name": "Vault.NewVaultFromService",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "vault", "v" ],
+        "Pattern": "Create/{type}",
+        "Area": "Vault",
+        "Defaults": {
+            "controller": "Vault",
+            "action": "NewVaultFromService"
+        }
+    },
+    {
+        "Name": "Vault.EditVault",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "vault", "v" ],
+        "Pattern": "Edit/{url}",
+        "Area": "Vault",
+        "Defaults": {
+            "controller": "Vault",
+            "action": "EditVault"
+        }
+    },
+    {
+        "Name": "Vault.Delete",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "vault", "v" ],
+        "Pattern": "Delete",
+        "Area": "Vault",
+        "Defaults": {
+            "controller": "Vault",
+            "action": "Delete"
+        }
+    },
+    {
+        "Name": "Vault.ViewVault",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "vault", "v" ],
+        "Pattern": "v/{id}",
+        "Area": "Vault",
+        "Defaults": {
+            "controller": "Vault",
+            "action": "ViewVault"
+        }
+    },
+    {
+        "Name": "Vault.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "vault", "v" ],
+        "Pattern": "Action/{action}",
+        "Area": "Vault",
+        "Defaults": {
+            "controller": "Vault",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Default.NotFound",
+        "HostTypes": [ "Full", "Short" ],
+        "SubDomains": [ "*" ],
+        "Pattern": "{*url}",
+        "Area": "Error",
+        "Defaults": {
+            "controller": "Error",
+            "action": "Http404"
+        },
+        "AdjustPattern": false
+    }
+]

@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Http;
 using Teknik.Logging;
 using Teknik.Areas.Users.Models;
 using Teknik.ContentScanningService;
+using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.Upload.Controllers
 {
@@ -259,7 +260,7 @@ namespace Teknik.Areas.Upload.Controllers
                         IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
                         premiumAccount = userInfo.AccountType == AccountType.Premium;
                     }
-                    if (!premiumAccount && upload.User != null)
+                    if (!premiumAccount && upload.UserId != null)
                     {
                         IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, upload.User.Username);
                         premiumAccount = userInfo.AccountType == AccountType.Premium;

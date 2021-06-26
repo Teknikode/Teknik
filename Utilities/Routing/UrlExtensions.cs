@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Routing;
 
-namespace Teknik.Utilities
+namespace Teknik.Utilities.Routing
 {
     public static class UrlExtensions
     {
@@ -35,72 +39,33 @@ namespace Teknik.Utilities
         /// <returns></returns>
         public static string SubRouteUrl(this IUrlHelper url, string sub, string routeName, object routeValues, string hostOverride)
         {
+            var linkGen = url.ActionContext.HttpContext.RequestServices.GetService<LinkGenerator>();
+            var env = url.ActionContext.HttpContext.RequestServices.GetService<IWebHostEnvironment>();
+
             string host = url.ActionContext.HttpContext.Request.Host.Value;
-            
-            string domain = host.GetDomain();
-            string rightUrl = string.Empty;
+            string domain = host;
 
-            // get current subdomain
-            string curSub = host.GetSubdomain();
-
-            // Grab the sub from parameters if it exists
-            string subParam = url.ActionContext.HttpContext.Request.Query["sub"]; // A subdomain specified as a query parameter takes precedence over the hostname unless on dev
-
-            // If the param is not being used, we will use the curSub
-            if (string.IsNullOrEmpty(subParam))
+            // Generate a new domain if we aren't in development
+            if (!env.IsEnvironment(Environments.Development) &&
+                !string.IsNullOrEmpty(sub))
             {
-                if (url.ActionContext.HttpContext.Request.IsLocal())
-                {
-                    subParam = sub;
-                }
-                else
-                {
-                    // If we are on dev and no subparam, we need to set the subparam to the specified sub
-                    subParam = (curSub == "dev") ? sub : string.Empty;
-                    string firstSub = (curSub == "dev") ? "dev" : sub;
-                    if (!string.IsNullOrEmpty(firstSub))
-                    {
-                        domain = firstSub + "." + domain;
-                    }
-                }
+                domain = sub + "." + domain.GetDomain();
             }
-            else
-            {
-                string firstSub = (curSub == "dev") ? "dev" : curSub;
-                if (!string.IsNullOrEmpty(firstSub))
-                {
-                    domain = firstSub + "." + domain;
-                }
-                else
-                {
-                    domain = host;
-                }
-            }
-
-            try
-            {
-                rightUrl = url.RouteUrl(new UrlRouteContext() { RouteName = routeName, Values = routeValues });
-            }
-            catch (ArgumentException ex)
-            {
-
-            }
-
             string fullHost = string.Format("{0}://{1}", url.ActionContext.HttpContext.Request.Scheme, domain);
-            
-            if (!string.IsNullOrEmpty(hostOverride))
+
+            var routeValueDict = new RouteValueDictionary(routeValues);
+
+            // Get the endpoint mapping
+            var mapping = EndpointHelper.GetEndpointMapping(routeName);
+            if (mapping != null &&
+                !routeValueDict.ContainsKey("area"))
             {
-                fullHost = hostOverride.TrimEnd('/');
+                routeValueDict.TryAdd("area", mapping.Area);
             }
 
-            string absoluteAction = string.Format("{0}{1}", fullHost, rightUrl);
-
-            if (!string.IsNullOrEmpty(subParam))
-            {
-                absoluteAction = absoluteAction.SetUrlParameter("sub", sub);
-            }
+            var path = linkGen.GetPathByAddress(url.ActionContext.HttpContext, routeName, routeValueDict);
   
-            return absoluteAction;
+            return $"{fullHost}{path}";
         }
 
         public static string GetUrlParameters(this string url)

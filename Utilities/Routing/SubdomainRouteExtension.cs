@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
-namespace Teknik.Utilities
+namespace Teknik.Utilities.Routing
 {
     public static class SubdomainRouteExtension
     {

@@ -1,29 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Teknik.Utilities
 {
     public enum IdentityClientScope
     {
-        [DisplayName("openid")]
+        [Display(Name = "openid")]
         [Description("The user identifier")]
         [ReadOnly(true)]
         openid,
-        [DisplayName("role")]
+        [Display(Name = "role")]
         [Description("The user role")]
         role,
-        [DisplayName("account-info")]
+        [Display(Name = "account-info")]
         [Description("A user's account information")]
         accountInfo,
-        [DisplayName("security-info")]
+        [Display(Name = "security-info")]
         [Description("A user's security information")]
         securityInfo,
-        [DisplayName("teknik-api.read")]
+        [Display(Name = "teknik-api.read")]
         [Description("Read access to the Teknik API")]
         teknikApiRead,
-        [DisplayName("teknik-api.write")]
+        [Display(Name = "teknik-api.write")]
         [Description("Write access to the Teknik API")]
         teknikApiWrite,
     }

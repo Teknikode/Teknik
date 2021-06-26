@@ -14,6 +14,7 @@ using Teknik.Configuration;
 using Teknik.Data;
 using Microsoft.AspNetCore.Mvc;
 using Teknik.Logging;
+using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.API.Controllers
 {

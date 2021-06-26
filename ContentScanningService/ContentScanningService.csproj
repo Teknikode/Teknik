@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
       <AssemblyName>Teknik.ContentScanningService</AssemblyName>
       <RootNamespace>Teknik.ContentScanningService</RootNamespace>
       <RuntimeIdentifiers>win-x86;win-x64;linux-x64;linux-arm;osx-x64</RuntimeIdentifiers>
@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="nClam" Version="4.0.1" />
+    <PackageReference Include="nClam" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -36,6 +36,7 @@ using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Models;
+using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.Users.Controllers
 {

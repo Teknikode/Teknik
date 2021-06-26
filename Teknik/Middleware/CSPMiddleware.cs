@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Teknik.Configuration;
 using Teknik.Utilities;
+using Teknik.Utilities.Routing;
 
 namespace Teknik.Middleware
 {

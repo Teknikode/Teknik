@@ -1,56 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Teknik.Data;
 using Teknik.Utilities;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Teknik.Logging;
 using System.IO;
-using Microsoft.Extensions.Logging;
 using Teknik.Configuration;
 using Teknik.Middleware;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using IdentityServer4.Models;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Teknik.Attributes;
-using Teknik.Filters;
 using Microsoft.Net.Http.Headers;
-using Teknik.Areas.Users.Models;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication;
 using IdentityModel;
 using Teknik.Security;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Authorization;
-using System.Text.Encodings.Web;
+using Microsoft.Extensions.Hosting;
 using Teknik.Tracking;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using Teknik.Logging;
+using Teknik.Utilities.Routing;
 
 namespace Teknik
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             Environment = env;
         }
         
-        public IHostingEnvironment Environment { get; }
+        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -80,22 +66,25 @@ namespace Teknik
 
             if (config.DevEnvironment)
             {
-                Environment.EnvironmentName = EnvironmentName.Development;
+                Environment.EnvironmentName = Environments.Development;
             }
             else
             {
-                Environment.EnvironmentName = EnvironmentName.Production;
+                Environment.EnvironmentName = Environments.Production;
             }
 
             services.AddHttpsRedirection(options =>
             {
                 options.RedirectStatusCode = (Environment.IsDevelopment()) ? StatusCodes.Status307TemporaryRedirect : StatusCodes.Status308PermanentRedirect;
 #if DEBUG
-                options.HttpsPort = 5050;
+                options.HttpsPort = 8050;
 #else
                 options.HttpsPort = 443;
 #endif
             });
+
+            services.AddControllersWithViews()
+                    .AddControllersAsServices();
 
             services.AddHostedService<TrackingService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
@@ -124,7 +113,6 @@ namespace Teknik
                 options.Cookie.Name = "TeknikWeb";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-                options.Cookie.Expiration = TimeSpan.FromDays(30);
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
             });
 
@@ -154,9 +142,6 @@ namespace Teknik
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
             });
 
-            // Core MVC
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
             services.AddTransient<CookieEventHandler>();
 
             services.AddAuthentication(options =>
@@ -179,7 +164,6 @@ namespace Teknik
                 {
                     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                     options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-                    options.Cookie.Expiration = TimeSpan.FromDays(30);
                     options.ExpireTimeSpan = TimeSpan.FromDays(30);
                     options.Cookie.Name = "TeknikWebAuth";
                     options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment());
@@ -237,22 +221,26 @@ namespace Teknik
                 options.AddPolicy("FullAPI", p =>
                 {
                     p.AddAuthenticationSchemes("Bearer");
+                    p.AddAuthenticationSchemes("AuthToken");
                     p.RequireScope("teknik-api.read");
                     p.RequireScope("teknik-api.write");
                 });
                 options.AddPolicy("ReadAPI", p =>
                 {
                     p.AddAuthenticationSchemes("Bearer");
+                    p.AddAuthenticationSchemes("AuthToken");
                     p.RequireScope("teknik-api.read");
                 });
                 options.AddPolicy("WriteAPI", p =>
                 {
                     p.AddAuthenticationSchemes("Bearer");
+                    p.AddAuthenticationSchemes("AuthToken");
                     p.RequireScope("teknik-api.write");
                 });
                 options.AddPolicy("AnyAPI", p =>
                 {
                     p.AddAuthenticationSchemes("Bearer");
+                    p.AddAuthenticationSchemes("AuthToken");
                     p.RequireScope("teknik-api.read", "teknik-api.write");
                 });
             });
@@ -269,6 +257,18 @@ namespace Teknik
         {
             // Create and Migrate the database
             dbContext.Database.Migrate();
+
+            // Setup static files and cache them client side
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public,max-age=" + 31536000;
+                }
+            });
+
+            // Initiate Routing
+            app.UseRouting();
 
             // Setup the HttpContext
             app.UseHttpContextSetup();
@@ -307,25 +307,17 @@ namespace Teknik
             app.UseCSP();
             app.UseSecurityHeaders();
 
-            // Setup static files and cache them client side
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public,max-age=" + 31536000;
-                }
-            });
-
             // Enable Cookie Policy
             app.UseCookiePolicy();
 
             // Authorize all the things!
             app.UseAuthentication();
+            app.UseAuthorization();
 
             // And finally, let's use MVC
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.BuildRoutes(config);
+                endpoints.BuildEndpoints(config.Host, config.ShortenerConfig?.ShortenerHost);
             });
         }
 

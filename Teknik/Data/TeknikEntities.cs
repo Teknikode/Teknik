@@ -69,9 +69,9 @@ namespace Teknik.Data
             // User
             modelBuilder.Entity<User>()
                 .HasKey(u => u.UserId);
-            modelBuilder.Entity<User>().OwnsOne(u => u.UserSettings);
-            modelBuilder.Entity<User>().OwnsOne(u => u.BlogSettings);
-            modelBuilder.Entity<User>().OwnsOne(u => u.UploadSettings);
+            modelBuilder.Entity<User>().OwnsOne(u => u.UserSettings, us => us.ToTable("Users"));
+            modelBuilder.Entity<User>().OwnsOne(u => u.BlogSettings, bs => bs.ToTable("Users"));
+            modelBuilder.Entity<User>().OwnsOne(u => u.UploadSettings, us => us.ToTable("Users"));
             modelBuilder.Entity<User>().HasMany(u => u.Features).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(u => u.Uploads).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(u => u.Pastes).WithOne(u => u.User);
@@ -116,9 +116,9 @@ namespace Teknik.Data
             modelBuilder.Entity<InviteCode>().ToTable("InviteCodes");
             modelBuilder.Entity<UserFeature>().ToTable("UserFeatures");
             // User Settings
-            modelBuilder.Entity<UserSettings>().ToTable("Users");
-            modelBuilder.Entity<BlogSettings>().ToTable("Users");
-            modelBuilder.Entity<UploadSettings>().ToTable("Users");
+            //modelBuilder.Entity<UserSettings>().ToTable("Users");
+            //modelBuilder.Entity<BlogSettings>().ToTable("Users");
+            //modelBuilder.Entity<UploadSettings>().ToTable("Users");
             // Features
             modelBuilder.Entity<Feature>().ToTable("Features");
             // Blogs

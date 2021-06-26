@@ -17,7 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		global.json = global.json
-		Performance1.psess = Performance1.psess
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -31,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceWorker", "ServiceWor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "IdentityServer\IdentityServer.csproj", "{3434645B-B8B4-457A-8C85-342E6727CCEE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentScanningService", "ContentScanningService\ContentScanningService.csproj", "{491FE626-ABC8-4D00-8C7F-0849C357201A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentScanningService", "ContentScanningService\ContentScanningService.csproj", "{491FE626-ABC8-4D00-8C7F-0849C357201A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

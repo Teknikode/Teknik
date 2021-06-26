@@ -15,18 +15,24 @@ namespace Teknik.Areas.Users.Utility
 {
     public static class IdentityHelper
     {
-        public static async Task<string> GetAccessToken(Config config)
+        public static async Task GetAccessToken(this HttpClient client, Config config)
         {
-            return await GetAccessToken(config.UserConfig.IdentityServerConfig.Authority, config.UserConfig.IdentityServerConfig.ClientId, config.UserConfig.IdentityServerConfig.ClientSecret, "auth-api");
+            var token = await client.GetAccessToken(config.UserConfig.IdentityServerConfig.Authority, config.UserConfig.IdentityServerConfig.ClientId, config.UserConfig.IdentityServerConfig.ClientSecret, "auth-api");
+            client.SetBearerToken(token);
         }
 
-        public static async Task<string> GetAccessToken(string authority, string clientId, string secret, string scope)
+        public static async Task<string> GetAccessToken(this HttpClient client, string authority, string clientId, string secret, string scope)
         {
-            var disco = await DiscoveryClient.GetAsync(authority);
+            var disco = await client.GetDiscoveryDocumentAsync(authority);
             if (disco.IsError) throw new Exception(disco.Error);
 
-            var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, secret);
-            var tokenResponse = await tokenClient.RequestClientCredentialsAsync(scope);
+            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = clientId,
+                ClientSecret = secret,
+                Scope = scope
+            });
 
             if (tokenResponse.IsError) throw new Exception(tokenResponse.Error);
 
@@ -42,7 +48,7 @@ namespace Teknik.Areas.Users.Utility
         public static async Task<IdentityResult> Get(Config config, Uri url)
         {
             var client = new HttpClient();
-            client.SetBearerToken(await GetAccessToken(config));
+            await client.GetAccessToken(config);
 
             var content = await client.GetStringAsync(url);
             if (!string.IsNullOrEmpty(content))
@@ -56,7 +62,8 @@ namespace Teknik.Areas.Users.Utility
         public static async Task<IdentityResult> Post(Config config, Uri url, object data)
         {
             var client = new HttpClient();
-            client.SetBearerToken(await GetAccessToken(config));
+            await client.GetAccessToken(config);
+
 
             var response = await client.PostAsJsonAsync(url, data);
             if (response.IsSuccessStatusCode)

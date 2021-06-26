@@ -34,8 +34,8 @@ namespace Teknik.Utilities
         {
             if (!bufferOutput)
             {
-                var bufferingFeature = context.HttpContext.Features.Get<IHttpBufferingFeature>();
-                bufferingFeature?.DisableResponseBuffering();
+                var bufferingFeature = context.HttpContext.Features.Get<IHttpResponseBodyFeature>();
+                bufferingFeature?.DisableBuffering();
             }
 
             return responseDelegate(context.HttpContext.Response);

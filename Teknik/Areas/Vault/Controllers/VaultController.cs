@@ -24,6 +24,7 @@ using Teknik.Logging;
 using Teknik.Models;
 using Teknik.Utilities;
 using Teknik.Utilities.Cryptography;
+using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.Vault.Controllers
 {
