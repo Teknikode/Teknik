@@ -49,7 +49,7 @@ $(document).ready(function () {
         addRemoveLinks: true,
         autoProcessQueue: false,
         clickable: "#uploadButton",
-        previewTemplate: function () { },
+        previewTemplate: "",
         addedfile: function (file) {
             // Upload the file to the server
             upload(file);
