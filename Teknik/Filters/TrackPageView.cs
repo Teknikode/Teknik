@@ -44,7 +44,7 @@ namespace Teknik.Filters
                 {
                     string title = (filterContext.Controller as Controller)?.ViewBag?.Title;
 
-                    string sub = filterContext.RouteData.Values["sub"].ToString();
+                    string sub = filterContext.RouteData.Values["sub"]?.ToString();
                     if (string.IsNullOrEmpty(sub))
                     {
                         sub = request.Host.ToUriComponent().GetSubdomain();
