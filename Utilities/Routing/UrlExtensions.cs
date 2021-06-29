@@ -9,6 +9,7 @@ using System.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json.Linq;
 
 namespace Teknik.Utilities.Routing
 {
@@ -57,10 +58,18 @@ namespace Teknik.Utilities.Routing
 
             // Get the endpoint mapping
             var mapping = EndpointHelper.GetEndpointMapping(routeName);
-            if (mapping != null &&
-                !routeValueDict.ContainsKey("area"))
+            if (mapping != null)
             {
                 routeValueDict.TryAdd("area", mapping.Area);
+
+                if (mapping.Defaults != null)
+                {
+                    var defaults = mapping.Defaults as JObject;
+                    foreach (var defaultVal in defaults)
+                    {
+                        routeValueDict.TryAdd(defaultVal.Key, defaultVal.Value.ToObject<object>());
+                    }
+                }
             }
 
             var path = linkGen.GetPathByAddress(url.ActionContext.HttpContext, routeName, routeValueDict);

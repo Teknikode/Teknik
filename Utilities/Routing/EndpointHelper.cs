@@ -30,7 +30,7 @@ namespace Teknik.Utilities.Routing
                     var defaults = mapping.Defaults as JObject;
                     foreach (var defaultVal in defaults)
                     {
-                        defaultObj.TryAdd(defaultVal.Key, defaultVal.Value);
+                        defaultObj.TryAdd(defaultVal.Key, defaultVal.Value.ToObject<object>());
                     }
                 }
                 defaultObj.TryAdd("area", mapping.Area);
