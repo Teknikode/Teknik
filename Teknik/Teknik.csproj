@@ -97,6 +97,7 @@
     <ProjectReference Include="..\MailService\MailService.csproj" />
     <ProjectReference Include="..\Tracking\Tracking.csproj" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
+    <ProjectReference Include="..\WebCommon\WebCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -134,9 +135,5 @@
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="npm run build" />
-  </Target>
 
 </Project>

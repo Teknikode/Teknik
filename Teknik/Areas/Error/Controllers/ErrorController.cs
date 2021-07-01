@@ -18,12 +18,13 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Diagnostics;
 using Teknik.Data;
 using Teknik.Logging;
+using Teknik.WebCommon;
 
 namespace Teknik.Areas.Error.Controllers
 {
     [Authorize]
     [Area("Error")]
-    public class ErrorController : DefaultController
+    public class ErrorController : DefaultController, IErrorController
     {
         public ErrorController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
@@ -31,6 +32,16 @@ namespace Teknik.Areas.Error.Controllers
         [TrackPageView]
         public IActionResult HttpError(int statusCode)
         {
+            return HttpError(statusCode, null);
+        }
+
+        [AllowAnonymous]
+        [TrackPageView]
+        public IActionResult HttpError(int statusCode, Exception ex)
+        {
+            if (ex != null)
+                return Http500(ex);
+
             switch (statusCode)
             {
                 case 401:
@@ -39,6 +50,8 @@ namespace Teknik.Areas.Error.Controllers
                     return Http403();
                 case 404:
                     return Http404();
+                case 500:
+                    return Http500(ex);
                 default:
                     return HttpGeneral(statusCode);
             }

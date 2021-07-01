@@ -26,6 +26,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Teknik.Logging;
 using Teknik.Utilities.Routing;
+using Teknik.WebCommon.Middleware;
+using Teknik.WebCommon;
+using Teknik.Areas.Error.Controllers;
 
 namespace Teknik
 {
@@ -63,8 +66,16 @@ namespace Teknik
 
             // Resolve the services from the service provider
             var config = sp.GetService<Config>();
+            var devEnv = config?.DevEnvironment ?? true;
+            var defaultConn = config?.DbConnection ?? string.Empty;
+            var authority = config?.UserConfig?.IdentityServerConfig?.Authority ?? string.Empty;
+            var host = config?.Host ?? string.Empty;
+            var apiName = config?.UserConfig?.IdentityServerConfig?.APIName ?? string.Empty;
+            var apiSecret = config?.UserConfig?.IdentityServerConfig?.APISecret ?? string.Empty;
+            var clientId = config?.UserConfig?.IdentityServerConfig?.ClientId ?? string.Empty;
+            var clientSecret = config?.UserConfig?.IdentityServerConfig?.ClientSecret ?? string.Empty;
 
-            if (config.DevEnvironment)
+            if (devEnv)
             {
                 Environment.EnvironmentName = Environments.Development;
             }
@@ -88,6 +99,7 @@ namespace Teknik
 
             services.AddHostedService<TrackingService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddScoped<IErrorController, ErrorController>();
 
             // Add Tracking Filter scopes
             //services.AddScoped<TrackDownload>();
@@ -97,7 +109,7 @@ namespace Teknik
             // Create the Database Context
             services.AddDbContext<TeknikEntities>(options => options
                     .UseLazyLoadingProxies()
-                    .UseSqlServer(config.DbConnection), ServiceLifetime.Transient);
+                    .UseSqlServer(defaultConn), ServiceLifetime.Transient);
 
             // Cookie Policies
             services.Configure<CookiePolicyOptions>(options =>
@@ -109,7 +121,7 @@ namespace Teknik
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment());
+                options.Cookie.Domain = CookieHelper.GenerateCookieDomain(host, false, Environment.IsDevelopment());
                 options.Cookie.Name = "TeknikWeb";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
@@ -136,7 +148,7 @@ namespace Teknik
             // Set the anti-forgery cookie name
             services.AddAntiforgery(options =>
             {
-                options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment());
+                options.Cookie.Domain = CookieHelper.GenerateCookieDomain(host, false, Environment.IsDevelopment());
                 options.Cookie.Name = "TeknikWebAntiForgery";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
@@ -151,11 +163,11 @@ namespace Teknik
             })
                 .AddIdentityServerAuthentication(options =>
                 {
-                    options.Authority = config.UserConfig.IdentityServerConfig.Authority;
+                    options.Authority = authority;
                     options.RequireHttpsMetadata = true;
 
-                    options.ApiName = config.UserConfig.IdentityServerConfig.APIName;
-                    options.ApiSecret = config.UserConfig.IdentityServerConfig.APISecret;
+                    options.ApiName = apiName;
+                    options.ApiSecret = apiSecret;
 
                     options.NameClaimType = "username";
                     options.RoleClaimType = JwtClaimTypes.Role;
@@ -166,7 +178,7 @@ namespace Teknik
                     options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
                     options.ExpireTimeSpan = TimeSpan.FromDays(30);
                     options.Cookie.Name = "TeknikWebAuth";
-                    options.Cookie.Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment());
+                    options.Cookie.Domain = CookieHelper.GenerateCookieDomain(host, false, Environment.IsDevelopment());
 
                     options.EventsType = typeof(CookieEventHandler);
                 })
@@ -174,11 +186,11 @@ namespace Teknik
                 {
                     options.SignInScheme = "Cookies";
 
-                    options.Authority = config.UserConfig.IdentityServerConfig.Authority;
+                    options.Authority = authority;
                     options.RequireHttpsMetadata = true;
 
-                    options.ClientId = config.UserConfig.IdentityServerConfig.ClientId;
-                    options.ClientSecret = config.UserConfig.IdentityServerConfig.ClientSecret;
+                    options.ClientId = clientId;
+                    options.ClientSecret = clientSecret;
                     options.ResponseType = "code id_token";
 
                     // Set the scopes to listen to
@@ -255,8 +267,11 @@ namespace Teknik
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, TeknikEntities dbContext, Config config)
         {
+            var host = config?.Host ?? string.Empty;
+            var shortHost = config?.ShortenerConfig?.ShortenerHost ?? string.Empty;
+
             // Create and Migrate the database
-            dbContext.Database.Migrate();
+            dbContext?.Database?.Migrate();
 
             // Setup static files and cache them client side
             app.UseStaticFiles(new StaticFileOptions
@@ -279,7 +294,7 @@ namespace Teknik
                 IdleTimeout = TimeSpan.FromMinutes(30),
                 Cookie = new CookieBuilder()
                 {
-                    Domain = CookieHelper.GenerateCookieDomain(config.Host, false, Environment.IsDevelopment()),
+                    Domain = CookieHelper.GenerateCookieDomain(host, false, Environment.IsDevelopment()),
                     Name = "TeknikWebSession",
                     SecurePolicy = CookieSecurePolicy.SameAsRequest,
                     SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict
@@ -296,7 +311,7 @@ namespace Teknik
             app.UseHttpsRedirection();
 
             // Use Exception Handling
-            app.UseErrorHandler(config);
+            app.UseErrorHandler();
 
             // Performance Monitor the entire request
             app.UsePerformanceMonitor();
@@ -317,7 +332,7 @@ namespace Teknik
             // And finally, let's use MVC
             app.UseEndpoints(endpoints =>
             {
-                endpoints.BuildEndpoints(config.Host, config.ShortenerConfig?.ShortenerHost);
+                endpoints.BuildEndpoints(host, shortHost);
             });
         }
 

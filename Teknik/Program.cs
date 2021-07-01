@@ -20,10 +20,10 @@ namespace Teknik
         {
             AppContext.SetSwitch("Microsoft.AspNetCore.Routing.UseCorrectCatchAllBehavior",
                                   true);
-            BuildWebHost(args).Build().Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder BuildWebHost(string[] args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(config =>
@@ -42,18 +42,6 @@ namespace Teknik
                     logging.AddProvider(new LoggerProvider(Config.Load(dataDir)));
                     logging.AddFilter<ConsoleLoggerProvider>("Microsoft.AspNetCore.Routing", LogLevel.Trace);
                 });
-
-            /*
-                .UseConfiguration(config)
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .ConfigureLogging((hostingContext, logging) =>
-                {
-                    string baseDir = hostingContext.HostingEnvironment.ContentRootPath;
-                    string dataDir = Path.Combine(baseDir, "App_Data");
-                    logging.AddProvider(new LoggerProvider(Config.Load(dataDir)));
-                });
-            */
         }
     }
 }
