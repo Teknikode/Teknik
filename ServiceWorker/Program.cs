@@ -56,7 +56,7 @@ namespace Teknik.ServiceWorker
                         using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
                         {
                             // Scan all the uploads for viruses, and remove the bad ones
-                            if (options.ScanUploads && config.UploadConfig.VirusScanEnable)
+                            if (options.ScanUploads && config.UploadConfig.ClamConfig.Enabled)
                             {
                                 ScanUploads(config, db);
                             }
@@ -182,7 +182,7 @@ namespace Teknik.ServiceWorker
                     using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                     using (AesCounterStream aesStream = new AesCounterStream(fs, false, keyBytes, ivBytes))
                     {
-                        ClamClient clam = new ClamClient(config.UploadConfig.ClamServer, config.UploadConfig.ClamPort);
+                        ClamClient clam = new ClamClient(config.UploadConfig.ClamConfig.Server, config.UploadConfig.ClamConfig.Port);
                         clam.MaxStreamSize = maxUploadSize;
                         ClamScanResult scanResult = await clam.SendAndScanFileAsync(fs);
 
