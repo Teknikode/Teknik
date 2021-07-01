@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "IdentityS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentScanningService", "ContentScanningService\ContentScanningService.csproj", "{491FE626-ABC8-4D00-8C7F-0849C357201A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebCommon", "WebCommon\WebCommon.csproj", "{32E85A7F-871A-437C-9BA3-00499AAB442C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,12 @@ Global
 		{491FE626-ABC8-4D00-8C7F-0849C357201A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{491FE626-ABC8-4D00-8C7F-0849C357201A}.Test|Any CPU.ActiveCfg = Debug|Any CPU
 		{491FE626-ABC8-4D00-8C7F-0849C357201A}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{32E85A7F-871A-437C-9BA3-00499AAB442C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32E85A7F-871A-437C-9BA3-00499AAB442C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32E85A7F-871A-437C-9BA3-00499AAB442C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32E85A7F-871A-437C-9BA3-00499AAB442C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32E85A7F-871A-437C-9BA3-00499AAB442C}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{32E85A7F-871A-437C-9BA3-00499AAB442C}.Test|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
