@@ -36,9 +36,9 @@ namespace Teknik.IdentityServer.Services
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
 
             var allowLocal = true;
-            if (context?.ClientId != null)
+            if (context?.Client?.ClientId != null)
             {
-                var client = await _clientStore.FindEnabledClientByIdAsync(context.ClientId);
+                var client = await _clientStore.FindEnabledClientByIdAsync(context.Client.ClientId);
                 if (client != null)
                 {
                     allowLocal = client.EnableLocalLogin;

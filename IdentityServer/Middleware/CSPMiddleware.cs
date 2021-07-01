@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Teknik.Configuration;
 using Teknik.Utilities;
+using Teknik.Utilities.Routing;
 
 namespace Teknik.IdentityServer.Middleware
 {
@@ -19,7 +20,7 @@ namespace Teknik.IdentityServer.Middleware
             _next = next;
         }
 
-        public Task Invoke(HttpContext httpContext, Config config)
+        public Task Invoke(HttpContext httpContext)
         {
             if (!httpContext.Request.IsLocal())
             {

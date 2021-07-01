@@ -4,8 +4,7 @@
         "inputFiles": [
             "./wwwroot/lib/jquery/js/jquery.js",
             "./wwwroot/lib/jquery/js/jquery.validate.js",
-            "./wwwroot/lib/bootstrap/js/bootstrap.js",
-            "./wwwroot/js/app/common.js"
+            "./wwwroot/lib/bootstrap/js/bootstrap.js"
         ]
     },
     {

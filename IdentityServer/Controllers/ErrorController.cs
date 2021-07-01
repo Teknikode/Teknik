@@ -15,10 +15,11 @@ using Teknik.Configuration;
 using Teknik.IdentityServer.ViewModels;
 using Teknik.Logging;
 using Teknik.Utilities;
+using Teknik.WebCommon;
 
 namespace Teknik.IdentityServer.Controllers
 {
-    public class ErrorController : DefaultController
+    public class ErrorController : DefaultController, IErrorController
     {
         private readonly IIdentityServerInteractionService _interaction;
 
@@ -27,8 +28,18 @@ namespace Teknik.IdentityServer.Controllers
             _interaction = interaction;
         }
 
+        [AllowAnonymous]
         public IActionResult HttpError(int statusCode)
         {
+            return HttpError(statusCode, null);
+        }
+
+        [AllowAnonymous]
+        public IActionResult HttpError(int statusCode, Exception ex)
+        {
+            if (ex != null)
+                return Http500(ex);
+
             switch (statusCode)
             {
                 case 401:
@@ -37,11 +48,14 @@ namespace Teknik.IdentityServer.Controllers
                     return Http403();
                 case 404:
                     return Http404();
+                case 500:
+                    return Http500(ex);
                 default:
                     return HttpGeneral(statusCode);
             }
         }
 
+        [AllowAnonymous]
         public IActionResult HttpGeneral(int statusCode)
         {
             ViewBag.Title = statusCode;

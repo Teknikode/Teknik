@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +11,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,24 +23,28 @@ using Teknik.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Teknik.IdentityServer.Models;
 using IdentityServer4.Services;
-
+using Teknik.WebCommon.Middleware;
+using Microsoft.Extensions.Hosting;
+using Teknik.Middleware;
+using Teknik.WebCommon;
+using Teknik.IdentityServer.Controllers;
 
 namespace Teknik.IdentityServer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             Environment = env;
         }
 
         public IConfiguration Configuration { get; }
-        public IHostingEnvironment Environment { get; }
+        public IWebHostEnvironment Environment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string dataDir = Configuration["ConfigDirectory"];
+            string dataDir = (Configuration != null) ? Configuration["ConfigDirectory"] : null;
             if (string.IsNullOrEmpty(dataDir))
             {
                 string baseDir = Environment.ContentRootPath;
@@ -58,14 +62,17 @@ namespace Teknik.IdentityServer
 
             // Resolve the services from the service provider
             var config = sp.GetService<Config>();
+            var devEnv = config?.DevEnvironment ?? true;
+            var defaultConn = config?.DbConnection ?? string.Empty;
+            var authority = config?.UserConfig?.IdentityServerConfig?.Authority ?? string.Empty;
 
-            if (config.DevEnvironment)
+            if (devEnv)
             {
-                Environment.EnvironmentName = EnvironmentName.Development;
+                Environment.EnvironmentName = Environments.Development;
             }
             else
             {
-                Environment.EnvironmentName = EnvironmentName.Production;
+                Environment.EnvironmentName = Environments.Production;
             }
 
             services.ConfigureApplicationCookie(options =>
@@ -73,7 +80,6 @@ namespace Teknik.IdentityServer
                 options.Cookie.Name = "TeknikAuth";
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-                options.Cookie.Expiration = TimeSpan.FromDays(30);
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
             });
 
@@ -86,6 +92,10 @@ namespace Teknik.IdentityServer
                 options.HttpsPort = 443;
 #endif
             });
+
+            services.AddScoped<IErrorController, ErrorController>();
+            services.AddControllersWithViews()
+                    .AddControllersAsServices();
 
             // Sessions
             services.AddResponseCaching();
@@ -100,10 +110,12 @@ namespace Teknik.IdentityServer
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddDbContext<ApplicationDbContext>(builder =>
-                builder.UseSqlServer(config.DbConnection, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)));
+            services.AddDbContext<ApplicationDbContext>(options => options
+                    .UseLazyLoadingProxies()
+                    .UseSqlServer(defaultConn, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)), 
+                    ServiceLifetime.Transient);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options => 
             {
@@ -136,10 +148,10 @@ namespace Teknik.IdentityServer
             })
                 .AddOperationalStore(options =>
                     options.ConfigureDbContext = builder =>
-                        builder.UseSqlServer(config.DbConnection, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
+                        builder.UseSqlServer(defaultConn, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
                 .AddConfigurationStore(options =>
                     options.ConfigureDbContext = builder =>
-                        builder.UseSqlServer(config.DbConnection, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
+                        builder.UseSqlServer(defaultConn, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
                 .AddConfigurationStoreCache()
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddRedirectUriValidator<TeknikRedirectUriValidator>()
@@ -162,7 +174,7 @@ namespace Teknik.IdentityServer
             services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
                 {
-                    options.Authority = config.UserConfig.IdentityServerConfig.Authority;
+                    options.Authority = authority;
                     options.RequireHttpsMetadata = true;
 
                     options.ApiName = "auth-api";
@@ -172,8 +184,23 @@ namespace Teknik.IdentityServer
             services.AddTransient<IProfileService, TeknikProfileService>();
         }
         
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, Config config)
+        public void Configure(IApplicationBuilder app, ApplicationDbContext dbContext, Config config)
         {
+            // Create and Migrate the database
+            dbContext?.Database?.Migrate();
+
+            // Setup static files and cache them client side
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public,max-age=" + 31536000;
+                }
+            });
+
+            // Initiate Routing
+            app.UseRouting();
+
             // Setup the HttpContext
             app.UseHttpContextSetup();
 
@@ -189,13 +216,11 @@ namespace Teknik.IdentityServer
                 }
             });
 
-            // Use Exception Handling
-            app.UseErrorHandler(config);
+            // Force a HTTPS redirection (301)
+            app.UseHttpsRedirection();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            // Use Exception Handling
+            app.UseErrorHandler();
 
             // Custom Middleware
             app.UseBlacklist();
@@ -206,26 +231,18 @@ namespace Teknik.IdentityServer
             // Cache Responses
             app.UseResponseCaching();
 
-            // Force a HTTPS redirection (301)
-            app.UseHttpsRedirection();
-
-            // Setup static files anc cache them client side
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public,max-age=" + 31536000;
-                }
-            });
-
-            InitializeDbTestDataAsync(app, config).Wait();
+            if (config != null)
+                InitializeDbTestDataAsync(app, config);
 
             app.UseIdentityServer();
-            
-            app.UseMvcWithDefaultRoute();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+            });
         }
 
-        private static async System.Threading.Tasks.Task InitializeDbTestDataAsync(IApplicationBuilder app, Config config)
+        private static void InitializeDbTestDataAsync(IApplicationBuilder app, Config config)
         {
             using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
@@ -249,6 +266,15 @@ namespace Teknik.IdentityServer
                     foreach (var resource in Resources.GetIdentityResources())
                     {
                         context.IdentityResources.Add(resource.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
+                if (!context.ApiScopes.Any())
+                {
+                    foreach (var apiScope in Resources.GetApiScopes())
+                    {
+                        context.ApiScopes.Add(apiScope.ToEntity());
                     }
                     context.SaveChanges();
                 }

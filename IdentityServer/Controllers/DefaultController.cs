@@ -31,7 +31,7 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
-        public IActionResult Favicon([FromServices] IHostingEnvironment env)
+        public IActionResult Favicon([FromServices] IWebHostEnvironment env)
         {
             string imageFile = FileHelper.MapPath(env, Constants.FAVICON_PATH);
             FileStream fs = new FileStream(imageFile, FileMode.Open, FileAccess.Read);
@@ -41,7 +41,7 @@ namespace Teknik.IdentityServer.Controllers
         // Get the Robots.txt
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Robots([FromServices] IHostingEnvironment env)
+        public IActionResult Robots([FromServices] IWebHostEnvironment env)
         {
             //string file = FileHelper.MapPath(env, Constants.ROBOTS_PATH);
             return File(Constants.ROBOTS_PATH, "text/plain");

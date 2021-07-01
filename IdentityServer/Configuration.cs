@@ -83,32 +83,34 @@ namespace Teknik.IdentityServer.Configuration
             };
         }
 
+        public static IEnumerable<ApiScope> GetApiScopes()
+        {
+            return new List<ApiScope>()
+            {
+                new ApiScope(name: "teknik-api.read", displayName: "Teknik API Read Access"),
+                new ApiScope(name: "teknik-api.write", displayName: "Teknik API Write Access"),
+                new ApiScope(name: "auth-api") { Required = true, ShowInDiscoveryDocument = false }
+            };
+        }
+
         public static IEnumerable<ApiResource> GetApiResources(Config config)
         {
-            return new List<ApiResource> {
-                new ApiResource {
+            return new List<ApiResource>() 
+            {
+                new ApiResource 
+                {
                     Name = config.UserConfig.IdentityServerConfig.APIName,
                     DisplayName = "Teknik API",
                     Description = "Teknik API Access for end users",
                     UserClaims = new List<string> {"role", "username"},
                     ApiSecrets = new List<Secret> {new Secret(config.UserConfig.IdentityServerConfig.APISecret.Sha256()) },
-                    Scopes = new List<Scope> {
-                        new Scope("teknik-api.read", "Teknik API Read Access"),
-                        new Scope("teknik-api.write", "Teknik API Write Access")
-                    }
+                    Scopes = new List<string> { "teknik-api.read", "teknik-api.write" }
                 },
                 new ApiResource {
                     Name = "auth-api",
                     DisplayName = "Auth Server API",
                     Description = "Auth Server API Access for managing the Auth Server",
-                    Scopes = new List<Scope> {
-                        new Scope()
-                        {
-                            Name = "auth-api",
-                            ShowInDiscoveryDocument = false,
-                            Required = true
-                        }
-                    }
+                    Scopes = new List<string> { "auth-api" }
                 }
             };
         }
@@ -118,7 +120,7 @@ namespace Teknik.IdentityServer.Configuration
     {
         public static IEnumerable<Policy> Get()
         {
-            return new List<Policy>
+            return new List<Policy>()
             {
                 new Policy
                 {
