@@ -1282,7 +1282,7 @@ namespace Teknik.Areas.Users.Controllers
 
                     string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/User/Views/User/Settings/ClientView.cshtml", model);
 
-                    return Json(new { result = true, clientId = client["id"], secret = client["secret"], html = renderedView });
+                    return Json(new { result = true, clientId = client["id"].ToString(), secret = client["secret"].ToString(), html = renderedView });
                 }
                 return Json(new { error = result.Message });
             }

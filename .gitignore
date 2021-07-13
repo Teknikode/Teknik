@@ -269,3 +269,4 @@ __pycache__/
 /ServiceWorker/Properties/launchSettings.json
 /IdentityServer/App_Data/Config.json
 /ServiceWorker/Output
+/IdentityServer/tempkey.jwk

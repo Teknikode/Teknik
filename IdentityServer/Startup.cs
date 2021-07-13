@@ -65,6 +65,7 @@ namespace Teknik.IdentityServer
             var devEnv = config?.DevEnvironment ?? true;
             var defaultConn = config?.DbConnection ?? string.Empty;
             var authority = config?.UserConfig?.IdentityServerConfig?.Authority ?? string.Empty;
+            var signingCert = config?.UserConfig?.IdentityServerConfig?.SigningCertificate ?? string.Empty;
 
             if (devEnv)
             {
@@ -95,7 +96,8 @@ namespace Teknik.IdentityServer
 
             services.AddScoped<IErrorController, ErrorController>();
             services.AddControllersWithViews()
-                    .AddControllersAsServices();
+                    .AddControllersAsServices()
+                    .AddNewtonsoftJson();
 
             // Sessions
             services.AddResponseCaching();
@@ -132,7 +134,7 @@ namespace Teknik.IdentityServer
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddIdentityServer(options =>
+            var identityBuilder = services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
@@ -154,8 +156,16 @@ namespace Teknik.IdentityServer
                         builder.UseSqlServer(defaultConn, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)))
                 .AddConfigurationStoreCache()
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddRedirectUriValidator<TeknikRedirectUriValidator>()
-                .AddDeveloperSigningCredential();
+                .AddRedirectUriValidator<TeknikRedirectUriValidator>();
+
+            if (!string.IsNullOrEmpty(signingCert))
+            {
+                identityBuilder.AddSigningCredential($"CN={signingCert}");
+            }
+            else
+            {
+                identityBuilder.AddDeveloperSigningCredential();
+            }
 
             services.AddAuthorization(options =>
             {
@@ -235,6 +245,10 @@ namespace Teknik.IdentityServer
                 InitializeDbTestDataAsync(app, config);
 
             app.UseIdentityServer();
+
+            // Authorize all the things!
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

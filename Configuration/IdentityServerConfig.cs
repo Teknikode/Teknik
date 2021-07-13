@@ -18,6 +18,8 @@ namespace Teknik.Configuration
         public string APIName { get; set; }
         public string APISecret { get; set; }
 
+        public string SigningCertificate { get; set; }
+
         public IdentityServerConfig()
         {
             Host = "localhost:5002";

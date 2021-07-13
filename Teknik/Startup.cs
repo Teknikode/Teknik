@@ -95,7 +95,8 @@ namespace Teknik
             });
 
             services.AddControllersWithViews()
-                    .AddControllersAsServices();
+                    .AddControllersAsServices()
+                    .AddNewtonsoftJson();
 
             services.AddHostedService<TrackingService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();

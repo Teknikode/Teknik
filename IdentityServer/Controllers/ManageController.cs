@@ -89,12 +89,12 @@ namespace Teknik.IdentityServer.Controllers
             if (foundUser != null)
             {
                 // Find this user's clients
-                var foundClients = configContext.Clients.Where(c =>
-                                        c.Properties.Exists(p =>
-                                            p.Key == "username" &&
-                                            p.Value.ToLower() == model.Username.ToLower())
-                                        ).ToList();
-                if (foundClients != null)
+                var lowerUsername = model.Username.ToLower();
+                var foundClients = configContext.Clients
+                                        .Select(c => new { Client = c, Username = c.Properties.FirstOrDefault(p => p.Key == "username").Value })
+                                        .Where(c => c.Username.ToLower() == lowerUsername)
+                                        .Select(c => c.Client);
+                if (foundClients.Any())
                 {
                     configContext.Clients.RemoveRange(foundClients);
                     configContext.SaveChanges();
@@ -133,7 +133,8 @@ namespace Teknik.IdentityServer.Controllers
             var foundUser = await GetCachedUser(username);
             if (foundUser != null)
             {
-                return new JsonResult(new { success = true, data = foundUser.ToJson() });
+                var userJson = foundUser.ToJson();
+                return new JsonResult(new { success = true, data = userJson });
             }
             return new JsonResult(new { success = false, message = "User does not exist." });
         }
@@ -479,15 +480,15 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(clientId))
                 return new JsonResult(new { success = false, message = "Client Id is required" });
 
-            var client = configContext.Clients.FirstOrDefault(c => 
-                                    c.ClientId == clientId && 
-                                    c.Properties.Exists(p => 
-                                        p.Key == "username" && 
-                                        p.Value.ToLower() == username.ToLower())
-                                    );
+            var lowerUsername = username.ToLower();
+            var client = configContext.Clients
+                                    .Select(c => new { Id = c.ClientId, Username = c.Properties.FirstOrDefault(p => p.Key == "username").Value })
+                                    .FirstOrDefault(c => 
+                                    c.Id == clientId &&
+                                    c.Username.ToLower() == lowerUsername);
             if (client != null)
             {
-                var foundClient = await clientStore.FindClientByIdAsync(client.ClientId);
+                var foundClient = await clientStore.FindClientByIdAsync(client.Id);
                 return new JsonResult(new { success = true, data = foundClient });
             }
 
@@ -500,15 +501,14 @@ namespace Teknik.IdentityServer.Controllers
             if (string.IsNullOrEmpty(username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundClientIds = configContext.Clients.Where(c =>
-                                    c.Properties.Exists(p =>
-                                        p.Key == "username" &&
-                                        p.Value.ToLower() == username.ToLower())
-                                    ).Select(c => c.ClientId);
+            var lowerUsername = username.ToLower();
+            var foundClientIds = configContext.Clients
+                                    .Select(c => new { Id = c.ClientId, Username = c.Properties.FirstOrDefault(p => p.Key == "username").Value })
+                                    .Where(c => c.Username.ToLower() == lowerUsername);
             var clients = new List<IdentityServer4.Models.Client>();
-            foreach (var clientId in foundClientIds)
+            foreach (var client in foundClientIds)
             {
-                var foundClient = await clientStore.FindClientByIdAsync(clientId);
+                var foundClient = await clientStore.FindClientByIdAsync(client.Id);
                 if (foundClient != null)
                     clients.Add(foundClient);
             }

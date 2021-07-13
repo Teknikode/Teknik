@@ -32,26 +32,22 @@ namespace Teknik.Areas.Users.Models
         {
             if (claims.FirstOrDefault(c => c.Type == "creation-date") != null)
             {
-                DateTime dateTime = new DateTime();
-                if (DateTime.TryParse(claims.FirstOrDefault(c => c.Type == "creation-date").Value, out dateTime))
+                if (DateTime.TryParse(claims.FirstOrDefault(c => c.Type == "creation-date").Value, out var dateTime))
                     CreationDate = dateTime;
             }
             if (claims.FirstOrDefault(c => c.Type == "last-seen") != null)
             {
-                DateTime dateTime = new DateTime();
-                if (DateTime.TryParse(claims.FirstOrDefault(c => c.Type == "last-seen").Value, out dateTime))
+                if (DateTime.TryParse(claims.FirstOrDefault(c => c.Type == "last-seen").Value, out var dateTime))
                     CreationDate = dateTime;
             }
             if (claims.FirstOrDefault(c => c.Type == "account-type") != null)
             {
-                AccountType accountType = Utilities.AccountType.Basic;
-                if (Enum.TryParse(claims.FirstOrDefault(c => c.Type == "account-type").Value, out accountType))
+                if (Enum.TryParse(claims.FirstOrDefault(c => c.Type == "account-type").Value, out AccountType accountType))
                     AccountType = accountType;
             }
             if (claims.FirstOrDefault(c => c.Type == "account-status") != null)
             {
-                AccountStatus accountStatus = Utilities.AccountStatus.Active;
-                if (Enum.TryParse(claims.FirstOrDefault(c => c.Type == "account-status").Value, out accountStatus))
+                if (Enum.TryParse(claims.FirstOrDefault(c => c.Type == "account-status").Value, out AccountStatus accountStatus))
                     AccountStatus = accountStatus;
             }
             if (claims.FirstOrDefault(c => c.Type == "recovery-email") != null)
@@ -60,14 +56,12 @@ namespace Teknik.Areas.Users.Models
             }
             if (claims.FirstOrDefault(c => c.Type == "recovery-verified") != null)
             {
-                bool verified = false;
-                if (bool.TryParse(claims.FirstOrDefault(c => c.Type == "recovery-verified").Value, out verified))
+                if (bool.TryParse(claims.FirstOrDefault(c => c.Type == "recovery-verified").Value, out var verified))
                     RecoveryVerified = verified;
             }
             if (claims.FirstOrDefault(c => c.Type == "2fa-enabled") != null)
             {
-                bool twoFactor = false;
-                if (bool.TryParse(claims.FirstOrDefault(c => c.Type == "2fa-enabled").Value, out twoFactor))
+                if (bool.TryParse(claims.FirstOrDefault(c => c.Type == "2fa-enabled").Value, out var twoFactor))
                     TwoFactorEnabled = twoFactor;
             }
             if (claims.FirstOrDefault(c => c.Type == "pgp-public-key") != null)
@@ -80,26 +74,22 @@ namespace Teknik.Areas.Users.Models
         {
             if (info["creation-date"] != null)
             {
-                DateTime dateTime = new DateTime();
-                if (DateTime.TryParse(info["creation-date"].ToString(), out dateTime))
+                if (DateTime.TryParse(info["creation-date"].ToString(), out var dateTime))
                     CreationDate = dateTime;
             }
             if (info["last-seen"] != null)
             {
-                DateTime dateTime = new DateTime();
-                if (DateTime.TryParse(info["last-seen"].ToString(), out dateTime))
+                if (DateTime.TryParse(info["last-seen"].ToString(), out var dateTime))
                     LastSeen = dateTime;
             }
             if (info["account-type"] != null)
             {
-                AccountType accountType = Utilities.AccountType.Basic;
-                if (Enum.TryParse(info["account-type"].ToString(), out accountType))
+                if (Enum.TryParse(info["account-type"].ToString(), out AccountType accountType))
                     AccountType = accountType;
             }
             if (info["account-status"] != null)
             {
-                AccountStatus accountStatus = Utilities.AccountStatus.Active;
-                if (Enum.TryParse(info["account-status"].ToString(), out accountStatus))
+                if (Enum.TryParse(info["account-status"].ToString(), out AccountStatus accountStatus))
                     AccountStatus = accountStatus;
             }
             if (info["recovery-email"] != null)
@@ -108,14 +98,12 @@ namespace Teknik.Areas.Users.Models
             }
             if (info["recovery-verified"] != null)
             {
-                bool verified = false;
-                if (bool.TryParse(info["recovery-verified"].ToString(), out verified))
+                if (bool.TryParse(info["recovery-verified"].ToString(), out var verified))
                     RecoveryVerified = verified;
             }
             if (info["2fa-enabled"] != null)
             {
-                bool twoFactor = false;
-                if (bool.TryParse(info["2fa-enabled"].ToString(), out twoFactor))
+                if (bool.TryParse(info["2fa-enabled"].ToString(), out var twoFactor))
                     TwoFactorEnabled = twoFactor;
             }
             if (info["pgp-public-key"] != null)
