@@ -2,8 +2,9 @@
 
 <script>
     // We need to define the action URLs for the script
+    var deleteDataURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "DeleteData" })';
+    var homeUrl = '@Url.SubRouteUrl("admin", "Admin.UploadSearch")';
     var searchResultsURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "GetUploadSearchResults" })';
-    var generateDeleteKeyURL = '@Url.SubRouteUrl("u", "Upload.GenerateDeleteKey")';
 </script>
 
 <div class="container">

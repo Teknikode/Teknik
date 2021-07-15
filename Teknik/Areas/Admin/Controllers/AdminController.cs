@@ -259,5 +259,36 @@ namespace Teknik.Areas.Admin.Controllers
             }
             return Json(new { error = "Unable to delete user" });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteData(string type, string id)
+        {
+            var context = new ControllerContext();
+            context.HttpContext = Request.HttpContext;
+            context.RouteData = RouteData;
+            context.ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor();
+
+            switch (type)
+            {
+                case "upload":
+                    var uploadController = new Upload.Controllers.UploadController(_logger, _config, _dbContext);
+                    uploadController.ControllerContext = context;
+                    return uploadController.Delete(id);
+                case "paste":
+                    var pasteController = new Paste.Controllers.PasteController(_logger, _config, _dbContext);
+                    pasteController.ControllerContext = context;
+                    return pasteController.Delete(id);
+                case "shortenedUrl":
+                    var shortenController = new Shortener.Controllers.ShortenerController(_logger, _config, _dbContext);
+                    shortenController.ControllerContext = context;
+                    return shortenController.Delete(id);
+                case "vault":
+                    var vaultController = new Vault.Controllers.VaultController(_logger, _config, _dbContext);
+                    vaultController.ControllerContext = context;
+                    return vaultController.Delete(id);
+            }
+            return Json(new { error = "Invalid Type" });
+        }
     }
 }

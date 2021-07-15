@@ -55,6 +55,9 @@
         "pageloadDoTimer": "readonly",
         "pageloadStopTimer": "readonly",
 
+        // AdminCommon.js Functions
+        "deleteItem": "readonly",
+
         // Common variables
         "oidcConfig": "readonly"
     }

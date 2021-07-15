@@ -1,4 +1,4 @@
-/* globals searchResultsURL, deletePasteURL, homeUrl */
+/* globals searchResultsURL, deleteDataURL, homeUrl */
 $(document).ready(function () {
     $('#Query').on('input', function () {
         var query = $(this).val();
@@ -32,32 +32,6 @@ $(document).ready(function () {
 function LinkPasteDelete(selector) {
     $(selector).click(function () {
         var id = $(this).data('paste-id');
-
-        deleteConfirm("Are you sure you want to delete this paste?", function (result) {
-            if (result) {
-                $.ajax({
-                    type: "POST",
-                    url: deletePasteURL,
-                    data: { id: id },
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    xhrFields: {
-                        withCredentials: true
-                    },
-                    success: function (response) {
-                        if (response.result) {
-                            window.location.replace(homeUrl);
-                        }
-                        else {
-                            $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response) + '</div>');
-                        }
-                    },
-                    error: function (response) {
-                        $("#top_msg").css('display', 'inline', 'important');
-                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(response.responseText) + '</div>');
-                    }
-                });
-            }
-        });
+        deleteItem('paste', id, deleteDataURL, homeUrl, "Are you sure you want to delete this paste?");
     });
 }

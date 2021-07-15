@@ -8,18 +8,21 @@
     {
         "outputFileName": "./wwwroot/js/uploadSearch.min.js",
         "inputFiles": [
+            "./wwwroot/js/App/Admin/AdminCommon.js",
             "./wwwroot/js/App/Admin/UploadSearch.js"
         ]
     },
     {
         "outputFileName": "./wwwroot/js/pasteSearch.min.js",
         "inputFiles": [
+            "./wwwroot/js/App/Admin/AdminCommon.js",
             "./wwwroot/js/App/Admin/PasteSearch.js"
         ]
     },
     {
         "outputFileName": "./wwwroot/js/shortenedUrlSearch.min.js",
         "inputFiles": [
+            "./wwwroot/js/App/Admin/AdminCommon.js",
             "./wwwroot/js/App/Admin/ShortenedUrlSearch.js"
         ]
     },
