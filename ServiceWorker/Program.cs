@@ -144,12 +144,6 @@ namespace Teknik.ServiceWorker
                 }
                 Task.WaitAll(runningTasks.ToArray());
             }
-            bool running = true;
-
-            //while (running)
-            //{
-            //    running = runningTasks.Exists(s => s != null && !s.IsCompleted && !s.IsCanceled && !s.IsFaulted);
-            //}
 
             Output(string.Format("Scanning Complete.  {0} Scanned | {1} Viruses Found | {2} Total Files", totalScans, totalViruses, totalCount));
         }
@@ -208,10 +202,7 @@ namespace Teknik.ServiceWorker
                                     db.Uploads.Remove(upload);
 
                                     // Delete the File
-                                    if (File.Exists(filePath))
-                                    {
-                                        File.Delete(filePath);
-                                    }
+                                    DeleteFile(filePath);
 
                                     // Add to transparency report if any were found
                                     Takedown report = new Takedown();
@@ -259,12 +250,8 @@ namespace Teknik.ServiceWorker
                 string filePath = Path.Combine(config.UploadConfig.UploadDirectory, subDir, upload.FileName);
 
                 // Delete the File
-                if (File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
+                DeleteFile(filePath);
             }
-
             db.RemoveRange(uploads);
             db.SaveChanges();
 
@@ -277,10 +264,7 @@ namespace Teknik.ServiceWorker
                 string filePath = Path.Combine(config.PasteConfig.PasteDirectory, subDir, paste.FileName);
 
                 // Delete the File
-                if (File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
+                DeleteFile(filePath);
             }
             db.RemoveRange(pastes);
             db.SaveChanges();
@@ -288,18 +272,48 @@ namespace Teknik.ServiceWorker
 
         public static void CleanStorage(Config config, TeknikEntities db)
         {
-            var curDate = DateTime.Now;
-
             // Process upload data
             Output(string.Format("[{0}] Starting processing upload storage cleaning.", DateTime.Now));
+            CleanUploadFiles(config, db);
 
-            List<string> uploads = db.Uploads.Select(u => Path.Combine(config.UploadConfig.UploadDirectory, u.FileName[0].ToString(), u.FileName)).Select(u => u.ToLower()).ToList();
+            // Process paste data
+            Output(string.Format("[{0}] Starting processing upload storage cleaning.", DateTime.Now));
+            CleanPasteFiles(config, db);
+        }
+
+        public static void CleanUploadFiles(Config config, TeknikEntities db)
+        {
+            List<string> uploads = db.Uploads.Where(u => !string.IsNullOrEmpty(u.FileName)).Select(u => Path.Combine(config.UploadConfig.UploadDirectory, u.FileName[0].ToString(), u.FileName)).Select(u => u.ToLower()).ToList();
             List<string> files = Directory.GetFiles(config.UploadConfig.UploadDirectory, "*.*", SearchOption.AllDirectories).Select(f => f.ToLower()).ToList();
             var orphans = files.Except(uploads);
             File.AppendAllLines(orphansFile, orphans);
             foreach (var orphan in orphans)
             {
-                File.Delete(orphan);
+                DeleteFile(orphan);
+            }
+        }
+
+        public static void CleanPasteFiles(Config config, TeknikEntities db)
+        {
+            List<string> pastes = db.Pastes.Where(p => !string.IsNullOrEmpty(p.FileName)).Select(p => Path.Combine(config.PasteConfig.PasteDirectory, p.FileName[0].ToString(), p.FileName)).Select(p => p.ToLower()).ToList();
+            List<string> files = Directory.GetFiles(config.PasteConfig.PasteDirectory, "*.*", SearchOption.AllDirectories).Select(f => f.ToLower()).ToList();
+            var orphans = files.Except(pastes);
+            File.AppendAllLines(orphansFile, orphans);
+            foreach (var orphan in orphans)
+            {
+                DeleteFile(orphan);
+            }
+        }
+
+        public static void DeleteFile(string filePath)
+        {
+            try
+            {
+                File.Delete(filePath);
+            }
+            catch (Exception ex)
+            {
+                Output(string.Format("[{0}] Unable to delete file: {1} | {2}", DateTime.Now, filePath, ex.ToString()));
             }
         }
 
