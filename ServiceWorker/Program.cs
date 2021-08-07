@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using Microsoft.EntityFrameworkCore;
 using nClam;
+using StorageService;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -151,9 +152,9 @@ namespace Teknik.ServiceWorker
         private static async Task<bool> ScanUpload(Config config, TeknikEntities db, Upload upload, int totalCount, int currentCount)
         {
             bool virusDetected = false;
-            string subDir = upload.FileName[0].ToString();
-            string filePath = Path.Combine(config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-            if (File.Exists(filePath))
+            var storageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
+            var fileStream = storageService.GetFile(upload.FileName);
+            if (fileStream != null)
             {
                 // If the IV is set, and Key is set, then scan it
                 if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
@@ -173,12 +174,11 @@ namespace Teknik.ServiceWorker
                         }
                     }
 
-                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                    using (AesCounterStream aesStream = new AesCounterStream(fs, false, keyBytes, ivBytes))
+                    using (AesCounterStream aesStream = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
                     {
                         ClamClient clam = new ClamClient(config.UploadConfig.ClamConfig.Server, config.UploadConfig.ClamConfig.Port);
                         clam.MaxStreamSize = maxUploadSize;
-                        ClamScanResult scanResult = await clam.SendAndScanFileAsync(fs);
+                        ClamScanResult scanResult = await clam.SendAndScanFileAsync(fileStream);
 
                         switch (scanResult.Result)
                         {
@@ -198,11 +198,12 @@ namespace Teknik.ServiceWorker
                                 lock (dbLock)
                                 {
                                     string urlName = upload.Url;
-                                    // Delete from the DB
-                                    db.Uploads.Remove(upload);
 
                                     // Delete the File
-                                    DeleteFile(filePath);
+                                    storageService.DeleteFile(upload.FileName);
+
+                                    // Delete from the DB
+                                    db.Uploads.Remove(upload);
 
                                     // Add to transparency report if any were found
                                     Takedown report = new Takedown();
@@ -244,13 +245,10 @@ namespace Teknik.ServiceWorker
             // Process uploads
             List<Upload> uploads = db.Uploads.Where(u => u.ExpireDate != null && u.ExpireDate < curDate).ToList();
 
+            var uploadStorageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
             foreach (Upload upload in uploads)
             {
-                string subDir = upload.FileName[0].ToString();
-                string filePath = Path.Combine(config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-
-                // Delete the File
-                DeleteFile(filePath);
+                DeleteFile(uploadStorageService, upload.FileName);
             }
             db.RemoveRange(uploads);
             db.SaveChanges();
@@ -258,13 +256,11 @@ namespace Teknik.ServiceWorker
             // Process Pastes
             List<Paste> pastes = db.Pastes.Where(p => p.ExpireDate != null && p.ExpireDate < curDate).ToList();
 
+            var pasteStorageService = StorageServiceFactory.GetStorageService(config.PasteConfig.StorageConfig);
             foreach (Paste paste in pastes)
             {
-                string subDir = paste.FileName[0].ToString();
-                string filePath = Path.Combine(config.PasteConfig.PasteDirectory, subDir, paste.FileName);
-
                 // Delete the File
-                DeleteFile(filePath);
+                DeleteFile(pasteStorageService, paste.FileName);
             }
             db.RemoveRange(pastes);
             db.SaveChanges();
@@ -283,37 +279,39 @@ namespace Teknik.ServiceWorker
 
         public static void CleanUploadFiles(Config config, TeknikEntities db)
         {
-            List<string> uploads = db.Uploads.Where(u => !string.IsNullOrEmpty(u.FileName)).Select(u => Path.Combine(config.UploadConfig.UploadDirectory, u.FileName[0].ToString(), u.FileName)).Select(u => u.ToLower()).ToList();
-            List<string> files = Directory.GetFiles(config.UploadConfig.UploadDirectory, "*.*", SearchOption.AllDirectories).Select(f => f.ToLower()).ToList();
+            var storageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
+            List<string> files = storageService.GetFileNames();
+            List<string> uploads = db.Uploads.Where(u => !string.IsNullOrEmpty(u.FileName)).Select(u => u.FileName.ToLower()).ToList();
             var orphans = files.Except(uploads);
             File.AppendAllLines(orphansFile, orphans);
             foreach (var orphan in orphans)
             {
-                DeleteFile(orphan);
+                DeleteFile(storageService, orphan);
             }
         }
 
         public static void CleanPasteFiles(Config config, TeknikEntities db)
         {
-            List<string> pastes = db.Pastes.Where(p => !string.IsNullOrEmpty(p.FileName)).Select(p => Path.Combine(config.PasteConfig.PasteDirectory, p.FileName[0].ToString(), p.FileName)).Select(p => p.ToLower()).ToList();
-            List<string> files = Directory.GetFiles(config.PasteConfig.PasteDirectory, "*.*", SearchOption.AllDirectories).Select(f => f.ToLower()).ToList();
+            var storageService = StorageServiceFactory.GetStorageService(config.PasteConfig.StorageConfig);
+            List<string> files = storageService.GetFileNames();
+            List<string> pastes = db.Pastes.Where(p => !string.IsNullOrEmpty(p.FileName)).Select(p => p.FileName.ToLower()).ToList();
             var orphans = files.Except(pastes);
             File.AppendAllLines(orphansFile, orphans);
             foreach (var orphan in orphans)
             {
-                DeleteFile(orphan);
+                DeleteFile(storageService, orphan);
             }
         }
 
-        public static void DeleteFile(string filePath)
+        public static void DeleteFile(IStorageService storageService, string fileName)
         {
             try
             {
-                File.Delete(filePath);
+                storageService.DeleteFile(fileName);
             }
             catch (Exception ex)
             {
-                Output(string.Format("[{0}] Unable to delete file: {1} | {2}", DateTime.Now, filePath, ex.ToString()));
+                Output(string.Format("[{0}] Unable to delete file: {1} | {2}", DateTime.Now, fileName, ex.ToString()));
             }
         }
 

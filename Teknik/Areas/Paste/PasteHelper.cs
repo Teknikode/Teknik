@@ -9,6 +9,9 @@ using Teknik.Models;
 using Teknik.Utilities.Cryptography;
 using Teknik.Data;
 using System.IO;
+using StorageService;
+using Teknik.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Teknik.Areas.Paste
 {
@@ -56,15 +59,6 @@ namespace Teknik.Areas.Paste
                     break;
             }
 
-            if (!Directory.Exists(config.PasteConfig.PasteDirectory))
-            {
-                Directory.CreateDirectory(config.PasteConfig.PasteDirectory);
-            }
-
-            // Generate a unique file name that does not currently exist
-            string filePath = FileHelper.GenerateRandomFileName(config.PasteConfig.PasteDirectory, config.PasteConfig.FileExtension, 10);
-            string fileName = Path.GetFileName(filePath);
-
             string key = GenerateKey(config.PasteConfig.KeySize);
             string iv = GenerateIV(config.PasteConfig.BlockSize);
 
@@ -73,8 +67,13 @@ namespace Teknik.Areas.Paste
                 paste.HashedPassword = HashPassword(key, password);
             }
 
+
+            // Generate a unique file name that does not currently exist
+            var storageService = StorageServiceFactory.GetStorageService(config.PasteConfig.StorageConfig);
+            var fileName = storageService.GetUniqueFileName();
+
             // Encrypt the contents to the file
-            EncryptContents(content, filePath, password, key, iv, config.PasteConfig.KeySize, config.PasteConfig.ChunkSize);
+            EncryptContents(storageService, content, fileName, password, key, iv, config.PasteConfig.KeySize, config.PasteConfig.ChunkSize);
 
             // Generate a deletion key
             string delKey = StringHelper.RandomString(config.PasteConfig.DeleteKeyLength);
@@ -118,7 +117,7 @@ namespace Teknik.Areas.Paste
             return SHA384.Hash(key, password).ToHex();
         }
 
-        public static void EncryptContents(string content, string filePath, string password, string key, string iv, int keySize, int chunkSize)
+        public static void EncryptContents(IStorageService storageService, string content, string fileName, string password, string key, string iv, int keySize, int chunkSize)
         {
             byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
             byte[] keyBytes = AesCounterManaged.CreateKey(key, ivBytes, keySize);
@@ -133,8 +132,25 @@ namespace Teknik.Areas.Paste
             byte[] data = Encoding.Unicode.GetBytes(content);
             using (MemoryStream ms = new MemoryStream(data))
             {
-                AesCounterManaged.EncryptToFile(filePath, ms, chunkSize, keyBytes, ivBytes);
+                storageService.SaveEncryptedFile(fileName, ms, chunkSize, keyBytes, ivBytes);
             }
+        }
+
+        public static void DeleteFile(TeknikEntities db, Config config, ILogger<Logger> logger, Models.Paste paste)
+        {
+            try
+            {
+                var storageService = StorageServiceFactory.GetStorageService(config.PasteConfig.StorageConfig);
+                storageService.DeleteFile(paste.FileName);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Unable to delete file: {0}", paste.FileName);
+            }
+
+            // Delete from the DB
+            db.Pastes.Remove(paste);
+            db.SaveChanges();
         }
     }
 }

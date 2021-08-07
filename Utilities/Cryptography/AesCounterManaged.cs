@@ -78,38 +78,44 @@ namespace Teknik.Utilities.Cryptography
 
         public static void EncryptToFile(string filePath, Stream input, int chunkSize, byte[] key, byte[] iv)
         {
+
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                EncryptToStream(input, fileStream, chunkSize, key, iv);
+            }
+        }
+
+        public static void EncryptToStream(Stream input, Stream output, int chunkSize, byte[] key, byte[] iv)
+        {
             // Make sure the input stream is at the beginning
             input.Seek(0, SeekOrigin.Begin);
 
             AesCounterStream cryptoStream = new AesCounterStream(input, true, key, iv);
 
-            using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            int curByte = 0;
+            int processedBytes = 0;
+            byte[] buffer = new byte[chunkSize];
+            int bytesRemaining = (int)input.Length;
+            int bytesToRead = chunkSize;
+            do
             {
-                int curByte = 0;
-                int processedBytes = 0;
-                byte[] buffer = new byte[chunkSize];
-                int bytesRemaining = (int)input.Length;
-                int bytesToRead = chunkSize;
-                do
+                if (chunkSize > bytesRemaining)
                 {
-                    if (chunkSize > bytesRemaining)
-                    {
-                        bytesToRead = bytesRemaining;
-                    }
-
-                    processedBytes = cryptoStream.Read(buffer, 0, bytesToRead);
-                    if (processedBytes > 0)
-                    {
-                        fileStream.Write(buffer, 0, processedBytes);
-
-                        // Clear the buffer
-                        Array.Clear(buffer, 0, chunkSize);
-                    }
-                    curByte += processedBytes;
-                    bytesRemaining -= processedBytes;
+                    bytesToRead = bytesRemaining;
                 }
-                while (processedBytes > 0 && bytesRemaining > 0);
+
+                processedBytes = cryptoStream.Read(buffer, 0, bytesToRead);
+                if (processedBytes > 0)
+                {
+                    output.Write(buffer, 0, processedBytes);
+
+                    // Clear the buffer
+                    Array.Clear(buffer, 0, chunkSize);
+                }
+                curByte += processedBytes;
+                bytesRemaining -= processedBytes;
             }
+            while (processedBytes > 0 && bytesRemaining > 0);
         }
 
         public static byte[] CreateKey(string password, string iv, int keySize = 256)

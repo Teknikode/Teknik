@@ -9,6 +9,9 @@ using Teknik.Utilities;
 using System.Text;
 using Teknik.Utilities.Cryptography;
 using Teknik.Data;
+using StorageService;
+using Teknik.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Teknik.Areas.Upload
 {
@@ -36,14 +39,10 @@ namespace Teknik.Areas.Upload
 
         public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength, string fileExt, string iv, string key, int keySize, int blockSize)
         {
-            if (!Directory.Exists(config.UploadConfig.UploadDirectory))
-            {
-                Directory.CreateDirectory(config.UploadConfig.UploadDirectory);
-            }
+            var storageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
 
             // Generate a unique file name that does not currently exist
-            string filePath = FileHelper.GenerateRandomFileName(config.UploadConfig.UploadDirectory, config.UploadConfig.FileExtension, 10);
-            string fileName = Path.GetFileName(filePath);
+            var fileName = storageService.GetUniqueFileName();
 
             // once we have the filename, lets save the file
             if (encrypt)
@@ -57,17 +56,11 @@ namespace Teknik.Areas.Upload
                 byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                 byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
-                // Encrypt the file to disk
-                AesCounterManaged.EncryptToFile(filePath, file, config.UploadConfig.ChunkSize, keyBytes, ivBytes);
+                storageService.SaveEncryptedFile(fileName, file, config.UploadConfig.ChunkSize, keyBytes, ivBytes);
             }
             else
             {
-                // Just write the stream to the file
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                {
-                    file.Seek(0, SeekOrigin.Begin);
-                    file.CopyTo(fileStream);
-                }
+                storageService.SaveFile(fileName, file);
             }
 
             // Generate a unique url
@@ -141,6 +134,23 @@ namespace Teknik.Areas.Upload
             Models.Upload upload = db.Uploads.Where(up => up.Url == url).FirstOrDefault();
 
             return upload;
+        }
+
+        public static void DeleteFile(TeknikEntities db, Config config, ILogger<Logger> logger, Models.Upload upload)
+        {
+            try
+            {
+                var storageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
+                storageService.DeleteFile(upload.FileName);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Unable to delete file: {0}", upload.FileName);
+            }
+
+            // Delete from the DB
+            db.Uploads.Remove(upload);
+            db.SaveChanges();
         }
     }
 }

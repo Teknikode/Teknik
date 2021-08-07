@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using StorageService;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -110,15 +111,14 @@ namespace Teknik.Areas.Vault.Controllers
                             if (!pasteModel.HasPassword)
                             {
                                 // Read in the file
-                                string subDir = paste.Paste.FileName[0].ToString();
-                                string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.Paste.FileName);
-                                if (!System.IO.File.Exists(filePath))
+                                var storageService = StorageServiceFactory.GetStorageService(_config.PasteConfig.StorageConfig);
+                                var fileStream = storageService.GetFile(paste.Paste.FileName);
+                                if (fileStream == null)
                                     continue;
 
                                 byte[] ivBytes = Encoding.Unicode.GetBytes(paste.Paste.IV);
                                 byte[] keyBytes = AesCounterManaged.CreateKey(paste.Paste.Key, ivBytes, paste.Paste.KeySize);
-                                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                                using (AesCounterStream cs = new AesCounterStream(fs, false, keyBytes, ivBytes))
+                                using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
                                 using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
                                 {
                                     pasteModel.Content = await sr.ReadToEndAsync();

@@ -96,6 +96,7 @@
     <ProjectReference Include="..\GitService\GitService.csproj" />
     <ProjectReference Include="..\Logging\Logging.csproj" />
     <ProjectReference Include="..\MailService\MailService.csproj" />
+    <ProjectReference Include="..\StorageService\StorageService.csproj" />
     <ProjectReference Include="..\Tracking\Tracking.csproj" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
     <ProjectReference Include="..\WebCommon\WebCommon.csproj" />

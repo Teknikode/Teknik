@@ -22,6 +22,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
 using Teknik.Utilities.Routing;
+using StorageService;
 
 namespace Teknik.Areas.Paste.Controllers
 {
@@ -58,7 +59,7 @@ namespace Teknik.Areas.Paste.Controllers
                 // Check Expiration
                 if (PasteHelper.CheckExpiration(paste))
                 {
-                    DeleteFile(paste);
+                    PasteHelper.DeleteFile(_dbContext, _config, _logger, paste);
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
 
@@ -98,7 +99,7 @@ namespace Teknik.Areas.Paste.Controllers
                     if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
                     {
                         PasswordViewModel passModel = new PasswordViewModel();
-                        passModel.ActionUrl = Url.SubRouteUrl("p", "Paste.View");
+                        passModel.ActionUrl = Url.SubRouteUrl("p", "Paste.View", new { type = type, url = url });
                         passModel.Url = url;
                         passModel.Type = type;
 
@@ -119,15 +120,12 @@ namespace Teknik.Areas.Paste.Controllers
                 // Read in the file
                 if (string.IsNullOrEmpty(paste.FileName))
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
-                string subDir = paste.FileName[0].ToString();
-                string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.FileName);
-                if (!System.IO.File.Exists(filePath))
-                {
+                var storageService = StorageServiceFactory.GetStorageService(_config.PasteConfig.StorageConfig);
+                var fileStream = storageService.GetFile(paste.FileName);
+                if (fileStream == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
-                }
 
-                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                using (AesCounterStream cs = new AesCounterStream(fs, false, keyBytes, ivBytes))
+                using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
                 using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
                 {
                     model.Content = await sr.ReadToEndAsync();
@@ -151,8 +149,7 @@ namespace Teknik.Areas.Paste.Controllers
 
                         Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                        FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                        return new BufferedFileStreamResult("application/octet-stream", async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)fs.Length, _config.PasteConfig.ChunkSize), false);
+                        return new BufferedFileStreamResult("application/octet-stream", async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fileStream, false, keyBytes, ivBytes), (int)fileStream.Length, _config.PasteConfig.ChunkSize), false);
                     default:
                         return View("~/Areas/Paste/Views/Paste/Full.cshtml", model);
                 }
@@ -220,7 +217,7 @@ namespace Teknik.Areas.Paste.Controllers
                 // Check Expiration
                 if (PasteHelper.CheckExpiration(paste))
                 {
-                    DeleteFile(paste);
+                    PasteHelper.DeleteFile(_dbContext, _config, _logger, paste);
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
 
@@ -271,15 +268,12 @@ namespace Teknik.Areas.Paste.Controllers
                 // Read in the file
                 if (string.IsNullOrEmpty(paste.FileName))
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
-                string subDir = paste.FileName[0].ToString();
-                string filePath = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.FileName);
-                if (!System.IO.File.Exists(filePath))
-                {
+                var storageService = StorageServiceFactory.GetStorageService(_config.PasteConfig.StorageConfig);
+                var fileStream = storageService.GetFile(paste.FileName);
+                if (fileStream == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
-                }
 
-                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                using (AesCounterStream cs = new AesCounterStream(fs, false, keyBytes, ivBytes))
+                using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
                 using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
                 {
                     model.Content = await sr.ReadToEndAsync();
@@ -333,17 +327,16 @@ namespace Teknik.Areas.Paste.Controllers
                         }
 
                         // get the old file
-                        string subDir = paste.FileName[0].ToString();
-                        string oldFile = Path.Combine(_config.PasteConfig.PasteDirectory, subDir, paste.FileName);
+                        var storageService = StorageServiceFactory.GetStorageService(_config.PasteConfig.StorageConfig);
+                        var oldFile = paste.FileName;
 
                         // Generate a unique file name that does not currently exist
-                        string newFilePath = FileHelper.GenerateRandomFileName(_config.PasteConfig.PasteDirectory, _config.PasteConfig.FileExtension, 10);
-                        string fileName = Path.GetFileName(newFilePath);
+                        string fileName = storageService.GetUniqueFileName();
 
                         string key = PasteHelper.GenerateKey(_config.PasteConfig.KeySize);
                         string iv = PasteHelper.GenerateIV(_config.PasteConfig.BlockSize);
 
-                        PasteHelper.EncryptContents(model.Content, newFilePath, password, key, iv, _config.PasteConfig.KeySize, _config.PasteConfig.ChunkSize);
+                        PasteHelper.EncryptContents(storageService, model.Content, fileName, password, key, iv, _config.PasteConfig.KeySize, _config.PasteConfig.ChunkSize);
 
                         paste.Key = key;
                         paste.KeySize = _config.PasteConfig.KeySize;
@@ -361,8 +354,7 @@ namespace Teknik.Areas.Paste.Controllers
                         _dbContext.SaveChanges();
 
                         // Delete the old file
-                        if (System.IO.File.Exists(oldFile))
-                            System.IO.File.Delete(oldFile);
+                        storageService.DeleteFile(oldFile);
 
                         return Redirect(Url.SubRouteUrl("p", "Paste.View", new { type = "Full", url = paste.Url }));
                     }
@@ -385,7 +377,7 @@ namespace Teknik.Areas.Paste.Controllers
                 if (foundPaste.User.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
-                    DeleteFile(foundPaste);
+                    PasteHelper.DeleteFile(_dbContext, _config, _logger, foundPaste);
 
                     return Json(new { result = true, redirect = Url.SubRouteUrl("p", "Paste.Index") });
                 }
@@ -417,32 +409,6 @@ namespace Teknik.Areas.Paste.Controllers
             {
                 HttpContext.Session.Remove("PastePassword_" + url);
             }
-        }
-
-        private void DeleteFile(Models.Paste paste)
-        {
-            if (!string.IsNullOrEmpty(paste.FileName))
-            {
-                string delSub = paste.FileName[0].ToString();
-                string delPath = Path.Combine(_config.PasteConfig.PasteDirectory, delSub, paste.FileName);
-
-                // Delete the File
-                if (System.IO.File.Exists(delPath))
-                {
-                    try
-                    {
-                        System.IO.File.Delete(delPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Unable to delete file: {0}", paste.FileName);
-                    }
-                }
-            }
-
-            // Delete from the DB
-            _dbContext.Pastes.Remove(paste);
-            _dbContext.SaveChanges();
         }
     }
 }

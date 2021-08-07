@@ -32,7 +32,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "IdentityS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentScanningService", "ContentScanningService\ContentScanningService.csproj", "{491FE626-ABC8-4D00-8C7F-0849C357201A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebCommon", "WebCommon\WebCommon.csproj", "{32E85A7F-871A-437C-9BA3-00499AAB442C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebCommon", "WebCommon\WebCommon.csproj", "{32E85A7F-871A-437C-9BA3-00499AAB442C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageService", "StorageService\StorageService.csproj", "{4A600C17-C772-462F-A37F-307E7893B2DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +109,12 @@ Global
 		{32E85A7F-871A-437C-9BA3-00499AAB442C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{32E85A7F-871A-437C-9BA3-00499AAB442C}.Test|Any CPU.ActiveCfg = Debug|Any CPU
 		{32E85A7F-871A-437C-9BA3-00499AAB442C}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{4A600C17-C772-462F-A37F-307E7893B2DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A600C17-C772-462F-A37F-307E7893B2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A600C17-C772-462F-A37F-307E7893B2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A600C17-C772-462F-A37F-307E7893B2DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A600C17-C772-462F-A37F-307E7893B2DB}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A600C17-C772-462F-A37F-307E7893B2DB}.Test|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -24,6 +24,7 @@ using Teknik.Logging;
 using Teknik.Areas.Users.Models;
 using Teknik.ContentScanningService;
 using Teknik.Utilities.Routing;
+using StorageService;
 
 namespace Teknik.Areas.Upload.Controllers
 {
@@ -240,7 +241,7 @@ namespace Teknik.Areas.Upload.Controllers
                     // Check Expiration
                     if (UploadHelper.CheckExpiration(upload))
                     {
-                        DeleteFile(upload);
+                        UploadHelper.DeleteFile(_dbContext, _config, _logger, upload);
                         return new StatusCodeResult(StatusCodes.Status404NotFound);
                     }
 
@@ -320,12 +321,12 @@ namespace Teknik.Areas.Upload.Controllers
                     }
                     else
                     {
-                        string subDir = fileName[0].ToString();
-                        string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, fileName);
+                        var storageService = StorageServiceFactory.GetStorageService(_config.UploadConfig.StorageConfig);
+                        var fileStream = storageService.GetFile(fileName);
                         long startByte = 0;
                         long endByte = contentLength - 1;
                         long length = contentLength;
-                        if (System.IO.File.Exists(filePath))
+                        if (fileStream != null)
                         {
                             #region Range Calculation
                             // Are they downloading it by range?
@@ -413,11 +414,8 @@ namespace Teknik.Areas.Upload.Controllers
 
                             Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                            // Read in the file
-                            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
                             // Reset file stream to starting position (or start of range)
-                            fs.Seek(startByte, SeekOrigin.Begin);
+                            fileStream.Seek(startByte, SeekOrigin.Begin);
 
                             try
                             {
@@ -427,12 +425,12 @@ namespace Teknik.Areas.Upload.Controllers
                                     byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                                     byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
-                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)length, _config.UploadConfig.ChunkSize), false);
+                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fileStream, false, keyBytes, ivBytes), (int)length, _config.UploadConfig.ChunkSize), false);
                                 }
                                 else // Otherwise just send it
                                 {
                                     // Send the file
-                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, fs, (int)length, _config.UploadConfig.ChunkSize), false);
+                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, fileStream, (int)length, _config.UploadConfig.ChunkSize), false);
                                 }
                             }
                             catch (Exception ex)
@@ -459,13 +457,13 @@ namespace Teknik.Areas.Upload.Controllers
                     // Check Expiration
                     if (UploadHelper.CheckExpiration(upload))
                     {
-                        DeleteFile(upload);
+                        UploadHelper.DeleteFile(_dbContext, _config, _logger, upload);
                         return Json(new { error = new { message = "File Does Not Exist" } });
                     }
 
-                    string subDir = upload.FileName[0].ToString();
-                    string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-                    if (System.IO.File.Exists(filePath))
+                    var storageService = StorageServiceFactory.GetStorageService(_config.UploadConfig.StorageConfig);
+                    var fileStream = storageService.GetFile(upload.FileName);
+                    if (fileStream != null)
                     {
                         // Notify the client the content length we'll be outputting 
                         Response.Headers.Add("Content-Length", upload.ContentLength.ToString());
@@ -482,21 +480,18 @@ namespace Teknik.Areas.Upload.Controllers
 
                         Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                        // Read in the file
-                        FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
                         // If the IV is set, and Key is set, then decrypt it while sending
                         if (decrypt && !string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                         {
                             byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
                             byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
 
-                            return new BufferedFileStreamResult(upload.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fs, false, keyBytes, ivBytes), (int)upload.ContentLength, _config.UploadConfig.ChunkSize), false);
+                            return new BufferedFileStreamResult(upload.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fileStream, false, keyBytes, ivBytes), (int)upload.ContentLength, _config.UploadConfig.ChunkSize), false);
                         }
                         else // Otherwise just send it
                         {
                             // Send the file
-                            return new BufferedFileStreamResult(upload.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, fs, (int)upload.ContentLength, _config.UploadConfig.ChunkSize), false);
+                            return new BufferedFileStreamResult(upload.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, fileStream, (int)upload.ContentLength, _config.UploadConfig.ChunkSize), false);
                         }
                     }
                 }
@@ -517,7 +512,7 @@ namespace Teknik.Areas.Upload.Controllers
                 model.File = file;
                 if (!string.IsNullOrEmpty(upload.DeleteKey) && upload.DeleteKey == key)
                 {
-                    DeleteFile(upload);
+                    UploadHelper.DeleteFile(_dbContext, _config, _logger, upload);
                     model.Deleted = true;
                 }
                 else
@@ -557,35 +552,12 @@ namespace Teknik.Areas.Upload.Controllers
             {
                 if (foundUpload.User.Username == User.Identity.Name)
                 {
-                    DeleteFile(foundUpload);
+                    UploadHelper.DeleteFile(_dbContext, _config, _logger, foundUpload);
                     return Json(new { result = true });
                 }
                 return Json(new { error = new { message = "You do not have permission to edit this Paste" } });
             }
             return Json(new { error = new { message = "This Upload does not exist" } });
-        }
-
-        private void DeleteFile(Models.Upload upload)
-        {
-            string subDir = upload.FileName[0].ToString();
-            string filePath = Path.Combine(_config.UploadConfig.UploadDirectory, subDir, upload.FileName);
-
-            // Delete the File
-            if (System.IO.File.Exists(filePath))
-            {
-                try
-                {
-                    System.IO.File.Delete(filePath);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Unable to delete file: {0}", upload.FileName);
-                }
-            }
-
-            // Delete from the DB
-            _dbContext.Uploads.Remove(upload);
-            _dbContext.SaveChanges();
         }
     }
 }

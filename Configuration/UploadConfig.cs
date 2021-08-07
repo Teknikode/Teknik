@@ -19,10 +19,6 @@ namespace Teknik.Configuration
         public long MaxTotalSizeBasic { get; set; }
         // Maximum total size for basic users
         public long MaxTotalSizePremium { get; set; }
-        // Location of the upload directory
-        public string UploadDirectory { get; set; }
-        // File Extension for saved files
-        public string FileExtension { get; set; }
         public int UrlLength { get; set; }
         public int DeleteKeyLength { get; set; }
         public int KeySize { get; set; }
@@ -34,6 +30,8 @@ namespace Teknik.Configuration
         public ClamConfig ClamConfig { get; set; }
         // Hash Scanning Settings
         public HashScanConfig HashScanConfig { get; set; }
+        // Storage settings
+        public StorageConfig StorageConfig { get; set; }
         // Content Type Restrictions
         public List<string> RestrictedContentTypes { get; set; }
         public List<string> RestrictedExtensions { get; set; }
@@ -53,8 +51,6 @@ namespace Teknik.Configuration
             MaxDownloadSize = 100000000;
             MaxTotalSizeBasic = 1000000000;
             MaxTotalSizePremium = 5000000000;
-            UploadDirectory = Directory.GetCurrentDirectory();
-            FileExtension = "enc";
             UrlLength = 5;
             DeleteKeyLength = 24;
             KeySize = 256;
@@ -63,6 +59,7 @@ namespace Teknik.Configuration
             ChunkSize = 1024;
             ClamConfig = new ClamConfig();
             HashScanConfig = new HashScanConfig();
+            StorageConfig = new StorageConfig("uploads");
             RestrictedContentTypes = new List<string>();
             RestrictedExtensions = new List<string>();
         }
