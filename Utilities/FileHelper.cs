@@ -15,23 +15,23 @@ namespace Teknik.Utilities
             {
                 string filename = StringHelper.RandomString(length);
                 string subDir = filename[0].ToString();
-                path = Path.Combine(path, subDir);
-                if (!Directory.Exists(path))
+                var fullPath = Path.Combine(path, subDir);
+                if (!Directory.Exists(fullPath))
                 {
-                    Directory.CreateDirectory(path);
+                    Directory.CreateDirectory(fullPath);
                 }
-                while (File.Exists(Path.Combine(path, string.Format("{0}.{1}", filename, extension))))
+                while (File.Exists(Path.Combine(fullPath, string.Format("{0}.{1}", filename, extension))))
                 {
                     filename = StringHelper.RandomString(length);
                     subDir = filename[0].ToString();
-                    path = Path.Combine(path, subDir);
-                    if (!Directory.Exists(path))
+                    fullPath = Path.Combine(path, subDir);
+                    if (!Directory.Exists(fullPath))
                     {
-                        Directory.CreateDirectory(path);
+                        Directory.CreateDirectory(fullPath);
                     }
                 }
 
-                return Path.Combine(path, string.Format("{0}.{1}", filename, extension));
+                return Path.Combine(fullPath, string.Format("{0}.{1}", filename, extension));
             }
 
             return string.Empty;

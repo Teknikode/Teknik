@@ -13,6 +13,8 @@ namespace StorageService
         {
             switch (config.Type)
             {
+                case StorageType.InMemory:
+                    return new MemoryStorageService(config);
                 case StorageType.Local:
                     return new LocalStorageService(config);
                 case StorageType.S3:

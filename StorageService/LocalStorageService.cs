@@ -44,7 +44,7 @@ namespace StorageService
                 Directory.CreateDirectory(_config.LocalDirectory);
 
             string filePath = GetFilePath(fileName);
-            AesCounterManaged.EncryptToFile(filePath, file, chunkSize, key, iv);
+            AesCounterManaged.EncryptToFile(file, filePath, chunkSize, key, iv);
         }
 
         public override void SaveFile(string fileName, Stream file)

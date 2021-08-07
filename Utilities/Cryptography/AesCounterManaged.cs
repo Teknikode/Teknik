@@ -76,7 +76,7 @@ namespace Teknik.Utilities.Cryptography
             return output;
         }
 
-        public static void EncryptToFile(string filePath, Stream input, int chunkSize, byte[] key, byte[] iv)
+        public static void EncryptToFile(Stream input, string filePath, int chunkSize, byte[] key, byte[] iv)
         {
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))

@@ -9,6 +9,7 @@ namespace Teknik.Configuration
     public enum StorageType
     {
         Local,
+        InMemory,
         S3
     }
 }
