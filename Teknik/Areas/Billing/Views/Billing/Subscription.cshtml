@@ -1,0 +1,47 @@
+﻿@model Teknik.Areas.Billing.ViewModels.SubscriptionViewModel
+
+@{
+    var extraUsage = "";
+    if (Model.MaxStorage != null)
+        extraUsage = $"If you need more than {StringHelper.GetBytesReadable(Model.MaxStorage.Value)} of storage, please contact support for assistance.";
+    var panelColor = "info";
+    if (Model.Primary)
+        panelColor = "primary";
+
+    var price = Model.BasePrice.HasValue ? $"${Model.BasePrice:0.00} <small>/ {Model.BaseUnit}</small>" : "Free";
+    var overage = "No Overage Allowed";
+    if (Model.OverageAllowed)
+    {
+        overage = "No Overage Fee";
+        if (Model.OveragePrice != null)
+        {
+            overage = $"Overage at ${Model.OveragePrice:0.00} / {Model.OverageUnit}";
+            if (Model.MaxStorage != null)
+                overage += $" <span data-toggle=\"tooltip\" data-placement=\"top\" title=\"{extraUsage}\">(Up to {StringHelper.GetBytesReadable(Model.MaxStorage.Value)})*</span>";
+        }
+    }
+    var storageAllowed = "";
+    if (Model.BaseStorage != null)
+    {
+        storageAllowed = $"<strong>{StringHelper.GetBytesReadable(Model.BaseStorage.Value)}</strong> Storage";
+    }
+    else if (Model.MaxStorage != null)
+    {
+        storageAllowed = $"<strong><span data-toggle=\"tooltip\" data-placement=\"top\" title=\"{extraUsage}\">Up to {StringHelper.GetBytesReadable(Model.MaxStorage.Value)}*</span></strong> Storage";
+    }
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-@panelColor">
+            <div class="panel-heading">
+                <h2 class="panel-title">@Model.SubscriptionName</h2>
+            </div>
+            <div class="panel-body text-center">
+                <h2>@Html.Raw(price)</h2>
+                <h5>
+                    <small>@Html.Raw(overage)</small>
+                </h5>
+                <p>@Html.Raw(storageAllowed)</p>
+                <p><a href="@Model.SubscribeUrl" class="btn btn-primary center-block" role="button">@Model.SubscribeText</a></p>
+            </div>
+        </div>
+    </div>
+}
