@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Teknik.Configuration;
 
-namespace StorageService
+namespace Teknik.StorageService
 {
     public static class StorageServiceFactory
     {

@@ -1,0 +1,89 @@
+﻿@model Teknik.Areas.Billing.ViewModels.BillingViewModel
+
+@{
+    string extraUsage = "If you need more than 100 GB of monthly upload bandwidth, please contact support for assistance.";
+}
+
+<div class="container">
+    <h2 class="text-center">Upload Bandwidth Subscriptions</h2>
+    <br />
+    <div class="row">
+        <div class="col-sm-6 col-md-3">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Basic Account</h2>
+                </div>
+                <div class="panel-body">
+                    <h2>Free</h2>
+                    <h5>
+                        <small>No Overage Allowed</small>
+                    </h5>
+                    <p>
+                        <strong>5 GB</strong> Uploads <small class="text-muted">/ month</small>
+                    </p>
+                    <p><a href="@Url.SubRouteUrl("account", "User.Register")" class="btn btn-primary center-block" role="button">Sign up for free</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Standalone 10 GB</h2>
+                </div>
+                <div class="panel-body">
+                    <h2>$0.99 <small>/ month</small></h2>
+                    <h5>
+                        <small>Overage at $0.30 / GB <span data-toggle="tooltip" data-placement="top" title="@extraUsage">(Up to 100 GB)*</span></small>
+                    </h5>
+                    <p>
+                        <strong>10 GB</strong> Uploads <small class="text-muted">/ month</small>
+                    </p>
+                    <p><a href="@Url.SubRouteUrl("billing", "Billing.Subscribe", new { plan = "10gb" })" class="btn btn-primary center-block" role="button">Subscribe</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Standalone 50 GB</h2>
+                </div>
+                <div class="panel-body">
+                    <h2>$3.99 <small>/ month</small></h2>
+                    <h5>
+                        <small>Overage at $0.30 / GB <span data-toggle="tooltip" data-placement="top" title="@extraUsage">(Up to 100 GB)*</span></small>
+                    </h5>
+                    <p>
+                        <strong>50 GB</strong> Uploads <small class="text-muted">/ month</small>
+                    </p>
+                    <p><a href="@Url.SubRouteUrl("billing", "Billing.Subscribe", new { plan = "50gb" })" class="btn btn-primary center-block" role="button">Subscribe</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2 class="panel-title">By Upload Usage</h2>
+                </div>
+                <div class="panel-body">
+                    <h2>$0.15 <small>/ GB</small></h2>
+                    <h5>
+                        <small>No Overage Fee</small>
+                    </h5>
+                    <p>
+                        <strong><span data-toggle="tooltip" data-placement="top" title="@extraUsage">Up to 100 GB*</span></strong> Uploads <small class="text-muted">/ month</small>
+                    </p>
+                    <p><a href="@Url.SubRouteUrl("billing", "Billing.Subscribe", new { plan = "usage" })" class="btn btn-primary center-block" role="button">Subscribe</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <p>
+                <small>
+                    * @extraUsage
+                </small>
+            </p>
+        </div>
+    </div>
+</div>

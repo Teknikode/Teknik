@@ -1046,6 +1046,50 @@
         }
     },
     {
+        "Name": "Billing.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Billing.Subscriptions",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "Subscriptions",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "Subscriptions"
+        }
+    },
+    {
+        "Name": "Billing.ViewPaymentInfo",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "PaymentInfo",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "ViewPaymentInfo"
+        }
+    },
+    {
+        "Name": "Billing.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "Action/{action}",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "Index"
+        }
+    },
+    {
         "Name": "Vault.Index",
         "HostTypes": [ "Full" ],
         "SubDomains": [ "vault", "v" ],

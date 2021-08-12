@@ -1,0 +1,54 @@
+﻿@model Teknik.Areas.Billing.ViewModels.PaymentViewModel
+
+<script>
+    var stripePublishKey = '@Model.StripePublishKey';
+    var editURL = '@Url.SubRouteUrl("billing", "Billing.Action", new { action = "UpdatePayment" })';
+</script>
+
+@{
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <div id="paymentStatus">
+            @if (Model.Error)
+            {
+            <div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>@Model.ErrorMessage</div>
+            }
+        </div>
+    </div>
+</div>
+<form id="paymentForm" action="@Url.SubRouteUrl("billing", "Billing.UpdatePayment" )" method="post" accept-charset="UTF-8">
+    <div class="form-group">
+        <label for="paymentName">Full Name</label>
+        <input type="text" class="form-control" id="paymentName" value="@Model.PaymentName" placeholder="Joe Smith" name="Payment.FullName" data-val-required="The Full Name of the card holder is required." data-val="true" />
+    </div>
+    <div class="form-group">
+        <label for="paymentCardNumber">Credit Card Number</label>
+        <input type="text" class="form-control" id="paymentCardNumber" value="@Model.CreditCardNumber" placeholder="XXXX-XXXX-XXXX-XXXX" name="Payment.CardNumber" data-val-required="The Credit Card Number is required." data-val="true" />
+    </div>
+    <div class="form-group">
+        <label for="paymentExpMonth">Expiration Month</label>
+        <input type="text" class="form-control" id="paymentExpMonth" value="@Model.ExpirationMonth" placeholder="MM" name="Payment.ExpMonth" data-val-required="The Expiration Month is required." data-val="true" />
+    </div>
+    <div class="form-group">
+        <label for="paymentExpYear">Expiration Year</label>
+        <input type="text" class="form-control" id="paymentExpYear" value="@Model.ExpirationYear" placeholder="YY" name="Payment.ExpYear" data-val-required="The Expiration Year is required." data-val="true" />
+    </div>
+    <div class="form-group">
+        <label for="paymentCCV">CCV</label>
+        <input type="text" class="form-control" id="paymentCCV" value="@Model.CCV" placeholder="123" name="Payment.CCV" data-val-required="The CCV is required." data-val="true" />
+    </div>
+    <div class="form-group">
+        <label for="paymentZip">Zip Code</label>
+        <input type="text" class="form-control" id="paymentZip" value="@Model.ZipCode" placeholder="99999" name="Payment.Zip" data-val-required="The Zip is required." data-val="true" />
+    </div>
+    <p class="text-center">
+        By registering for Teknik, you agree to the <a href="@Url.SubRouteUrl(" tos", "TOS.Index" )" target="_blank">Terms of Service</a>.
+    </p>
+    <div class="form-group text-center">
+        <button class="btn btn-primary" id="paymentSubmit" type="submit" name="Payment.Submit">Sign Up</button>
+    </div>
+</form>
+}
+
+<script src="https://js.stripe.com/v3/"></script>
+<bundle src="js/billing.min.js" append-version="true"></bundle>

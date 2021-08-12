@@ -1,0 +1,14 @@
+﻿@model Teknik.Areas.Billing.ViewModels.PaymentViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center">
+                <h1>Payment Information</h1>
+                <div class="col-md-4 col-md-offset-4">
+                    @await Html.PartialAsync("../../Areas/Billing/Views/Billing/PaymentDetails", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

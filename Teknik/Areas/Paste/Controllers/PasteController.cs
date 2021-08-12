@@ -22,7 +22,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
 using Teknik.Utilities.Routing;
-using StorageService;
+using Teknik.StorageService;
 
 namespace Teknik.Areas.Paste.Controllers
 {

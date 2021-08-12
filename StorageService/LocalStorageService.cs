@@ -8,7 +8,7 @@ using Teknik.Configuration;
 using Teknik.Utilities;
 using Teknik.Utilities.Cryptography;
 
-namespace StorageService
+namespace Teknik.StorageService
 {
     public class LocalStorageService : StorageService
     {

@@ -52,6 +52,7 @@ namespace Teknik.Configuration
         private LoggingConfig           _LoggingConfig;
         private PiwikConfig             _PiwikConfig;
         private IRCConfig               _IRCConfig;
+        private BillingConfig           _BillingConfig;
 
         public bool         DevEnvironment          { get { return _DevEnvironment; }       set { _DevEnvironment = value; } }
         public bool         Migrate                 { get { return _Migrate; }              set { _Migrate = value; } }
@@ -120,8 +121,11 @@ namespace Teknik.Configuration
         // Piwik Configuration
         public PiwikConfig          PiwikConfig             { get { return _PiwikConfig; }          set { _PiwikConfig = value; } }
 
-        // Piwik Configuration
+        // IRC Configuration
         public IRCConfig            IRCConfig               { get { return _IRCConfig; }            set { _IRCConfig = value; } }
+
+        // Billing Configuration
+        public BillingConfig        BillingConfig           { get { return _BillingConfig; }        set { _BillingConfig = value; } }
 
         public Config()
         {
@@ -167,6 +171,7 @@ namespace Teknik.Configuration
             LoggingConfig           = new LoggingConfig();
             PiwikConfig             = new PiwikConfig();
             IRCConfig               = new IRCConfig();
+            BillingConfig           = new BillingConfig();
         }
 
         public static Config Deserialize(string text)

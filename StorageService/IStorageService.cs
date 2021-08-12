@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Teknik.Configuration;
 
-namespace StorageService
+namespace Teknik.StorageService
 {
     public interface IStorageService
     {

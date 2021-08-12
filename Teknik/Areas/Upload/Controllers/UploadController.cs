@@ -24,7 +24,7 @@ using Teknik.Logging;
 using Teknik.Areas.Users.Models;
 using Teknik.ContentScanningService;
 using Teknik.Utilities.Routing;
-using StorageService;
+using Teknik.StorageService;
 
 namespace Teknik.Areas.Upload.Controllers
 {

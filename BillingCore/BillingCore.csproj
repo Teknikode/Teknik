@@ -2,9 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>Teknik.StorageService</RootNamespace>
-    <AssemblyName>Teknik.StorageService</AssemblyName>
+    <AssemblyName>Teknik.BillingCore</AssemblyName>
+    <RootNamespace>Teknik.BillingCore</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Stripe.net" Version="39.62.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Configuration\Configuration.csproj" />

@@ -292,6 +292,12 @@
         ]
     },
     {
+        "outputFileName": "./wwwroot/js/billing.min.js",
+        "inputFiles": [
+            "./wwwroot/js/app/Billing/Billing.js"
+        ]
+    },
+    {
         "outputFileName": "./wwwroot/js/vault.min.js",
         "inputFiles": [
             "./wwwroot/lib/jquery/js/jquery.BlockUI.js",
