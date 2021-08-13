@@ -8,6 +8,10 @@
     @if (Model.UploadSubscriptions.Any())
     {
         <h2 class="text-center">Upload Storage Subscriptions</h2>
+        <p class="text-muted text-center">
+            By subscribing to a Teknik Service plan, you agree to the <a href="@Url.SubRouteUrl("tos", "TOS.Index")">Teknik Terms of Service</a>.<br />
+            <strong>Note:</strong> The <a href="@Url.SubRouteUrl("privacy", "Privacy.Index")">Teknik Privacy Policy</a> describes how data is handled in this service.
+        </p>
         <br />
         <div class="row">
             @foreach (var subVM in Model.UploadSubscriptions)

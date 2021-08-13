@@ -33,102 +33,67 @@ namespace Teknik.Areas.Billing.Controllers
             // Get Upload Subscriptions
             subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
             {
+                CurrentPlan = true,
                 SubscriptionId = "upload_free",
                 SubscriptionName = "Basic Account",
-                SubscribeText = "Sign up for free",
-                SubscribeUrl = Url.SubRouteUrl("account", "User.Register"),
-                BaseStorage = 5368709120,
-                MaxStorage = 107374200000
+                SubscribeText = "Free",
+                SubscribeUrlMonthly = Url.SubRouteUrl("account", "User.Register"),
+                BaseStorage = 5368709120
             });
             subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
             {
-                Primary = true,
+                Recommended = true,
                 SubscriptionId = "upload_10gb",
                 SubscriptionName = "Standalone 10 GB",
-                SubscribeText = "Subscribe",
-                SubscribeUrl = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_10gb" }),
+                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_10gb_monthly" }),
+                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_10gb_yearly" }),
                 BaseStorage = 10737418240,
-                BasePrice = 0.99,
-                BaseUnit = "month",
-                OverageAllowed = true,
-                OveragePrice = 0.30,
-                OverageUnit = "GB",
-                MaxStorage = 107374200000
+                BasePriceMonthly = 0.99,
+                BasePriceYearly = 9.99
             });
             subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
             {
-                Primary = true,
                 SubscriptionId = "upload_50gb",
                 SubscriptionName = "Standalone 50 GB",
-                SubscribeText = "Subscribe",
-                SubscribeUrl = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_50gb" }),
+                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_50gb_monthly" }),
+                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_50gb_yearly" }),
                 BaseStorage = 53687091200,
-                BasePrice = 3.99,
-                BaseUnit = "month",
-                OverageAllowed = true,
-                OveragePrice = 0.30,
-                OverageUnit = "GB",
-                MaxStorage = 107374200000
+                BasePriceMonthly = 3.99,
+                BasePriceYearly = 39.99
             });
             subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
             {
-                Primary = true,
-                SubscriptionId = "upload_usage",
-                SubscriptionName = "Pay Per Unit",
-                SubscribeText = "Subscribe",
-                SubscribeUrl = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_usage" }),
-                BaseStorage = null,
-                BasePrice = 0.15,
-                BaseUnit = "GB",
-                OverageAllowed = true,
-                OverageUnit = "monthly",
-                MaxStorage = 107374200000
+                SubscriptionId = "upload_100gb",
+                SubscriptionName = "Standalone 100 GB",
+                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_100gb_monthly" }),
+                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_100gb_yearly" }),
+                BaseStorage = 107374200000,
+                BasePriceMonthly = 5.99,
+                BasePriceYearly = 59.99
             });
 
             // Get Email Subscriptions
             subVM.EmailSubscriptions.Add(new SubscriptionViewModel()
             {
-                Primary = true,
-                SubscriptionId = "email_1gb_monthly",
-                SubscriptionName = "Basic Email - Monthly",
-                SubscribeText = "Subscribe",
-                SubscribeUrl = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_1gb_monthly" }),
+                Recommended = true,
+                SubscriptionId = "email_1gb",
+                SubscriptionName = "Basic Email",
+                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_1gb_monthly" }),
+                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_1gb_yearly" }),
                 BaseStorage = 1073741824,
-                BasePrice = 1.99,
-                BaseUnit = "month"
+                BasePriceMonthly = 1.99,
+                BasePriceYearly = 19.99,
+                PanelOffset = "3"
             });
             subVM.EmailSubscriptions.Add(new SubscriptionViewModel()
             {
-                Primary = true,
-                SubscriptionId = "email_1gb_yearly",
-                SubscriptionName = "Basic Email - Yearly",
-                SubscribeText = "Subscribe",
-                SubscribeUrl = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_1gb_yearly" }),
-                BaseStorage = 1073741824,
-                BasePrice = 19.99,
-                BaseUnit = "year"
-            });
-            subVM.EmailSubscriptions.Add(new SubscriptionViewModel()
-            {
-                Primary = true,
-                SubscriptionId = "email_5gb_monthly",
-                SubscriptionName = "Premium Email - Monthly",
-                SubscribeText = "Subscribe",
-                SubscribeUrl = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_5gb_monthly" }),
+                SubscriptionId = "email_5gb",
+                SubscriptionName = "Premium Email",
+                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_5gb_monthly" }),
+                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_5gb_yearly" }),
                 BaseStorage = 5368709120,
-                BasePrice = 3.99,
-                BaseUnit = "month"
-            });
-            subVM.EmailSubscriptions.Add(new SubscriptionViewModel()
-            {
-                Primary = true,
-                SubscriptionId = "email_5gb_yearly",
-                SubscriptionName = "Premium Email - Yearly",
-                SubscribeText = "Subscribe",
-                SubscribeUrl = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_5gb_yearly" }),
-                BaseStorage = 5368709120,
-                BasePrice = 39.99,
-                BaseUnit = "year"
+                BasePriceMonthly = 3.99,
+                BasePriceYearly = 39.99,
             });
 
             return View(subVM);

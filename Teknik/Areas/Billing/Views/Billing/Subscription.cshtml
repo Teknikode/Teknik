@@ -4,43 +4,62 @@
     var extraUsage = "";
     if (Model.MaxStorage != null)
         extraUsage = $"If you need more than {StringHelper.GetBytesReadable(Model.MaxStorage.Value)} of storage, please contact support for assistance.";
-    var panelColor = "info";
-    if (Model.Primary)
-        panelColor = "primary";
 
-    var price = Model.BasePrice.HasValue ? $"${Model.BasePrice:0.00} <small>/ {Model.BaseUnit}</small>" : "Free";
-    var overage = "No Overage Allowed";
-    if (Model.OverageAllowed)
-    {
-        overage = "No Overage Fee";
-        if (Model.OveragePrice != null)
-        {
-            overage = $"Overage at ${Model.OveragePrice:0.00} / {Model.OverageUnit}";
-            if (Model.MaxStorage != null)
-                overage += $" <span data-toggle=\"tooltip\" data-placement=\"top\" title=\"{extraUsage}\">(Up to {StringHelper.GetBytesReadable(Model.MaxStorage.Value)})*</span>";
-        }
-    }
     var storageAllowed = "";
     if (Model.BaseStorage != null)
     {
-        storageAllowed = $"<strong>{StringHelper.GetBytesReadable(Model.BaseStorage.Value)}</strong> Storage";
+        storageAllowed = $"{StringHelper.GetBytesReadable(Model.BaseStorage.Value)} Storage";
     }
-    else if (Model.MaxStorage != null)
+
+    var btnClass = "";
+    var subscribeText = Model.BasePriceMonthly.HasValue ? $"${Model.BasePriceMonthly:0.00} / month" : "Free";
+    if (Model.CurrentPlan)
     {
-        storageAllowed = $"<strong><span data-toggle=\"tooltip\" data-placement=\"top\" title=\"{extraUsage}\">Up to {StringHelper.GetBytesReadable(Model.MaxStorage.Value)}*</span></strong> Storage";
+        btnClass = "disabled";
+        subscribeText = "Current plan";
     }
-    <div class="col-sm-6 col-md-3">
-        <div class="panel panel-@panelColor">
-            <div class="panel-heading">
-                <h2 class="panel-title">@Model.SubscriptionName</h2>
-            </div>
-            <div class="panel-body text-center">
-                <h2>@Html.Raw(price)</h2>
-                <h5>
-                    <small>@Html.Raw(overage)</small>
-                </h5>
-                <p>@Html.Raw(storageAllowed)</p>
-                <p><a href="@Model.SubscribeUrl" class="btn btn-primary center-block" role="button">@Model.SubscribeText</a></p>
+
+    var panelColor = "default";
+    var buttonColor = "default";
+    var title = "";
+    if (Model.Recommended)
+    {
+        panelColor = "primary";
+        buttonColor = "primary";
+        title = "Recommended";
+    }
+    var offset = "";
+    if (!string.IsNullOrEmpty(Model.PanelOffset))
+        offset = $"col-md-offset-{Model.PanelOffset}";
+    <div class="col-sm-6 col-md-3 @offset">
+        <div class="thumbnail thumbnail-@panelColor subscription-panel">
+            <div class="caption text-center">
+                <h4 class="header">@title</h4>
+                <h2 class="body">@Html.Raw(storageAllowed)</h2>
+                @if (Model.OverageAllowed)
+                {
+                    var overage = "No Overage Fee";
+                    if (Model.OveragePriceMonthly != null)
+                    {
+                        overage = $"Overage at ${Model.OveragePriceMonthly:0.00} / {Model.OverageUnit}";
+                        if (Model.MaxStorage != null)
+                            overage += $" <span data-toggle=\"tooltip\" data-placement=\"top\" title=\"{extraUsage}\">(Up to {StringHelper.GetBytesReadable(Model.MaxStorage.Value)})*</span>";
+                    }
+                    <h5>
+                        <small>@Html.Raw(overage)</small>
+                    </h5>
+                }
+                <h4 class="sub-title">@Model.SubscribeText</h4>
+                <p><a href="@Model.SubscribeUrlMonthly" class="btn btn-@buttonColor center-block @btnClass" role="button">@subscribeText</a></p>
+                @if (Model.BasePriceYearly != null)
+                {
+                    var discount = 1 - (Model.BasePriceYearly.Value / (Model.BasePriceMonthly.Value * 12));
+                    <p>
+                        Or prepay annually<br />
+                        (save @Math.Round(100 * discount)%):
+                    </p>
+                    <p><a href="@Model.SubscribeUrlYearly" class="btn btn-default btn-no-border btn-text-primary center-block" role="button">@($"${Model.BasePriceYearly:0.00}") / year</a></p>
+                }
             </div>
         </div>
     </div>

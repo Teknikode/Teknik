@@ -204,6 +204,19 @@ margin: 0 auto;
   margin: 10px;
 }
 
+.btn-no-border {
+    border: none;
+}
+
+.btn-text-primary {
+    color: #418bca;
+}
+
+    .btn-text-primary:hover {
+        color: #286090;
+        background-color: #418bca17
+    }
+
 .btn-file {
     position: relative;
     overflow: hidden;
@@ -353,6 +366,35 @@ textarea{
 padding-bottom: 24px; }
 .jumbotron small {
 color: #FFF;
+}
+
+.thumbnail-primary {
+    border-color: #418bca;
+    border-width: 2px;
+}
+
+.thumbnail-info {
+    border-color: #5bc0de;
+}
+
+.thumbnail-default {
+    border-color: #ddd;
+}
+
+.subscription-panel {
+    height: 300px;
+}
+
+.subscription-panel .header {
+    height: 20px;
+}
+
+.subscription-panel .body {
+    height: 45px;
+}
+
+.subscription-panel .sub-title {
+    height: 25px;
 }
 
 .h1 small {
