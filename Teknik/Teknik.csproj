@@ -91,6 +91,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BillingCore\BillingCore.csproj" />
     <ProjectReference Include="..\Configuration\Configuration.csproj" />
     <ProjectReference Include="..\ContentScanningService\ContentScanningService.csproj" />
     <ProjectReference Include="..\GitService\GitService.csproj" />

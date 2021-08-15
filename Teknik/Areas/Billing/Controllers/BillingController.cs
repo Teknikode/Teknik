@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Teknik.Areas.Billing.ViewModels;
+using Teknik.BillingCore;
 using Teknik.Configuration;
 using Teknik.Controllers;
 using Teknik.Data;
@@ -26,75 +27,104 @@ namespace Teknik.Areas.Billing.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Subscriptions()
+        public IActionResult ViewSubscriptions()
         {
             var subVM = new SubscriptionsViewModel();
 
-            // Get Upload Subscriptions
+            // Get Biling Service
+            var billingService = BillingFactory.GetStorageService(_config.BillingConfig);
+
+            // Get current subscriptions
+            string curSubId = null;
+            var curSubs = new Dictionary<string, List<string>>();
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var currentSubs = billingService.GetSubscriptionList(User.Identity.Name);
+                foreach (var curSub in currentSubs)
+                {
+                    foreach (var price in curSub.Prices)
+                    {
+                        if (!curSubs.ContainsKey(price.ProductId))
+                            curSubs[price.ProductId] = new List<string>();
+                        curSubs[price.ProductId].Add(price.Id);
+                    }
+                }
+            }
+
+            // Show Free Subscription
             subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
             {
-                CurrentPlan = true,
-                SubscriptionId = "upload_free",
-                SubscriptionName = "Basic Account",
+                CurrentPlan = curSubId == null,
                 SubscribeText = "Free",
                 SubscribeUrlMonthly = Url.SubRouteUrl("account", "User.Register"),
-                BaseStorage = 5368709120
-            });
-            subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
-            {
-                Recommended = true,
-                SubscriptionId = "upload_10gb",
-                SubscriptionName = "Standalone 10 GB",
-                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_10gb_monthly" }),
-                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_10gb_yearly" }),
-                BaseStorage = 10737418240,
-                BasePriceMonthly = 0.99,
-                BasePriceYearly = 9.99
-            });
-            subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
-            {
-                SubscriptionId = "upload_50gb",
-                SubscriptionName = "Standalone 50 GB",
-                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_50gb_monthly" }),
-                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_50gb_yearly" }),
-                BaseStorage = 53687091200,
-                BasePriceMonthly = 3.99,
-                BasePriceYearly = 39.99
-            });
-            subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
-            {
-                SubscriptionId = "upload_100gb",
-                SubscriptionName = "Standalone 100 GB",
-                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_100gb_monthly" }),
-                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "upload_100gb_yearly" }),
-                BaseStorage = 107374200000,
-                BasePriceMonthly = 5.99,
-                BasePriceYearly = 59.99
+                BaseStorage = _config.UploadConfig.MaxUploadSizeBasic
             });
 
-            // Get Email Subscriptions
-            subVM.EmailSubscriptions.Add(new SubscriptionViewModel()
+            // Get Upload Prices
+            var curUploadSubs = new List<string>();
+            if (curSubs.ContainsKey(_config.BillingConfig.UploadProductId))
+                curUploadSubs = curSubs[_config.BillingConfig.UploadProductId];
+            var uploadProduct = billingService.GetProduct(_config.BillingConfig.UploadProductId);
+            if (uploadProduct != null)
             {
-                Recommended = true,
-                SubscriptionId = "email_1gb",
-                SubscriptionName = "Basic Email",
-                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_1gb_monthly" }),
-                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_1gb_yearly" }),
-                BaseStorage = 1073741824,
-                BasePriceMonthly = 1.99,
-                BasePriceYearly = 19.99,
-                PanelOffset = "3"
-            });
-            subVM.EmailSubscriptions.Add(new SubscriptionViewModel()
+                bool handledFirst = false;
+                foreach (var priceGrp in uploadProduct.Prices.GroupBy(p => p.Storage).OrderBy(p => p.Key))
+                {
+                    // Get Monthly prices
+                    var priceMonth = priceGrp.FirstOrDefault(p => p.Interval == BillingCore.Models.Interval.Month);
+
+                    // Get Yearly prices
+                    var priceYear = priceGrp.FirstOrDefault(p => p.Interval == BillingCore.Models.Interval.Year);
+
+                    var isCurrent = curUploadSubs.Exists(s => priceGrp.FirstOrDefault(p => p.ProductId == s) != null);
+                    subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
+                    {
+                        Recommended = !handledFirst,
+                        CurrentPlan = isCurrent,
+                        SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { priceId = priceMonth?.Id }),
+                        SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { priceId = priceYear?.Id }),
+                        BaseStorage = priceMonth?.Storage,
+                        BasePriceMonthly = priceMonth?.Amount,
+                        BasePriceYearly = priceYear?.Amount
+                    });
+                    handledFirst = true;
+                }
+            }
+
+            // Get Email Prices
+            var curEmailSubs = new List<string>();
+            if (curSubs.ContainsKey(_config.BillingConfig.EmailProductId))
+                curEmailSubs = curSubs[_config.BillingConfig.EmailProductId];
+            var emailProduct = billingService.GetProduct(_config.BillingConfig.EmailProductId);
+            if (emailProduct != null)
             {
-                SubscriptionId = "email_5gb",
-                SubscriptionName = "Premium Email",
-                SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_5gb_monthly" }),
-                SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { subscription = "email_5gb_yearly" }),
-                BaseStorage = 5368709120,
-                BasePriceMonthly = 3.99,
-                BasePriceYearly = 39.99,
-            });
+                bool handledFirst = false;
+                foreach (var priceGrp in emailProduct.Prices.GroupBy(p => p.Storage).OrderBy(p => p.Key))
+                {
+                    // Get Monthly prices
+                    var priceMonth = priceGrp.FirstOrDefault(p => p.Interval == BillingCore.Models.Interval.Month);
+
+                    // Get Yearly prices
+                    var priceYear = priceGrp.FirstOrDefault(p => p.Interval == BillingCore.Models.Interval.Year);
+
+                    var isCurrent = curUploadSubs.Exists(s => priceGrp.FirstOrDefault(p => p.ProductId == s) != null);
+                    var emailSub = new SubscriptionViewModel()
+                    {
+                        Recommended = !handledFirst,
+                        CurrentPlan = isCurrent,
+                        SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { priceId = priceMonth?.Id }),
+                        SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { priceId = priceYear?.Id }),
+                        BaseStorage = priceMonth?.Storage,
+                        BasePriceMonthly = priceMonth?.Amount,
+                        BasePriceYearly = priceYear?.Amount
+                    };
+                    if (!handledFirst)
+                        emailSub.PanelOffset = "3";
+                    subVM.EmailSubscriptions.Add(emailSub);
+                    handledFirst = true;
+                }
+            }
 
             return View(subVM);
         }
@@ -103,6 +133,16 @@ namespace Teknik.Areas.Billing.Controllers
         public IActionResult ViewPaymentInfo()
         {
             return View(new PaymentViewModel() { StripePublishKey = _config.BillingConfig.StripePublishApiKey });
+        }
+
+        [AllowAnonymous]
+        public IActionResult Subscribe(string priceId)
+        {
+            // Get Subscription Info
+            var billingService = BillingFactory.GetStorageService(_config.BillingConfig);
+            var price = billingService.GetPrice(priceId);
+
+            return View(new SubscriptionViewModel());
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Teknik.BillingCore
+namespace Teknik.BillingCore.Models
 {
     public enum IntervalType
     {

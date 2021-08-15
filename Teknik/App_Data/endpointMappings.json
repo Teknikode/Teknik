@@ -1064,7 +1064,7 @@
         "Area": "Billing",
         "Defaults": {
             "controller": "Billing",
-            "action": "Subscriptions"
+            "action": "ViewSubscriptions"
         }
     },
     {

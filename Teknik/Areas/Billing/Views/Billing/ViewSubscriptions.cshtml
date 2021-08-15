@@ -19,7 +19,7 @@
                 if (subVM.MaxStorage != null)
                     extraUsage = $"If you need more than {StringHelper.GetBytesReadable(subVM.MaxStorage.Value)} of storage, please contact support for assistance.";
 
-                @await Html.PartialAsync("../../Areas/Billing/Views/Billing/Subscription", subVM)
+                @await Html.PartialAsync("../../Areas/Billing/Views/Billing/ViewSubscription", subVM)
             }
         </div>
         @if (!string.IsNullOrEmpty(extraUsage))
@@ -47,7 +47,7 @@
                 if (subVM.MaxStorage != null)
                     extraUsage = $"If you need more than {StringHelper.GetBytesReadable(subVM.MaxStorage.Value)} of storage, please contact support for assistance.";
 
-                @await Html.PartialAsync("../../Areas/Billing/Views/Billing/Subscription", subVM)
+                @await Html.PartialAsync("../../Areas/Billing/Views/Billing/ViewSubscription", subVM)
             }
         </div>
     }

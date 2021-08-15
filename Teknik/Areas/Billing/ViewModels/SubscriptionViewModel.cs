@@ -11,13 +11,12 @@ namespace Teknik.Areas.Billing.ViewModels
         public bool Recommended { get; set; }
         public bool CurrentPlan { get; set; }
         public string SubscriptionId { get; set; }
-        public string SubscriptionName { get; set; }
-        public double? BasePriceMonthly { get; set; }
-        public double? BasePriceYearly { get; set; }
+        public decimal? BasePriceMonthly { get; set; }
+        public decimal? BasePriceYearly { get; set; }
         public long? BaseStorage { get; set; }
         public bool OverageAllowed { get; set; }
-        public double? OveragePriceMonthly { get; set; }
-        public double? OveragePriceYearly { get; set; }
+        public decimal? OveragePriceMonthly { get; set; }
+        public decimal? OveragePriceYearly { get; set; }
         public string OverageUnit { get; set; }
         public long? MaxStorage { get; set; }
         public string SubscribeUrlYearly { get; set; }

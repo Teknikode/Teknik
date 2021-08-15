@@ -4,12 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Teknik.BillingCore
+namespace Teknik.BillingCore.Models
 {
     public class Product
     {
-        public int ProductId { get; set; }
+        public string ProductId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public List<Price> Prices { get; set; }
+
+        public Product()
+        {
+            Prices = new List<Price>();
+        }
     }
 }
