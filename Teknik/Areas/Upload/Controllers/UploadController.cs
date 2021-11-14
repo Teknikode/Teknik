@@ -510,7 +510,8 @@ namespace Teknik.Areas.Upload.Controllers
             Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
             if (upload != null)
             {
-                if (upload.User.Username == User.Identity.Name)
+                if (upload.User.Username == User.Identity.Name ||
+                    User.IsInRole("Admin"))
                 {
                     string delKey = StringHelper.RandomString(_config.UploadConfig.DeleteKeyLength);
                     upload.DeleteKey = delKey;
@@ -518,7 +519,7 @@ namespace Teknik.Areas.Upload.Controllers
                     _dbContext.SaveChanges();
                     return Json(new { result = new { url = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = file, key = delKey }) } });
                 }
-                return Json(new { error = new { message = "You do not own this upload" } });
+                return Json(new { error = new { message = "You do not have permission to delete this Upload" } });
             }
             return Json(new { error = new { message = "Invalid URL" } });
         }
@@ -530,12 +531,13 @@ namespace Teknik.Areas.Upload.Controllers
             Models.Upload foundUpload = _dbContext.Uploads.Where(u => u.Url == id).FirstOrDefault();
             if (foundUpload != null)
             {
-                if (foundUpload.User.Username == User.Identity.Name)
+                if (foundUpload.User.Username == User.Identity.Name ||
+                    User.IsInRole("Admin"))
                 {
                     UploadHelper.DeleteFile(_dbContext, _config, _logger, foundUpload);
                     return Json(new { result = true });
                 }
-                return Json(new { error = new { message = "You do not have permission to edit this Paste" } });
+                return Json(new { error = new { message = "You do not have permission to delete this Upload" } });
             }
             return Json(new { error = new { message = "This Upload does not exist" } });
         }
