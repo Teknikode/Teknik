@@ -40,22 +40,17 @@ namespace Teknik.Areas.API.V1.Controllers
                 {
                     if (model.file != null)
                     {
-                        long maxUploadSize = _config.UploadConfig.MaxUploadSize;
+                        long maxUploadSize = _config.UploadConfig.MaxUploadFileSize;
+                        long maxTotalSize = _config.UploadConfig.MaxUploadFileSize;
                         if (User.Identity.IsAuthenticated)
                         {
-                            maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
-                            long maxTotalSize = _config.UploadConfig.MaxTotalSizeBasic;
-                            IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
-                            if (userInfo.AccountType == AccountType.Premium)
-                            {
-                                maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
-                                maxTotalSize = _config.UploadConfig.MaxTotalSizePremium;
-                            }
-
                             // Check account total limits
                             var user = UserHelper.GetUser(_dbContext, User.Identity.Name);
                             if (user.UploadSettings.MaxUploadStorage != null)
                                 maxTotalSize = user.UploadSettings.MaxUploadStorage.Value;
+                            if (user.UploadSettings.MaxUploadFileSize != null)
+                                maxUploadSize = user.UploadSettings.MaxUploadFileSize.Value;
+
                             var userUploadSize = user.Uploads.Sum(u => u.ContentLength);
                             if (userUploadSize + model.file.Length > maxTotalSize)
                             {

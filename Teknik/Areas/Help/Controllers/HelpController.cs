@@ -118,18 +118,14 @@ namespace Teknik.Areas.Help.Controllers
             ViewBag.Title = "Upload Service Help";
             UploadHelpViewModel model = new UploadHelpViewModel();
 
-            model.MaxUploadSize = _config.UploadConfig.MaxUploadSize;
+            model.MaxUploadSize = _config.UploadConfig.MaxUploadFileSize;
             if (User.Identity.IsAuthenticated)
             {
                 User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
                 if (user != null)
                 {
-                    model.MaxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
-                    IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
-                    if (userInfo.AccountType == AccountType.Premium)
-                    {
-                        model.MaxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
-                    }
+                    if (user.UploadSettings.MaxUploadFileSize != null)
+                        model.MaxUploadSize = user.UploadSettings.MaxUploadFileSize.Value;
                 }
             }
             return View("~/Areas/Help/Views/Help/Upload.cshtml", model);

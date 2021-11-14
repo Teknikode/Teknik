@@ -9,7 +9,7 @@ namespace Teknik.BillingCore
 {
     public static class BillingFactory
     {
-        public static BillingService GetStorageService(BillingConfig config)
+        public static BillingService GetBillingService(BillingConfig config)
         {
             switch (config.Type)
             {

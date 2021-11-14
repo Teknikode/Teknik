@@ -7,18 +7,12 @@ namespace Teknik.Configuration
     {
         public bool UploadEnabled { get; set; }
         public bool DownloadEnabled { get; set; }
-        // Max upload size in bytes
-        public long MaxUploadSize { get; set; }
-        // Max Upload Size for basic users
-        public long MaxUploadSizeBasic { get; set; }
-        // Max Upload Size for premium users
-        public long MaxUploadSizePremium { get; set; }
-        // Gets the maximum download size before they are forced to the download page
-        public long MaxDownloadSize { get; set; }
-        // Maximum total size for basic users
-        public long MaxTotalSizeBasic { get; set; }
-        // Maximum total size for basic users
-        public long MaxTotalSizePremium { get; set; }
+        // Max upload size in bytes for free/anonymous users
+        public long MaxUploadFileSize { get; set; }
+        // Maximum file size before they are forced to the download page
+        public long MaxDownloadFileSize { get; set; }
+        // Maximum storage for free users
+        public long MaxStorage { get; set; }
         public int UrlLength { get; set; }
         public int DeleteKeyLength { get; set; }
         public int KeySize { get; set; }
@@ -45,12 +39,9 @@ namespace Teknik.Configuration
         {
             UploadEnabled = true;
             DownloadEnabled = true;
-            MaxUploadSize = 100000000;
-            MaxUploadSizeBasic = 100000000;
-            MaxUploadSizePremium = 100000000;
-            MaxDownloadSize = 100000000;
-            MaxTotalSizeBasic = 1000000000;
-            MaxTotalSizePremium = 5000000000;
+            MaxUploadFileSize = 1073741824;
+            MaxDownloadFileSize = 1073741824;
+            MaxStorage = 5368709120;
             UrlLength = 5;
             DeleteKeyLength = 24;
             KeySize = 256;

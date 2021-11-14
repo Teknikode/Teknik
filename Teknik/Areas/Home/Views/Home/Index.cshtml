@@ -131,7 +131,7 @@
                     </div>
                     <br />
                     <hr />
-                    <h2 class="text-center"><a href="@Url.SubRouteUrl("account", "User.GetPremium")">Upgrade to Premium</a> for even more features!</h2>
+                    <h2 class="text-center"><a href="@Url.SubRouteUrl("billing", "Billing.Subscriptions")">Subscribe</a> for even more features!</h2>
                     <div class="row">
                         <a conditional href="@Url.SubRouteUrl("help", "Help.Mail")" asp-condition="@User.Identity.IsAuthenticated">
                             <div class="col-md-3 text-center text-primary">
@@ -154,18 +154,18 @@
                         <a conditional href="@Url.SubRouteUrl("upload", "Upload.Index")" asp-condition="@User.Identity.IsAuthenticated">
                             <div class="col-md-3 text-center text-primary">
                                 <br />
-                                <i class="fa fa-film fa-5x"></i>
+                                <i class="fa fa-hdd-o fa-5x"></i>
                                 <div class="caption">
-                                    <h3>No Embed Limits</h3>
+                                    <h3>Additional Storage</h3>
                                 </div>
                             </div>
                         </a>
-                        <a conditional href="@Url.SubRouteUrl("about", "About.Index")" asp-condition="@User.Identity.IsAuthenticated">
+                        <a conditional href="@Url.SubRouteUrl("upload", "Upload.Index")" asp-condition="@User.Identity.IsAuthenticated">
                             <div class="col-md-3 text-center text-primary">
                                 <br />
-                                <i class="fa fa-heart fa-5x"></i>
+                                <i class="fa fa-film fa-5x"></i>
                                 <div class="caption">
-                                    <h3>Lifetime Account</h3>
+                                    <h3>No Embed Limits</h3>
                                 </div>
                             </div>
                         </a>

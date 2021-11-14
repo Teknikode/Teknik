@@ -1,0 +1,45 @@
+﻿@model Teknik.Areas.Billing.ViewModels.SubscribeViewModel
+
+@{
+    var price = Model.Price.Amount != null ? $"${Model.Price.Amount:0.00}" : "Free";
+    var interval = Model.Price.Interval.ToString();
+    var priceText = Model.Price.Amount != null ? $"{price}/{interval}" : "Free";
+    var storageText = $"{StringHelper.GetBytesReadable(Model.Price.Storage)}";
+
+    if (Model.Subscription != null)
+    {
+    }
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="subscribeStatus">
+                @if (Model.Error)
+                {
+                    <div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>@Model.ErrorMessage</div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-5 col-sm-offset-1 text-left">@storageText</div>
+        <div class="col-sm-5 text-right text-primary">@priceText</div>
+    </div>
+    <div class="row">
+        <div class="col-sm-5 col-sm-offset-6 text-right text-muted">no tax</div>
+    </div>
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <p><strong>You'll be charged @price automatically every @interval until you cancel.  Your price may change as described in the <a href="@Url.SubRouteUrl("tos", "TOS.Index")" target="_blank">Teknik Terms of Service</a>.</strong></p>
+            <p>Cancel anytime in your <a href="@Url.SubRouteUrl("account", "Account.Subscriptions")" target="_blank">Subscriptions Settings</a>.</p>
+            <p></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button class="btn btn-default" id="subscribeCancel" type="button" name="Subscription.Cancel">Cancel</button>
+            <a href="@Url.SubRouteUrl("billing", "Billing.Checkout", new { priceId = Model.Price.Id, subscriptionId = Model.Subscription?.Id })" class="btn btn-primary" role="button">Subscribe</a>
+        </div>
+    </div>
+</div>

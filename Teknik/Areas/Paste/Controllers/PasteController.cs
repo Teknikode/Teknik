@@ -93,7 +93,7 @@ namespace Teknik.Areas.Paste.Controllers
                     string hash = string.Empty;
                     if (!string.IsNullOrEmpty(password))
                     {
-                        hash = PasteHelper.HashPassword(paste.Key, password);
+                        hash = Crypto.HashPassword(paste.Key, password);
                         keyBytes = AesCounterManaged.CreateKey(password, ivBytes, paste.KeySize);
                     }
                     if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
@@ -242,7 +242,7 @@ namespace Teknik.Areas.Paste.Controllers
                     string hash = string.Empty;
                     if (!string.IsNullOrEmpty(password))
                     {
-                        hash = PasteHelper.HashPassword(paste.Key, password);
+                        hash = Crypto.HashPassword(paste.Key, password);
                         keyBytes = AesCounterManaged.CreateKey(password, ivBytes, paste.KeySize);
                     }
                     if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
@@ -307,7 +307,7 @@ namespace Teknik.Areas.Paste.Controllers
                             string hash = string.Empty;
                             if (!string.IsNullOrEmpty(password))
                             {
-                                hash = PasteHelper.HashPassword(paste.Key, password);
+                                hash = Crypto.HashPassword(paste.Key, password);
                             }
                             if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
                             {
@@ -333,8 +333,8 @@ namespace Teknik.Areas.Paste.Controllers
                         // Generate a unique file name that does not currently exist
                         string fileName = storageService.GetUniqueFileName();
 
-                        string key = PasteHelper.GenerateKey(_config.PasteConfig.KeySize);
-                        string iv = PasteHelper.GenerateIV(_config.PasteConfig.BlockSize);
+                        string key = Crypto.GenerateKey(_config.PasteConfig.KeySize);
+                        string iv = Crypto.GenerateIV(_config.PasteConfig.BlockSize);
 
                         PasteHelper.EncryptContents(storageService, model.Content, fileName, password, key, iv, _config.PasteConfig.KeySize, _config.PasteConfig.ChunkSize);
 
@@ -344,7 +344,7 @@ namespace Teknik.Areas.Paste.Controllers
                         paste.BlockSize = _config.PasteConfig.BlockSize;
 
                         if (!string.IsNullOrEmpty(password))
-                            paste.HashedPassword = PasteHelper.HashPassword(paste.Key, password);
+                            paste.HashedPassword = Crypto.HashPassword(paste.Key, password);
                         paste.FileName = fileName;
                         paste.Title = model.Title;
                         paste.Syntax = model.Syntax;

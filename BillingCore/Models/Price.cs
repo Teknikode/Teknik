@@ -16,6 +16,7 @@ namespace Teknik.BillingCore.Models
         public decimal? Amount { get; set; }
         public string Currency { get; set; }
         public long Storage { get; set; }
+        public long FileSize { get; set; }
         public Interval Interval { get; set; }
     }
 }

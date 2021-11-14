@@ -37,6 +37,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
 using IdentityServer4.Models;
 using Teknik.Utilities.Routing;
+using Teknik.BillingCore;
 
 namespace Teknik.Areas.Users.Controllers
 {
@@ -352,6 +353,51 @@ namespace Teknik.Areas.Users.Controllers
                 model.Username = user.Username;
 
                 return View("/Areas/User/Views/User/Settings/AccountSettings.cshtml", model);
+            }
+
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
+        }
+
+        [TrackPageView]
+        public IActionResult BillingSettings()
+        {
+            string username = User.Identity.Name;
+            User user = UserHelper.GetUser(_dbContext, username);
+
+            if (user != null)
+            {
+                ViewBag.Title = "Billing Settings";
+                ViewBag.Description = "Your " + _config.Title + " Billing Settings";
+
+                BillingSettingsViewModel model = new BillingSettingsViewModel();
+                model.Page = "Billing";
+                model.UserID = user.UserId;
+                model.Username = user.Username;
+
+                if (user.BillingCustomer != null)
+                {
+                    var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+                    var subs = billingService.GetSubscriptionList(user.BillingCustomer.CustomerId);
+                    foreach (var sub in subs)
+                    {
+                        foreach (var price in sub.Prices)
+                        {
+                            var product = billingService.GetProduct(price.ProductId);
+                            var subView = new SubscriptionViewModel()
+                            {
+                                SubscriptionId = sub.Id,
+                                ProductId = product.ProductId,
+                                ProductName = product.Name,
+                                Storage = price.Storage,
+                                Price = price.Amount,
+                                Interval = price.Interval.ToString()
+                            };
+                            model.Subscriptions.Add(subView);
+                        }
+                    }
+                }
+
+                return View("/Areas/User/Views/User/Settings/BillingSettings.cshtml", model);
             }
 
             return new StatusCodeResult(StatusCodes.Status403Forbidden);

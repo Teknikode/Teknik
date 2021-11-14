@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Teknik.Areas.Billing.Models;
 using Teknik.Areas.Billing.ViewModels;
+using Teknik.Areas.Users.Models;
+using Teknik.Areas.Users.Utility;
 using Teknik.BillingCore;
 using Teknik.Configuration;
 using Teknik.Controllers;
@@ -15,6 +19,7 @@ using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.Billing.Controllers
 {
+    [Authorize]
     [Area("Billing")]
     public class BillingController : DefaultController
     {
@@ -32,39 +37,47 @@ namespace Teknik.Areas.Billing.Controllers
             var subVM = new SubscriptionsViewModel();
 
             // Get Biling Service
-            var billingService = BillingFactory.GetStorageService(_config.BillingConfig);
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 
             // Get current subscriptions
-            string curSubId = null;
-            var curSubs = new Dictionary<string, List<string>>();
+            var curPrices = new Dictionary<string, List<string>>();
 
             if (User.Identity.IsAuthenticated)
             {
-                var currentSubs = billingService.GetSubscriptionList(User.Identity.Name);
-                foreach (var curSub in currentSubs)
+                var user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                if (user.BillingCustomer != null)
                 {
-                    foreach (var price in curSub.Prices)
+                    var currentSubs = billingService.GetSubscriptionList(user.BillingCustomer.CustomerId);
+                    foreach (var curSub in currentSubs)
                     {
-                        if (!curSubs.ContainsKey(price.ProductId))
-                            curSubs[price.ProductId] = new List<string>();
-                        curSubs[price.ProductId].Add(price.Id);
+                        foreach (var price in curSub.Prices)
+                        {
+                            if (!curPrices.ContainsKey(price.ProductId))
+                                curPrices[price.ProductId] = new List<string>();
+                            curPrices[price.ProductId].Add(price.Id);
+                        }
                     }
                 }
             }
+            bool hasUploadProduct = curPrices.ContainsKey(_config.BillingConfig.UploadProductId);
+            bool hasEmailProduct = curPrices.ContainsKey(_config.BillingConfig.EmailProductId);
+            var curUploadPrice = string.Empty;
+            if (curPrices.ContainsKey(_config.BillingConfig.UploadProductId))
+                curUploadPrice = curPrices[_config.BillingConfig.UploadProductId].FirstOrDefault();
+            var curEmailPrice = string.Empty;
+            if (curPrices.ContainsKey(_config.BillingConfig.EmailProductId))
+                curEmailPrice = curPrices[_config.BillingConfig.EmailProductId].FirstOrDefault();
 
             // Show Free Subscription
             subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
             {
-                CurrentPlan = curSubId == null,
+                CurrentSubMonthly = !hasUploadProduct && User.Identity.IsAuthenticated,
                 SubscribeText = "Free",
-                SubscribeUrlMonthly = Url.SubRouteUrl("account", "User.Register"),
-                BaseStorage = _config.UploadConfig.MaxUploadSizeBasic
+                SubscribeUrlMonthly = Url.SubRouteUrl("about", "About.Index"),
+                BaseStorage = _config.UploadConfig.MaxStorage
             });
 
             // Get Upload Prices
-            var curUploadSubs = new List<string>();
-            if (curSubs.ContainsKey(_config.BillingConfig.UploadProductId))
-                curUploadSubs = curSubs[_config.BillingConfig.UploadProductId];
             var uploadProduct = billingService.GetProduct(_config.BillingConfig.UploadProductId);
             if (uploadProduct != null)
             {
@@ -77,13 +90,18 @@ namespace Teknik.Areas.Billing.Controllers
                     // Get Yearly prices
                     var priceYear = priceGrp.FirstOrDefault(p => p.Interval == BillingCore.Models.Interval.Year);
 
-                    var isCurrent = curUploadSubs.Exists(s => priceGrp.FirstOrDefault(p => p.ProductId == s) != null);
+                    var curPrice = priceGrp.FirstOrDefault(p => p.Id == curUploadPrice);
                     subVM.UploadSubscriptions.Add(new SubscriptionViewModel()
                     {
                         Recommended = !handledFirst,
-                        CurrentPlan = isCurrent,
-                        SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { priceId = priceMonth?.Id }),
-                        SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { priceId = priceYear?.Id }),
+                        CurrentSubMonthly = curPrice?.Id == priceMonth?.Id,
+                        CurrentSubYearly = curPrice?.Id == priceYear?.Id,
+                        SubscribeUrlMonthly = Url.SubRouteUrl("billing", 
+                                                              hasUploadProduct ? "Billing.EditSubscription" : "Billing.Checkout", 
+                                                              new { priceId = priceMonth?.Id }),
+                        SubscribeUrlYearly = Url.SubRouteUrl("billing", 
+                                                             hasUploadProduct ? "Billing.EditSubscription" : "Billing.Checkout", 
+                                                             new { priceId = priceYear?.Id }),
                         BaseStorage = priceMonth?.Storage,
                         BasePriceMonthly = priceMonth?.Amount,
                         BasePriceYearly = priceYear?.Amount
@@ -93,9 +111,6 @@ namespace Teknik.Areas.Billing.Controllers
             }
 
             // Get Email Prices
-            var curEmailSubs = new List<string>();
-            if (curSubs.ContainsKey(_config.BillingConfig.EmailProductId))
-                curEmailSubs = curSubs[_config.BillingConfig.EmailProductId];
             var emailProduct = billingService.GetProduct(_config.BillingConfig.EmailProductId);
             if (emailProduct != null)
             {
@@ -108,13 +123,18 @@ namespace Teknik.Areas.Billing.Controllers
                     // Get Yearly prices
                     var priceYear = priceGrp.FirstOrDefault(p => p.Interval == BillingCore.Models.Interval.Year);
 
-                    var isCurrent = curUploadSubs.Exists(s => priceGrp.FirstOrDefault(p => p.ProductId == s) != null);
+                    var curPrice = priceGrp.FirstOrDefault(p => p.Id == curEmailPrice);
                     var emailSub = new SubscriptionViewModel()
                     {
                         Recommended = !handledFirst,
-                        CurrentPlan = isCurrent,
-                        SubscribeUrlMonthly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { priceId = priceMonth?.Id }),
-                        SubscribeUrlYearly = Url.SubRouteUrl("billing", "Billing.Subscribe", new { priceId = priceYear?.Id }),
+                        CurrentSubMonthly = curPrice?.Id == priceMonth?.Id,
+                        CurrentSubYearly = curPrice?.Id == priceYear?.Id,
+                        SubscribeUrlMonthly = Url.SubRouteUrl("billing",
+                                                              hasEmailProduct ? "Billing.EditSubscription" : "Billing.Checkout",
+                                                              new { priceId = priceMonth?.Id }),
+                        SubscribeUrlYearly = Url.SubRouteUrl("billing",
+                                                             hasEmailProduct ? "Billing.EditSubscription" : "Billing.Checkout",
+                                                             new { priceId = priceYear?.Id }),
                         BaseStorage = priceMonth?.Storage,
                         BasePriceMonthly = priceMonth?.Amount,
                         BasePriceYearly = priceYear?.Amount
@@ -136,13 +156,152 @@ namespace Teknik.Areas.Billing.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Subscribe(string priceId)
+        public IActionResult Subscribe(string priceId, string subscriptionId)
         {
             // Get Subscription Info
-            var billingService = BillingFactory.GetStorageService(_config.BillingConfig);
-            var price = billingService.GetPrice(priceId);
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 
-            return View(new SubscriptionViewModel());
+            var vm = new SubscribeViewModel();
+            vm.Price = billingService.GetPrice(priceId);
+            vm.Subscription = billingService.GetSubscription(subscriptionId);
+
+            return View(vm);
+        }
+
+        public IActionResult Checkout(string priceId)
+        {
+            // Get Subscription Info
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+
+            var price = billingService.GetPrice(priceId);
+            if (price == null)
+                throw new ArgumentException("Invalid Price ID", "priceId");
+
+            User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+            if (user == null)
+                throw new UnauthorizedAccessException();
+
+            if (user.BillingCustomer == null)
+            {
+                var custId = billingService.CreateCustomer(user.Username, null);
+                var customer = new Customer()
+                {
+                    CustomerId = custId,
+                    User = user
+                };
+                _dbContext.Customers.Add(customer);
+                user.BillingCustomer = customer;
+                _dbContext.Entry(user).State = EntityState.Modified;
+                _dbContext.SaveChanges();
+            }
+
+            var session = billingService.CreateCheckoutSession(user.BillingCustomer.CustomerId,
+                                                               priceId, 
+                                                               Url.SubRouteUrl("billing", "Billing.CheckoutComplete", new { productId = price.ProductId }), 
+                                                               Url.SubRouteUrl("billing", "Billing.Subscriptions"));
+            return Redirect(session.Url);
+        }
+
+        public IActionResult CheckoutComplete(string productId, string session_id)
+        {
+            // Get Checkout Info
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+            var checkoutSession = billingService.GetCheckoutSession(session_id);
+            if (checkoutSession != null)
+            {
+                var subscription = billingService.GetSubscription(checkoutSession.SubscriptionId);
+                if (subscription != null)
+                {
+                    foreach (var price in subscription.Prices)
+                    {
+                        if (price.ProductId == productId)
+                        {
+                            return Redirect(Url.SubRouteUrl("billing", "Billing.SubscriptionSuccess", new { priceId = price.Id }));
+                        }
+                    }
+                }
+            }
+
+            return Redirect(Url.SubRouteUrl("billing", "Billing.ViewSubscriptions"));
+        }
+
+        public IActionResult EditSubscription(string priceId)
+        {
+            // Get Subscription Info
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+
+            var price = billingService.GetPrice(priceId);
+            if (price == null)
+                throw new ArgumentException("Invalid Price ID", "priceId");
+
+            User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+            if (user == null)
+                throw new UnauthorizedAccessException();
+            
+            if (user.BillingCustomer == null)
+            {
+                return Checkout(priceId);
+            }
+            else
+            {
+                var currentSubs = billingService.GetSubscriptionList(user.BillingCustomer.CustomerId);
+                foreach (var curSub in currentSubs)
+                {
+                    if (curSub.Prices.Exists(p => p.ProductId == price.ProductId))
+                    {
+                        billingService.EditSubscriptionPrice(curSub.Id, price.Id);
+                        return Redirect(Url.SubRouteUrl("billing", "Billing.SubscriptionSuccess", new { priceId = price.Id }));
+                    }
+                }
+            }
+
+            return Redirect(Url.SubRouteUrl("billing", "Billing.ViewSubscriptions"));
+        }
+
+        public IActionResult CancelSubscription(string subscriptionId, string productId)
+        {
+            // Get Subscription Info
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+
+            var subscription = billingService.GetSubscription(subscriptionId);
+            if (subscription == null)
+                throw new ArgumentException("Invalid Subscription Id", "subscriptionId");
+
+            if (!subscription.Prices.Exists(p => p.ProductId == productId))
+                throw new ArgumentException("Subscription does not relate to product", "productId");
+
+            var product = billingService.GetProduct(productId);
+            if (product == null)
+                throw new ArgumentException("Product does not exist", "productId");
+
+            var result = billingService.CancelSubscription(subscriptionId);
+
+            var vm = new CancelSubscriptionViewModel()
+            {
+                ProductName = product.Name
+            };
+
+            return View(vm);
+        }
+
+        public IActionResult SubscriptionSuccess(string priceId)
+        {
+            var vm = new SubscriptionSuccessViewModel();
+
+            // Get Subscription Info
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+
+            var price = billingService.GetPrice(priceId);
+            if (price == null)
+                throw new ArgumentException("Invalid Price ID", "priceId");
+
+            var product = billingService.GetProduct(price.ProductId);
+            vm.ProductName = product.Name;
+            vm.Price = price.Amount;
+            vm.Interval = price.Interval.ToString();
+            vm.Storage = price.Storage;
+
+            return View(vm);
         }
     }
 }

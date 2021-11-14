@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace Teknik.BillingCore
         }
 
         public abstract object GetCustomer(string id);
-        public abstract bool CreateCustomer(string email);
+        public abstract string CreateCustomer(string username, string email);
 
         public abstract List<Product> GetProductList();
         public abstract Product GetProduct(string productId);
@@ -28,10 +29,15 @@ namespace Teknik.BillingCore
 
         public abstract List<Subscription> GetSubscriptionList(string customerId);
         public abstract Subscription GetSubscription(string subscriptionId);
-        public abstract Tuple<bool, string, string> CreateSubscription(string customerId, string priceId);
-        public abstract bool EditSubscription(Subscription subscription);
-        public abstract bool RemoveSubscription(string subscriptionId);
+        public abstract Subscription CreateSubscription(string customerId, string priceId);
+        public abstract Subscription EditSubscriptionPrice(string subscriptionId, string priceId);
+        public abstract bool CancelSubscription(string subscriptionId);
 
-        public abstract void SyncSubscriptions();
+        public abstract CheckoutSession CreateCheckoutSession(string customerId, string priceId, string successUrl, string cancelUrl);
+        public abstract CheckoutSession GetCheckoutSession(string sessionId);
+
+        public abstract Task<Event> ParseEvent(HttpRequest request);
+        public abstract CheckoutSession ProcessCheckoutCompletedEvent(Event e);
+        public abstract Customer ProcessCustomerEvent(Event e);
     }
 }

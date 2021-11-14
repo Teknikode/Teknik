@@ -1,0 +1,32 @@
+@model Teknik.Areas.Users.ViewModels.BillingSettingsViewModel
+
+@using Teknik.BillingCore.Models
+
+@{
+    Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-10 col-sm-offset-1">
+        <br />
+        <label for="activeSubscriptions"><h4>Active Subscriptions</h4></label>
+        <div id="activeSubscriptions" style="overflow-y: auto; max-height: 400px;">
+            <ul class="list-group" id="activeSubscriptionList">
+                @if (Model.Subscriptions.Any())
+                {
+                    foreach (var subscription in Model.Subscriptions)
+                    {
+                    <li class="list-group-item">
+                        <h4 class="list-group-item-heading">@subscription.ProductName: <strong>@(StringHelper.GetBytesReadable(subscription.Storage))</strong> for <strong>@($"${subscription.Price:0.00} / {subscription.Interval}")</strong></h4>
+                        <p><a href="@(Url.SubRouteUrl("billing", "Billing.CancelSubscription", new { subscriptionId = subscription.SubscriptionId, productId = subscription.ProductId }))">Cancel Subscription</a></p>
+                    </li>
+                    }
+                }
+                else
+                {
+                    <li class="list-group-item text-center">No Active Subscriptions</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

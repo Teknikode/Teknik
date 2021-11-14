@@ -45,7 +45,7 @@ namespace Teknik.Areas.Upload.Controllers
             model.Encrypt = false;
             model.ExpirationLength = 1;
             model.ExpirationUnit = ExpirationUnit.Days;
-            model.MaxUploadSize = _config.UploadConfig.MaxUploadSize;
+            model.MaxUploadSize = _config.UploadConfig.MaxUploadFileSize;
             if (User.Identity.IsAuthenticated)
             {
                 User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
@@ -58,16 +58,12 @@ namespace Teknik.Areas.Upload.Controllers
 
                     model.CurrentTotalSize = user.Uploads.Sum(u => u.ContentLength);
 
-                    model.MaxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
-                    model.MaxTotalSize = _config.UploadConfig.MaxTotalSizeBasic;
-                    IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
-                    if (userInfo.AccountType == AccountType.Premium)
-                    {
-                        model.MaxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
-                        model.MaxTotalSize = _config.UploadConfig.MaxTotalSizePremium;
-                    }
+                    model.MaxUploadSize = _config.UploadConfig.MaxUploadFileSize;
+                    model.MaxTotalSize = _config.UploadConfig.MaxStorage;
                     if (user.UploadSettings.MaxUploadStorage != null)
                         model.MaxTotalSize = user.UploadSettings.MaxUploadStorage.Value;
+                    if (user.UploadSettings.MaxUploadFileSize != null)
+                        model.MaxUploadSize = user.UploadSettings.MaxUploadFileSize.Value;
 
                     if (model.CurrentTotalSize >= model.MaxTotalSize)
                     {
@@ -88,22 +84,17 @@ namespace Teknik.Areas.Upload.Controllers
             {
                 if (_config.UploadConfig.UploadEnabled)
                 {
-                    long maxUploadSize = _config.UploadConfig.MaxUploadSize;
+                    long maxUploadSize = _config.UploadConfig.MaxUploadFileSize;
+                    long maxTotalSize = _config.UploadConfig.MaxStorage;
                     if (User.Identity.IsAuthenticated)
                     {
-                        maxUploadSize = _config.UploadConfig.MaxUploadSizeBasic;
-                        long maxTotalSize = _config.UploadConfig.MaxTotalSizeBasic;
-                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
-                        if (userInfo.AccountType == AccountType.Premium)
-                        {
-                            maxUploadSize = _config.UploadConfig.MaxUploadSizePremium;
-                            maxTotalSize = _config.UploadConfig.MaxTotalSizePremium;
-                        }
-
                         // Check account total limits
                         var user = UserHelper.GetUser(_dbContext, User.Identity.Name);
                         if (user.UploadSettings.MaxUploadStorage != null)
                             maxTotalSize = user.UploadSettings.MaxUploadStorage.Value;
+                        if (user.UploadSettings.MaxUploadFileSize != null)
+                            maxUploadSize = user.UploadSettings.MaxUploadFileSize.Value;
+
                         var userUploadSize = user.Uploads.Sum(u => u.ContentLength);
                         if (userUploadSize + uploadFile.file.Length > maxTotalSize)
                         {
@@ -232,7 +223,6 @@ namespace Teknik.Areas.Upload.Controllers
                 string iv = string.Empty;
                 string contentType = string.Empty;
                 long contentLength = 0;
-                bool premiumAccount = false;
                 DateTime dateUploaded = new DateTime();
 
                 Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
@@ -256,16 +246,6 @@ namespace Teknik.Areas.Upload.Controllers
                     contentType = upload.ContentType;
                     contentLength = upload.ContentLength;
                     dateUploaded = upload.DateUploaded;
-                    if (User.Identity.IsAuthenticated)
-                    {
-                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, User.Identity.Name);
-                        premiumAccount = userInfo.AccountType == AccountType.Premium;
-                    }
-                    if (!premiumAccount && upload.UserId != null)
-                    {
-                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, upload.User.Username);
-                        premiumAccount = userInfo.AccountType == AccountType.Premium;
-                    }
                 }
                 else
                 {
@@ -285,7 +265,7 @@ namespace Teknik.Areas.Upload.Controllers
 
                     return View(model);
                 }
-                else if (!premiumAccount && _config.UploadConfig.MaxDownloadSize < contentLength)
+                else if (_config.UploadConfig.MaxDownloadFileSize < contentLength)
                 {
                     // We want to force them to the dl page due to them being over the max download size for embedded content
                     DownloadViewModel model = new DownloadViewModel();

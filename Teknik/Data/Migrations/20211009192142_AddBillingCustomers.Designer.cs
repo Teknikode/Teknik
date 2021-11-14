@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Teknik.Data;
 
 namespace Teknik.Data.Migrations
 {
     [DbContext(typeof(TeknikEntities))]
-    partial class TeknikEntitiesModelSnapshot : ModelSnapshot
+    [Migration("20211009192142_AddBillingCustomers")]
+    partial class AddBillingCustomers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -884,10 +886,6 @@ namespace Teknik.Data.Migrations
                             b1.Property<int>("ExpirationUnit")
                                 .HasColumnType("int")
                                 .HasColumnName("ExpirationUnit");
-
-                            b1.Property<long?>("MaxUploadFileSize")
-                                .HasColumnType("bigint")
-                                .HasColumnName("MaxUploadFileSize");
 
                             b1.Property<long?>("MaxUploadStorage")
                                 .HasColumnType("bigint")

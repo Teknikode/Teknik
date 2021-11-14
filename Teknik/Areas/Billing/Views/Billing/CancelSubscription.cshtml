@@ -1,0 +1,21 @@
+﻿@model Teknik.Areas.Billing.ViewModels.CancelSubscriptionViewModel
+
+<div class="container">
+    @if (Model.Error)
+    {
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <h2>@Model.ErrorMessage</h2>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2>You have successfully canceled your subscription to <strong>@Model.ProductName</strong></h2>
+                <p><a href="@Url.SubRouteUrl("account", "User.BillingSettings")">View Active Subscriptions</a></p>
+            </div>
+        </div>
+    }
+</div>

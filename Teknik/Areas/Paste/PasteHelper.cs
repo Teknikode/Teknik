@@ -59,14 +59,13 @@ namespace Teknik.Areas.Paste
                     break;
             }
 
-            string key = GenerateKey(config.PasteConfig.KeySize);
-            string iv = GenerateIV(config.PasteConfig.BlockSize);
+            string key = Crypto.GenerateKey(config.PasteConfig.KeySize);
+            string iv = Crypto.GenerateIV(config.PasteConfig.BlockSize);
 
             if (!string.IsNullOrEmpty(password))
             {
-                paste.HashedPassword = HashPassword(key, password);
+                paste.HashedPassword = Crypto.HashPassword(key, password);
             }
-
 
             // Generate a unique file name that does not currently exist
             var storageService = StorageServiceFactory.GetStorageService(config.PasteConfig.StorageConfig);
@@ -100,21 +99,6 @@ namespace Teknik.Areas.Paste
                 return true;
 
             return false;
-        }
-
-        public static string GenerateKey(int keySize)
-        {
-            return StringHelper.RandomString(keySize / 8);
-        }
-
-        public static string GenerateIV(int ivSize)
-        {
-            return StringHelper.RandomString(ivSize / 16);
-        }
-
-        public static string HashPassword(string key, string password)
-        {
-            return SHA384.Hash(key, password).ToHex();
         }
 
         public static void EncryptContents(IStorageService storageService, string content, string fileName, string password, string key, string iv, int keySize, int chunkSize)

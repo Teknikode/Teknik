@@ -1,0 +1,21 @@
+﻿@model Teknik.Areas.Billing.ViewModels.SubscriptionSuccessViewModel
+
+<div class="container">
+    @if (Model.Error)
+    {
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <h2>@Model.ErrorMessage</h2>
+            </div>
+        </div>
+    }
+    else
+    {
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h2>Thank you for subscribing to @Model.ProductName: <strong>@(StringHelper.GetBytesReadable(Model.Storage))</strong> for <strong>@($"${Model.Price:0.00} / {Model.Interval}")</strong></h2>
+            <p><a href="@Url.SubRouteUrl("account", "User.BillingSettings")">View Active Subscriptions</a></p>
+        </div>
+    </div>
+    }
+</div>

@@ -21,7 +21,12 @@ namespace Teknik.Areas.Users.Models
         public ExpirationUnit ExpirationUnit { get; set; }
 
         [Column("MaxUploadStorage")]
+        // Maximum Allotted total upload storage
         public long? MaxUploadStorage { get; set; }
+
+        [Column("MaxUploadFileSize")]
+        // Maximum allowed file size
+        public long? MaxUploadFileSize { get; set; }
 
         public UploadSettings()
         {
@@ -29,6 +34,7 @@ namespace Teknik.Areas.Users.Models
             ExpirationLength = 1;
             ExpirationUnit = ExpirationUnit.Never;
             MaxUploadStorage = null;
+            MaxUploadFileSize = null;
         }
     }
 }

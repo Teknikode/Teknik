@@ -12,6 +12,7 @@ using Teknik.Areas.Vault.Models;
 using Microsoft.EntityFrameworkCore;
 using Teknik.Models;
 using System.Configuration;
+using Teknik.Areas.Billing.Models;
 
 namespace Teknik.Data
 {
@@ -25,6 +26,8 @@ namespace Teknik.Data
         public DbSet<UserSettings> UserSettings { get; set; }
         public DbSet<BlogSettings> BlogSettings { get; set; }
         public DbSet<UploadSettings> UploadSettings { get; set; }
+        // Billing Customers
+        public DbSet<Customer> Customers { get; set; }
         // Features
         public DbSet<Feature> Features { get; set; }
         // Blogs
@@ -72,6 +75,7 @@ namespace Teknik.Data
             modelBuilder.Entity<User>().OwnsOne(u => u.UserSettings, us => us.ToTable("Users"));
             modelBuilder.Entity<User>().OwnsOne(u => u.BlogSettings, bs => bs.ToTable("Users"));
             modelBuilder.Entity<User>().OwnsOne(u => u.UploadSettings, us => us.ToTable("Users"));
+            modelBuilder.Entity<User>().HasOne(u => u.BillingCustomer).WithOne(i => i.User);
             modelBuilder.Entity<User>().HasMany(u => u.Features).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(u => u.Uploads).WithOne(u => u.User);
             modelBuilder.Entity<User>().HasMany(u => u.Pastes).WithOne(u => u.User);
@@ -85,6 +89,9 @@ namespace Teknik.Data
             // Invite Codes
             //modelBuilder.Entity<InviteCode>().HasOne(t => t.ClaimedUser).WithOne(u => u.ClaimedInviteCode).HasPrincipalKey("ClaimedUserId").HasForeignKey("ClaimedUser_UserId"); // Legacy???
             //modelBuilder.Entity<InviteCode>().HasOne(t => t.Owner).WithMany(u => u.OwnedInviteCodes).HasPrincipalKey("ClaimedUserId").HasForeignKey("Owner_UserId"); // Legacy???
+
+            // Billing Customers
+            modelBuilder.Entity<Customer>().HasOne(u => u.User);
 
             // Features
             modelBuilder.Entity<UserFeature>().HasOne(f => f.Feature);
@@ -119,6 +126,8 @@ namespace Teknik.Data
             //modelBuilder.Entity<UserSettings>().ToTable("Users");
             //modelBuilder.Entity<BlogSettings>().ToTable("Users");
             //modelBuilder.Entity<UploadSettings>().ToTable("Users");
+            // Billing Customers
+            modelBuilder.Entity<Customer>().ToTable("Customers");
             // Features
             modelBuilder.Entity<Feature>().ToTable("Features");
             // Blogs

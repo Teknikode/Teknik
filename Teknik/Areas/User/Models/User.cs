@@ -6,6 +6,7 @@ using Teknik.Attributes;
 using Teknik.Models;
 using Teknik.Utilities;
 using Microsoft.AspNetCore.Identity;
+using Teknik.Areas.Billing.Models;
 
 namespace Teknik.Areas.Users.Models
 {
@@ -14,6 +15,8 @@ namespace Teknik.Areas.Users.Models
         public int UserId { get; set; }
 
         public string Username { get; set; }
+
+        public virtual Customer BillingCustomer { get; set; }
 
         public virtual ICollection<UserFeature> Features { get; set; }
 

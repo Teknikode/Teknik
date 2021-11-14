@@ -1,8 +1,7 @@
 @model Teknik.Areas.About.ViewModels.AboutViewModel
 
-@{ 
-    string lifetimeAccount = "The account will not get deleted for inactivity as defined in the ToS";
-    string apiAccountAccess = "Passing user credentials allows linking for Uploads/Pastes/Shortened URLs and other account specific features";
+@{
+    string extraUsage = string.Empty;
 }
 
 <div class="container">
@@ -16,56 +15,34 @@
             <p>
                 You can view our complete activity and statistics by visiting the <a href="@Url.SubRouteUrl("stats", "Stats.Index")">statistics</a> page.
             </p>
+
             <br />
-            <hr>
+            <hr />
+
             <h2 class="text-center">What can you do with Teknik?</h2>
             <br />
+
             <div class="row">
                 <div class="col-sm-10 col-sm-offset-1">
                     <table class="table table-bordered">
                         <!-- Heading -->
                         <tr>
                             <th class="text-center"></th>
-                            <th class="text-center"><a href="@Url.SubRouteUrl("account", "User.GetPremium")">Premium Account</a></th>
-                            <th class="text-center"><a href="@Url.SubRouteUrl("account", "User.Register")">Basic Account</a></th>
-                            <th class="text-center">No Account</th>
+                            <th class="text-center"><a href="@Url.SubRouteUrl("account", "User.Register")">Free Account</a></th>
+                            <th class="text-center">Anonymous</th>
                         </tr>
-                        <!-- Prices -->
-                        <tr>
-                            <td class="text-left"></td>
-                            <td class="text-center">$@Config.UserConfig.PremiumAccountPrice @Config.UserConfig.PaymentType</td>
-                            <td class="text-center">Free</td>
-                            <td class="text-center">Free</td>
-                        </tr>
-                        <!-- Premium Features -->
-                        <tr>
-                            <td class="text-left"><span data-toggle="tooltip" data-placement="top" title="@lifetimeAccount">Lifetime Account <small>*</small></span></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
-                        </tr>
-                        <tr>
-                            <td class="text-left">Email Account</td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
-                            <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
-                        </tr>
-                        <!-- Basic Features -->
                         <tr>
                             <td class="text-left">Git Repositories</td>
-                            <td class="text-center">Unlimited Public &amp; Private Repos</td>
                             <td class="text-center">Unlimited Public &amp; Private Repos</td>
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
                         </tr>
                         <tr>
                             <td class="text-left">Personal Blog</td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
                         </tr>
                         <tr>
                             <td class="text-left">Vault and Paste Editing</td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
                         </tr>
@@ -81,13 +58,16 @@
                                 </ul>
                             </td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-times fa-2x text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><span data-toggle="tooltip" data-placement="top">Service API</span></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
+                            <td class="text-center"><i class="fa fa-check fa-2x text-danger"></i></td>
                         </tr>
                         <!-- No Account Features -->
                         <tr>
                             <td class="text-left">Pastebin</td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                         </tr>
@@ -95,29 +75,24 @@
                             <td class="text-left">File Uploads</td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                         </tr>
                         <tr>
                             <td class="text-left">Max Upload Filesize</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSizePremium)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSizeBasic)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadFileSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxUploadFileSize)</td>
                         </tr>
                         <tr>
                             <td class="text-left">Max Embedded Filesize</td>
-                            <td class="text-center">Unlimited</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxDownloadSize)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxDownloadSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxDownloadFileSize)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxDownloadFileSize)</td>
                         </tr>
                         <tr>
                             <td class="text-left">Upload Storage</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxTotalSizePremium)</td>
-                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxTotalSizeBasic)</td>
+                            <td class="text-center">@StringHelper.GetBytesReadable(Config.UploadConfig.MaxStorage)</td>
                             <td class="text-center">No Limit</td>
                         </tr>
                         <tr>
                             <td class="text-left">Upload Expiration</td>
-                            <td class="text-center">Never</td>
                             <td class="text-center">Never</td>
                             <td class="text-center">24 Hours</td>
                         </tr>
@@ -125,11 +100,9 @@
                             <td class="text-left">Url Shortening</td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                         </tr>
                         <tr>
                             <td class="text-left">Vault Creation</td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                         </tr>
@@ -137,45 +110,20 @@
                             <td class="text-left">Technical Podcasts</td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                             <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                        </tr>
-                        <tr>
-                            <td class="text-left">Mumble Server</td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                        </tr>
-                        <tr>
-                            <td class="text-left">IRC Server</td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                        </tr>
-                        <tr>
-                            <td class="text-left"><span data-toggle="tooltip" data-placement="top" title="@apiAccountAccess">Service API <small>**</small></span></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
-                            <td class="text-center"><i class="fa fa-check fa-2x text-success"></i></td>
                         </tr>
                     </table>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-10 col-sm-offset-1">
-                    <p>
-                        <small>
-                            * @lifetimeAccount
-                            <br />
-                            ** @apiAccountAccess
-                        </small>
-                    </p>
-                </div>
-            </div>
+            <br />
+            
+            @await Html.PartialAsync("../../Areas/Billing/Views/Billing/ViewSubscriptions", Model.Subscriptions);
+
             <br />
             <hr>
+
             <h2 class="text-center">Want to help?</h2>
             <br />
-            <p>
+            <p class="text-center">
                 Teknik's source code can be located on our <a href="https://git.teknik.io/Teknikode/">Git Repository</a> as well as all our internal tools and projects.
                 <br />
                 <br />

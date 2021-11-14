@@ -188,6 +188,116 @@
         }
     },
     {
+        "Name": "Billing.Index",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "Index"
+        }
+    },
+    {
+        "Name": "Billing.Subscriptions",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "Subscriptions",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "ViewSubscriptions"
+        }
+    },
+    {
+        "Name": "Billing.ViewPaymentInfo",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "PaymentInfo",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "ViewPaymentInfo"
+        }
+    },
+    {
+        "Name": "Billing.Subscribe",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "Subscribe/{priceId}/{subscriptionId?}",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "Subscribe"
+        }
+    },
+    {
+        "Name": "Billing.Checkout",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "Checkout/{priceId}",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "Checkout"
+        }
+    },
+    {
+        "Name": "Billing.CheckoutComplete",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "CheckoutComplete",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "CheckoutComplete"
+        }
+    },
+    {
+        "Name": "Billing.EditSubscription",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "EditSubscription/{priceId}",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "EditSubscription"
+        }
+    },
+    {
+        "Name": "Billing.CancelSubscription",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "CancelSubscription/{subscriptionId}/{productId}",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "CancelSubscription"
+        }
+    },
+    {
+        "Name": "Billing.SubscriptionSuccess",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "SubscriptionSuccess/{priceId}",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "SubscriptionSuccess"
+        }
+    },
+    {
+        "Name": "Billing.Action",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "billing" ],
+        "Pattern": "Action/{action}",
+        "Area": "Billing",
+        "Defaults": {
+            "controller": "Billing",
+            "action": "Index"
+        }
+    },
+    {
         "Name": "Blog.Blog",
         "HostTypes": [ "Full" ],
         "SubDomains": [ "blog" ],
@@ -903,6 +1013,17 @@
         }
     },
     {
+        "Name": "User.BillingSettings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings/Billing",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "BillingSettings"
+        }
+    },
+    {
         "Name": "User.SecuritySettings",
         "HostTypes": [ "Full" ],
         "SubDomains": [ "account" ],
@@ -1043,50 +1164,6 @@
         "Defaults": {
             "controller": "User",
             "action": "ViewRawPGP"
-        }
-    },
-    {
-        "Name": "Billing.Index",
-        "HostTypes": [ "Full" ],
-        "SubDomains": [ "billing" ],
-        "Pattern": "",
-        "Area": "Billing",
-        "Defaults": {
-            "controller": "Billing",
-            "action": "Index"
-        }
-    },
-    {
-        "Name": "Billing.Subscriptions",
-        "HostTypes": [ "Full" ],
-        "SubDomains": [ "billing" ],
-        "Pattern": "Subscriptions",
-        "Area": "Billing",
-        "Defaults": {
-            "controller": "Billing",
-            "action": "ViewSubscriptions"
-        }
-    },
-    {
-        "Name": "Billing.ViewPaymentInfo",
-        "HostTypes": [ "Full" ],
-        "SubDomains": [ "billing" ],
-        "Pattern": "PaymentInfo",
-        "Area": "Billing",
-        "Defaults": {
-            "controller": "Billing",
-            "action": "ViewPaymentInfo"
-        }
-    },
-    {
-        "Name": "Billing.Action",
-        "HostTypes": [ "Full" ],
-        "SubDomains": [ "billing" ],
-        "Pattern": "Action/{action}",
-        "Area": "Billing",
-        "Defaults": {
-            "controller": "Billing",
-            "action": "Index"
         }
     },
     {

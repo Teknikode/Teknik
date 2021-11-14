@@ -1,9 +1,12 @@
-﻿using Stripe;
+﻿using Microsoft.AspNetCore.Http;
+using Stripe;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Teknik.BillingCore.Models;
 using Teknik.Configuration;
 
@@ -16,21 +19,33 @@ namespace Teknik.BillingCore
             StripeConfiguration.ApiKey = config.StripeSecretApiKey;
         }
 
-        public override object GetCustomer(string id)
+        public override string GetCustomer(string email)
         {
-            var service = new CustomerService();
-            return service.Get(id);
+            if (!string.IsNullOrEmpty(email))
+            {
+                var service = new CustomerService();
+                var foundCustomer = service.Get(email);
+                if (foundCustomer != null)
+                    return foundCustomer.Id;
+            }
+
+            return null;
         }
 
-        public override bool CreateCustomer(string email)
+        public override string CreateCustomer(string username, string email)
         {
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException("username");
+
             var options = new CustomerCreateOptions
             {
+                Name = username,
                 Email = email,
+                Description = $"Customer for account {username}"
             };
             var service = new CustomerService();
             var customer = service.Create(options);
-            return customer != null;
+            return customer.Id;
         }
 
         public override List<Models.Product> GetProductList()
@@ -52,10 +67,13 @@ namespace Teknik.BillingCore
 
         public override Models.Product GetProduct(string productId)
         {
-            var productService = new ProductService();
-            Stripe.Product product = productService.Get(productId);
-            if (product != null)
-                return ConvertProduct(product);
+            if (!string.IsNullOrEmpty(productId))
+            {
+                var productService = new ProductService();
+                Stripe.Product product = productService.Get(productId);
+                if (product != null)
+                    return ConvertProduct(product);
+            }
 
             return null;
         }
@@ -63,31 +81,39 @@ namespace Teknik.BillingCore
         public override List<Models.Price> GetPriceList(string productId)
         {
             var foundPrices = new List<Models.Price>();
-            var options = new PriceListOptions
+            if (!string.IsNullOrEmpty(productId))
             {
-                Active = true,
-                Product = productId
-            };
-
-            var priceService = new PriceService();
-            var priceList = priceService.List(options);
-            if (priceList != null)
-            {
-                foreach (var price in priceList)
+                var options = new PriceListOptions
                 {
-                    foundPrices.Add(ConvertPrice(price));
+                    Active = true,
+                    Product = productId
+                };
+                options.AddExpand("data.product");
+
+                var priceService = new PriceService();
+                var priceList = priceService.List(options);
+                if (priceList != null)
+                {
+                    foreach (var price in priceList)
+                    {
+                        foundPrices.Add(ConvertPrice(price));
+                    }
                 }
             }
+
             return foundPrices;
         }
 
         public override Models.Price GetPrice(string priceId)
         {
-
-            var priceService = new PriceService();
-            var price = priceService.Get(priceId);
-            if (price != null)
-                return ConvertPrice(price);
+            if (!string.IsNullOrEmpty(priceId))
+            {
+                var options = new PriceGetOptions();
+                var priceService = new PriceService();
+                var price = priceService.Get(priceId, options);
+                if (price != null)
+                    return ConvertPrice(price);
+            }
 
             return null;
         }
@@ -118,62 +144,176 @@ namespace Teknik.BillingCore
 
         public override Models.Subscription GetSubscription(string subscriptionId)
         {
-            var subService = new SubscriptionService();
-            var sub = subService.Get(subscriptionId);
-            if (sub != null)
-                return ConvertSubscription(sub);
+            if (!string.IsNullOrEmpty(subscriptionId))
+            {
+                var subService = new SubscriptionService();
+                var sub = subService.Get(subscriptionId);
+                if (sub != null)
+                    return ConvertSubscription(sub);
+            }
 
             return null;
         }
 
-        public override Tuple<bool, string, string> CreateSubscription(string customerId, string priceId)
+        public override Models.Subscription CreateSubscription(string customerId, string priceId)
         {
-            // Create the subscription. Note we're expanding the Subscription's
-            // latest invoice and that invoice's payment_intent
-            // so we can pass it to the front end to confirm the payment
-            var subscriptionOptions = new SubscriptionCreateOptions
+            if (!string.IsNullOrEmpty(customerId) &&
+                !string.IsNullOrEmpty(priceId))
             {
-                Customer = customerId,
-                Items = new List<SubscriptionItemOptions>
+                // Create the subscription. Note we're expanding the Subscription's
+                // latest invoice and that invoice's payment_intent
+                // so we can pass it to the front end to confirm the payment
+                var subscriptionOptions = new SubscriptionCreateOptions
                 {
-                    new SubscriptionItemOptions
+                    Customer = customerId,
+                    Items = new List<SubscriptionItemOptions>
+                    {
+                        new SubscriptionItemOptions
+                        {
+                            Price = priceId,
+                        },
+                    },
+                    PaymentBehavior = "default_incomplete",
+                    CancelAtPeriodEnd = false
+                };
+                subscriptionOptions.AddExpand("latest_invoice.payment_intent");
+                var subscriptionService = new SubscriptionService();
+                var subscription = subscriptionService.Create(subscriptionOptions);
+
+                return ConvertSubscription(subscription);
+            }
+            return null;
+        }
+
+        public override Models.Subscription EditSubscriptionPrice(string subscriptionId, string priceId)
+        {
+            if (!string.IsNullOrEmpty(subscriptionId))
+            {
+                var subscriptionService = new SubscriptionService();
+                var subscription = subscriptionService.Get(subscriptionId);
+                if (subscription != null)
+                {
+                    var subscriptionOptions = new SubscriptionUpdateOptions()
+                    {
+                        Items = new List<SubscriptionItemOptions>
+                        {
+                            new SubscriptionItemOptions
+                            {
+                                Id = subscription.Items.Data[0].Id,
+                                Price = priceId,
+                            },
+                        },
+                        CancelAtPeriodEnd = false,
+                        ProrationBehavior = "create_prorations"
+                    };
+                    subscriptionOptions.AddExpand("latest_invoice.payment_intent");
+                    var result = subscriptionService.Update(subscriptionId, subscriptionOptions);
+                    if (result != null)
+                        return ConvertSubscription(result);
+                }
+            }
+            return null;
+        }
+
+        public override bool CancelSubscription(string subscriptionId)
+        {
+            if (!string.IsNullOrEmpty(subscriptionId))
+            {
+                var cancelOptions = new SubscriptionCancelOptions()
+                {
+                    InvoiceNow = true
+                };
+                var subscriptionService = new SubscriptionService();
+                var subscription = subscriptionService.Cancel(subscriptionId, cancelOptions);
+                return subscription.Status == "canceled";
+            }
+            return false;
+        }
+
+        public override CheckoutSession CreateCheckoutSession(string customerId, string priceId, string successUrl, string cancelUrl)
+        {
+            // Modify Success URL to include session ID variable
+            var uriBuilder = new UriBuilder(successUrl);
+            var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
+            paramValues.Add("session_id", "{CHECKOUT_SESSION_ID}");
+            uriBuilder.Query = paramValues.ToString();
+            successUrl = uriBuilder.Uri.ToString();
+
+            var checkoutService = new Stripe.Checkout.SessionService();
+            var sessionOptions = new Stripe.Checkout.SessionCreateOptions()
+            {
+                LineItems = new List<Stripe.Checkout.SessionLineItemOptions>()
+                {
+                    new Stripe.Checkout.SessionLineItemOptions()
                     {
                         Price = priceId,
-                    },
+                        Quantity = 1
+                    }
                 },
-                PaymentBehavior = "default_incomplete",
+                PaymentMethodTypes = new List<string>()
+                {
+                    "card"
+                },                
+                Mode = "subscription",
+                SuccessUrl = successUrl,
+                CancelUrl = cancelUrl,
+                Customer = customerId
             };
-            subscriptionOptions.AddExpand("latest_invoice.payment_intent");
-            var subscriptionService = new SubscriptionService();
+            sessionOptions.AddExpand("customer");
+            var session = checkoutService.Create(sessionOptions);
+            return ConvertCheckoutSession(session);
+        }
+
+        public override async Task<Models.Event> ParseEvent(HttpRequest request)
+        {
+            var json = await new StreamReader(request.Body).ReadToEndAsync();
+
             try
             {
-                Stripe.Subscription subscription = subscriptionService.Create(subscriptionOptions);
+                var stripeEvent = EventUtility.ConstructEvent(
+                  json,
+                  request.Headers["Stripe-Signature"],
+                  Config.StripeWebhookSecret
+                );
 
-                return new Tuple<bool, string, string>(true, subscription.Id, subscription.LatestInvoice.PaymentIntent.ClientSecret);
+                return ConvertEvent(stripeEvent);
             }
-            catch (StripeException e)
+            catch (StripeException)
             {
-                return new Tuple<bool, string, string>(false, $"Failed to create subscription. {e}", null);
             }
+            return null;
         }
 
-        public override bool EditSubscription(Models.Subscription subscription)
+        public override CheckoutSession ProcessCheckoutCompletedEvent(Models.Event ev)
         {
-            throw new NotImplementedException();
+            // Handle the checkout.session.completed event
+            var session = ev.Data as Stripe.Checkout.Session;
+
+            return ConvertCheckoutSession(session);
         }
 
-        public override bool RemoveSubscription(string subscriptionId)
+        public override Models.Customer ProcessCustomerEvent(Models.Event ev)
         {
-            throw new NotImplementedException();
+            // Handle the checkout.session.completed event
+            var customer = ev.Data as Stripe.Customer;
+
+            return ConvertCustomer(customer);
         }
 
-        public override void SyncSubscriptions()
+        public override CheckoutSession GetCheckoutSession(string sessionId)
         {
-            throw new NotImplementedException();
+            var checkoutService = new Stripe.Checkout.SessionService();
+            var sessionOptions = new Stripe.Checkout.SessionGetOptions();
+            sessionOptions.AddExpand("customer");
+            var session = checkoutService.Get(sessionId, sessionOptions);
+
+            return ConvertCheckoutSession(session);
         }
 
         private Models.Product ConvertProduct(Stripe.Product product)
         {
+            if (product == null)
+                return null;
             return new Models.Product()
             {
                 ProductId = product.Id,
@@ -185,6 +325,8 @@ namespace Teknik.BillingCore
 
         private Models.Price ConvertPrice(Stripe.Price price)
         {
+            if (price == null)
+                return null;
             var interval = Interval.Once;
             if (price.Type == "recurring")
             {
@@ -216,11 +358,15 @@ namespace Teknik.BillingCore
                 convPrice.Amount = price.UnitAmountDecimal / 100;
             if (price.Metadata.ContainsKey("storage"))
                 convPrice.Storage = long.Parse(price.Metadata["storage"]);
+            if (price.Metadata.ContainsKey("fileSize"))
+                convPrice.FileSize = long.Parse(price.Metadata["fileSize"]);
             return convPrice;
         }
 
         private Models.Subscription ConvertSubscription(Stripe.Subscription subscription)
         {
+            if (subscription == null)
+                return null;
             var status = SubscriptionStatus.Incomplete;
             switch (subscription.Status)
             {
@@ -259,7 +405,77 @@ namespace Teknik.BillingCore
                 Id = subscription.Id,
                 CustomerId = subscription.CustomerId,
                 Status = status,
-                Prices = prices
+                Prices = prices,
+                ClientSecret = subscription.LatestInvoice?.PaymentIntent?.ClientSecret
+            };
+        }
+
+        private CheckoutSession ConvertCheckoutSession(Stripe.Checkout.Session session)
+        {
+            if (session == null)
+                return null;
+
+
+            var paymentStatus = PaymentStatus.Unpaid;
+            switch (session.PaymentStatus)
+            {
+                case "paid":
+                    paymentStatus = PaymentStatus.Paid;
+                    break;
+                case "unpaid":
+                    paymentStatus = PaymentStatus.Unpaid;
+                    break;
+                case "no_payment_required":
+                    paymentStatus = PaymentStatus.NoPaymentRequired;
+                    break;
+            }
+
+            return new CheckoutSession()
+            {
+                PaymentIntentId = session.PaymentIntentId,
+                CustomerId = session.Customer.Id,
+                SubscriptionId = session.SubscriptionId,
+                PaymentStatus = paymentStatus,
+                Url = session.Url
+            };
+        }
+
+        private Models.Customer ConvertCustomer(Stripe.Customer customer)
+        {
+            var returnCust = new Models.Customer()
+            {
+                CustomerId = customer.Id
+            };
+
+            if (customer.Subscriptions.Any())
+                returnCust.Subscriptions = customer.Subscriptions.Select(s => ConvertSubscription(s)).ToList();
+
+            return returnCust;
+        }
+
+        private Models.Event ConvertEvent(Stripe.Event ev)
+        {
+            if (ev == null)
+                return null;
+
+            var eventType = EventType.Unknown;
+            switch (ev.Type)
+            {
+                case Events.CheckoutSessionCompleted:
+                    eventType = EventType.CheckoutComplete;
+                    break;
+                case Events.CustomerSubscriptionDeleted:
+                    eventType = EventType.SubscriptionDeleted;
+                    break;
+                case Events.CustomerSubscriptionUpdated:
+                    eventType = EventType.SubscriptionUpdated;
+                    break;
+            }
+
+            return new Models.Event()
+            {
+                EventType = eventType,
+                Data = ev.Data.Object
             };
         }
     }

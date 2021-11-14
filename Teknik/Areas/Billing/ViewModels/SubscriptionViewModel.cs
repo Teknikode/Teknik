@@ -9,7 +9,8 @@ namespace Teknik.Areas.Billing.ViewModels
     public class SubscriptionViewModel : ViewModelBase
     {
         public bool Recommended { get; set; }
-        public bool CurrentPlan { get; set; }
+        public bool CurrentSubMonthly { get; set; }
+        public bool CurrentSubYearly { get; set; }
         public string SubscriptionId { get; set; }
         public decimal? BasePriceMonthly { get; set; }
         public decimal? BasePriceYearly { get; set; }
@@ -28,7 +29,8 @@ namespace Teknik.Areas.Billing.ViewModels
         public SubscriptionViewModel()
         {
             Recommended = false;
-            CurrentPlan = false;
+            CurrentSubMonthly = false;
+            CurrentSubYearly = false;
             OverageAllowed = false;
         }
     }

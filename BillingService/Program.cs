@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using CommandLine;
 using Microsoft.EntityFrameworkCore;
+using Teknik.Areas.Users.Models;
+using Teknik.Areas.Users.Utility;
+using Teknik.BillingCore;
+using Teknik.BillingCore.Models;
 using Teknik.Configuration;
 using Teknik.Data;
 using Teknik.Utilities;
@@ -43,6 +48,7 @@ namespace Teknik.BillingService
                             if (options.SyncSubscriptions)
                             {
                                 // Sync subscription information
+                                SyncSubscriptions(config, db);
                             }
                         }
 
@@ -63,6 +69,44 @@ namespace Teknik.BillingService
                 Output(msg);
             }
             return -1;
+        }
+
+        public static void SyncSubscriptions(Config config, TeknikEntities db)
+        {
+            // Get Biling Service
+            var billingService = BillingFactory.GetBillingService(config.BillingConfig);
+
+            foreach (var user in db.Users)
+            {
+                string email = UserHelper.GetUserEmailAddress(config, user.Username);
+                if (user.BillingCustomer != null)
+                {
+                    // get the subscriptions for this user
+                    var subscriptions = billingService.GetSubscriptionList(user.BillingCustomer.CustomerId);
+                    var uploadPrice = subscriptions.SelectMany(s => s.Prices).FirstOrDefault(p => p.ProductId == config.BillingConfig.UploadProductId);
+                    if (uploadPrice != null)
+                    {
+                        // Process Upload Settings
+                        user.UploadSettings.MaxUploadStorage = uploadPrice.Storage;
+                        user.UploadSettings.MaxUploadFileSize = uploadPrice.FileSize;
+                    }
+                    var emailPrice = subscriptions.SelectMany(s => s.Prices).FirstOrDefault(p => p.ProductId == config.BillingConfig.EmailProductId);
+                    if (emailPrice != null)
+                    {
+                        UserHelper.EnableUserEmail(config, email);
+                        UserHelper.EditUserEmailMaxSize(config, email, (int)emailPrice.Storage);
+                    }
+                }
+                else
+                {
+                    // No customer, so let's reset their info
+                    user.UploadSettings.MaxUploadStorage = config.UploadConfig.MaxStorage;
+                    user.UploadSettings.MaxUploadFileSize = config.UploadConfig.MaxUploadFileSize;
+                    UserHelper.DisableUserEmail(config, email);
+                }
+                db.Entry(user).State = EntityState.Modified;
+                db.SaveChanges();
+            }
         }
 
         public static void Output(string message)

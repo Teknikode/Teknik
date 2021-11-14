@@ -163,15 +163,12 @@ namespace Teknik.ServiceWorker
                     byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
 
 
-                    long maxUploadSize = config.UploadConfig.MaxUploadSize;
+                    long maxUploadSize = config.UploadConfig.MaxUploadFileSize;
                     if (upload.User != null)
                     {
-                        maxUploadSize = config.UploadConfig.MaxUploadSizeBasic;
-                        IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(config, upload.User.Username);
-                        if (userInfo.AccountType == AccountType.Premium)
-                        {
-                            maxUploadSize = config.UploadConfig.MaxUploadSizePremium;
-                        }
+                        // Check account total limits
+                        if (upload.User.UploadSettings.MaxUploadFileSize != null)
+                            maxUploadSize = upload.User.UploadSettings.MaxUploadFileSize.Value;
                     }
 
                     using (AesCounterStream aesStream = new AesCounterStream(fileStream, false, keyBytes, ivBytes))

@@ -8,10 +8,7 @@
     @if (Model.UploadSubscriptions.Any())
     {
         <h2 class="text-center">Upload Storage Subscriptions</h2>
-        <p class="text-muted text-center">
-            By subscribing to a Teknik Service plan, you agree to the <a href="@Url.SubRouteUrl("tos", "TOS.Index")">Teknik Terms of Service</a>.<br />
-            <strong>Note:</strong> The <a href="@Url.SubRouteUrl("privacy", "Privacy.Index")">Teknik Privacy Policy</a> describes how data is handled in this service.
-        </p>
+        <p class="text-center">Want some extra storage?  Upgrade with one of the storage subscriptions!</p>
         <br />
         <div class="row">
             @foreach (var subVM in Model.UploadSubscriptions)
@@ -22,24 +19,13 @@
                 @await Html.PartialAsync("../../Areas/Billing/Views/Billing/ViewSubscription", subVM)
             }
         </div>
-        @if (!string.IsNullOrEmpty(extraUsage))
-        {
-            <div class="row">
-                <div class="col-sm-12">
-                    <p>
-                        <small>
-                            * @extraUsage
-                        </small>
-                    </p>
-                </div>
-            </div>
-        }
     }
 
     @if (Model.EmailSubscriptions.Any())
     {
         <br />
         <h2 class="text-center">Email Subscriptions</h2>
+        <p class="text-center">Get a personal email address, complete with web mail client.</p>
         <br />
         <div class="row">
             @foreach (var subVM in Model.EmailSubscriptions)
@@ -51,4 +37,25 @@
             }
         </div>
     }
+
+        <br />
+            
+        <div class="row">
+            <div class="col-sm-12">
+                <p class="text-muted text-center">
+                    By subscribing to a Teknik Service plan, you agree to the <a href="@Url.SubRouteUrl("tos", "TOS.Index")" target="_blank">Teknik Terms of Service</a>.<br />
+                    <strong>Note:</strong> The <a href="@Url.SubRouteUrl("privacy", "Privacy.Index")" target="_blank">Teknik Privacy Policy</a> describes how data is handled in this service.
+                </p>
+                @if (!string.IsNullOrEmpty(extraUsage))
+                {
+                    <p>
+                        <small>
+                            * @extraUsage
+                        </small>
+                    </p>
+                }
+            </div>
+        </div>
 </div>
+
+<bundle src="js/billing.min.js" append-version="true"></bundle>
