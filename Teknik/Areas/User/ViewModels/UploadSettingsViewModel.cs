@@ -10,6 +10,9 @@ namespace Teknik.Areas.Users.ViewModels
 {
     public class UploadSettingsViewModel : SettingsViewModel
     {
+        public long MaxStorage { get; set; }
+        public long MaxFileSize { get; set; }
+
         public bool Encrypt { get; set; }
         public int ExpirationLength { get; set; }
         public ExpirationUnit ExpirationUnit { get; set; }

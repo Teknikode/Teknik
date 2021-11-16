@@ -12,6 +12,22 @@
 
 <bundle src="css/user.settings.upload.min.css" append-version="true"></bundle>
 
+<div class="row">
+    <div class="col-md-12">
+        <h3 class="text-center">Upload Limits</h3>
+        <div class="row">
+            <div class="col-md-2 col-sm-offset-1"><strong>Storage</strong></div>
+            <div class="col-md-9"><strong>@StringHelper.GetBytesReadable(Model.MaxStorage)</strong></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-offset-1"><strong>File Size</strong></div>
+            <div class="col-md-9"><strong>@StringHelper.GetBytesReadable(Model.MaxFileSize)</strong></div>
+        </div>
+    </div>
+</div>
+<br />
+<hr />
+
 <!form class="form" action="##" method="post" id="updateForm">
 
     <div class="row form-horizontal">

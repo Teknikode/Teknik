@@ -751,7 +751,7 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
 
-        public static void EditUserEmailMaxSize(Config config, string email, int size)
+        public static void EditUserEmailMaxSize(Config config, string email, long size)
         {
             try
             {

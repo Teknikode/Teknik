@@ -35,14 +35,14 @@ namespace Teknik.MailService
             _App = InitApp();
         }
 
-        public void CreateAccount(string username, string password, int size)
+        public void CreateAccount(string username, string password, long size)
         {
             var domain = _App.Domains.ItemByName[_Domain];
             var newAccount = domain.Accounts.Add();
             newAccount.Address = username;
             newAccount.Password = password;
             newAccount.Active = true;
-            newAccount.MaxSize = size;
+            newAccount.MaxSize = (int)(size / 1000000);
 
             newAccount.Save();
         }
@@ -94,10 +94,10 @@ namespace Teknik.MailService
             mySQL.Execute(sql, new object[] { maxPerDay, username });
         }
 
-        public void EditMaxSize(string username, int size)
+        public void EditMaxSize(string username, long size)
         {
             var account = GetAccount(username);
-            account.MaxSize = size;
+            account.MaxSize = (int)(size / 1000000);
             account.Save();
         }
 

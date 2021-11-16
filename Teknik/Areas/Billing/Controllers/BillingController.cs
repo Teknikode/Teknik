@@ -34,6 +34,8 @@ namespace Teknik.Areas.Billing.Controllers
         [AllowAnonymous]
         public IActionResult ViewSubscriptions()
         {
+            ViewBag.Title = "Subscriptions";
+
             var subVM = new SubscriptionsViewModel();
 
             // Get Biling Service

@@ -580,6 +580,10 @@ namespace Teknik.Areas.Users.Controllers
                 model.Page = "Upload";
                 model.UserID = user.UserId;
                 model.Username = user.Username;
+
+                model.MaxStorage = user.UploadSettings.MaxUploadStorage ?? _config.UploadConfig.MaxStorage;
+                model.MaxFileSize = user.UploadSettings.MaxUploadFileSize ?? _config.UploadConfig.MaxUploadFileSize;
+
                 model.Encrypt = user.UploadSettings.Encrypt;
                 model.ExpirationLength = user.UploadSettings.ExpirationLength;
                 model.ExpirationUnit = user.UploadSettings.ExpirationUnit;

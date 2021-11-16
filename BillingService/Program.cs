@@ -94,7 +94,7 @@ namespace Teknik.BillingService
                     if (emailPrice != null)
                     {
                         UserHelper.EnableUserEmail(config, email);
-                        UserHelper.EditUserEmailMaxSize(config, email, (int)emailPrice.Storage);
+                        UserHelper.EditUserEmailMaxSize(config, email, emailPrice.Storage);
                     }
                 }
                 else

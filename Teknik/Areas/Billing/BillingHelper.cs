@@ -44,7 +44,7 @@ namespace Teknik.Areas.Billing
                 if (active)
                 {
                     UserHelper.EnableUserEmail(config, email);
-                    UserHelper.EditUserEmailMaxSize(config, email, (int)price.Storage);
+                    UserHelper.EditUserEmailMaxSize(config, email, price.Storage);
                 }
                 else
                 {
