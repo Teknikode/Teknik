@@ -11,7 +11,8 @@ namespace Teknik.Configuration
         public BillingType Type { get; set; }
         public string StripePublishApiKey { get; set; }
         public string StripeSecretApiKey { get; set; }
-        public string StripeWebhookSecret { get; set; }
+        public string StripeCheckoutWebhookSecret { get; set; }
+        public string StripeCustomerWebhookSecret { get; set; }
 
         public string UploadProductId { get; set; }
         public string EmailProductId { get; set; }
@@ -21,7 +22,8 @@ namespace Teknik.Configuration
             Type = BillingType.Stripe;
             StripePublishApiKey = null;
             StripeSecretApiKey = null;
-            StripeWebhookSecret = null;
+            StripeCheckoutWebhookSecret = null;
+            StripeCustomerWebhookSecret = null;
         }
     }
 }

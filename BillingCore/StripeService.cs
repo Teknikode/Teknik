@@ -264,7 +264,7 @@ namespace Teknik.BillingCore
             return ConvertCheckoutSession(session);
         }
 
-        public override async Task<Models.Event> ParseEvent(HttpRequest request)
+        public override async Task<Models.Event> ParseEvent(HttpRequest request, string apiKey)
         {
             var json = await new StreamReader(request.Body).ReadToEndAsync();
 
@@ -273,7 +273,7 @@ namespace Teknik.BillingCore
                 var stripeEvent = EventUtility.ConstructEvent(
                   json,
                   request.Headers["Stripe-Signature"],
-                  Config.StripeWebhookSecret
+                  apiKey
                 );
 
                 return ConvertEvent(stripeEvent);
@@ -292,12 +292,12 @@ namespace Teknik.BillingCore
             return ConvertCheckoutSession(session);
         }
 
-        public override Models.Customer ProcessCustomerEvent(Models.Event ev)
+        public override Models.Subscription ProcessSubscriptionEvent(Models.Event ev)
         {
             // Handle the checkout.session.completed event
-            var customer = ev.Data as Stripe.Customer;
+            var subscription = ev.Data as Stripe.Subscription;
 
-            return ConvertCustomer(customer);
+            return ConvertSubscription(subscription);
         }
 
         public override CheckoutSession GetCheckoutSession(string sessionId)
@@ -433,7 +433,7 @@ namespace Teknik.BillingCore
             return new CheckoutSession()
             {
                 PaymentIntentId = session.PaymentIntentId,
-                CustomerId = session.Customer.Id,
+                CustomerId = session.Customer?.Id ?? session.CustomerId,
                 SubscriptionId = session.SubscriptionId,
                 PaymentStatus = paymentStatus,
                 Url = session.Url

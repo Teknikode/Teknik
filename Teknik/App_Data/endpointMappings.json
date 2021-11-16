@@ -133,6 +133,28 @@
         }
     },
     {
+        "Name": "API.v1.HandleCheckoutComplete",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "api" ],
+        "Pattern": "v1/Billing/HandleCheckoutComplete",
+        "Area": "API",
+        "Defaults": {
+            "controller": "BillingAPIv1",
+            "action": "HandleCheckoutCompleteEvent"
+        }
+    },
+    {
+        "Name": "API.v1.HandleSubscriptionChange",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "api" ],
+        "Pattern": "v1/Billing/HandleSubscriptionChange",
+        "Area": "API",
+        "Defaults": {
+            "controller": "BillingAPIv1",
+            "action": "HandleSubscriptionChange"
+        }
+    },
+    {
         "Name": "API.v1.Claims",
         "HostTypes": [ "Full" ],
         "SubDomains": [ "api" ],

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -11,7 +12,13 @@ namespace Teknik.Utilities.TagHelpers
     {
         private const string _verFile = "version.json";
 
+        private readonly IWebHostEnvironment _env;
         public string Source { get; set; }
+
+        public VersionHelper(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -32,7 +39,7 @@ namespace Teknik.Utilities.TagHelpers
                     string commitVer = res["version"].ToString();
                     string commitHash = res["hash"].ToString();
 
-                    output.Content.AppendHtml($"Version: {commitVer} - Hash: <a href=\"{Source}{commitHash}\">{commitHash.Truncate(10)}</a>");
+                    output.Content.AppendHtml($"Version: {commitVer} - Hash: <a href=\"{Source}{commitHash}\">{commitHash.Truncate(10)}</a> | {_env.EnvironmentName}");
                 }
             }
         }

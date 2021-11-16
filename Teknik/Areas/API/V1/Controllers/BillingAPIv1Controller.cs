@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Teknik.Areas.Billing;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.BillingCore;
@@ -24,7 +25,7 @@ namespace Teknik.Areas.API.V1.Controllers
         {
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 
-            var billingEvent = await billingService.ParseEvent(Request);
+            var billingEvent = await billingService.ParseEvent(Request, _config.BillingConfig.StripeCheckoutWebhookSecret);
 
             if (billingEvent == null)
                 return BadRequest();
@@ -34,7 +35,7 @@ namespace Teknik.Areas.API.V1.Controllers
             {
                 var subscription = billingService.GetSubscription(session.SubscriptionId);
 
-                ProcessSubscription(session.CustomerId, subscription);
+                BillingHelper.ProcessSubscription(_config, _dbContext, session.CustomerId, subscription);
             }
 
             return Ok();
@@ -44,61 +45,18 @@ namespace Teknik.Areas.API.V1.Controllers
         {
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 
-            var billingEvent = await billingService.ParseEvent(Request);
+            var billingEvent = await billingService.ParseEvent(Request, _config.BillingConfig.StripeCustomerWebhookSecret);
 
             if (billingEvent == null)
                 return BadRequest();
 
-            var customerEvent = billingService.ProcessCustomerEvent(billingEvent);
-            
-            foreach (var subscription in customerEvent.Subscriptions)
-            {
-                ProcessSubscription(customerEvent.CustomerId, subscription);
-            }
+            var subscriptionEvent = billingService.ProcessSubscriptionEvent(billingEvent);
+            if (subscriptionEvent == null)
+                return BadRequest();
+
+            BillingHelper.ProcessSubscription(_config, _dbContext, subscriptionEvent.CustomerId, subscriptionEvent);
 
             return Ok();
-        }
-
-        private void ProcessSubscription(string customerId, Subscription subscription)
-        {
-            // They have paid, so let's get their subscription and update their user settings
-            var user = _dbContext.Users.FirstOrDefault(u => u.BillingCustomer != null &&
-                                                            u.BillingCustomer.CustomerId == customerId);
-            if (user != null)
-            {
-                var isActive = subscription.Status == SubscriptionStatus.Active;
-                foreach (var price in subscription.Prices)
-                {
-                    ProcessPrice(user, price, isActive);
-                }
-            }
-        }
-
-        private void ProcessPrice(User user, Price price, bool active)
-        {
-            // What type of subscription is this
-            if (_config.BillingConfig.UploadProductId == price.ProductId)
-            {
-                // Process Upload Settings
-                user.UploadSettings.MaxUploadStorage = active ? price.Storage : _config.UploadConfig.MaxStorage;
-                user.UploadSettings.MaxUploadFileSize = active ? price.FileSize : _config.UploadConfig.MaxUploadFileSize;
-                _dbContext.Entry(user).State = EntityState.Modified;
-                _dbContext.SaveChanges();
-            }
-            else if (_config.BillingConfig.EmailProductId == price.ProductId)
-            {
-                // Process an email subscription
-                string email = UserHelper.GetUserEmailAddress(_config, user.Username);
-                if (active)
-                {
-                    UserHelper.EnableUserEmail(_config, email);
-                    UserHelper.EditUserEmailMaxSize(_config, email, (int)price.Storage);
-                }
-                else
-                {
-                    UserHelper.DisableUserEmail(_config, email);
-                }
-            }
         }
     }
 }

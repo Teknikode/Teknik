@@ -36,8 +36,8 @@ namespace Teknik.BillingCore
         public abstract CheckoutSession CreateCheckoutSession(string customerId, string priceId, string successUrl, string cancelUrl);
         public abstract CheckoutSession GetCheckoutSession(string sessionId);
 
-        public abstract Task<Event> ParseEvent(HttpRequest request);
+        public abstract Task<Event> ParseEvent(HttpRequest request, string apiKey);
         public abstract CheckoutSession ProcessCheckoutCompletedEvent(Event e);
-        public abstract Customer ProcessCustomerEvent(Event e);
+        public abstract Subscription ProcessSubscriptionEvent(Event e);
     }
 }
