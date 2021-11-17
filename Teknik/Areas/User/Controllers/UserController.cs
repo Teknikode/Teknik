@@ -101,17 +101,6 @@ namespace Teknik.Areas.Users.Controllers
             //_logoutSessions.Add(sub, sid);
         }
 
-        [AllowAnonymous]
-        [TrackPageView]
-        public IActionResult GetPremium()
-        {
-            ViewBag.Title = "Get a Premium Account";
-
-            GetPremiumViewModel model = new GetPremiumViewModel();
-
-            return View(model);
-        }
-
         [HttpGet]
         [AllowAnonymous]
         [TrackPageView]

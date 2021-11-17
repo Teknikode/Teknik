@@ -9,11 +9,8 @@ namespace Teknik.Areas.About.ViewModels
 {
     public class AboutViewModel : ViewModelBase
     {
-        public SubscriptionsViewModel Subscriptions { get; set; }
-
         public AboutViewModel()
         {
-            Subscriptions = new SubscriptionsViewModel();
         }
     }
 }
