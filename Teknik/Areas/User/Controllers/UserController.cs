@@ -372,6 +372,7 @@ namespace Teknik.Areas.Users.Controllers
                         foreach (var price in sub.Prices)
                         {
                             var product = billingService.GetProduct(price.ProductId);
+                            var portalSession = billingService.CreatePortalSession(user.BillingCustomer.CustomerId, Url.SubRouteUrl("account", "User.BillingSettings"));
                             var subView = new SubscriptionViewModel()
                             {
                                 SubscriptionId = sub.Id,
@@ -379,7 +380,8 @@ namespace Teknik.Areas.Users.Controllers
                                 ProductName = product.Name,
                                 Storage = price.Storage,
                                 Price = price.Amount,
-                                Interval = price.Interval.ToString()
+                                Interval = price.Interval.ToString(),
+                                PortalUrl = portalSession?.Url
                             };
                             model.Subscriptions.Add(subView);
                         }

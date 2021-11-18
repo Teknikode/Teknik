@@ -264,6 +264,16 @@ namespace Teknik.BillingCore
             return ConvertCheckoutSession(session);
         }
 
+        public override CheckoutSession GetCheckoutSession(string sessionId)
+        {
+            var checkoutService = new Stripe.Checkout.SessionService();
+            var sessionOptions = new Stripe.Checkout.SessionGetOptions();
+            sessionOptions.AddExpand("customer");
+            var session = checkoutService.Get(sessionId, sessionOptions);
+
+            return ConvertCheckoutSession(session);
+        }
+
         public override async Task<Models.Event> ParseEvent(HttpRequest request, string apiKey)
         {
             var json = await new StreamReader(request.Body).ReadToEndAsync();
@@ -300,14 +310,16 @@ namespace Teknik.BillingCore
             return ConvertSubscription(subscription);
         }
 
-        public override CheckoutSession GetCheckoutSession(string sessionId)
+        public override PortalSession CreatePortalSession(string customerId, string returnUrl)
         {
-            var checkoutService = new Stripe.Checkout.SessionService();
-            var sessionOptions = new Stripe.Checkout.SessionGetOptions();
-            sessionOptions.AddExpand("customer");
-            var session = checkoutService.Get(sessionId, sessionOptions);
-
-            return ConvertCheckoutSession(session);
+            var portalService = new Stripe.BillingPortal.SessionService();
+            var sessionOptions = new Stripe.BillingPortal.SessionCreateOptions()
+            {
+                Customer = customerId,
+                ReturnUrl = returnUrl
+            };
+            var session = portalService.Create(sessionOptions);
+            return ConvertPortalSession(session);
         }
 
         private Models.Product ConvertProduct(Stripe.Product product)
@@ -415,7 +427,6 @@ namespace Teknik.BillingCore
             if (session == null)
                 return null;
 
-
             var paymentStatus = PaymentStatus.Unpaid;
             switch (session.PaymentStatus)
             {
@@ -436,6 +447,17 @@ namespace Teknik.BillingCore
                 CustomerId = session.Customer?.Id ?? session.CustomerId,
                 SubscriptionId = session.SubscriptionId,
                 PaymentStatus = paymentStatus,
+                Url = session.Url
+            };
+        }
+
+        private PortalSession ConvertPortalSession(Stripe.BillingPortal.Session session)
+        {
+            if (session == null)
+                return null;
+
+            return new PortalSession()
+            {
                 Url = session.Url
             };
         }

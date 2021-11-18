@@ -18,7 +18,7 @@
                     {
                     <li class="list-group-item">
                         <h4 class="list-group-item-heading">@subscription.ProductName: <strong>@(StringHelper.GetBytesReadable(subscription.Storage))</strong> for <strong>@($"${subscription.Price:0.00} / {subscription.Interval}")</strong></h4>
-                        <p><a href="@(Url.SubRouteUrl("billing", "Billing.CancelSubscription", new { subscriptionId = subscription.SubscriptionId, productId = subscription.ProductId }))">Cancel Subscription</a></p>
+                        <p><a href="@subscription.PortalUrl">Subscription Details</a> | <a href="@(Url.SubRouteUrl("billing", "Billing.CancelSubscription", new { subscriptionId = subscription.SubscriptionId, productId = subscription.ProductId }))">Cancel Subscription</a></p>
                     </li>
                     }
                 }
