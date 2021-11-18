@@ -12,11 +12,9 @@
     }
 
     var btnClass = "";
-    var subscribeText = Model.BasePriceMonthly.HasValue ? $"${Model.BasePriceMonthly:0.00} / month" : "Free";
     if (Model.CurrentSubMonthly)
     {
         btnClass = "disabled";
-        subscribeText = "Current Plan";
     }
 
     var panelColor = "default";
@@ -28,6 +26,13 @@
         buttonColor = "primary";
         title = "Recommended";
     }
+
+    if (Model.CurrentSubMonthly ||
+        Model.CurrentSubYearly)
+    {
+        title = "Current Plan";
+    }
+
     var offset = "";
     if (!string.IsNullOrEmpty(Model.PanelOffset))
         offset = $"col-md-offset-{Model.PanelOffset}";
@@ -50,22 +55,20 @@
                     </h5>
                 }
                 <h4 class="sub-title">@Model.SubscribeText</h4>
-                <p><a href="@Model.SubscribeUrlMonthly" class="btn btn-@buttonColor center-block @btnClass" role="button">@subscribeText</a></p>
+                <p><a href="@Model.SubscribeUrlMonthly" class="btn btn-@buttonColor center-block @btnClass" role="button">@(Model.BasePriceMonthly.HasValue ? $"${Model.BasePriceMonthly:0.00} / month" : "Free")</a></p>
                 @if (Model.BasePriceYearly != null)
                 {
                     var yearBtnClass = "";
-                    var yearSubscribeText = $"${Model.BasePriceYearly:0.00} / year";
                     if (Model.CurrentSubYearly)
                     {
                         yearBtnClass = "disabled";
-                        yearSubscribeText = "Current Plan";
                     }
                     var discount = 1 - (Model.BasePriceYearly.Value / (Model.BasePriceMonthly.Value * 12));
                     <p>
                         Or prepay annually<br />
                         (save @Math.Round(100 * discount)%):
                     </p>
-                    <p><a href="@Model.SubscribeUrlYearly" class="btn btn-default btn-no-border btn-text-primary center-block @yearBtnClass" role="button">@yearSubscribeText</a></p>
+                    <p><a href="@Model.SubscribeUrlYearly" class="btn btn-default btn-no-border btn-text-primary center-block @yearBtnClass" role="button">@($"${Model.BasePriceYearly:0.00} / year")</a></p>
                 }
             </div>
         </div>
