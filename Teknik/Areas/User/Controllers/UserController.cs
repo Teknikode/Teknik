@@ -366,13 +366,15 @@ namespace Teknik.Areas.Users.Controllers
                 if (user.BillingCustomer != null)
                 {
                     var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+                    var portalSession = billingService.CreatePortalSession(user.BillingCustomer.CustomerId, Url.SubRouteUrl("account", "User.BillingSettings"));
+                    model.PortalUrl = portalSession.Url;
+
                     var subs = billingService.GetSubscriptionList(user.BillingCustomer.CustomerId);
                     foreach (var sub in subs)
                     {
                         foreach (var price in sub.Prices)
                         {
                             var product = billingService.GetProduct(price.ProductId);
-                            var portalSession = billingService.CreatePortalSession(user.BillingCustomer.CustomerId, Url.SubRouteUrl("account", "User.BillingSettings"));
                             var subView = new SubscriptionViewModel()
                             {
                                 SubscriptionId = sub.Id,
@@ -381,7 +383,6 @@ namespace Teknik.Areas.Users.Controllers
                                 Storage = price.Storage,
                                 Price = price.Amount,
                                 Interval = price.Interval.ToString(),
-                                PortalUrl = portalSession?.Url
                             };
                             model.Subscriptions.Add(subView);
                         }

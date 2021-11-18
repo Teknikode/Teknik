@@ -8,6 +8,8 @@ namespace Teknik.Areas.Users.ViewModels
 {
     public class BillingSettingsViewModel : SettingsViewModel
     {
+        public string PortalUrl { get; set; }
+
         public List<SubscriptionViewModel> Subscriptions { get; set; }
 
         public BillingSettingsViewModel()
