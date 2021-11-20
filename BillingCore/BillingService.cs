@@ -41,5 +41,6 @@ namespace Teknik.BillingCore
         public abstract Task<Event> ParseEvent(HttpRequest request, string apiKey);
         public abstract CheckoutSession ProcessCheckoutCompletedEvent(Event e);
         public abstract Subscription ProcessSubscriptionEvent(Event e);
+        public abstract Customer ProcessCustomerEvent(Event e);
     }
 }

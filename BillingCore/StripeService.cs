@@ -310,6 +310,14 @@ namespace Teknik.BillingCore
             return ConvertSubscription(subscription);
         }
 
+        public override Models.Customer ProcessCustomerEvent(Models.Event ev)
+        {
+            // Handle the checkout.session.completed event
+            var customer = ev.Data as Stripe.Customer;
+
+            return ConvertCustomer(customer);
+        }
+
         public override PortalSession CreatePortalSession(string customerId, string returnUrl)
         {
             var portalService = new Stripe.BillingPortal.SessionService();
@@ -469,7 +477,8 @@ namespace Teknik.BillingCore
                 CustomerId = customer.Id
             };
 
-            if (customer.Subscriptions.Any())
+            if (customer.Subscriptions != null && 
+                customer.Subscriptions.Any())
                 returnCust.Subscriptions = customer.Subscriptions.Select(s => ConvertSubscription(s)).ToList();
 
             return returnCust;

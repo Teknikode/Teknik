@@ -45,7 +45,7 @@ namespace Teknik.Areas.API.V1.Controllers
         {
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 
-            var billingEvent = await billingService.ParseEvent(Request, _config.BillingConfig.StripeCustomerWebhookSecret);
+            var billingEvent = await billingService.ParseEvent(Request, _config.BillingConfig.StripeSubscriptionWebhookSecret);
 
             if (billingEvent == null)
                 return BadRequest();
@@ -55,6 +55,24 @@ namespace Teknik.Areas.API.V1.Controllers
                 return BadRequest();
 
             BillingHelper.ProcessSubscription(_config, _dbContext, subscriptionEvent.CustomerId, subscriptionEvent);
+
+            return Ok();
+        }
+
+        public async Task<IActionResult> HandleCustomerDeletion()
+        {
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+
+            var billingEvent = await billingService.ParseEvent(Request, _config.BillingConfig.StripeCustomerWebhookSecret);
+
+            if (billingEvent == null)
+                return BadRequest();
+
+            var customerEvent = billingService.ProcessCustomerEvent(billingEvent);
+            if (customerEvent == null)
+                return BadRequest();
+
+            BillingHelper.RemoveCustomer(_dbContext, customerEvent.CustomerId);
 
             return Ok();
         }
