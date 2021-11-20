@@ -261,6 +261,12 @@
         ]
     },
     {
+        "outputFileName": "./wwwroot/js/user.settings.billing.min.js",
+        "inputFiles": [
+            "./wwwroot/js/app/User/BillingSettings.js"
+        ]
+    },
+    {
         "outputFileName": "./wwwroot/js/user.settings.security.min.js",
         "inputFiles": [
             "./wwwroot/js/app/User/SecuritySettings.js"

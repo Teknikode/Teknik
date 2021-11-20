@@ -31,6 +31,7 @@
         "Oidc": "readonly",
 
         // Common.js Functions
+        "confirmDialog": "readonly",
         "deleteConfirm": "readonly",
         "disableButton": "readonly",
         "enableButton": "readonly",

@@ -155,6 +155,17 @@
         }
     },
     {
+        "Name": "API.v1.HandleCustomerDeletion",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "api" ],
+        "Pattern": "v1/Billing/HandleCustomerDeletion",
+        "Area": "API",
+        "Defaults": {
+            "controller": "BillingAPIv1",
+            "action": "HandleCustomerDeletion"
+        }
+    },
+    {
         "Name": "API.v1.Claims",
         "HostTypes": [ "Full" ],
         "SubDomains": [ "api" ],

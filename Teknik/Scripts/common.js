@@ -117,15 +117,19 @@ $(function () {
 });
 
 function deleteConfirm(message, callback) {
+    confirmDialog('Delete', 'Cancel', message, callback);
+}
+
+function confirmDialog(confirmLabel, cancelLabel, message, callback) {
     bootbox.confirm({
         message: "<h3>" + message + "</h3>",
         buttons: {
             confirm: {
-                label: 'Delete',
+                label: confirmLabel,
                 className: 'btn-danger'
             },
             cancel: {
-                label: 'Cancel',
+                label: cancelLabel,
                 className: 'btn-default'
             }
         },

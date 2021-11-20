@@ -183,21 +183,7 @@ namespace Teknik.Areas.Billing.Controllers
             if (user == null)
                 throw new UnauthorizedAccessException();
 
-            if (user.BillingCustomer == null)
-            {
-                var custId = billingService.CreateCustomer(user.Username, null);
-                var customer = new Customer()
-                {
-                    CustomerId = custId,
-                    User = user
-                };
-                _dbContext.Customers.Add(customer);
-                user.BillingCustomer = customer;
-                _dbContext.Entry(user).State = EntityState.Modified;
-                _dbContext.SaveChanges();
-            }
-
-            var session = billingService.CreateCheckoutSession(user.BillingCustomer.CustomerId,
+            var session = billingService.CreateCheckoutSession(user.BillingCustomer?.CustomerId,
                                                                priceId, 
                                                                Url.SubRouteUrl("billing", "Billing.CheckoutComplete", new { productId = price.ProductId }), 
                                                                Url.SubRouteUrl("billing", "Billing.Subscriptions"));
@@ -211,6 +197,15 @@ namespace Teknik.Areas.Billing.Controllers
             var checkoutSession = billingService.GetCheckoutSession(session_id);
             if (checkoutSession != null)
             {
+                User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
+                if (user == null)
+                    throw new UnauthorizedAccessException();
+
+                if (user.BillingCustomer == null)
+                {
+                    BillingHelper.CreateCustomer(_dbContext, user, checkoutSession.CustomerId);
+                }
+
                 var subscription = billingService.GetSubscription(checkoutSession.SubscriptionId);
                 if (subscription != null)
                 {
@@ -258,32 +253,6 @@ namespace Teknik.Areas.Billing.Controllers
             }
 
             return Redirect(Url.SubRouteUrl("billing", "Billing.ViewSubscriptions"));
-        }
-
-        public IActionResult CancelSubscription(string subscriptionId, string productId)
-        {
-            // Get Subscription Info
-            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
-
-            var subscription = billingService.GetSubscription(subscriptionId);
-            if (subscription == null)
-                throw new ArgumentException("Invalid Subscription Id", "subscriptionId");
-
-            if (!subscription.Prices.Exists(p => p.ProductId == productId))
-                throw new ArgumentException("Subscription does not relate to product", "productId");
-
-            var product = billingService.GetProduct(productId);
-            if (product == null)
-                throw new ArgumentException("Product does not exist", "productId");
-
-            var result = billingService.CancelSubscription(subscriptionId);
-
-            var vm = new CancelSubscriptionViewModel()
-            {
-                ProductName = product.Name
-            };
-
-            return View(vm);
         }
 
         public IActionResult SubscriptionSuccess(string priceId)

@@ -1493,5 +1493,31 @@ namespace Teknik.Areas.Users.Controllers
             }
             return Json(new { error = "Invalid Type" });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CancelSubscription(string subscriptionId, string productId)
+        {
+            // Get Subscription Info
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+
+            var subscription = billingService.GetSubscription(subscriptionId);
+            if (subscription == null)
+                return Json(new { error = "Invalid Subscription Id" });
+
+            if (!subscription.Prices.Exists(p => p.ProductId == productId))
+                return Json(new { error = "Subscription does not relate to product" });
+
+            var product = billingService.GetProduct(productId);
+            if (product == null)
+                return Json(new { error = "Product does not exist" });
+
+            var result = billingService.CancelSubscription(subscriptionId);
+
+            if (result)
+                return Json(new { result = true });
+
+            return Json(new { error = "Unable to cancel subscription" });
+        }
     }
 }
