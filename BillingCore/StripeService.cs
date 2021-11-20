@@ -19,14 +19,29 @@ namespace Teknik.BillingCore
             StripeConfiguration.ApiKey = config.StripeSecretApiKey;
         }
 
-        public override string GetCustomer(string email)
+        public override List<Models.Customer> GetCustomers()
+        {
+            var customers = new List<Models.Customer>();
+            var service = new CustomerService();
+            var foundCustomers = service.List();
+            if (foundCustomers != null)
+            {
+                foreach (var customer in foundCustomers)
+                {
+                    customers.Add(ConvertCustomer(customer));
+                }
+            }
+            return customers;
+        }
+
+        public override Models.Customer GetCustomer(string email)
         {
             if (!string.IsNullOrEmpty(email))
             {
                 var service = new CustomerService();
                 var foundCustomer = service.Get(email);
                 if (foundCustomer != null)
-                    return foundCustomer.Id;
+                    return ConvertCustomer(foundCustomer);
             }
 
             return null;

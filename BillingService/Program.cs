@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using CommandLine;
 using Microsoft.EntityFrameworkCore;
+using Teknik.Areas.Billing;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
 using Teknik.BillingCore;
@@ -76,8 +77,21 @@ namespace Teknik.BillingService
             // Get Biling Service
             var billingService = BillingFactory.GetBillingService(config.BillingConfig);
 
+            // Get all customers
+            var customers = billingService.GetCustomers();
+            if (customers != null)
+            {
+                // Find customers that aren't linked anymore
+                var unlinkedCustomers = db.Users.Select(u => u.BillingCustomer).Where(b => !customers.Exists(c => c.CustomerId == b.CustomerId));
+                foreach (var customer in unlinkedCustomers)
+                {
+                    BillingHelper.RemoveCustomer(db, customer.CustomerId);
+                }
+            }
+
             foreach (var user in db.Users)
             {
+                // Only set/reset their limits if they have a subscription or have subscribed at some point
                 string email = UserHelper.GetUserEmailAddress(config, user.Username);
                 if (user.BillingCustomer != null)
                 {
@@ -86,26 +100,22 @@ namespace Teknik.BillingService
                     var uploadPrice = subscriptions.SelectMany(s => s.Prices).FirstOrDefault(p => p.ProductId == config.BillingConfig.UploadProductId);
                     if (uploadPrice != null)
                     {
-                        // Process Upload Settings
-                        user.UploadSettings.MaxUploadStorage = uploadPrice.Storage;
-                        user.UploadSettings.MaxUploadFileSize = uploadPrice.FileSize;
+                        BillingHelper.SetUploadLimits(db, user, uploadPrice.Storage, uploadPrice.FileSize);
+                    }
+                    else
+                    {
+                        BillingHelper.SetUploadLimits(db, user, config.UploadConfig.MaxStorage, config.UploadConfig.MaxUploadFileSize);
                     }
                     var emailPrice = subscriptions.SelectMany(s => s.Prices).FirstOrDefault(p => p.ProductId == config.BillingConfig.EmailProductId);
                     if (emailPrice != null)
                     {
-                        UserHelper.EnableUserEmail(config, email);
-                        UserHelper.EditUserEmailMaxSize(config, email, emailPrice.Storage);
+                        BillingHelper.SetEmailLimits(config, user, emailPrice.Storage, true);
+                    }
+                    else
+                    {
+                        BillingHelper.SetEmailLimits(config, user, config.EmailConfig.MaxSize, false);
                     }
                 }
-                else
-                {
-                    // No customer, so let's reset their info
-                    user.UploadSettings.MaxUploadStorage = config.UploadConfig.MaxStorage;
-                    user.UploadSettings.MaxUploadFileSize = config.UploadConfig.MaxUploadFileSize;
-                    UserHelper.DisableUserEmail(config, email);
-                }
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
             }
         }
 
