@@ -26,7 +26,7 @@
                 The Teknik API is free for everyone to use, and is defined on a per service basis.
                 <br />
                 <br />
-                The general API calls can be summarized as follows: <code>@Url.SubRouteUrl("api", "Api.Index")v@(Config.ApiConfig.Version)/<b>Service</b>/<b>Action</b></code>
+                The general API calls can be summarized as follows: <code>@Url.SubRouteUrl("api", "Api.Index")/v@(Config.ApiConfig.Version)/<b>Service</b>/<b>Action</b></code>
             </p>
             <h3>Authentication</h3>
             <p>
@@ -34,7 +34,7 @@
                 <br />
                 <br />
                 <h4>OAuth2 token (sent in a header)</h4>
-                <code>curl -H "Authorization: token <i>OATH-TOKEN</i>" @Url.SubRouteUrl("api", "Api.Index")v@(Config.ApiConfig.Version)/</code>
+                <code>curl -H "Authorization: token <i>OATH-TOKEN</i>" @Url.SubRouteUrl("api", "Api.Index")/v@(Config.ApiConfig.Version)/</code>
                 <br />
                 <br />
                 For example, if you're accessing the API via cURL, the following command would associate the create paste with your account.  Just replace <code>&lt;OAUTH-TOKEN&gt;</code> with your access token.
