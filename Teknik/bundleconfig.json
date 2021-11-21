@@ -55,6 +55,7 @@
     {
         "outputFileName": "./wwwroot/js/contact.min.js",
         "inputFiles": [
+            "./wwwroot/js/app/lib/jquery.validate.unobtrusive.js",
             "./wwwroot/js/app/Contact/Contact.js"
         ]
     },
