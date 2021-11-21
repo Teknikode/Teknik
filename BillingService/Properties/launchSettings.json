@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BillingService": {
+      "commandName": "Project",
+      "commandLineArgs": "-c C:\\Users\\chris\\Repositories\\Teknik\\Teknik\\App_Data -s"
+    }
+  }
+}

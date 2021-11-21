@@ -358,6 +358,7 @@ namespace Teknik.Areas.Users.Utility
                 .Include(u => u.UserSettings)
                 .Include(u => u.BlogSettings)
                 .Include(u => u.UploadSettings)
+                .Include(u => u.BillingCustomer)
                 .Where(b => b.Username == username).FirstOrDefault();
 
             return user;

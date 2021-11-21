@@ -81,23 +81,25 @@ namespace Teknik.BillingService
             var customers = billingService.GetCustomers();
             if (customers != null)
             {
+                var customerIds = customers.Select(c => c.CustomerId).ToList();
                 // Find customers that aren't linked anymore
-                var unlinkedCustomers = db.Users.Select(u => u.BillingCustomer).Where(b => !customers.Exists(c => c.CustomerId == b.CustomerId));
+                var unlinkedCustomers = db.Users.Select(u => u.BillingCustomer).Where(b => b != null && !customerIds.Contains(b.CustomerId));
                 foreach (var customer in unlinkedCustomers)
                 {
                     BillingHelper.RemoveCustomer(db, customer.CustomerId);
                 }
             }
 
-            foreach (var user in db.Users)
+            foreach (var user in db.Users.Include(u => u.BillingCustomer))
             {
                 // Only set/reset their limits if they have a subscription or have subscribed at some point
-                string email = UserHelper.GetUserEmailAddress(config, user.Username);
                 if (user.BillingCustomer != null)
                 {
                     // get the subscriptions for this user
                     var subscriptions = billingService.GetSubscriptionList(user.BillingCustomer.CustomerId);
                     var uploadPrice = subscriptions.SelectMany(s => s.Prices).FirstOrDefault(p => p.ProductId == config.BillingConfig.UploadProductId);
+
+                    // Process upload subscription sync
                     if (uploadPrice != null)
                     {
                         BillingHelper.SetUploadLimits(db, user, uploadPrice.Storage, uploadPrice.FileSize);
@@ -106,6 +108,8 @@ namespace Teknik.BillingService
                     {
                         BillingHelper.SetUploadLimits(db, user, config.UploadConfig.MaxStorage, config.UploadConfig.MaxUploadFileSize);
                     }
+
+                    // Process email subscription sync
                     var emailPrice = subscriptions.SelectMany(s => s.Prices).FirstOrDefault(p => p.ProductId == config.BillingConfig.EmailProductId);
                     if (emailPrice != null)
                     {
