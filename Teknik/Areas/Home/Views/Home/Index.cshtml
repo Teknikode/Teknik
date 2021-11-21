@@ -68,12 +68,12 @@
                 </div>
             </div>
         </a>
-        <a href="@Url.SubRouteUrl("help", "Help.Mumble")">
+        <a href="@Url.SubRouteUrl("valut", "Vault.NewVault")">
             <div class="col-md-2 text-center">
                 <br />
-                <i class="fa fa-comments fa-5x"></i>
+                <i class="fa fa-archive fa-5x"></i>
                 <div class="caption">
-                    <h3>Mumble Server</h3>
+                    <h3>Vaults</h3>
                 </div>
             </div>
         </a>
@@ -124,7 +124,7 @@
                                 <br />
                                 <i class="fa fa-database fa-5x"></i>
                                 <div class="caption">
-                                    <h3>Service Data</h3>
+                                    <h3>View Data</h3>
                                 </div>
                             </div>
                         </a>
@@ -134,7 +134,7 @@
                     <h2 class="text-center"><a href="@Url.SubRouteUrl("billing", "Billing.Subscriptions")">Subscribe</a> for even more features!</h2>
                     <div class="row">
                         <a conditional href="@Url.SubRouteUrl("help", "Help.Mail")" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-3 text-center text-primary">
+                            <div class="col-md-4 text-center text-primary">
                                 <br />
                                 <i class="fa fa-envelope fa-5x"></i>
                                 <div class="caption">
@@ -143,7 +143,7 @@
                             </div>
                         </a>
                         <a conditional href="@Url.SubRouteUrl("upload", "Upload.Index")" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-3 text-center text-primary">
+                            <div class="col-md-4 text-center text-primary">
                                 <br />
                                 <i class="fa fa-upload fa-5x"></i>
                                 <div class="caption">
@@ -152,20 +152,11 @@
                             </div>
                         </a>
                         <a conditional href="@Url.SubRouteUrl("upload", "Upload.Index")" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-3 text-center text-primary">
+                            <div class="col-md-4 text-center text-primary">
                                 <br />
                                 <i class="fa fa-hdd-o fa-5x"></i>
                                 <div class="caption">
                                     <h3>Additional Storage</h3>
-                                </div>
-                            </div>
-                        </a>
-                        <a conditional href="@Url.SubRouteUrl("upload", "Upload.Index")" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-3 text-center text-primary">
-                                <br />
-                                <i class="fa fa-film fa-5x"></i>
-                                <div class="caption">
-                                    <h3>No Embed Limits</h3>
                                 </div>
                             </div>
                         </a>

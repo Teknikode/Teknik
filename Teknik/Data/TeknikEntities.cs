@@ -46,7 +46,6 @@ namespace Teknik.Data
         public DbSet<PodcastFile> PodcastFiles { get; set; }
         public DbSet<PodcastComment> PodcastComments { get; set; }
         // Transparency
-        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Takedown> Takedowns { get; set; }
         // Url Shortener
         public DbSet<ShortenedUrl> ShortenedUrls { get; set; }
@@ -115,9 +114,6 @@ namespace Teknik.Data
             // Takedowns
             modelBuilder.Entity<Takedown>().HasMany(t => t.Attachments).WithOne().HasForeignKey("Takedown_TakedownId"); // Legacy???
 
-            // Transactions
-            modelBuilder.Entity<Transaction>().Property(t => t.Amount).HasColumnType("decimal(19, 5)");
-
             // Users
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<InviteCode>().ToTable("InviteCodes");
@@ -152,7 +148,6 @@ namespace Teknik.Data
             modelBuilder.Entity<PodcastComment>().ToTable("PodcastComments");
             modelBuilder.Entity<PodcastTag>().ToTable("PodcastTags");
             // Transparency
-            modelBuilder.Entity<Transaction>().ToTable("Transactions");
             modelBuilder.Entity<Takedown>().ToTable("Takedowns");
 
             // Custom Attributes

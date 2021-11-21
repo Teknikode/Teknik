@@ -18,8 +18,7 @@ $(document).ready(function () {
                         success: function(response) {
                             if (response.result) {
                                 $("#top_msg").css('display', 'inline', 'important');
-                                $("#top_msg").html(
-                                    '<div class="alert alert-info alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Thank you for your help!  Feedback has been submitted.</div>');
+                                $("#top_msg").html('<div class="alert alert-info alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Thank you for your help!  Feedback has been submitted.</div>');
                             } else {
                                 $("#top_msg").css('display', 'inline', 'important');
                                 $("#top_msg")
