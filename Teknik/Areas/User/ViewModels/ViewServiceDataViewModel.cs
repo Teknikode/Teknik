@@ -10,6 +10,10 @@ namespace Teknik.Areas.Users.ViewModels
     {
         public DateTime LastSeen { get; set; }
 
+        public long MaxUploadStorage { get; set; }
+
+        public long CurrentUploadStorage { get; set; }
+
         public List<Upload.Models.Upload> Uploads { get; set; }
 
         public List<Paste.Models.Paste> Pastes { get; set; }

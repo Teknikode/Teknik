@@ -272,6 +272,9 @@ namespace Teknik.Areas.Users.Controllers
                 {
                     ViewBag.Title = "Service Data";
                     ViewBag.Description = "Viewing all of your service data";
+
+                    model.CurrentUploadStorage = _dbContext.Uploads.Where(u => u.UserId == user.UserId).Sum(u => u.ContentLength);
+                    model.MaxUploadStorage = user.UploadSettings.MaxUploadStorage ?? _config.UploadConfig.MaxStorage;
                     
                     model.Uploads = _dbContext.Uploads.Where(u => u.UserId == user.UserId).OrderByDescending(u => u.DateUploaded).ToList();
 
