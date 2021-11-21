@@ -23,6 +23,9 @@ namespace Teknik.Areas.API.V1.Controllers
 
         public async Task<IActionResult> HandleCheckoutCompleteEvent()
         {
+            if (!_config.BillingConfig.Enabled)
+                return Forbid();
+
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 
             var billingEvent = await billingService.ParseEvent(Request, _config.BillingConfig.StripeCheckoutWebhookSecret);
@@ -43,6 +46,9 @@ namespace Teknik.Areas.API.V1.Controllers
 
         public async Task<IActionResult> HandleSubscriptionChange()
         {
+            if (!_config.BillingConfig.Enabled)
+                return Forbid();
+
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 
             var billingEvent = await billingService.ParseEvent(Request, _config.BillingConfig.StripeSubscriptionWebhookSecret);
@@ -61,6 +67,9 @@ namespace Teknik.Areas.API.V1.Controllers
 
         public async Task<IActionResult> HandleCustomerDeletion()
         {
+            if (!_config.BillingConfig.Enabled)
+                return Forbid();
+
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 
             var billingEvent = await billingService.ParseEvent(Request, _config.BillingConfig.StripeCustomerWebhookSecret);

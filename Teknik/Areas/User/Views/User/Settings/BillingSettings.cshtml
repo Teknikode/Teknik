@@ -10,48 +10,59 @@
     var cancelSubscriptionURL = '@Url.SubRouteUrl("billing", "User.Action", new { action = "CancelSubscription" })';
 </script>
 
-@if (!string.IsNullOrEmpty(Model.PortalUrl))
+@if (Config.BillingConfig.Enabled)
 {
+    if (!string.IsNullOrEmpty(Model.PortalUrl))
+    {
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Billing Information</h2>
+                <hr />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-12">
+                <a href="@Model.PortalUrl">Click here</a> to view/modify your billing information and invoices.
+            </div>
+        </div>
+    }
     <div class="row">
         <div class="col-sm-12">
-            <h2>Billing Information</h2>
+            <h2>Active Subscriptions</h2>
             <hr />
         </div>
     </div>
     <div class="row">
-        <div class="form-group col-sm-12">
-            <a href="@Model.PortalUrl">Click here</a> to view/modify your billing information and invoices.
+        <div class="col-sm-12">
+            <div id="activeSubscriptions" style="overflow-y: auto; max-height: 400px;">
+                <ul class="list-group" id="activeSubscriptionList">
+                    @if (Model.Subscriptions.Any())
+                    {
+                        foreach (var subscription in Model.Subscriptions)
+                        {
+                            <li class="list-group-item" id="@subscription.SubscriptionId">
+                                <h4 class="list-group-item-heading pull-left">@subscription.ProductName: <strong>@(StringHelper.GetBytesReadable(subscription.Storage))</strong> for <strong>@($"${subscription.Price:0.00} / {subscription.Interval}")</strong></h4>
+                                <button role="button" class="btn btn-default cancel-subscription-button pull-right" data-subscription-id="@subscription.SubscriptionId" data-product-id="@subscription.ProductId">Cancel Subscription</button>
+                                <div class="clearfix"></div>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item text-center">No Active Subscriptions</li>
+                    }
+                </ul>
+            </div>
         </div>
     </div>
 }
-<div class="row">
-    <div class="col-sm-12">
-        <h2>Active Subscriptions</h2>
-        <hr />
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div id="activeSubscriptions" style="overflow-y: auto; max-height: 400px;">
-            <ul class="list-group" id="activeSubscriptionList">
-                @if (Model.Subscriptions.Any())
-                {
-                    foreach (var subscription in Model.Subscriptions)
-                    {
-                    <li class="list-group-item" id="@subscription.SubscriptionId">
-                        <h4 class="list-group-item-heading pull-left">@subscription.ProductName: <strong>@(StringHelper.GetBytesReadable(subscription.Storage))</strong> for <strong>@($"${subscription.Price:0.00} / {subscription.Interval}")</strong></h4>
-                        <button role="button" class="btn btn-default cancel-subscription-button pull-right" data-subscription-id="@subscription.SubscriptionId" data-product-id="@subscription.ProductId">Cancel Subscription</button>
-                        <div class="clearfix"></div>
-                    </li>
-                    }
-                }
-                else
-                {
-                    <li class="list-group-item text-center">No Active Subscriptions</li>
-                }
-            </ul>
+else
+{
+    <div class="row">
+        <div class="form-group col-sm-12">
+            <p>Billing System Disabled</p>
         </div>
     </div>
-</div>
+}
 
 <bundle src="js/user.settings.billing.min.js" append-version="true"></bundle>

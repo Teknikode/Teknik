@@ -172,6 +172,9 @@ namespace Teknik.Areas.Billing.Controllers
 
         public IActionResult Checkout(string priceId)
         {
+            if (!_config.BillingConfig.Enabled)
+                throw new UnauthorizedAccessException();
+
             // Get Subscription Info
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 
@@ -192,6 +195,9 @@ namespace Teknik.Areas.Billing.Controllers
 
         public IActionResult CheckoutComplete(string productId, string session_id)
         {
+            if (!_config.BillingConfig.Enabled)
+                throw new UnauthorizedAccessException();
+
             // Get Checkout Info
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
             var checkoutSession = billingService.GetCheckoutSession(session_id);
@@ -224,6 +230,9 @@ namespace Teknik.Areas.Billing.Controllers
 
         public IActionResult EditSubscription(string priceId)
         {
+            if (!_config.BillingConfig.Enabled)
+                throw new UnauthorizedAccessException();
+
             // Get Subscription Info
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
 

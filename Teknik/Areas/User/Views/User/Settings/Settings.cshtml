@@ -17,7 +17,10 @@
                         <div class="panel-heading text-center"><strong>Personal Settings</strong></div>
                         <a href="@Url.SubRouteUrl("account", "User.ProfileSettings")" class="list-group-item @(Model.Page == "Profile" ? "active" : string.Empty)">Profile</a>
                         <a href="@Url.SubRouteUrl("account", "User.AccountSettings")" class="list-group-item @(Model.Page == "Account" ? "active" : string.Empty)">Account</a>
-                        <a href="@Url.SubRouteUrl("account", "User.BillingSettings")" class="list-group-item @(Model.Page == "Billing" ? "active" : string.Empty)">Billing</a>
+                        @if (Config.BillingConfig.Enabled)
+                        {
+                            <a href="@Url.SubRouteUrl("account", "User.BillingSettings")" class="list-group-item @(Model.Page == "Billing" ? "active" : string.Empty)">Billing</a>
+                        }
                         <a href="@Url.SubRouteUrl("account", "User.SecuritySettings")" class="list-group-item @(Model.Page == "Security" ? "active" : string.Empty)">Security</a>
                         <a href="@Url.SubRouteUrl("account", "User.InviteSettings")" class="list-group-item @(Model.Page == "Invite" ? "active" : string.Empty)">Invite Codes</a>
                         <a href="@Url.SubRouteUrl("account", "User.BlogSettings")" class="list-group-item @(Model.Page == "Blog" ? "active" : string.Empty)">Blogging</a>
