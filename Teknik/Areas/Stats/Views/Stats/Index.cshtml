@@ -15,7 +15,6 @@
     {
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#site-stats" role="tab" data-toggle="tab">Site Statistics</a></li>
-            <li role="presentation"><a href="#transactions" role="tab" data-toggle="tab">Transactions</a></li>
             <li role="presentation"><a href="#takedowns" role="tab" data-toggle="tab">Takedowns</a></li>
         </ul>
 
@@ -57,9 +56,6 @@
                     </div>
                 </div>
 
-            </div>
-            <div role="tabpanel" class="tab-pane" id="transactions">
-                @await Html.PartialAsync("~/Areas/Stats/Views/Stats/Transactions.cshtml", Model.Transactions)
             </div>
             <div role="tabpanel" class="tab-pane" id="takedowns">
                 @await Html.PartialAsync("~/Areas/Stats/Views/Stats/Takedowns.cshtml", Model.Takedowns)
