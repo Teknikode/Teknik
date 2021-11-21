@@ -12,7 +12,7 @@
     }
 
     var btnClass = "";
-    if (Model.CurrentSubMonthly)
+    if (Model.CurrentSubMonthly || !Config.BillingConfig.Enabled)
     {
         btnClass = "disabled";
     }
@@ -59,7 +59,7 @@
                 @if (Model.BasePriceYearly != null)
                 {
                     var yearBtnClass = "";
-                    if (Model.CurrentSubYearly)
+                    if (Model.CurrentSubYearly || !Config.BillingConfig.Enabled)
                     {
                         yearBtnClass = "disabled";
                     }
