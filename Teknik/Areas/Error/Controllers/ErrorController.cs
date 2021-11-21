@@ -185,7 +185,6 @@ Stack Trace:
                 client.Port = _config.ContactConfig.EmailAccount.Port;
                 client.EnableSsl = _config.ContactConfig.EmailAccount.SSL;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                client.UseDefaultCredentials = true;
                 client.Credentials = new System.Net.NetworkCredential(_config.ContactConfig.EmailAccount.Username, _config.ContactConfig.EmailAccount.Password);
                 client.Timeout = 5000;
 

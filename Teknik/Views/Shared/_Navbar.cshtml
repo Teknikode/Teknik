@@ -69,9 +69,6 @@
                         <li class="@Url.GetActive("mail")">
                             <a href="@Url.SubRouteUrl("mail", "Mail.Index")" target="_blank"><i class="fa fa-envelope fa-fw"></i>&nbsp;&nbsp;Mail</a>
                         </li>
-                        <li class="@Url.GetActive("mumble")">
-                            <a href="mumble://mumble.@(Config.Host):64738/?version=1.2.5" target="_blank"><i class="fa fa-comments fa-fw"></i>&nbsp;&nbsp;Mumble</a>
-                        </li>
                     </ul>
                 </li>
                 <li is-active-route asp-controller="Contact">
