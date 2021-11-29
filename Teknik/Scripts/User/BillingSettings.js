@@ -5,9 +5,8 @@ $(document).ready(function () {
 
         var subscriptionId = $(this).data('subscription-id');
         var productId = $(this).data('product-id');
-        var element = $('#activeSubscriptionList [id="' + subscriptionId + '"');
 
-        confirmDialog('Confirm', 'Back', 'Are you sure you want to cancel your subscription?', function (result) {
+        confirmDialog('Confirm', 'Back', 'Are you sure you want to cancel your subscription? Your plan will be canceled, but is still available until the end of your billing period.', function (result) {
             if (result) {
                 $.ajax({
                     type: "POST",
@@ -21,9 +20,8 @@ $(document).ready(function () {
                     },
                     success: function (response) {
                         if (response.result) {
-                            element.remove();
                             $("#top_msg").css('display', 'inline', 'important');
-                            $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Subscription successfully canceled.</div>');
+                            $("#top_msg").html('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Subscription will be canceled at the end of your billing cycle.</div>');
                         }
                         else {
                             $("#top_msg").css('display', 'inline', 'important');
