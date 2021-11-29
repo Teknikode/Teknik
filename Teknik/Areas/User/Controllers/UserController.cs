@@ -1515,7 +1515,7 @@ namespace Teknik.Areas.Users.Controllers
             if (product == null)
                 return Json(new { error = "Product does not exist" });
 
-            var result = billingService.CancelSubscription(subscriptionId);
+            var result = billingService.CancelSubscription(subscriptionId, true);
 
             if (result)
                 return Json(new { result = true });

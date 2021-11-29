@@ -230,17 +230,31 @@ namespace Teknik.BillingCore
             return null;
         }
 
-        public override bool CancelSubscription(string subscriptionId)
+        public override bool CancelSubscription(string subscriptionId, bool atEndOfperiod)
         {
             if (!string.IsNullOrEmpty(subscriptionId))
             {
-                var cancelOptions = new SubscriptionCancelOptions()
+                if (atEndOfperiod)
                 {
-                    InvoiceNow = true
-                };
-                var subscriptionService = new SubscriptionService();
-                var subscription = subscriptionService.Cancel(subscriptionId, cancelOptions);
-                return subscription.Status == "canceled";
+                    var cancelOptions = new SubscriptionUpdateOptions()
+                    {
+                        CancelAtPeriodEnd = true
+                    };
+                    var subscriptionService = new SubscriptionService();
+                    var subscription = subscriptionService.Update(subscriptionId, cancelOptions);
+                    return subscription.CancelAtPeriodEnd;
+                }
+                else
+                {
+                    var cancelOptions = new SubscriptionCancelOptions()
+                    {
+
+                        InvoiceNow = true
+                    };
+                    var subscriptionService = new SubscriptionService();
+                    var subscription = subscriptionService.Cancel(subscriptionId, cancelOptions);
+                    return subscription.Status == "canceled";
+                }
             }
             return false;
         }
