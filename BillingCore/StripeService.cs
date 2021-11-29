@@ -230,6 +230,27 @@ namespace Teknik.BillingCore
             return null;
         }
 
+        public override Models.Subscription RenewSubscription(string subscriptionId)
+        {
+            if (!string.IsNullOrEmpty(subscriptionId))
+            {
+                var subscriptionService = new SubscriptionService();
+                var subscription = subscriptionService.Get(subscriptionId);
+                if (subscription != null)
+                {
+                    var subscriptionOptions = new SubscriptionUpdateOptions()
+                    {
+                        CancelAtPeriodEnd = false
+                    };
+                    subscriptionOptions.AddExpand("latest_invoice.payment_intent");
+                    var result = subscriptionService.Update(subscriptionId, subscriptionOptions);
+                    if (result != null)
+                        return ConvertSubscription(result);
+                }
+            }
+            return null;
+        }
+
         public override bool CancelSubscription(string subscriptionId, bool atEndOfperiod)
         {
             if (!string.IsNullOrEmpty(subscriptionId))
@@ -454,6 +475,8 @@ namespace Teknik.BillingCore
                 Id = subscription.Id,
                 CustomerId = subscription.CustomerId,
                 Status = status,
+                BillingPeriodEnd = subscription.CurrentPeriodEnd,
+                CancelAtBillingEnd = subscription.CancelAtPeriodEnd,
                 Prices = prices,
                 ClientSecret = subscription.LatestInvoice?.PaymentIntent?.ClientSecret
             };

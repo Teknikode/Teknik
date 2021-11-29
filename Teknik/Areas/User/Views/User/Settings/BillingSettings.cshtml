@@ -7,7 +7,8 @@
 }
 
 <script>
-    var cancelSubscriptionURL = '@Url.SubRouteUrl("billing", "User.Action", new { action = "CancelSubscription" })';
+    var cancelSubscriptionURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "CancelSubscription" })';
+    var renewSubscriptionURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "RenewSubscription" })';
 </script>
 
 @if (Config.BillingConfig.Enabled)
@@ -28,7 +29,7 @@
     }
     <div class="row">
         <div class="col-sm-12">
-            <h2>Active Subscriptions</h2>
+            <h2>Current Subscriptions</h2>
             <hr />
         </div>
     </div>
@@ -41,8 +42,24 @@
                         foreach (var subscription in Model.Subscriptions)
                         {
                             <li class="list-group-item" id="@subscription.SubscriptionId">
-                                <h4 class="list-group-item-heading pull-left">@subscription.ProductName: <strong>@(StringHelper.GetBytesReadable(subscription.Storage))</strong> for <strong>@($"${subscription.Price:0.00} / {subscription.Interval}")</strong></h4>
-                                <button role="button" class="btn btn-danger cancel-subscription-button pull-right" data-subscription-id="@subscription.SubscriptionId" data-product-id="@subscription.ProductId">Cancel Subscription</button>
+                                <div class="pull-left">
+                                    <h4 class="list-group-item-heading pull-left">@subscription.ProductName: <strong>@(StringHelper.GetBytesReadable(subscription.Storage))</strong> for <strong>@($"${subscription.Price:0.00} / {subscription.Interval}")</strong></h4>                                    
+                                    <p>
+                                    @if (subscription.Canceled)
+                                    {
+                                        @:<strong>Canceled</strong> - 
+                                    }
+                                    Billing period ends @(subscription.BillingPeriodEnd.ToShortDateString()).
+                                    </p>
+                                </div>
+                                @if (subscription.Canceled)
+                                {
+                                    <button role="button" class="btn btn-primary renew-subscription-button pull-right" data-subscription-id="@subscription.SubscriptionId">Renew Subscription</button>
+                                }
+                                else
+                                {
+                                    <button role="button" class="btn btn-danger cancel-subscription-button pull-right" data-subscription-id="@subscription.SubscriptionId">Cancel Subscription</button>
+                                }
                                 <div class="clearfix"></div>
                             </li>
                         }

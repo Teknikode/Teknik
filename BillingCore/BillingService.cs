@@ -32,6 +32,7 @@ namespace Teknik.BillingCore
         public abstract Subscription GetSubscription(string subscriptionId);
         public abstract Subscription CreateSubscription(string customerId, string priceId);
         public abstract Subscription EditSubscriptionPrice(string subscriptionId, string priceId);
+        public abstract Subscription RenewSubscription(string subscriptionId);
         public abstract bool CancelSubscription(string subscriptionId, bool atEndOfPeriod);
 
         public abstract CheckoutSession CreateCheckoutSession(string customerId, string priceId, string successUrl, string cancelUrl);

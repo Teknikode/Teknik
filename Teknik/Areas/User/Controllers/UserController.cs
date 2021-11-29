@@ -386,6 +386,8 @@ namespace Teknik.Areas.Users.Controllers
                                 Storage = price.Storage,
                                 Price = price.Amount,
                                 Interval = price.Interval.ToString(),
+                                BillingPeriodEnd = sub.BillingPeriodEnd,
+                                Canceled = sub.CancelAtBillingEnd
                             };
                             model.Subscriptions.Add(subView);
                         }
@@ -1499,7 +1501,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CancelSubscription(string subscriptionId, string productId)
+        public IActionResult CancelSubscription(string subscriptionId)
         {
             // Get Subscription Info
             var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
@@ -1508,16 +1510,29 @@ namespace Teknik.Areas.Users.Controllers
             if (subscription == null)
                 return Json(new { error = "Invalid Subscription Id" });
 
-            if (!subscription.Prices.Exists(p => p.ProductId == productId))
-                return Json(new { error = "Subscription does not relate to product" });
-
-            var product = billingService.GetProduct(productId);
-            if (product == null)
-                return Json(new { error = "Product does not exist" });
-
             var result = billingService.CancelSubscription(subscriptionId, true);
 
             if (result)
+                return Json(new { result = true });
+
+            return Json(new { error = "Unable to cancel subscription" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RenewSubscription(string subscriptionId)
+        {
+            // Get Subscription Info
+            var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+
+            var subscription = billingService.GetSubscription(subscriptionId);
+            if (subscription == null)
+                return Json(new { error = "Invalid Subscription Id" });
+
+            var result = billingService.RenewSubscription(subscriptionId);
+
+            if (result != null &&
+                !result.CancelAtBillingEnd)
                 return Json(new { result = true });
 
             return Json(new { error = "Unable to cancel subscription" });

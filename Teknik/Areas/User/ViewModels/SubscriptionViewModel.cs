@@ -19,5 +19,9 @@ namespace Teknik.Areas.Users.ViewModels
         public string Interval { get; set; }
 
         public long Storage { get; set; }
+
+        public DateTime BillingPeriodEnd { get; set; }
+
+        public bool Canceled { get; set; }
     }
 }
