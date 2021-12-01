@@ -35,8 +35,8 @@
         "url": "https://git.teknik.io/Teknikode/Teknik"
     },
     "scripts": {
-        "pre-publish": "npm install && gulp clean && gulp copy-assets && gulp watch",
-        "build": "npm install && gulp clean && gulp copy-assets && gulp min && gulp update-version",
+        "pre-publish": "npm install && gulp clean && gulp copy-assets",
+        "build": "npm install && gulp eslint && gulp clean && gulp copy-assets && gulp load-bundle && gulp min && gulp update-version",
         "gulp": "gulp"
     },
     "version": "2.1.0"

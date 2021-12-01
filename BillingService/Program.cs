@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using CommandLine;
 using Microsoft.EntityFrameworkCore;
 using Teknik.Areas.Billing;
@@ -72,7 +73,7 @@ namespace Teknik.BillingService
             return -1;
         }
 
-        public static void SyncSubscriptions(Config config, TeknikEntities db)
+        public static async Task SyncSubscriptions(Config config, TeknikEntities db)
         {
             // Get Biling Service
             var billingService = BillingFactory.GetBillingService(config.BillingConfig);
@@ -117,7 +118,13 @@ namespace Teknik.BillingService
                     }
                     else
                     {
-                        BillingHelper.SetEmailLimits(config, user, config.EmailConfig.MaxSize, false);
+                        // Only reset their email size limit if they are premium
+                        var userInfo = await IdentityHelper.GetIdentityUserInfo(config, user.Username);
+                        if (userInfo != null &&
+                            userInfo.AccountType == AccountType.Premium)
+                            BillingHelper.SetEmailLimits(config, user, config.EmailConfig.MaxSize, true);
+                        else
+                            BillingHelper.SetEmailLimits(config, user, config.EmailConfig.MaxSize, false);
                     }
                 }
             }
