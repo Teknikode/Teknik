@@ -14,6 +14,7 @@ using Teknik.BillingCore;
 using Teknik.Configuration;
 using Teknik.Controllers;
 using Teknik.Data;
+using Teknik.Filters;
 using Teknik.Logging;
 using Teknik.Utilities.Routing;
 
@@ -32,6 +33,7 @@ namespace Teknik.Areas.Billing.Controllers
         }
 
         [AllowAnonymous]
+        [TrackPageView]
         public IActionResult ViewSubscriptions()
         {
             ViewBag.Title = "Subscriptions";

@@ -41,6 +41,14 @@
                             </div>
                         </div>
                         <br />
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <small class="upload__drop-text text-muted">@StringHelper.GetBytesReadable(Model.CurrentTotalSize) / @StringHelper.GetBytesReadable(Model.MaxTotalSize) Storage</small>
+                            </div>
+                        </div>
+                        }
                         <div class="row">
                             <div class="col-sm-12">
                                 <small class="upload__drop-text text-muted">(Individual file size limit @StringHelper.GetBytesReadable(Model.MaxUploadSize))</small>

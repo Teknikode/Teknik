@@ -1,4 +1,4 @@
-﻿/// <binding ProjectOpened='watch' />
+/// <binding BeforeBuild='load-bundle, copy-assets, min, update-version' Clean='clean' />
 "use strict";
 
 var gulp = require('gulp');
