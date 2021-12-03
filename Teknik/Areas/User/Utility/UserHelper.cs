@@ -570,7 +570,6 @@ namespace Teknik.Areas.Users.Utility
             client.Port = config.ContactConfig.EmailAccount.Port;
             client.EnableSsl = config.ContactConfig.EmailAccount.SSL;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.UseDefaultCredentials = true;
             client.Credentials = new NetworkCredential(config.ContactConfig.EmailAccount.Username, config.ContactConfig.EmailAccount.Password);
             client.Timeout = 5000;
 
@@ -598,7 +597,6 @@ If you recieved this email and you did not sign up for an account, please email 
             client.Port = config.ContactConfig.EmailAccount.Port;
             client.EnableSsl = config.ContactConfig.EmailAccount.SSL;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.UseDefaultCredentials = true;
             client.Credentials = new NetworkCredential(config.ContactConfig.EmailAccount.Username, config.ContactConfig.EmailAccount.Password);
             client.Timeout = 5000;
 

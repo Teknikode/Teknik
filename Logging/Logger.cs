@@ -142,7 +142,6 @@ namespace Teknik.Logging
                 client.Port = _config.LoggingConfig.SenderAccount.Port;
                 client.EnableSsl = _config.LoggingConfig.SenderAccount.SSL;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                client.UseDefaultCredentials = true;
                 client.Credentials = new System.Net.NetworkCredential(_config.LoggingConfig.SenderAccount.Username, _config.LoggingConfig.SenderAccount.Password);
                 client.Timeout = 5000;
 
