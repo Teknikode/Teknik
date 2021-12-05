@@ -849,8 +849,19 @@
     },
     {
         "Name": "Shortener.View",
-        "HostTypes": [ "Short", "Full" ],
-        "SubDomains": [ "", "shortened" ],
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "shortened" ],
+        "Pattern": "{url}",
+        "Area": "Shortener",
+        "Defaults": {
+            "controller": "Shortener",
+            "action": "RedirectToUrl"
+        }
+    },
+    {
+        "Name": "Shortener.View",
+        "HostTypes": [ "Short" ],
+        "SubDomains": [],
         "Pattern": "{url}",
         "Area": "Shortener",
         "Defaults": {
@@ -861,7 +872,7 @@
     {
         "Name": "Shortener.Verify",
         "HostTypes": [ "Short" ],
-        "SubDomains": [ "" ],
+        "SubDomains": [],
         "Pattern": "",
         "Area": "Shortener",
         "Defaults": {
