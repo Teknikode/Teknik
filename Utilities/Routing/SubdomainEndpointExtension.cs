@@ -65,6 +65,10 @@ namespace Teknik.Utilities.Routing
         private static string[] BuildHosts(List<string> subdomains, List<string> hosts)
         {
             var fullHosts = new List<string>();
+            if (subdomains != null &&
+                subdomains.Count == 0)
+                return hosts?.ToArray();
+
             foreach (var sub in subdomains)
             {
                 foreach (var host in hosts)
