@@ -1,0 +1,76 @@
+﻿@model Teknik.Areas.Users.ViewModels.AuthTokenSettingsViewModel
+
+@using Teknik.Areas.Users.ViewModels
+
+@{
+    Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
+}
+
+<script>
+    var createAuthTokenURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "CreateAuthToken" })';
+    var editAuthTokenURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "EditAuthToken" })';
+    var deleteAuthTokenURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "DeleteAuthToken" })';
+    var getAuthTokenURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "GetAuthToken" })';
+</script>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h2>Auth Tokens</h2>
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <span class="pull-right"><button type="button" class="btn btn-default" id="createAuthToken">Create Auth Token</button></span>
+        <div class="clearfix"></div>
+        <br />
+        <div id="authTokens">
+            <ul class="list-group" id="authTokenList">
+                @if (Model.AuthTokens.Any())
+                {
+                    foreach (AuthTokenViewModel authToken in Model.AuthTokens)
+                    {
+                        @await Html.PartialAsync("Settings/AuthTokenView", authToken)
+                    }
+                }
+                else
+                {
+                    <li class="list-group-item text-center" id="noAuthTokens">No Auth Tokens</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="authTokenModal" tabindex="-1" role="dialog" aria-labelledby="authTokenModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header modal-header-default">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="authTokenModalLabel">Auth Token Information</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" class="form-control" id="authTokenId" name="authTokenId" />
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <div id="authTokenStatus">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="authTokenName">Auth Token Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="authTokenName" name="authTokenName" data-val-required="The Auth Token Name field is required." data-val="true" />
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary pull-right hidden authTokenSubmit" id="authTokenCreateSubmit" type="submit" name="authTokenCreateSubmit">Create Auth Token</button>
+                        <button class="btn btn-primary pull-right hidden authTokenSubmit" id="authTokenEditSubmit" type="submit" name="authTokenEditSubmit">Save Auth Token</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<bundle src="js/user.settings.authToken.min.js" append-version="true"></bundle>

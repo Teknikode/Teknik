@@ -2,8 +2,8 @@
 
 <li class="list-group-item" id="authToken_@Model.AuthTokenId">
     <div class="btn-group btn-group-sm pull-right" role="group" aria-label="...">
-        <button type="button" class="btn btn-default editAuthToken" id="editAuthToken_@Model.AuthTokenId" data-authId="@Model.AuthTokenId">Edit</button>
-        <button type="button" class="btn btn-danger text-danger deleteAuthToken" id="deleteAuthToken_@Model.AuthTokenId" data-authId="@Model.AuthTokenId">Delete</button>
+        <button type="button" class="btn btn-default editAuthToken" id="editAuthToken_@Model.AuthTokenId" data-authTokenId="@Model.AuthTokenId">Edit</button>
+        <button type="button" class="btn btn-danger text-danger deleteAuthToken" id="deleteAuthToken_@Model.AuthTokenId" data-authTokenId="@Model.AuthTokenId">Delete</button>
     </div>
     <h4 class="list-group-item-heading" id="authTokenName_@Model.AuthTokenId">@Model.Name</h4>
     @if (Model.LastDateUsed.HasValue)

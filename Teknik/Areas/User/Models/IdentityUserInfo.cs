@@ -10,6 +10,8 @@ namespace Teknik.Areas.Users.Models
 {
     public class IdentityUserInfo
     {
+        public string Username { get; set; }
+
         public DateTime? CreationDate { get; set; }
 
         public DateTime? LastSeen { get; set; }
@@ -30,6 +32,10 @@ namespace Teknik.Areas.Users.Models
 
         public IdentityUserInfo(IEnumerable<Claim> claims)
         {
+            if (claims.FirstOrDefault(c => c.Type == "username") != null)
+            {
+                RecoveryEmail = claims.FirstOrDefault(c => c.Type == "username").Value;
+            }
             if (claims.FirstOrDefault(c => c.Type == "creation-date") != null)
             {
                 if (DateTime.TryParse(claims.FirstOrDefault(c => c.Type == "creation-date").Value, out var dateTime))
@@ -72,6 +78,10 @@ namespace Teknik.Areas.Users.Models
 
         public IdentityUserInfo(JObject info)
         {
+            if (info["username"] != null)
+            {
+                Username = info["username"].ToString();
+            }
             if (info["creation-date"] != null)
             {
                 if (DateTime.TryParse(info["creation-date"].ToString(), out var dateTime))

@@ -8,7 +8,7 @@ namespace Teknik.Areas.Users.ViewModels
 {
     public class AuthTokenViewModel : ViewModelBase
     {
-        public int AuthTokenId { get; set; }
+        public string AuthTokenId { get; set; }
 
         public string Name { get; set; }
 

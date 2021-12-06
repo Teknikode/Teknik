@@ -16,6 +16,8 @@ namespace Teknik.Utilities
 
         public const string NONCE_KEY = "Nonce";
 
+        public const string AUTH_TOKEN_MATCH = "AuthToken";
+
         public const string NullIpAddress = "::1";
     }
 }

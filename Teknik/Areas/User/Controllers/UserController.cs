@@ -418,17 +418,6 @@ namespace Teknik.Areas.Users.Controllers
 
                 // Get the user secure info
                 IdentityUserInfo userInfo = await IdentityHelper.GetIdentityUserInfo(_config, user.Username);
-                //model.TrustedDeviceCount = user.TrustedDevices.Count;
-                //model.AuthTokens = new List<AuthTokenViewModel>();
-                //foreach (AuthToken token in user.AuthTokens)
-                //{
-                //    AuthTokenViewModel tokenModel = new AuthTokenViewModel();
-                //    tokenModel.AuthTokenId = token.AuthTokenId;
-                //    tokenModel.Name = token.Name;
-                //    tokenModel.LastDateUsed = token.LastDateUsed;
-
-                //    model.AuthTokens.Add(tokenModel);
-                //}
 
                 model.PgpPublicKey = userInfo.PGPPublicKey;
                 model.RecoveryEmail = userInfo.RecoveryEmail;
@@ -444,32 +433,22 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [TrackPageView]
-        public async Task<IActionResult> DeveloperSettings()
+        public async Task<IActionResult> ClientSettings()
         {
             string username = User.Identity.Name;
             User user = UserHelper.GetUser(_dbContext, username);
 
             if (user != null)
             {
-                ViewBag.Title = "Developer Settings";
-                ViewBag.Description = "Your " + _config.Title + " Developer Settings";
+                ViewBag.Title = "Client Settings";
+                ViewBag.Description = "Your " + _config.Title + " Client Settings";
 
-                DeveloperSettingsViewModel model = new DeveloperSettingsViewModel();
-                model.Page = "Developer";
+                ClientSettingsViewModel model = new ClientSettingsViewModel();
+                model.Page = "Clients";
                 model.UserID = user.UserId;
                 model.Username = user.Username;
 
-                model.AuthTokens = new List<AuthTokenViewModel>();
                 model.Clients = new List<ClientViewModel>();
-                //foreach (AuthToken token in user.AuthTokens)
-                //{
-                //    AuthTokenViewModel tokenModel = new AuthTokenViewModel();
-                //    tokenModel.AuthTokenId = token.AuthTokenId;
-                //    tokenModel.Name = token.Name;
-                //    tokenModel.LastDateUsed = token.LastDateUsed;
-
-                //    model.AuthTokens.Add(tokenModel);
-                //}
 
                 Client[] clients = await IdentityHelper.GetClients(_config, username);
                 foreach (Client client in clients)
@@ -486,7 +465,42 @@ namespace Teknik.Areas.Users.Controllers
                     });
                 }
 
-                return View("/Areas/User/Views/User/Settings/DeveloperSettings.cshtml", model);
+                return View("/Areas/User/Views/User/Settings/ClientSettings.cshtml", model);
+            }
+
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
+        }
+
+        [TrackPageView]
+        public async Task<IActionResult> AuthTokenSettings()
+        {
+            string username = User.Identity.Name;
+            User user = UserHelper.GetUser(_dbContext, username);
+
+            if (user != null)
+            {
+                ViewBag.Title = "Auth Tokens";
+                ViewBag.Description = "Your " + _config.Title + " - Developer Settings";
+
+                AuthTokenSettingsViewModel model = new AuthTokenSettingsViewModel();
+                model.Page = "AuthTokens";
+                model.UserID = user.UserId;
+                model.Username = user.Username;
+
+                model.AuthTokens = new List<AuthTokenViewModel>();
+
+                AuthToken[] authTokens = await IdentityHelper.GetAuthTokens(_config, username);
+                foreach (AuthToken token in authTokens)
+                {
+                    AuthTokenViewModel tokenModel = new AuthTokenViewModel();
+                    tokenModel.AuthTokenId = token.AuthTokenId;
+                    tokenModel.Name = token.Name;
+                    tokenModel.LastDateUsed = token.LastUsed;
+
+                    model.AuthTokens.Add(tokenModel);
+                }
+
+                return View("/Areas/User/Views/User/Settings/AuthTokenSettings.cshtml", model);
             }
 
             return new StatusCodeResult(StatusCodes.Status403Forbidden);
@@ -704,20 +718,6 @@ namespace Teknik.Areas.Users.Controllers
                             }
                         }
 
-                        //if (!settings.TwoFactorEnabled && (!userInfo.TwoFactorEnabled.HasValue || userInfo.TwoFactorEnabled.Value))
-                        //{
-                        //    var result = await IdentityHelper.Disable2FA(_config, user.Username);
-                        //    if (!result.Success)
-                        //        return Json(new { error = result.Message });
-                        //}
-
-                        //UserHelper.EditAccount(_dbContext, _config, user, changePass, settings.NewPassword);
-
-
-                        //if (!oldTwoFactor && settings.TwoFactorEnabled)
-                        //{
-                        //    return Json(new { result = new { checkAuth = true, key = newKey, qrUrl = Url.SubRouteUrl("account", "User.Action", new { action = "GenerateAuthQrCode", key = newKey }) } });
-                        //}
                         return Json(new { result = true });
                     }
                     return Json(new { error = "User does not exist" });
@@ -1124,33 +1124,32 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ClearTrustedDevices()
+        public async Task<IActionResult> CreateAuthToken(string name, [FromServices] ICompositeViewEngine viewEngine)
         {
             try
             {
-                User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                if (user != null)
-                {
-                    //if (user.SecuritySettings.AllowTrustedDevices)
-                    //{
-                    //    // let's clear the trusted devices
-                    //    user.TrustedDevices.Clear();
-                    //    List<TrustedDevice> foundDevices = _dbContext.TrustedDevices.Where(d => d.UserId == user.UserId).ToList();
-                    //    if (foundDevices != null)
-                    //    {
-                    //        foreach (TrustedDevice device in foundDevices)
-                    //        {
-                    //            _dbContext.TrustedDevices.Remove(device);
-                    //        }
-                    //    }
-                    //    _dbContext.Entry(user).State = EntityState.Modified;
-                    //    _dbContext.SaveChanges();
+                if (string.IsNullOrEmpty(name))
+                    return Json(new { error = "You must enter an auth token name" });
 
-                    //    return Json(new { result = true });
-                    //}
-                    return Json(new { error = "User does not allow trusted devices" });
+                // Validate the code with the identity server
+                var result = await IdentityHelper.CreateAuthToken(
+                    _config,
+                    User.Identity.Name,
+                    name);
+
+                if (result.Success)
+                {
+                    var authToken = (JObject)result.Data;
+
+                    AuthTokenViewModel model = new AuthTokenViewModel();
+                    model.AuthTokenId = authToken["authTokenId"].ToString();
+                    model.Name = name;
+
+                    string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/User/Views/User/Settings/AuthTokenView.cshtml", model);
+
+                    return Json(new { result = true, authTokenId = model.AuthTokenId, token = authToken["token"].ToString(), html = renderedView });
                 }
-                return Json(new { error = "User does not exist" });
+                return Json(new { error = result.Message });
             }
             catch (Exception ex)
             {
@@ -1160,37 +1159,55 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GenerateToken(string name, [FromServices] ICompositeViewEngine viewEngine)
+        public async Task<IActionResult> GetAuthToken(string authTokenId)
+        {
+            AuthToken foundAuthToken = await IdentityHelper.GetAuthToken(_config, authTokenId);
+            if (foundAuthToken != null)
+            {
+                AuthTokenViewModel model = new AuthTokenViewModel()
+                {
+                    AuthTokenId = foundAuthToken.AuthTokenId.ToString(),
+                    Name = foundAuthToken.Name
+                };
+
+                return Json(new { result = true, authToken = model });
+            }
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAuthToken(string authTokenId, string name, [FromServices] ICompositeViewEngine viewEngine)
         {
             try
             {
-                User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                if (user != null)
+                if (string.IsNullOrEmpty(name))
+                    return Json(new { error = "You must enter an auth token name" });
+
+                AuthToken foundAuthToken = await IdentityHelper.GetAuthToken(_config, authTokenId);
+
+                if (foundAuthToken == null)
+                    return Json(new { error = "Auth Token does not exist" });
+
+                // Validate the code with the identity server
+                var result = await IdentityHelper.EditAuthToken(
+                    _config,
+                    authTokenId,
+                    name);
+
+                if (result.Success)
                 {
-                    //string newTokenStr = UserHelper.GenerateAuthToken(_dbContext, user.Username);
+                    var authToken = (JObject)result.Data;
 
-                    //if (!string.IsNullOrEmpty(newTokenStr))
-                    //{
-                    //    AuthToken token = new AuthToken();
-                    //    token.UserId = user.UserId;
-                    //    token.HashedToken = SHA256.Hash(newTokenStr);
-                    //    token.Name = name;
+                    AuthTokenViewModel model = new AuthTokenViewModel();
+                    model.AuthTokenId = authTokenId;
+                    model.Name = name;
 
-                    //    _dbContext.AuthTokens.Add(token);
-                    //    _dbContext.SaveChanges();
+                    string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/User/Views/User/Settings/AuthTokenView.cshtml", model);
 
-                    //    AuthTokenViewModel model = new AuthTokenViewModel();
-                    //    model.AuthTokenId = token.AuthTokenId;
-                    //    model.Name = token.Name;
-                    //    model.LastDateUsed = token.LastDateUsed;
-
-                    //    string renderedView = await RenderPartialViewToString(viewEngine, "~/Areas/User/Views/User/Settings/AuthToken.cshtml", model);
-
-                    //    return Json(new { result = new { token = newTokenStr, html = renderedView } });
-                    //}
-                    return Json(new { error = "Unable to generate Auth Token" });
+                    return Json(new { result = true, authTokenId = authTokenId, html = renderedView });
                 }
-                return Json(new { error = "User does not exist" });
+                return Json(new { error = result.Message });
             }
             catch (Exception ex)
             {
@@ -1200,85 +1217,19 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RevokeAllTokens()
+        public async Task<IActionResult> DeleteAuthToken(string authTokenId)
         {
             try
             {
-                User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                if (user != null)
+                var result = await IdentityHelper.DeleteAuthToken(_config, authTokenId);
+                if (result.Success)
                 {
-                    //user.AuthTokens.Clear();
-                    //List<AuthToken> foundTokens = _dbContext.AuthTokens.Where(d => d.UserId == user.UserId).ToList();
-                    //if (foundTokens != null)
-                    //{
-                    //    foreach (AuthToken token in foundTokens)
-                    //    {
-                    //        _dbContext.AuthTokens.Remove(token);
-                    //    }
-                    //}
-                    _dbContext.Entry(user).State = EntityState.Modified;
-                    _dbContext.SaveChanges();
-
                     return Json(new { result = true });
                 }
-                return Json(new { error = "User does not exist" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { error = ex.GetFullMessage(true) });
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult EditTokenName(int tokenId, string name)
-        {
-            try
-            {
-                User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                if (user != null)
+                else
                 {
-                    //AuthToken foundToken = _dbContext.AuthTokens.Where(d => d.UserId == user.UserId && d.AuthTokenId == tokenId).FirstOrDefault();
-                    //if (foundToken != null)
-                    //{
-                    //    foundToken.Name = name;
-                    //    _dbContext.Entry(foundToken).State = EntityState.Modified;
-                    //    _dbContext.SaveChanges();
-
-                    //    return Json(new { result = new { name = name } });
-                    //}
-                    return Json(new { error = "Authentication Token does not exist" });
+                    return Json(new { error = result.Message });
                 }
-                return Json(new { error = "User does not exist" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { error = ex.GetFullMessage(true) });
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteToken(int tokenId)
-        {
-            try
-            {
-                User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
-                if (user != null)
-                {
-                    //AuthToken foundToken = _dbContext.AuthTokens.Where(d => d.UserId == user.UserId && d.AuthTokenId == tokenId).FirstOrDefault();
-                    //if (foundToken != null)
-                    //{
-                    //    _dbContext.AuthTokens.Remove(foundToken);
-                    //    user.AuthTokens.Remove(foundToken);
-                    //    _dbContext.Entry(user).State = EntityState.Modified;
-                    //    _dbContext.SaveChanges();
-
-                    //    return Json(new { result = true });
-                    //}
-                    return Json(new { error = "Authentication Token does not exist" });
-                }
-                return Json(new { error = "User does not exist" });
             }
             catch (Exception ex)
             {

@@ -1090,14 +1090,25 @@
         }
     },
     {
-        "Name": "User.DeveloperSettings",
+        "Name": "User.ClientSettings",
         "HostTypes": [ "Full" ],
         "SubDomains": [ "account" ],
-        "Pattern": "Settings/Developer",
+        "Pattern": "Settings/Clients",
         "Area": "User",
         "Defaults": {
             "controller": "User",
-            "action": "DeveloperSettings"
+            "action": "ClientSettings"
+        }
+    },
+    {
+        "Name": "User.AuthTokenSettings",
+        "HostTypes": [ "Full" ],
+        "SubDomains": [ "account" ],
+        "Pattern": "Settings/AuthTokens",
+        "Area": "User",
+        "Defaults": {
+            "controller": "User",
+            "action": "AuthTokenSettings"
         }
     },
     {

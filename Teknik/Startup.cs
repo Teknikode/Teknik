@@ -227,33 +227,34 @@ namespace Teknik
                     };
 
                     options.Events.OnRemoteFailure = HandleOnRemoteFailure;
-                });
+                })
+                .AddScheme<AuthTokenSchemeOptions, AuthTokenAuthenticationHandler>("AuthToken", "AuthToken", options => { });
 
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("FullAPI", p =>
                 {
-                    p.AddAuthenticationSchemes("Bearer");
                     p.AddAuthenticationSchemes("AuthToken");
+                    p.AddAuthenticationSchemes("Bearer");
                     p.RequireScope("teknik-api.read");
                     p.RequireScope("teknik-api.write");
                 });
                 options.AddPolicy("ReadAPI", p =>
                 {
-                    p.AddAuthenticationSchemes("Bearer");
                     p.AddAuthenticationSchemes("AuthToken");
+                    p.AddAuthenticationSchemes("Bearer");
                     p.RequireScope("teknik-api.read");
                 });
                 options.AddPolicy("WriteAPI", p =>
                 {
-                    p.AddAuthenticationSchemes("Bearer");
                     p.AddAuthenticationSchemes("AuthToken");
+                    p.AddAuthenticationSchemes("Bearer");
                     p.RequireScope("teknik-api.write");
                 });
                 options.AddPolicy("AnyAPI", p =>
                 {
-                    p.AddAuthenticationSchemes("Bearer");
                     p.AddAuthenticationSchemes("AuthToken");
+                    p.AddAuthenticationSchemes("Bearer");
                     p.RequireScope("teknik-api.read", "teknik-api.write");
                 });
             });

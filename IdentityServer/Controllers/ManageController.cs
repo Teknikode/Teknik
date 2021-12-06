@@ -139,6 +139,36 @@ namespace Teknik.IdentityServer.Controllers
             return new JsonResult(new { success = false, message = "User does not exist." });
         }
 
+        [HttpGet]
+        public IActionResult GetUserInfoByAuthToken(string authToken)
+        {
+            if (string.IsNullOrEmpty(authToken))
+                return new JsonResult(new { success = false, message = "Auth Token Required" });
+
+            var foundUser = GetCachedUserByAuthToken(authToken);
+            if (foundUser != null)
+            {
+                var userJson = foundUser.ToJson();
+                return new JsonResult(new { success = true, data = userJson });
+            }
+            return new JsonResult(new { success = false, message = "User does not exist." });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserClaims(string username, [FromServices] IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory)
+        {
+            if (string.IsNullOrEmpty(username))
+                return new JsonResult(new { success = false, message = "Username is required" });
+
+            var foundUser = await GetCachedUser(username);
+            if (foundUser != null)
+            {
+                var principal = await claimsFactory.CreateAsync(foundUser);
+                return new JsonResult(new { success = true, data = principal.Claims.ToList() });
+            }
+            return new JsonResult(new { success = false, message = "User does not exist." });
+        }
+
         [HttpPost]
         public async Task<IActionResult> CheckPassword(CheckPasswordModel model)
         {
@@ -672,6 +702,109 @@ namespace Teknik.IdentityServer.Controllers
             return new JsonResult(new { success = false, message = "Client does not exist." });
         }
 
+        [HttpGet]
+        public IActionResult GetAuthToken(string authTokenId, [FromServices] ApplicationDbContext dbContext)
+        {
+            var authToken = dbContext.AuthTokens.FirstOrDefault(t => t.AuthTokenId == Guid.Parse(authTokenId));
+            if (authToken != null)
+            {
+                return new JsonResult(new { success = true, data = new { authTokenId = authToken.AuthTokenId, name = authToken.Name, token = authToken.Token } });
+            }
+
+            return new JsonResult(new { success = false, message = "Auth Token does not exist." });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAuthTokens(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                return new JsonResult(new { success = false, message = "Username is required" });
+
+            var foundUser = await GetCachedUser(username);
+            if (foundUser != null)
+            {
+                var authTokens = foundUser.AuthTokens.Select(t => new { authTokenId = t.AuthTokenId, name = t.Name, token = t.Token }).ToList();
+                return new JsonResult(new { success = true, data = authTokens });
+            }
+            return new JsonResult(new { success = false, message = "User does not exist" });
+        }
+
+        [HttpPost]
+        public IActionResult CreateAuthToken(CreateAuthTokenModel model, [FromServices] ApplicationDbContext dbContext)
+        {
+
+            if (string.IsNullOrEmpty(model.Username))
+                return new JsonResult(new { success = false, message = "Username is required" });
+
+            var foundUser = dbContext.Users.FirstOrDefault(u => u.UserName == model.Username);
+            if (foundUser != null)
+            {
+                // Generate a unique token
+                var token = StringHelper.RandomString(40, "abcdefghjkmnpqrstuvwxyz1234567890");
+                var authToken = new AuthToken()
+                {
+                    AuthTokenId = Guid.NewGuid(),
+                    ApplicationUser = foundUser,
+                    Name = model.Name,
+                    Token = token
+                };
+
+                dbContext.AuthTokens.Add(authToken);
+                dbContext.SaveChanges();
+
+                // Clear the user cache
+                RemoveCachedUser(model.Username);
+
+                return new JsonResult(new { success = true, data = new { authTokenId = authToken.AuthTokenId, token = token } });
+            }
+            return new JsonResult(new { success = false, message = "User does not exist" });
+        }
+
+        [HttpPost]
+        public IActionResult EditAuthToken(EditAuthTokenModel model, [FromServices] ApplicationDbContext applicationDb)
+        {
+            var foundAuthToken = applicationDb.AuthTokens.FirstOrDefault(t => t.AuthTokenId == Guid.Parse(model.AuthTokenId));
+            if (foundAuthToken != null)
+            {
+                foundAuthToken.Name = model.Name;
+                applicationDb.Entry(foundAuthToken).State = EntityState.Modified;
+                applicationDb.SaveChanges();
+
+                // Clear the user cache
+                RemoveCachedUser(foundAuthToken.ApplicationUser.UserName);
+
+                // Clear the user cache by token
+                RemoveCachedUser(foundAuthToken.Token);
+
+                return new JsonResult(new { success = true });
+            }
+
+            return new JsonResult(new { success = false, message = "Auth Token does not exist." });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteAuthToken(DeleteAuthTokenModel model, [FromServices] ApplicationDbContext applicationDb)
+        {
+            var foundAuthToken = applicationDb.AuthTokens.FirstOrDefault(t => t.AuthTokenId == Guid.Parse(model.AuthTokenId));
+            if (foundAuthToken != null)
+            {
+                var username = foundAuthToken.ApplicationUser.UserName;
+                var token = foundAuthToken.Token;
+                applicationDb.AuthTokens.Remove(foundAuthToken);
+                applicationDb.SaveChanges();
+
+                // Clear the user cache
+                RemoveCachedUser(username);
+
+                // Clear the user cache by token
+                RemoveCachedUser(token);
+
+                return new JsonResult(new { success = true });
+            }
+
+            return new JsonResult(new { success = false, message = "Auth Token does not exist." });
+        }
+
         private string FormatKey(string unformattedKey)
         {
             var result = new StringBuilder();
@@ -700,6 +833,26 @@ namespace Teknik.IdentityServer.Controllers
             if (!_cache.TryGetValue(cacheKey, out foundUser))
             {
                 foundUser = await _userManager.FindByNameAsync(username);
+                if (foundUser != null)
+                {
+                    _cache.AddToCache(cacheKey, foundUser, new TimeSpan(1, 0, 0));
+                }
+            }
+
+            return foundUser;
+        }
+
+        private ApplicationUser GetCachedUserByAuthToken(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+                throw new ArgumentNullException("token");
+
+            // Check the cache
+            string cacheKey = GetKey<ApplicationUser>(token);
+            ApplicationUser foundUser;
+            if (!_cache.TryGetValue(cacheKey, out foundUser))
+            {
+                foundUser = _userManager.Users.FirstOrDefault(u => u.AuthTokens.FirstOrDefault(t => t.Token == token) != null);
                 if (foundUser != null)
                 {
                     _cache.AddToCache(cacheKey, foundUser, new TimeSpan(1, 0, 0));

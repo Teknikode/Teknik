@@ -5,15 +5,12 @@ using System.Threading.Tasks;
 
 namespace Teknik.Areas.Users.ViewModels
 {
-    public class DeveloperSettingsViewModel : SettingsViewModel
+    public class ClientSettingsViewModel : SettingsViewModel
     {
-
-        public List<AuthTokenViewModel> AuthTokens { get; set; }
         public List<ClientViewModel> Clients { get; set; }
 
-        public DeveloperSettingsViewModel()
+        public ClientSettingsViewModel()
         {
-            AuthTokens = new List<AuthTokenViewModel>();
             Clients = new List<ClientViewModel>();
         }
     }

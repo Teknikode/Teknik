@@ -274,15 +274,21 @@
         ]
     },
     {
-        "outputFileName": "./wwwroot/js/user.settings.developer.min.js",
+        "outputFileName": "./wwwroot/js/user.settings.client.min.js",
         "inputFiles": [
-            "./wwwroot/js/app/User/DeveloperSettings.js"
+            "./wwwroot/js/app/User/ClientSettings.js"
         ]
     },
     {
-        "outputFileName": "./wwwroot/css/user.settings.developer.min.css",
+        "outputFileName": "./wwwroot/css/user.settings.client.min.css",
         "inputFiles": [
-            "./wwwroot/css/app/User/Settings/Developer.css"
+            "./wwwroot/css/app/User/Settings/Client.css"
+        ]
+    },
+    {
+        "outputFileName": "./wwwroot/js/user.settings.authToken.min.js",
+        "inputFiles": [
+            "./wwwroot/js/app/User/AuthTokenSettings.js"
         ]
     },
     {

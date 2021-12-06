@@ -14,7 +14,7 @@
                 <!--left col-->
                 <div class="panel panel-default">
                     <ul class="list-group">
-                        <div class="panel-heading text-center"><strong>Personal Settings</strong></div>
+                        <div class="panel-heading text-center"><h5>Personal Settings</h5></div>
                         <a href="@Url.SubRouteUrl("account", "User.ProfileSettings")" class="list-group-item @(Model.Page == "Profile" ? "active" : string.Empty)">Profile</a>
                         <a href="@Url.SubRouteUrl("account", "User.AccountSettings")" class="list-group-item @(Model.Page == "Account" ? "active" : string.Empty)">Account</a>
                         @if (Config.BillingConfig.Enabled)
@@ -29,7 +29,9 @@
                 </div>
                 <div class="panel panel-default">
                     <ul class="list-group">
-                        <a href="@Url.SubRouteUrl("account", "User.DeveloperSettings")" class="list-group-item @(Model.Page == "Developer" ? "active" : string.Empty)">Developer Settings</a>
+                        <div class="panel-heading text-center"><h5>Developer Settings</h5></div>
+                        <a href="@Url.SubRouteUrl("account", "User.ClientSettings")" class="list-group-item @(Model.Page == "Clients" ? "active" : string.Empty)">Clients</a>
+                        <a href="@Url.SubRouteUrl("account", "User.AuthTokenSettings")" class="list-group-item @(Model.Page == "AuthTokens" ? "active" : string.Empty)">Auth Tokens</a>
                     </ul>
                 </div>
             </div><!--/col-2-->

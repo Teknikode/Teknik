@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Teknik.Areas.Users.Models;
 using Teknik.Configuration;
@@ -167,6 +168,30 @@ namespace Teknik.Areas.Users.Utility
             if (result.Success)
             {
                 return new IdentityUserInfo((JObject)result.Data);
+            }
+            throw new Exception(result.Message);
+        }
+
+        public static async Task<IdentityUserInfo> GetIdentityUserInfoByToken(Config config, string token)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/GetUserInfoByAuthToken?authToken={token}");
+
+            var result = await Get(config, manageUrl);
+            if (result.Success)
+            {
+                return new IdentityUserInfo((JObject)result.Data);
+            }
+            throw new Exception(result.Message);
+        }
+
+        public static async Task<Claim[]> GetIdentityUserClaims(Config config, string username)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/GetUserClaims?username={username}");
+
+            var result = await Get(config, manageUrl);
+            if (result.Success)
+            {
+                return ((JArray)result.Data).ToObject<Claim[]>();
             }
             throw new Exception(result.Message);
         }
@@ -443,6 +468,68 @@ namespace Teknik.Areas.Users.Utility
                 new
                 {
                     clientId = clientId
+                });
+            return response;
+        }
+
+        public static async Task<AuthToken> GetAuthToken(Config config, string authTokenId)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/GetAuthToken?authTokenId={authTokenId}");
+
+            var result = await Get(config, manageUrl);
+            if (result.Success)
+            {
+                return ((JObject)result.Data).ToObject<AuthToken>();
+            }
+            throw new Exception(result.Message);
+        }
+
+        public static async Task<AuthToken[]> GetAuthTokens(Config config, string username)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/GetAuthTokens?username={username}");
+
+            var result = await Get(config, manageUrl);
+            if (result.Success)
+            {
+                return ((JArray)result.Data).ToObject<AuthToken[]>();
+            }
+            throw new Exception(result.Message);
+        }
+
+        public static async Task<IdentityResult> CreateAuthToken(Config config, string username, string name)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/CreateAuthToken");
+
+            var response = await Post(config, manageUrl,
+                new
+                {
+                    username = username,
+                    name = name
+                });
+            return response;
+        }
+
+        public static async Task<IdentityResult> EditAuthToken(Config config, string authTokenId, string name)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/EditAuthToken");
+
+            var response = await Post(config, manageUrl,
+                new
+                {
+                    authTokenId = authTokenId,
+                    name = name
+                });
+            return response;
+        }
+
+        public static async Task<IdentityResult> DeleteAuthToken(Config config, string authTokenId)
+        {
+            var manageUrl = CreateUrl(config, $"Manage/DeleteAuthToken");
+
+            var response = await Post(config, manageUrl,
+                new
+                {
+                    authTokenId = authTokenId
                 });
             return response;
         }

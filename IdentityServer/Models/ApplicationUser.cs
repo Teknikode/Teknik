@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace Teknik.IdentityServer.Models
 
         public DateTime LastEdit { get; set; }
 
+        public virtual ICollection<AuthToken> AuthTokens { get; set; }
+
         public ApplicationUser() : base()
         {
             Init();
@@ -41,6 +44,7 @@ namespace Teknik.IdentityServer.Models
             AccountType = AccountType.Basic;
             AccountStatus = AccountStatus.Active;
             PGPPublicKey = null;
+            AuthTokens = new List<AuthToken>();
         }
 
         public List<Claim> ToClaims()

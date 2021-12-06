@@ -1,4 +1,4 @@
-﻿@model Teknik.Areas.Users.ViewModels.DeveloperSettingsViewModel
+﻿@model Teknik.Areas.Users.ViewModels.ClientSettingsViewModel
 
 @using Teknik.Areas.Users.ViewModels
 
@@ -6,7 +6,7 @@
     Layout = "~/Areas/User/Views/User/Settings/Settings.cshtml";
 }
 
-<bundle src="css/user.settings.developer.min.css" append-version="true"></bundle>
+<bundle src="css/user.settings.client.min.css" append-version="true"></bundle>
 
 <script>
     var createClientURL = '@Url.SubRouteUrl("account", "User.Action", new { action = "CreateClient" })';
@@ -133,4 +133,4 @@
     </div>
 </div>
 
-<bundle src="js/user.settings.developer.min.js" append-version="true"></bundle>
+<bundle src="js/user.settings.client.min.js" append-version="true"></bundle>
