@@ -270,3 +270,4 @@ __pycache__/
 /IdentityServer/App_Data/Config.json
 /ServiceWorker/Output
 /IdentityServer/tempkey.jwk
+/IdentityServer/App_Data/version.json
