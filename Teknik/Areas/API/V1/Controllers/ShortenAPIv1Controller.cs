@@ -26,7 +26,6 @@ namespace Teknik.Areas.API.V1.Controllers
         public ShortenAPIv1Controller(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
         [HttpPost]
-        [AllowAnonymous]
         [TrackPageView]
         public IActionResult Shorten(ShortenAPIv1Model model)
         {
