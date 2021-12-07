@@ -23,22 +23,36 @@
             <h2><b>Teknik API</b></h2>
             <hr>
             <p>
-                The Teknik API is free for everyone to use, and is defined on a per service basis.
+                The Teknik API is free for all accounts to use, and is defined on a per service basis.
                 <br />
                 <br />
                 The general API calls can be summarized as follows: <code>@Url.SubRouteUrl("api", "Api.Index")/v@(Config.ApiConfig.Version)/<b>Service</b>/<b>Action</b></code>
             </p>
             <h3>Authentication</h3>
             <p>
-                For some services, you may be required to authenticate to access them, or to associate generated content with your account.  In all cases, the same authentication methods can be used.
+                For all API services, you will be required to authenticate to access them.  You can either authenticate using Oauth/OpenID Connect, or via an Auth Token.  We advise to use OAuth in as many cases as possible, but when unable, Auth Tokens are persistent tokens that give you access to the API only.
+                <br />
+                <br />
+                <h4>OAuth or OpenID Connect</h4>
+                <p>To authenticate with OAuth or OpenID, you will need to create a client in your <a href="@Url.SubRouteUrl("account", "User.ClientSettings")">Developer Settings</a> to authenticate against.  Once created, you can interact with the authentication endpoint via any of the endpoints described in the <a href="https://auth.teknik.io/.well-known/openid-configuration">discovery document</a>.</p>
                 <br />
                 <br />
                 <h4>OAuth2 token (sent in a header)</h4>
+                <p>To authenticate with an Oauth Token, you need to generate one using the <a href="https://auth.teknik.io/connect/token">token endpoint</a>.  To learn more about obtaining a token, you can </p>
                 <code>curl -H "Authorization: token <i>OATH-TOKEN</i>" @Url.SubRouteUrl("api", "Api.Index")/v@(Config.ApiConfig.Version)/</code>
                 <br />
                 <br />
                 For example, if you're accessing the API via cURL, the following command would associate the create paste with your account.  Just replace <code>&lt;OAUTH-TOKEN&gt;</code> with your access token.
                 <pre><code>$ curl -H &lt;OAUTH-TOKEN&gt; --data code="Test" @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
+                <br />
+                <br />
+                <h4>Auth Token (sent in a header)</h4>
+                <p>To authenticate with an Auth Token, you can generate tokens in your <a href="@Url.SubRouteUrl("account", "User.AuthTokenSettings")">Developer Settings</a></p>
+                <code>curl -H "Authorization: AuthToken <i>AUTH-TOKEN</i>" @Url.SubRouteUrl("api", "Api.Index")/v@(Config.ApiConfig.Version)/</code>
+                <br />
+                <br />
+                For example, if you're accessing the API via cURL, the following command would associate the create paste with your account.  Just replace <code>&lt;XXXXXXXXXXXXXXXXXXXX&gt;</code> with your Auth Token.
+                <pre><code>$ curl -H "AuthToken &lt;XXXXXXXXXXXXXXXXXXXX&gt;"" --data code="Test" @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
             </p>
             <h3>Responses</h3>
             <p>
