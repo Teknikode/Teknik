@@ -42,7 +42,7 @@
                 <br />
                 <br />
                 For example, if you're accessing the API via cURL, the following command would associate the create paste with your account.  Just replace <code>&lt;OAUTH-TOKEN&gt;</code> with your access token.
-                <pre><code>$ curl -H "Authorization: token &lt;OAUTH-TOKEN&gt;"" --data code="Test" @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
+                <pre><code>$ curl -H "Authorization: token &lt;OAUTH-TOKEN&gt;" --data code="Test" @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
                 <br />
                 <h4>Auth Token (sent in a header)</h4>
                 <p>To authenticate with an Auth Token, you can generate tokens in your <a href="@Url.SubRouteUrl("account", "User.AuthTokenSettings")">Developer Settings</a></p>
@@ -50,7 +50,7 @@
                 <br />
                 <br />
                 For example, if you're accessing the API via cURL, the following command would associate the create paste with your account.  Just replace <code>&lt;XXXXXXXXXXXXXXXXXXXX&gt;</code> with your Auth Token.
-                <pre><code>$ curl -H "Authorization: AuthToken &lt;XXXXXXXXXXXXXXXXXXXX&gt;"" --data code="Test" @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
+                <pre><code>$ curl -H "Authorization: AuthToken &lt;XXXXXXXXXXXXXXXXXXXX&gt;" --data code="Test" @Url.SubRouteUrl("api", "API.v1.Paste")</code></pre>
                 <br />
                 <br />
             </p>
