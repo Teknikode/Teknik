@@ -27,12 +27,6 @@ namespace Teknik.Areas.Billing.Controllers
         public BillingController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
         [AllowAnonymous]
-        public IActionResult Index()
-        {
-            return View(new BillingViewModel() { StripePublishKey = _config.BillingConfig.StripePublishApiKey });
-        }
-
-        [AllowAnonymous]
         [TrackPageView]
         public IActionResult ViewSubscriptions()
         {

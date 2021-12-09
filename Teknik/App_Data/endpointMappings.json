@@ -221,17 +221,6 @@
         }
     },
     {
-        "Name": "Billing.Index",
-        "HostTypes": [ "Full" ],
-        "SubDomains": [ "billing" ],
-        "Pattern": "",
-        "Area": "Billing",
-        "Defaults": {
-            "controller": "Billing",
-            "action": "Index"
-        }
-    },
-    {
         "Name": "Billing.Subscriptions",
         "HostTypes": [ "Full" ],
         "SubDomains": [ "billing" ],
