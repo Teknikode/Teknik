@@ -756,6 +756,10 @@ namespace Teknik.IdentityServer.Controllers
             {
                 // Generate a unique token
                 var token = StringHelper.RandomString(40, "abcdefghjkmnpqrstuvwxyz1234567890");
+                while (dbContext.AuthTokens.FirstOrDefault(t => t.Token == token) != null)
+                {
+                    token = StringHelper.RandomString(40, "abcdefghjkmnpqrstuvwxyz1234567890");
+                }
                 var authToken = new AuthToken()
                 {
                     AuthTokenId = Guid.NewGuid(),
