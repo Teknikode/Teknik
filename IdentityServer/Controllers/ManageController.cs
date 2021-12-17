@@ -140,7 +140,7 @@ namespace Teknik.IdentityServer.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetUserInfoByAuthToken(string authToken)
+        public IActionResult GetUserInfoByAuthToken(string authToken, [FromServices] ApplicationDbContext dbContext)
         {
             if (string.IsNullOrEmpty(authToken))
                 return new JsonResult(new { success = false, message = "Auth Token Required" });
@@ -148,6 +148,21 @@ namespace Teknik.IdentityServer.Controllers
             var foundUser = GetCachedUserByAuthToken(authToken);
             if (foundUser != null)
             {
+                // Update the auth token's last used date
+                var foundAuthToken = dbContext.AuthTokens.FirstOrDefault(t => t.Token == authToken);
+                if (foundAuthToken != null)
+                {
+                    foundAuthToken.LastUsed = DateTime.Now;
+                    dbContext.Entry(foundAuthToken).State = EntityState.Modified;
+                    dbContext.SaveChanges();
+
+                    // Clear the user cache
+                    RemoveCachedUser(foundUser.UserName);
+
+                    // Clear the user cache by token
+                    RemoveCachedUser(authToken);
+                }
+
                 var userJson = foundUser.ToJson();
                 return new JsonResult(new { success = true, data = userJson });
             }
@@ -723,7 +738,7 @@ namespace Teknik.IdentityServer.Controllers
             var foundUser = await GetCachedUser(username);
             if (foundUser != null)
             {
-                var authTokens = foundUser.AuthTokens.Select(t => new { authTokenId = t.AuthTokenId, name = t.Name, token = t.Token }).ToList();
+                var authTokens = foundUser.AuthTokens.Select(t => new { authTokenId = t.AuthTokenId, name = t.Name, token = t.Token, lastUsed = t.LastUsed }).ToList();
                 return new JsonResult(new { success = true, data = authTokens });
             }
             return new JsonResult(new { success = false, message = "User does not exist" });

@@ -10,6 +10,8 @@ namespace Teknik.IdentityServer.Models
         
         public string Name { get; set; }
 
+        public DateTime? LastUsed { get; set; }
+
         [JsonIgnore]
         public string ApplicationUserId { get; set; }
 
