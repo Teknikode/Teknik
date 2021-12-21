@@ -374,7 +374,7 @@ namespace Teknik.Areas.Paste.Controllers
             Models.Paste foundPaste = _dbContext.Pastes.Where(p => p.Url == id).FirstOrDefault();
             if (foundPaste != null)
             {
-                if (foundPaste.User.Username == User.Identity.Name ||
+                if (foundPaste.User?.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
                     PasteHelper.DeleteFile(_dbContext, _config, _logger, foundPaste);

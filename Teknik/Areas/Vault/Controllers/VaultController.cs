@@ -435,7 +435,7 @@ namespace Teknik.Areas.Vault.Controllers
             Vault.Models.Vault foundVault = _dbContext.Vaults.Where(v => v.Url == id).FirstOrDefault();
             if (foundVault != null)
             {
-                if (foundVault.User.Username == User.Identity.Name ||
+                if (foundVault.User?.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
                     _dbContext.Vaults.Remove(foundVault);

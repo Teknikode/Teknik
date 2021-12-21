@@ -510,7 +510,7 @@ namespace Teknik.Areas.Upload.Controllers
             Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
             if (upload != null)
             {
-                if (upload.User.Username == User.Identity.Name ||
+                if (upload.User?.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
                     string delKey = StringHelper.RandomString(_config.UploadConfig.DeleteKeyLength);
@@ -531,7 +531,7 @@ namespace Teknik.Areas.Upload.Controllers
             Models.Upload foundUpload = _dbContext.Uploads.Where(u => u.Url == id).FirstOrDefault();
             if (foundUpload != null)
             {
-                if (foundUpload.User.Username == User.Identity.Name ||
+                if (foundUpload.User?.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
                     UploadHelper.DeleteFile(_dbContext, _config, _logger, foundUpload);

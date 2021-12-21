@@ -86,7 +86,7 @@ namespace Teknik.Areas.Shortener.Controllers
             ShortenedUrl shortenedUrl = _dbContext.ShortenedUrls.Where(s => s.ShortUrl == id).FirstOrDefault();
             if (shortenedUrl != null)
             {
-                if (shortenedUrl.User.Username == User.Identity.Name ||
+                if (shortenedUrl.User?.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
                     _dbContext.ShortenedUrls.Remove(shortenedUrl);
