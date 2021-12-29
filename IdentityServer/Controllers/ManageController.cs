@@ -607,7 +607,8 @@ namespace Teknik.IdentityServer.Controllers
                 },
 
                 RequireConsent = true,
-                AllowOfflineAccess = true
+                AllowOfflineAccess = true,
+                RequirePkce = false
             };
 
             configContext.Clients.Add(client.ToEntity());
