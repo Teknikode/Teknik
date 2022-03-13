@@ -32,7 +32,15 @@ namespace Teknik.Areas.Upload.Controllers
     [Area("Upload")]
     public class UploadController : DefaultController
     {
-        public UploadController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+        private const int _cacheLength = 300;
+        private readonly ObjectCache _uploadCache;
+        private readonly IBackgroundTaskQueue _queue;
+
+        public UploadController(ILogger<Logger> logger, Config config, TeknikEntities dbContext, IBackgroundTaskQueue queue) : base(logger, config, dbContext) 
+        {
+            _uploadCache = new ObjectCache(_cacheLength);
+            _queue = queue;
+        }
         
         [HttpGet]
         [AllowAnonymous]
@@ -225,19 +233,18 @@ namespace Teknik.Areas.Upload.Controllers
                 long contentLength = 0;
                 DateTime dateUploaded = new DateTime();
 
-                Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
+                var upload = UploadHelper.GetUpload(_dbContext, file);
                 if (upload != null)
                 {
                     // Check Expiration
                     if (UploadHelper.CheckExpiration(upload))
                     {
-                        UploadHelper.DeleteFile(_dbContext, _config, _logger, upload);
+                        UploadHelper.DeleteFile(_dbContext, _config, _logger, file);
                         return new StatusCodeResult(StatusCodes.Status404NotFound);
                     }
 
-                    upload.Downloads += 1;
-                    _dbContext.Entry(upload).State = EntityState.Modified;
-                    _dbContext.SaveChanges();
+                    // Increment the download count for this upload
+                    UploadHelper.IncrementDownloadCount(_queue, _config, file);
 
                     fileName = upload.FileName;
                     url = upload.Url;
@@ -431,13 +438,13 @@ namespace Teknik.Areas.Upload.Controllers
         {
             if (_config.UploadConfig.DownloadEnabled)
             {
-                Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
+                Models.Upload upload =  UploadHelper.GetUpload(_dbContext, file);
                 if (upload != null)
                 {
                     // Check Expiration
                     if (UploadHelper.CheckExpiration(upload))
                     {
-                        UploadHelper.DeleteFile(_dbContext, _config, _logger, upload);
+                        UploadHelper.DeleteFile(_dbContext, _config, _logger, file);
                         return Json(new { error = new { message = "File Does Not Exist" } });
                     }
 
@@ -485,14 +492,14 @@ namespace Teknik.Areas.Upload.Controllers
         public IActionResult DeleteByKey(string file, string key)
         {
             ViewBag.Title = "File Delete | " + file ;
-            Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
+            Models.Upload upload = UploadHelper.GetUpload(_dbContext, file);
             if (upload != null)
             {
                 DeleteViewModel model = new DeleteViewModel();
                 model.File = file;
                 if (!string.IsNullOrEmpty(upload.DeleteKey) && upload.DeleteKey == key)
                 {
-                    UploadHelper.DeleteFile(_dbContext, _config, _logger, upload);
+                    UploadHelper.DeleteFile(_dbContext, _config, _logger, file);
                     model.Deleted = true;
                 }
                 else
@@ -507,16 +514,13 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpPost]
         public IActionResult GenerateDeleteKey(string file)
         {
-            Models.Upload upload = _dbContext.Uploads.Where(up => up.Url == file).FirstOrDefault();
+            Models.Upload upload = UploadHelper.GetUpload(_dbContext, file);
             if (upload != null)
             {
                 if (upload.User?.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
-                    string delKey = StringHelper.RandomString(_config.UploadConfig.DeleteKeyLength);
-                    upload.DeleteKey = delKey;
-                    _dbContext.Entry(upload).State = EntityState.Modified;
-                    _dbContext.SaveChanges();
+                    var delKey = UploadHelper.GenerateDeleteKey(_dbContext, _config, file);
                     return Json(new { result = new { url = Url.SubRouteUrl("u", "Upload.DeleteByKey", new { file = file, key = delKey }) } });
                 }
                 return Json(new { error = new { message = "You do not have permission to delete this Upload" } });
@@ -534,7 +538,7 @@ namespace Teknik.Areas.Upload.Controllers
                 if (foundUpload.User?.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
-                    UploadHelper.DeleteFile(_dbContext, _config, _logger, foundUpload);
+                    UploadHelper.DeleteFile(_dbContext, _config, _logger, id);
                     return Json(new { result = true });
                 }
                 return Json(new { error = new { message = "You do not have permission to delete this Upload" } });

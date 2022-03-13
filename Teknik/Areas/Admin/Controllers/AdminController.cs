@@ -262,7 +262,7 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteData(string type, string id)
+        public IActionResult DeleteData(string type, string id, [FromServices] IBackgroundTaskQueue queue)
         {
             var context = new ControllerContext();
             context.HttpContext = Request.HttpContext;
@@ -272,7 +272,7 @@ namespace Teknik.Areas.Admin.Controllers
             switch (type)
             {
                 case "upload":
-                    var uploadController = new Upload.Controllers.UploadController(_logger, _config, _dbContext);
+                    var uploadController = new Upload.Controllers.UploadController(_logger, _config, _dbContext, queue);
                     uploadController.ControllerContext = context;
                     return uploadController.Delete(id);
                 case "paste":

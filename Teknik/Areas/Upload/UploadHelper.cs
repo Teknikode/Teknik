@@ -12,11 +12,15 @@ using Teknik.Data;
 using Teknik.StorageService;
 using Teknik.Logging;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Teknik.Areas.Upload
 {
     public static class UploadHelper
     {
+        private static object _cacheLock = new object();
+        private readonly static ObjectCache _uploadCache = new ObjectCache(300);
+
         public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength)
         {
             return SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, string.Empty, null, null, 256, 128);
@@ -119,6 +123,19 @@ namespace Teknik.Areas.Upload
             return upload;
         }
 
+        public static string GenerateDeleteKey(TeknikEntities db, Config config, string url)
+        {
+            var upload = db.Uploads.FirstOrDefault(up => up.Url == url);
+            if (upload != null)
+            {
+                string delKey = StringHelper.RandomString(config.UploadConfig.DeleteKeyLength);
+                upload.DeleteKey = delKey;
+                ModifyUpload(db, upload);
+                return delKey;
+            }
+            return null;
+        }
+
         public static bool CheckExpiration(Models.Upload upload)
         {
             if (upload.ExpireDate != null && DateTime.Now >= upload.ExpireDate)
@@ -129,15 +146,37 @@ namespace Teknik.Areas.Upload
             return false;
         }
 
-        public static Models.Upload GetUpload(TeknikEntities db, string url)
+        public static void IncrementDownloadCount(IBackgroundTaskQueue queue, Config config, string url)
         {
-            Models.Upload upload = db.Uploads.Where(up => up.Url == url).FirstOrDefault();
+            // Fire and forget updating of the download count
+            queue.QueueBackgroundWorkItem(async token =>
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<TeknikEntities>();
+                optionsBuilder.UseSqlServer(config.DbConnection);
 
-            return upload;
+                using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
+                {
+                    var upload = db.Uploads.FirstOrDefault(up => up.Url == url);
+                    if (upload != null)
+                    {
+                        upload.Downloads++;
+                        ModifyUpload(db, upload);
+                    }
+                }
+            });
         }
 
-        public static void DeleteFile(TeknikEntities db, Config config, ILogger<Logger> logger, Models.Upload upload)
+        public static Models.Upload GetUpload(TeknikEntities db, string url)
         {
+            lock (_cacheLock)
+            {
+                return _uploadCache.GetObject(url, (key) => db.Uploads.FirstOrDefault(up => up.Url == key));
+            }
+        }
+
+        public static void DeleteFile(TeknikEntities db, Config config, ILogger<Logger> logger, string url)
+        {
+            var upload = db.Uploads.FirstOrDefault(up => up.Url == url);
             try
             {
                 var storageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
@@ -148,8 +187,27 @@ namespace Teknik.Areas.Upload
                 logger.LogError(ex, "Unable to delete file: {0}", upload.FileName);
             }
 
+            // Remove from the cache
+            lock (_cacheLock)
+            {
+                _uploadCache.DeleteObject(upload.FileName);
+            }
+
             // Delete from the DB
             db.Uploads.Remove(upload);
+            db.SaveChanges();
+        }
+
+        public static void ModifyUpload(TeknikEntities db, Models.Upload upload)
+        {
+            // Update the cache's copy
+            lock (_cacheLock)
+            {
+                _uploadCache.UpdateObject(upload.Url, upload);
+            }
+
+            // Update the database
+            db.Entry(upload).State = EntityState.Modified;
             db.SaveChanges();
         }
     }
