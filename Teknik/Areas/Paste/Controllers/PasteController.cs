@@ -30,7 +30,12 @@ namespace Teknik.Areas.Paste.Controllers
     [Area("Paste")]
     public class PasteController : DefaultController
     {
-        public PasteController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
+        private readonly IBackgroundTaskQueue _queue;
+
+        public PasteController(ILogger<Logger> logger, Config config, TeknikEntities dbContext, IBackgroundTaskQueue queue) : base(logger, config, dbContext)
+        {
+            _queue = queue;
+        }
         
         [AllowAnonymous]
         [TrackPageView]
@@ -46,22 +51,28 @@ namespace Teknik.Areas.Paste.Controllers
         [TrackPageView]
         public async Task<IActionResult> ViewPaste(string type, string url, string password)
         {
-            Models.Paste paste = _dbContext.Pastes.Where(p => p.Url == url).FirstOrDefault();
+            Models.Paste paste = PasteHelper.GetPaste(_dbContext, url);
             if (paste != null)
             {
                 ViewBag.Title = (string.IsNullOrEmpty(paste.Title)) ? "Untitled Paste" : paste.Title + " | Pastebin";
                 ViewBag.Description = "Paste your code or text easily and securely.  Set an expiration, set a password, or leave it open for the world to see.";
-                // Increment Views
-                paste.Views += 1;
-                _dbContext.Entry(paste).State = EntityState.Modified;
-                _dbContext.SaveChanges();
+
+                string fileName = paste.FileName;
+                string key = paste.Key;
+                string iv = paste.IV;
+                int blockSize = paste.BlockSize;
+                int keySize = paste.KeySize;
+                string hashedPass = paste.HashedPassword;
 
                 // Check Expiration
                 if (PasteHelper.CheckExpiration(paste))
                 {
-                    PasteHelper.DeleteFile(_dbContext, _config, _logger, paste);
+                    PasteHelper.DeleteFile(_dbContext, _config, _logger, url);
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
+
+                // Increment View Count
+                PasteHelper.IncrementViewCount(_queue, _config, url);
 
                 PasteViewModel model = new PasteViewModel();
                 model.Url = url;
@@ -79,11 +90,11 @@ namespace Teknik.Areas.Paste.Controllers
                     }
                 }
 
-                byte[] ivBytes = (string.IsNullOrEmpty(paste.IV)) ? new byte[paste.BlockSize] : Encoding.Unicode.GetBytes(paste.IV);
-                byte[] keyBytes = (string.IsNullOrEmpty(paste.Key)) ? new byte[paste.KeySize] : AesCounterManaged.CreateKey(paste.Key, ivBytes, paste.KeySize);
+                byte[] ivBytes = (string.IsNullOrEmpty(iv)) ? new byte[blockSize] : Encoding.Unicode.GetBytes(iv);
+                byte[] keyBytes = (string.IsNullOrEmpty(key)) ? new byte[keySize] : AesCounterManaged.CreateKey(key, ivBytes, keySize);
 
                 // The paste has a password set
-                if (!string.IsNullOrEmpty(paste.HashedPassword))
+                if (!string.IsNullOrEmpty(hashedPass))
                 {
                     if (string.IsNullOrEmpty(password))
                     {
@@ -93,17 +104,17 @@ namespace Teknik.Areas.Paste.Controllers
                     string hash = string.Empty;
                     if (!string.IsNullOrEmpty(password))
                     {
-                        hash = Crypto.HashPassword(paste.Key, password);
-                        keyBytes = AesCounterManaged.CreateKey(password, ivBytes, paste.KeySize);
+                        hash = Crypto.HashPassword(key, password);
+                        keyBytes = AesCounterManaged.CreateKey(password, ivBytes, keySize);
                     }
-                    if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
+                    if (string.IsNullOrEmpty(password) || hash != hashedPass)
                     {
                         PasswordViewModel passModel = new PasswordViewModel();
                         passModel.ActionUrl = Url.SubRouteUrl("p", "Paste.View", new { type = type, url = url });
                         passModel.Url = url;
                         passModel.Type = type;
 
-                        if (!string.IsNullOrEmpty(password) && hash != paste.HashedPassword)
+                        if (!string.IsNullOrEmpty(password) && hash != hashedPass)
                         {
                             passModel.Error = true;
                             passModel.ErrorMessage = "Invalid Password";
@@ -118,10 +129,10 @@ namespace Teknik.Areas.Paste.Controllers
                 CachePassword(url, password);
 
                 // Read in the file
-                if (string.IsNullOrEmpty(paste.FileName))
+                if (string.IsNullOrEmpty(fileName))
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
                 var storageService = StorageServiceFactory.GetStorageService(_config.PasteConfig.StorageConfig);
-                var fileStream = storageService.GetFile(paste.FileName);
+                var fileStream = storageService.GetFile(fileName);
                 if (fileStream == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
 
@@ -205,7 +216,7 @@ namespace Teknik.Areas.Paste.Controllers
         [TrackPageView]
         public async Task<IActionResult> Edit(string url, string password)
         {
-            Models.Paste paste = _dbContext.Pastes.Where(p => p.Url == url).FirstOrDefault();
+            Models.Paste paste = PasteHelper.GetPaste(_dbContext, url);
             if (paste != null)
             {
                 if (paste.User?.Username != User.Identity.Name)
@@ -217,7 +228,7 @@ namespace Teknik.Areas.Paste.Controllers
                 // Check Expiration
                 if (PasteHelper.CheckExpiration(paste))
                 {
-                    PasteHelper.DeleteFile(_dbContext, _config, _logger, paste);
+                    PasteHelper.DeleteFile(_dbContext, _config, _logger, url);
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
 
@@ -292,7 +303,7 @@ namespace Teknik.Areas.Paste.Controllers
             {
                 try
                 {
-                    Models.Paste paste = _dbContext.Pastes.Where(p => p.Url == model.Url).FirstOrDefault();
+                    Models.Paste paste = PasteHelper.GetPaste(_dbContext, model.Url);
                     if (paste != null)
                     {
                         if (paste.User?.Username != User.Identity.Name)
@@ -350,8 +361,7 @@ namespace Teknik.Areas.Paste.Controllers
                         paste.Syntax = model.Syntax;
                         paste.DateEdited = DateTime.Now;
 
-                        _dbContext.Entry(paste).State = EntityState.Modified;
-                        _dbContext.SaveChanges();
+                        PasteHelper.ModifyPaste(_dbContext, paste);
 
                         // Delete the old file
                         storageService.DeleteFile(oldFile);
@@ -371,13 +381,13 @@ namespace Teknik.Areas.Paste.Controllers
         [HttpOptions]
         public IActionResult Delete(string id)
         {
-            Models.Paste foundPaste = _dbContext.Pastes.Where(p => p.Url == id).FirstOrDefault();
+            Models.Paste foundPaste = PasteHelper.GetPaste(_dbContext, id);
             if (foundPaste != null)
             {
                 if (foundPaste.User?.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
-                    PasteHelper.DeleteFile(_dbContext, _config, _logger, foundPaste);
+                    PasteHelper.DeleteFile(_dbContext, _config, _logger, id);
 
                     return Json(new { result = true, redirect = Url.SubRouteUrl("p", "Paste.Index") });
                 }

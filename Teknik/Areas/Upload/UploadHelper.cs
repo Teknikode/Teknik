@@ -156,7 +156,7 @@ namespace Teknik.Areas.Upload
 
                 using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
                 {
-                    var upload = db.Uploads.FirstOrDefault(up => up.Url == url);
+                    var upload = GetUpload(db, url);
                     if (upload != null)
                     {
                         upload.Downloads++;
@@ -170,13 +170,18 @@ namespace Teknik.Areas.Upload
         {
             lock (_cacheLock)
             {
-                return _uploadCache.GetObject(url, (key) => db.Uploads.FirstOrDefault(up => up.Url == key));
+                var upload = _uploadCache.GetObject(url, (key) => db.Uploads.FirstOrDefault(up => up.Url == key));
+
+                if (!db.Exists(upload))
+                    db.Attach(upload);
+
+                return upload;
             }
         }
 
         public static void DeleteFile(TeknikEntities db, Config config, ILogger<Logger> logger, string url)
         {
-            var upload = db.Uploads.FirstOrDefault(up => up.Url == url);
+            var upload = GetUpload(db, url);
             try
             {
                 var storageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
@@ -187,15 +192,15 @@ namespace Teknik.Areas.Upload
                 logger.LogError(ex, "Unable to delete file: {0}", upload.FileName);
             }
 
-            // Remove from the cache
-            lock (_cacheLock)
-            {
-                _uploadCache.DeleteObject(upload.FileName);
-            }
-
             // Delete from the DB
             db.Uploads.Remove(upload);
             db.SaveChanges();
+
+            // Remove from the cache
+            lock (_cacheLock)
+            {
+                _uploadCache.DeleteObject(url);
+            }
         }
 
         public static void ModifyUpload(TeknikEntities db, Models.Upload upload)

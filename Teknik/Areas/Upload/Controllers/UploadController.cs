@@ -32,13 +32,10 @@ namespace Teknik.Areas.Upload.Controllers
     [Area("Upload")]
     public class UploadController : DefaultController
     {
-        private const int _cacheLength = 300;
-        private readonly ObjectCache _uploadCache;
         private readonly IBackgroundTaskQueue _queue;
 
         public UploadController(ILogger<Logger> logger, Config config, TeknikEntities dbContext, IBackgroundTaskQueue queue) : base(logger, config, dbContext) 
         {
-            _uploadCache = new ObjectCache(_cacheLength);
             _queue = queue;
         }
         

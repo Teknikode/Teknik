@@ -23,35 +23,40 @@ namespace Teknik.Utilities
             if (objectCache.TryGetValue(key, out var result) &&
                 result.Item1 > cacheDate.Subtract(new TimeSpan(0, 0, _cacheSeconds)))
             {
-                cacheDate = result.Item1;
-                foundObject = (T)result.Item2;
+                return (T)result.Item2;
             }
             else
             {
                 foundObject = getObjectFunc(key);
+                // Update the cache for this key
+                if (foundObject != null)
+                    UpdateObject(key, foundObject, cacheDate);
             }
-
-            if (foundObject != null)
-                objectCache[key] = new Tuple<DateTime, object>(cacheDate, foundObject);
 
             return foundObject;
         }
 
         public void UpdateObject<T>(string key, T update)
         {
-            var cacheDate = DateTime.UtcNow;
-            if (objectCache.TryGetValue(key, out var result))
-            {
-                if (result.Item1 <= cacheDate.Subtract(new TimeSpan(0, 0, _cacheSeconds)))
-                    DeleteObject(key);
-                else
-                    objectCache[key] = new Tuple<DateTime, object>(result.Item1, update);
-            }
+            UpdateObject(key, update, DateTime.UtcNow);
+        }
+
+        public void UpdateObject<T>(string key, T update, DateTime cacheTime)
+        {
+            objectCache[key] = new Tuple<DateTime, object>(cacheTime, update);
         }
 
         public void DeleteObject(string key)
         {
             objectCache.Remove(key);
+        }
+
+        public bool CacheValid(string key)
+        {
+            if (objectCache.TryGetValue(key, out var result) && 
+                result.Item1 > DateTime.UtcNow.Subtract(new TimeSpan(0, 0, _cacheSeconds)))
+                return true;
+            return false;
         }
     }
 }

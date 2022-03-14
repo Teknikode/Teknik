@@ -1435,7 +1435,7 @@ namespace Teknik.Areas.Users.Controllers
                     uploadController.ControllerContext = context;
                     return uploadController.Delete(id);
                 case "paste":
-                    var pasteController = new Paste.Controllers.PasteController(_logger, _config, _dbContext);
+                    var pasteController = new Paste.Controllers.PasteController(_logger, _config, _dbContext, queue);
                     pasteController.ControllerContext = context;
                     return pasteController.Delete(id);
                 case "shortenedUrl":
