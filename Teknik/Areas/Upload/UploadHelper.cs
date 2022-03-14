@@ -172,7 +172,8 @@ namespace Teknik.Areas.Upload
             {
                 var upload = _uploadCache.GetObject(url, (key) => db.Uploads.FirstOrDefault(up => up.Url == key));
 
-                if (!db.Exists(upload))
+                if (upload != null &&
+                    !db.Exists(upload))
                     db.Attach(upload);
 
                 return upload;
@@ -182,19 +183,22 @@ namespace Teknik.Areas.Upload
         public static void DeleteFile(TeknikEntities db, Config config, ILogger<Logger> logger, string url)
         {
             var upload = GetUpload(db, url);
-            try
+            if (upload != null)
             {
-                var storageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
-                storageService.DeleteFile(upload.FileName);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Unable to delete file: {0}", upload.FileName);
-            }
+                try
+                {
+                    var storageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
+                    storageService.DeleteFile(upload.FileName);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Unable to delete file: {0}", upload.FileName);
+                }
 
-            // Delete from the DB
-            db.Uploads.Remove(upload);
-            db.SaveChanges();
+                // Delete from the DB
+                db.Uploads.Remove(upload);
+                db.SaveChanges();
+            }
 
             // Remove from the cache
             lock (_cacheLock)
@@ -211,9 +215,15 @@ namespace Teknik.Areas.Upload
                 _uploadCache.UpdateObject(upload.Url, upload);
             }
 
-            // Update the database
-            db.Entry(upload).State = EntityState.Modified;
-            db.SaveChanges();
+            if (upload != null)
+            {
+                if (!db.Exists(upload))
+                    db.Attach(upload);
+
+                // Update the database
+                db.Entry(upload).State = EntityState.Modified;
+                db.SaveChanges();
+            }
         }
     }
 }

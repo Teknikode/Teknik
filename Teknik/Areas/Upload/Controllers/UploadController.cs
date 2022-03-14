@@ -529,7 +529,7 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpOptions]
         public IActionResult Delete(string id)
         {
-            Models.Upload foundUpload = _dbContext.Uploads.Where(u => u.Url == id).FirstOrDefault();
+            Models.Upload foundUpload = UploadHelper.GetUpload(_dbContext, id);
             if (foundUpload != null)
             {
                 if (foundUpload.User?.Username == User.Identity.Name ||

@@ -150,7 +150,8 @@ namespace Teknik.Areas.Paste
             {
                 var paste = _pasteCache.GetObject(url, (key) => db.Pastes.FirstOrDefault(up => up.Url == key));
 
-                if (!db.Exists(paste))
+                if (paste != null &&
+                    !db.Exists(paste))
                     db.Attach(paste);
 
                 return paste;
@@ -160,19 +161,22 @@ namespace Teknik.Areas.Paste
         public static void DeleteFile(TeknikEntities db, Config config, ILogger<Logger> logger, string url)
         {
             var paste = GetPaste(db, url);
-            try
+            if (paste != null)
             {
-                var storageService = StorageServiceFactory.GetStorageService(config.PasteConfig.StorageConfig);
-                storageService.DeleteFile(paste.FileName);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Unable to delete file: {0}", paste.FileName);
-            }
+                try
+                {
+                    var storageService = StorageServiceFactory.GetStorageService(config.PasteConfig.StorageConfig);
+                    storageService.DeleteFile(paste.FileName);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Unable to delete file: {0}", paste.FileName);
+                }
 
-            // Delete from the DB
-            db.Pastes.Remove(paste);
-            db.SaveChanges();
+                // Delete from the DB
+                db.Pastes.Remove(paste);
+                db.SaveChanges();
+            }
 
             // Remove from the cache
             lock (_cacheLock)
@@ -189,12 +193,15 @@ namespace Teknik.Areas.Paste
                 _pasteCache.UpdateObject(paste.Url, paste);
             }
 
-            if (!db.Exists(paste))
-                db.Attach(paste);
+            if (paste != null)
+            {
+                if (!db.Exists(paste))
+                    db.Attach(paste);
 
-            // Update the database
-            db.Entry(paste).State = EntityState.Modified;
-            db.SaveChanges();
+                // Update the database
+                db.Entry(paste).State = EntityState.Modified;
+                db.SaveChanges();
+            }
         }
     }
 }
