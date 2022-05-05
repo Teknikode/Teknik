@@ -24,7 +24,6 @@ namespace Teknik.Areas.Shortener.Controllers
     {
         public ShortenerController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
         
-        [AllowAnonymous]
         [TrackPageView]
         public IActionResult Index()
         {
@@ -49,7 +48,6 @@ namespace Teknik.Areas.Shortener.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public IActionResult ShortenUrl(string url)
         {
             if (url.IsValidUrl())

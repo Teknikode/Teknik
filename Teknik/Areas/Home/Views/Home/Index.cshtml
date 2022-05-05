@@ -33,7 +33,7 @@
 <div class="container">
     <div class="row">
         <a href="@Url.SubRouteUrl("upload", "Upload.Index")">
-            <div class="col-md-2 col-lg-offset-1 text-center">
+            <div class="col-md-3 col-lg-offset-1 text-center">
                 <br />
                 <i class="fa fa-lock fa-5x"></i>
                 <div class="caption">
@@ -42,7 +42,7 @@
             </div>
         </a>
         <a href="@Url.SubRouteUrl("paste", "Paste.Index")">
-            <div class="col-md-2 text-center">
+            <div class="col-md-3 text-center">
                 <br />
                 <i class="fa fa-code fa-5x"></i>
                 <div class="caption">
@@ -51,7 +51,7 @@
             </div>
         </a>
         <a href="@Url.SubRouteUrl("podcast", "Podcast.Index")">
-            <div class="col-md-2 text-center">
+            <div class="col-md-3 text-center">
                 <br />
                 <i class="fa fa-microphone fa-5x"></i>
                 <div class="caption">
@@ -59,17 +59,8 @@
                 </div>
             </div>
         </a>
-        <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")">
-            <div class="col-md-2 text-center">
-                <br />
-                <i class="fa fa-link fa-5x"></i>
-                <div class="caption">
-                    <h3>Url Shortener</h3>
-                </div>
-            </div>
-        </a>
         <a href="@Url.SubRouteUrl("vault", "Vault.NewVault")">
-            <div class="col-md-2 text-center">
+            <div class="col-md-3 text-center">
                 <br />
                 <i class="fa fa-archive fa-5x"></i>
                 <div class="caption">
@@ -93,7 +84,7 @@
                 <div class="panel-body">
                     <div class="row">
                         <a conditional href="@Url.SubRouteUrl("upload", "Upload.Index")" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-3 text-center text-primary">
+                            <div class="col-md-2 text-center text-primary">
                                 <br />
                                 <i class="fa fa-clock-o fa-5x"></i>
                                 <div class="caption">
@@ -102,7 +93,7 @@
                             </div>
                         </a>
                         <a conditional href="@Config.GitConfig.Host" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-3 text-center text-primary">
+                            <div class="col-md-2 text-center text-primary">
                                 <br />
                                 <i class="fa fa-git fa-5x"></i>
                                 <div class="caption">
@@ -111,7 +102,7 @@
                             </div>
                         </a>
                         <a conditional href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = User.Identity.Name })" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-3 text-center text-primary">
+                            <div class="col-md-2 text-center text-primary">
                                 <br />
                                 <i class="fa fa-book fa-5x"></i>
                                 <div class="caption">
@@ -119,8 +110,17 @@
                                 </div>
                             </div>
                         </a>
+                        <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")" asp-condition="@User.Identity.IsAuthenticated">
+                            <div class="col-md-2 text-center">
+                                <br />
+                                <i class="fa fa-link fa-5x"></i>
+                                <div class="caption">
+                                    <h3>Url Shortener</h3>
+                                </div>
+                            </div>
+                        </a>
                         <a conditional href="@Url.SubRouteUrl("account", "User.ViewServiceData")" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-3 text-center text-primary">
+                            <div class="col-md-2 text-center text-primary">
                                 <br />
                                 <i class="fa fa-database fa-5x"></i>
                                 <div class="caption">
