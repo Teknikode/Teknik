@@ -110,8 +110,8 @@
                                 </div>
                             </div>
                         </a>
-                        <a href="@Url.SubRouteUrl("shorten", "Shortener.Index")" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-2 text-center">
+                        <a conditional href="@Url.SubRouteUrl("shorten", "Shortener.Index")" asp-condition="@User.Identity.IsAuthenticated">
+                            <div class="col-md-2 text-center text-primary">
                                 <br />
                                 <i class="fa fa-link fa-5x"></i>
                                 <div class="caption">
