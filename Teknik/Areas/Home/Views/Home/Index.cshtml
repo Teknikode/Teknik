@@ -33,7 +33,7 @@
 <div class="container">
     <div class="row">
         <a href="@Url.SubRouteUrl("upload", "Upload.Index")">
-            <div class="col-md-3 col-lg-offset-1 text-center">
+            <div class="col-md-3text-center">
                 <br />
                 <i class="fa fa-lock fa-5x"></i>
                 <div class="caption">
@@ -84,7 +84,7 @@
                 <div class="panel-body">
                     <div class="row">
                         <a conditional href="@Url.SubRouteUrl("upload", "Upload.Index")" asp-condition="@User.Identity.IsAuthenticated">
-                            <div class="col-md-2 text-center text-primary">
+                            <div class="col-md-2 col-lg-offset-1 text-center text-primary">
                                 <br />
                                 <i class="fa fa-clock-o fa-5x"></i>
                                 <div class="caption">
