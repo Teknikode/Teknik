@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Teknik.Data;
 
 namespace Teknik.Data.Migrations
 {
     [DbContext(typeof(TeknikEntities))]
-    partial class TeknikEntitiesModelSnapshot : ModelSnapshot
+    [Migration("20220521053202_MaxUrlLength")]
+    partial class MaxUrlLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -239,8 +241,6 @@ namespace Teknik.Data.Migrations
 
                     b.HasKey("PasteId");
 
-                    b.HasIndex("Url");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Pastes");
@@ -391,8 +391,6 @@ namespace Teknik.Data.Migrations
 
                     b.HasKey("ShortenedUrlId");
 
-                    b.HasIndex("ShortUrl");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("ShortenedUrls");
@@ -489,8 +487,6 @@ namespace Teknik.Data.Migrations
                     b.HasKey("UploadId");
 
                     b.HasIndex("Takedown_TakedownId");
-
-                    b.HasIndex("Url");
 
                     b.HasIndex("UserId");
 
@@ -615,8 +611,6 @@ namespace Teknik.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("VaultId");
-
-                    b.HasIndex("Url");
 
                     b.HasIndex("UserId");
 

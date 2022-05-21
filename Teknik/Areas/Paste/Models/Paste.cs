@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ using Teknik.Models;
 
 namespace Teknik.Areas.Paste.Models
 {
+    [Index(nameof(Url))]
     public class Paste
     {
         public int PasteId { get; set; }
@@ -23,6 +26,7 @@ namespace Teknik.Areas.Paste.Models
 
         public DateTime DateEdited { get; set; }
 
+        [MaxLength(250)]
         [CaseSensitive]
         public string Url { get; set; }
 

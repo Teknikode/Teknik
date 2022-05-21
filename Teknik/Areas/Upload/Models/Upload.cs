@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using Teknik.Areas.Users.Models;
@@ -7,6 +9,7 @@ using Teknik.Attributes;
 
 namespace Teknik.Areas.Upload.Models
 {
+    [Index(nameof(Url))]
     public class Upload
     {
         public int UploadId { get; set; }
@@ -19,6 +22,7 @@ namespace Teknik.Areas.Upload.Models
 
         public DateTime DateUploaded { get; set; }
 
+        [MaxLength(250)]
         [CaseSensitive]
         public string Url { get; set; }
 
