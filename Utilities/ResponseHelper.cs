@@ -16,44 +16,34 @@ namespace Teknik.Utilities
             try
             {
                 int processedBytes = 0;
-                byte[] buffer = new byte[chunkSize];
-                int bytesRemaining = length;
-                int bytesToRead = chunkSize;
+                var bufferSize = chunkSize;
+                if (length < chunkSize)
+                    bufferSize = length;
+                Memory<byte> buffer = new byte[bufferSize];
                 do
                 {
-                    if (chunkSize > bytesRemaining)
-                    {
-                        bytesToRead = bytesRemaining;
-                    }
-
-                    processedBytes = stream.Read(buffer, 0, bytesToRead);
+                    processedBytes = await stream.ReadAsync(buffer);
                     if (processedBytes > 0)
                     {
-                        await response.Body.WriteAsync(buffer, 0, processedBytes);
+                        await response.Body.WriteAsync(buffer.Slice(0, processedBytes));
 
                         // Flush the response
                         if (flush)
                         {
                             await response.Body.FlushAsync();
                         }
-
-                        // Clear the buffer
-                        Array.Clear(buffer, 0, chunkSize);
-
-                        // decrement the total bytes remaining to process
-                        bytesRemaining -= processedBytes;
                     }
                 }
-                while (processedBytes > 0 && bytesRemaining > 0);
+                while (processedBytes > 0);
             }
             catch (Exception)
             {
                 // Don't worry about it.  Just leave
-                await response.Body.FlushAsync();
             }
             finally
             {
                 await response.Body.FlushAsync();
+
                 // dispose of file stream
                 stream?.Dispose();
             }
