@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Syndication;
-using System.Web;
-using System.Xml.Linq;
 using Teknik.Areas.Blog.Models;
 using Teknik.Controllers;
-using Teknik.Filters;
 using Teknik.Utilities;
-using Teknik.Models;
 using Teknik.Attributes;
 using Teknik.Areas.Users.Utility;
 using Microsoft.Extensions.Logging;

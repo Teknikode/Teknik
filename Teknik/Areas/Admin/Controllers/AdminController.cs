@@ -12,7 +12,6 @@ using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Controllers;
 using Teknik.Data;
-using Teknik.Filters;
 using Teknik.Models;
 using Teknik.Utilities;
 using Teknik.ViewModels;

@@ -6,7 +6,6 @@ using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Controllers;
 using Teknik.Data;
-using Teknik.Filters;
 using Teknik.Logging;
 
 namespace Teknik.Areas.Privacy.Controllers

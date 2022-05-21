@@ -3,7 +3,6 @@ using System.Linq;
 using Teknik.Areas.Blog.Models;
 using Teknik.Areas.Home.ViewModels;
 using Teknik.Controllers;
-using Teknik.Filters;
 using Teknik.Attributes;
 using Microsoft.Extensions.Logging;
 using Teknik.Configuration;
@@ -12,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Teknik.Logging;
-using System;
 
 namespace Teknik.Areas.Home.Controllers
 {

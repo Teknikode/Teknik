@@ -1,16 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Teknik.Areas.Abuse.ViewModels;
 using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Controllers;
 using Teknik.Data;
-using Teknik.Filters;
 using Teknik.Logging;
 
 namespace Teknik.Areas.Abuse.Controllers

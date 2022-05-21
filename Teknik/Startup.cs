@@ -29,6 +29,7 @@ using Teknik.Utilities.Routing;
 using Teknik.WebCommon.Middleware;
 using Teknik.WebCommon;
 using Teknik.Areas.Error.Controllers;
+using Teknik.Services;
 
 namespace Teknik
 {
@@ -98,7 +99,7 @@ namespace Teknik
                     .AddControllersAsServices()
                     .AddNewtonsoftJson();
 
-            services.AddHostedService<TrackingService>();
+            services.AddHostedService<TaskQueueService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddScoped<IErrorController, ErrorController>();
 

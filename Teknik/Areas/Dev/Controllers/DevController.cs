@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Controllers;
 using Teknik.Data;
-using Teknik.Filters;
-using Teknik.Utilities;
 using Teknik.Logging;
 using Teknik.Utilities.Routing;
 

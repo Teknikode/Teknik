@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 using Teknik.Logging;
 using Teknik.Utilities;
 
-namespace Teknik.Tracking
+namespace Teknik.Services
 {
-    public class TrackingService : BackgroundService
+    public class TaskQueueService : BackgroundService
     {
         private readonly ILogger<Logger> _logger;
 
-        public TrackingService(IBackgroundTaskQueue taskQueue,
+        public TaskQueueService(IBackgroundTaskQueue taskQueue,
                                 ILogger<Logger> logger)
         {
             TaskQueue = taskQueue;

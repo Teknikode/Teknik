@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Teknik.Areas.API.Controllers;
 using Teknik.Areas.API.V1.Models;
 using Teknik.Areas.Paste;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
+using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Data;
-using Teknik.Filters;
 using Teknik.Logging;
-using Teknik.Utilities;
 using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.API.V1.Controllers

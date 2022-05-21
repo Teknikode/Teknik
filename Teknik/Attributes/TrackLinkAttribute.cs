@@ -11,7 +11,7 @@ using Teknik.Configuration;
 using Teknik.Tracking;
 using Teknik.Utilities;
 
-namespace Teknik.Filters
+namespace Teknik.Attributes
 {
     public class TrackLink : ActionFilterAttribute
     {
@@ -39,7 +39,7 @@ namespace Teknik.Filters
 
                 string urlReferrer = request.Headers["Referer"].ToString();
 
-                string url = UriHelper.GetEncodedUrl(request);
+                string url = request.GetEncodedUrl();
 
                 // Fire and forget.  Don't need to wait for it.
                 Tracking.Tracking.TrackLink(filterContext.HttpContext, _config, userAgent, clientIp, url, urlReferrer);

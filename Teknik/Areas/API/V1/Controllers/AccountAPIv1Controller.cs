@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Data;
-using Teknik.Filters;
 using Teknik.Logging;
 
 namespace Teknik.Areas.API.V1.Controllers

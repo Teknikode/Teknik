@@ -10,10 +10,8 @@ using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Controllers;
 using Teknik.Data;
-using Teknik.Filters;
 using Teknik.Logging;
 using Teknik.Tracking;
-using Teknik.Utilities;
 
 namespace Teknik.Areas.Stats.Controllers
 {

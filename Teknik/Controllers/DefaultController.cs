@@ -1,24 +1,17 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
-using Teknik.Areas.Error.Controllers;
 using Teknik.Attributes;
 using Teknik.Configuration;
 using Teknik.Data;
-using Teknik.Filters;
 using Teknik.Logging;
 using Teknik.Utilities;
 

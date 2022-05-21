@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Net.Mail;
 using Teknik.Controllers;
 using Teknik.Areas.Contact.ViewModels;
-using Teknik.Areas.Contact.Models;
-using Teknik.Models;
 using System.Text;
-using Teknik.Filters;
 using Teknik.Attributes;
 using Microsoft.Extensions.Logging;
 using Teknik.Configuration;

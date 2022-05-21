@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Teknik.Areas.Paste.ViewModels;
 using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
-using Teknik.Filters;
 using Teknik.Utilities;
-using Teknik.Models;
 using Teknik.Attributes;
 using Teknik.Utilities.Cryptography;
 using Microsoft.Extensions.Logging;
@@ -15,12 +12,10 @@ using Teknik.Configuration;
 using Teknik.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Teknik.Logging;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Diagnostics;
 using Teknik.Utilities.Routing;
 using Teknik.StorageService;
 

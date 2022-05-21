@@ -1,14 +1,10 @@
-using nClam;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Teknik.Areas.Upload.ViewModels;
 using Teknik.Areas.Users.Utility;
 using Teknik.Controllers;
-using Teknik.Filters;
 using Teknik.Utilities;
-using Teknik.Models;
 using Teknik.Attributes;
 using System.Text;
 using Teknik.Utilities.Cryptography;

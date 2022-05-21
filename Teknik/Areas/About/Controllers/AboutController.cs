@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Teknik.Areas.About.ViewModels;
-using Teknik.Areas.Billing.ViewModels;
-using Teknik.Areas.Users.Utility;
 using Teknik.Attributes;
-using Teknik.BillingCore;
 using Teknik.Configuration;
 using Teknik.Controllers;
 using Teknik.Data;
-using Teknik.Filters;
 using Teknik.Logging;
-using Teknik.Utilities.Routing;
 
 namespace Teknik.Areas.About.Controllers
 {

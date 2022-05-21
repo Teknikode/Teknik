@@ -11,21 +11,21 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Teknik.Utilities.Routing;
 
-namespace Teknik.Filters
+namespace Teknik.Attributes
 {
-    public class TrackPageViewAttribute : TypeFilterAttribute
+    public class TrackDownloadAttribute : TypeFilterAttribute
     {
-        public TrackPageViewAttribute() : base(typeof(TrackPageView))
+        public TrackDownloadAttribute() : base(typeof(TrackDownload))
         {
         }
-        public class TrackPageView : ActionFilterAttribute
+
+        public class TrackDownload : ActionFilterAttribute
         {
             private readonly IBackgroundTaskQueue _queue;
             private readonly Config _config;
 
-            public TrackPageView(IBackgroundTaskQueue queue, Config config)
+            public TrackDownload(IBackgroundTaskQueue queue, Config config)
             {
                 _queue = queue;
                 _config = config;
@@ -42,35 +42,18 @@ namespace Teknik.Filters
                 string doNotTrack = request.Headers["DNT"];
                 if (string.IsNullOrEmpty(doNotTrack) || doNotTrack != "1")
                 {
-                    string title = (filterContext.Controller as Controller)?.ViewBag?.Title;
-
-                    string sub = filterContext.RouteData.Values["sub"]?.ToString();
-                    if (string.IsNullOrEmpty(sub))
-                    {
-                        sub = request.Host.ToUriComponent().GetSubdomain();
-                    }
+                    string userAgent = request.Headers["User-Agent"].ToString();
 
                     string clientIp = request.ClientIPFromRequest(true);
 
-                    string url = UriHelper.GetEncodedUrl(request);
-
                     string urlReferrer = request.Headers["Referer"].ToString();
 
-                    string userAgent = request.Headers["User-Agent"].ToString();
-
-                    int pixelWidth = 0;
-                    int pixelHeight = 0;
-
-                    bool hasCookies = false;
-
-                    string acceptLang = request.Headers["Accept-Language"];
-
-                    bool hasJava = false;
+                    string url = request.GetEncodedUrl();
 
                     // Fire and forget.  Don't need to wait for it.
                     _queue.QueueBackgroundWorkItem(async token =>
                     {
-                        Tracking.Tracking.TrackPageView(filterContext.HttpContext, _config, title, sub, clientIp, url, urlReferrer, userAgent, pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava);
+                        Tracking.Tracking.TrackDownload(filterContext.HttpContext, _config, userAgent, clientIp, url, urlReferrer);
                     });
                 }
             }
