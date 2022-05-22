@@ -13,13 +13,13 @@ namespace Teknik.Utilities
     {
         public async static Task StreamToOutput(HttpResponse response, bool flush, Stream stream, int length, int chunkSize)
         {
-            int processedBytes = 0;
             var bufferSize = chunkSize;
             if (length < chunkSize)
                 bufferSize = length;
             Memory<byte> buffer = new byte[bufferSize];
             try
             {
+                int processedBytes;
                 do
                 {
                     processedBytes = await stream.ReadAsync(buffer);
@@ -36,7 +36,7 @@ namespace Teknik.Utilities
                 }
                 while (processedBytes > 0);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // Don't worry about it.  Just leave
             }

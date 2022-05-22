@@ -131,10 +131,16 @@ namespace Teknik.Areas.Paste.Controllers
                 if (fileStream == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
 
-                using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
-                using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
+                int contentSize = (int)fileStream.Length;
+
+                // Only load the model content if we aren't downloading it.
+                if (type.ToLower() != "download")
                 {
-                    model.Content = await sr.ReadToEndAsync();
+                    using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
+                    using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
+                    {
+                        model.Content = await sr.ReadToEndAsync();
+                    }
                 }
 
                 switch (type.ToLower())
@@ -155,7 +161,7 @@ namespace Teknik.Areas.Paste.Controllers
 
                         Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                        return new BufferedFileStreamResult("application/octet-stream", async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fileStream, false, keyBytes, ivBytes), (int)fileStream.Length, _config.PasteConfig.ChunkSize), false);
+                        return new BufferedFileStreamResult("application/octet-stream", async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fileStream, false, keyBytes, ivBytes), contentSize, _config.PasteConfig.ChunkSize), false);
                     default:
                         return View("~/Areas/Paste/Views/Paste/Full.cshtml", model);
                 }
