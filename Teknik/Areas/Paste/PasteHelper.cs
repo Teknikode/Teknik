@@ -13,6 +13,7 @@ using Teknik.StorageService;
 using Teknik.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Teknik.Areas.Paste
 {
@@ -21,7 +22,7 @@ namespace Teknik.Areas.Paste
         private static object _cacheLock = new object();
         private readonly static ObjectCache _pasteCache = new ObjectCache(300);
 
-        public static Models.Paste CreatePaste(Config config, TeknikEntities db, string content, string title = "", string syntax = "text", ExpirationUnit expireUnit = ExpirationUnit.Never, int expireLength = 1, string password = "")
+        public static async Task<Models.Paste> CreatePaste(Config config, TeknikEntities db, string content, string title = "", string syntax = "text", ExpirationUnit expireUnit = ExpirationUnit.Never, int expireLength = 1, string password = "")
         {
             Models.Paste paste = new Models.Paste();
             paste.DatePosted = DateTime.Now;
@@ -76,7 +77,7 @@ namespace Teknik.Areas.Paste
             var fileName = storageService.GetUniqueFileName();
 
             // Encrypt the contents to the file
-            EncryptContents(storageService, content, fileName, password, key, iv, config.PasteConfig.KeySize, config.PasteConfig.ChunkSize);
+            await EncryptContents(storageService, content, fileName, password, key, iv, config.PasteConfig.KeySize, config.PasteConfig.ChunkSize);
 
             // Generate a deletion key
             string delKey = StringHelper.RandomString(config.PasteConfig.DeleteKeyLength);
@@ -105,7 +106,7 @@ namespace Teknik.Areas.Paste
             return false;
         }
 
-        public static void EncryptContents(IStorageService storageService, string content, string fileName, string password, string key, string iv, int keySize, int chunkSize)
+        public static async Task EncryptContents(IStorageService storageService, string content, string fileName, string password, string key, string iv, int keySize, int chunkSize)
         {
             byte[] ivBytes = Encoding.Unicode.GetBytes(iv);
             byte[] keyBytes = AesCounterManaged.CreateKey(key, ivBytes, keySize);
@@ -120,7 +121,7 @@ namespace Teknik.Areas.Paste
             byte[] data = Encoding.Unicode.GetBytes(content);
             using (MemoryStream ms = new MemoryStream(data))
             {
-                storageService.SaveEncryptedFile(fileName, ms, chunkSize, keyBytes, ivBytes);
+                await storageService.SaveEncryptedFile(fileName, ms, keyBytes, ivBytes);
             }
         }
 

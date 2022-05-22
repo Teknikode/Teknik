@@ -123,11 +123,43 @@ namespace Teknik.Utilities.Cryptography
             IncrementCounter();
         }
 
+        public int TransformFinalBlock(Span<byte> inputBuffer, int inputOffset, int inputCount)
+        {
+            return TransformBlock(inputBuffer, inputOffset, inputCount);
+        }
+
         public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
         {
             var output = new byte[inputCount];
             TransformBlock(inputBuffer, inputOffset, inputCount, output, 0);
             return output;
+        }
+
+        public int TransformBlock(Span<byte> inputBuffer, int inputOffset, int inputCount)
+        {
+            for (var i = 0; i < inputCount; i++)
+            {
+                // Encrypt the counter if we have reached the end, or 
+                if (_CounterPosition >= _EncryptedCounter.Length)
+                {
+                    //Reset current counter position
+                    _CounterPosition = 0;
+
+                    // Encrypt the counter
+                    EncryptCounter();
+
+                    // Increment the counter for the next batch
+                    IncrementCounter();
+                }
+
+                // XOR the encrypted counter with the input plain text
+                inputBuffer[inputOffset + i] = (byte)(_EncryptedCounter[_CounterPosition] ^ inputBuffer[inputOffset + i]);
+
+                // Move the counter position
+                _CounterPosition++;
+            }
+
+            return inputCount;
         }
 
         public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)

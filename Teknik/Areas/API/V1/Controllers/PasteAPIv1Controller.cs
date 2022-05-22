@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,13 +22,13 @@ namespace Teknik.Areas.API.V1.Controllers
 
         [HttpPost]
         [TrackPageView]
-        public IActionResult Paste(PasteAPIv1Model model)
+        public async Task<IActionResult> Paste(PasteAPIv1Model model)
         {
             try
             {
                 if (model != null && model.code != null)
                 {
-                    Paste.Models.Paste paste = PasteHelper.CreatePaste(_config, _dbContext, model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password);
+                    Paste.Models.Paste paste = await PasteHelper.CreatePaste(_config, _dbContext, model.code, model.title, model.syntax, model.expireUnit, model.expireLength, model.password);
 
                     // Associate this with the user if they are logged in
                     if (User.Identity.IsAuthenticated)

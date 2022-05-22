@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Teknik.Configuration;
 
 namespace Teknik.StorageService
@@ -17,8 +18,8 @@ namespace Teknik.StorageService
         public abstract string GetUniqueFileName();
         public abstract Stream GetFile(string fileName);
         public abstract List<string> GetFileNames();
-        public abstract void SaveFile(string fileName, Stream file);
-        public abstract void SaveEncryptedFile(string fileName, Stream file, int chunkSize, byte[] key, byte[] iv);
+        public abstract Task SaveFile(string fileName, Stream file);
+        public abstract Task SaveEncryptedFile(string fileName, Stream file, byte[] key, byte[] iv);
         public abstract void DeleteFile(string fileName);
     }
 }

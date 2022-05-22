@@ -154,7 +154,7 @@ namespace Teknik.Areas.Upload.Controllers
                                 }
                             }
 
-                            Models.Upload upload = UploadHelper.SaveFile(_dbContext,
+                            Models.Upload upload = await UploadHelper.SaveFile(_dbContext,
                                 _config,
                                 fs,
                                 uploadFile.fileType,

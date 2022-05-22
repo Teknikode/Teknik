@@ -166,7 +166,7 @@ namespace Teknik.Areas.Paste.Controllers
         [HttpPost]
         [AllowAnonymous]
         [DisableRequestSizeLimit]
-        public IActionResult Paste([Bind("Content, Title, Syntax, ExpireLength, ExpireUnit, Password")]PasteCreateViewModel model)
+        public async Task<IActionResult> Paste([Bind("Content, Title, Syntax, ExpireLength, ExpireUnit, Password")]PasteCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -174,7 +174,7 @@ namespace Teknik.Areas.Paste.Controllers
                 {
                     try
                     {
-                        Models.Paste paste = PasteHelper.CreatePaste(_config, _dbContext, model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password);
+                        Models.Paste paste = await PasteHelper.CreatePaste(_config, _dbContext, model.Content, model.Title, model.Syntax, model.ExpireUnit, model.ExpireLength ?? 1, model.Password);
 
                         if (model.ExpireUnit == ExpirationUnit.Views)
                         {
@@ -292,7 +292,7 @@ namespace Teknik.Areas.Paste.Controllers
 
         [HttpPost]
         [DisableRequestSizeLimit]
-        public IActionResult EditSubmit([Bind("Content, Title, Syntax, Url")]PasteEditViewModel model)
+        public async Task<IActionResult> EditSubmit([Bind("Content, Title, Syntax, Url")]PasteEditViewModel model)
         {
             if (_config.PasteConfig.Enabled)
             {
@@ -342,7 +342,7 @@ namespace Teknik.Areas.Paste.Controllers
                         string key = Crypto.GenerateKey(_config.PasteConfig.KeySize);
                         string iv = Crypto.GenerateIV(_config.PasteConfig.BlockSize);
 
-                        PasteHelper.EncryptContents(storageService, model.Content, fileName, password, key, iv, _config.PasteConfig.KeySize, _config.PasteConfig.ChunkSize);
+                        await PasteHelper.EncryptContents(storageService, model.Content, fileName, password, key, iv, _config.PasteConfig.KeySize, _config.PasteConfig.ChunkSize);
 
                         paste.Key = key;
                         paste.KeySize = _config.PasteConfig.KeySize;

@@ -132,7 +132,7 @@ namespace Teknik.Areas.API.V1.Controllers
                                     model.blockSize = _config.UploadConfig.BlockSize;
 
                                 // Save the file data
-                                Upload.Models.Upload upload = UploadHelper.SaveFile(_dbContext, _config, fs, model.contentType, contentLength, model.encrypt, model.expirationUnit, model.expirationLength, fileExt, model.iv, model.key, model.keySize, model.blockSize);
+                                Upload.Models.Upload upload = await UploadHelper.SaveFile(_dbContext, _config, fs, model.contentType, contentLength, model.encrypt, model.expirationUnit, model.expirationLength, fileExt, model.iv, model.key, model.keySize, model.blockSize);
 
                                 if (upload != null)
                                 {

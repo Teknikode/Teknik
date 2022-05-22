@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Teknik.Utilities.Cryptography
 {
@@ -36,28 +38,84 @@ namespace Teknik.Utilities.Cryptography
             SyncCounter();
         }
 
-        public override int Read(byte[] buffer, int offset, int count)
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
             if (_Inner != null && CanRead)
             {
-                byte[] readBuf = new byte[count];
                 int processed = 0;
 
                 // Read the data from the stream
-                int bytesRead = _Inner.Read(readBuf, 0, count);
+                int bytesRead = await _Inner.ReadAsync(buffer);
                 if (bytesRead > 0)
                 {
                     // Process the read buffer
-                    processed = _Cipher.TransformBlock(readBuf, 0, bytesRead, buffer, offset);
+                    processed = _Cipher.TransformBlock(buffer.Span, 0, bytesRead);
                 }
 
                 // Do we have more?
                 if (processed < bytesRead)
                 {
                     // Finalize the cipher
-                    byte[] finalBuf = _Cipher.TransformFinalBlock(readBuf, processed + offset, bytesRead);
-                    finalBuf.CopyTo(buffer, processed);
-                    processed += finalBuf.Length;
+                    var finalProcessed = _Cipher.TransformFinalBlock(buffer.Span, processed, bytesRead);
+                    if (finalProcessed > 0)
+                        processed += finalProcessed;
+                }
+
+                return processed;
+            }
+            return -1;
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            if (_Inner != null && CanRead)
+            {
+                Memory<byte> readBuf = buffer;
+                int processed = 0;
+
+                // Read the data from the stream
+                int bytesRead = _Inner.Read(readBuf.Span.Slice(offset, count));
+                if (bytesRead > 0)
+                {
+                    // Process the read buffer
+                    processed = _Cipher.TransformBlock(readBuf.Span, offset, bytesRead);
+                }
+
+                // Do we have more?
+                if (processed < bytesRead)
+                {
+                    // Finalize the cipher
+                    var finalProcessed = _Cipher.TransformFinalBlock(readBuf.Span, processed + offset, bytesRead);
+                    if (finalProcessed > 0)
+                        processed += finalProcessed;
+                }
+
+                return processed;
+            }
+            return -1;
+        }
+
+        public override int Read(Span<byte> buffer)
+        {
+            if (_Inner != null && CanRead)
+            {
+                int processed = 0;
+
+                // Read the data from the stream
+                int bytesRead = _Inner.Read(buffer);
+                if (bytesRead > 0)
+                {
+                    // Process the read buffer
+                    processed = _Cipher.TransformBlock(buffer, 0, bytesRead);
+                }
+
+                // Do we have more?
+                if (processed < bytesRead)
+                {
+                    // Finalize the cipher
+                    var finalProcessed = _Cipher.TransformFinalBlock(buffer, processed, bytesRead);
+                    if (finalProcessed > 0)
+                        processed += finalProcessed;
                 }
 
                 return processed;
@@ -70,20 +128,21 @@ namespace Teknik.Utilities.Cryptography
             if (_Inner != null && CanWrite)
             {
                 // Process the cipher
-                byte[] output = new byte[count];
+                Memory<byte> output = buffer;
 
                 // Process the buffer
-                int processed = _Cipher.TransformBlock(buffer, offset, count, output, 0);
+                int processed = _Cipher.TransformBlock(output.Span, offset, count);
 
                 // Do we have more?
                 if (processed < count)
                 {
                     // Finalize the cipher
-                    byte[] finalBuf = _Cipher.TransformFinalBlock(buffer, processed + offset, count);
-                    finalBuf.CopyTo(output, processed);
+                    var finalProcessed = _Cipher.TransformFinalBlock(output.Span, processed + offset, count);
+                    if (finalProcessed > 0)
+                        processed += finalProcessed;
                 }
-
-                _Inner.Write(output, 0, count);
+                ReadOnlyMemory<byte> readOnlyOutput = buffer;
+                _Inner.Write(readOnlyOutput.Span);
             }
         }
 
@@ -186,6 +245,20 @@ namespace Teknik.Utilities.Cryptography
             {
                 _Inner.SetLength(value);
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _Inner.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        public override ValueTask DisposeAsync()
+        {
+            _Inner.DisposeAsync();
+
+            return base.DisposeAsync();
         }
 
         private void SyncCounter()

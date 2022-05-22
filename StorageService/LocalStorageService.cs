@@ -38,16 +38,16 @@ namespace Teknik.StorageService
             return null;
         }
 
-        public override void SaveEncryptedFile(string fileName, Stream file, int chunkSize, byte[] key, byte[] iv)
+        public override async Task SaveEncryptedFile(string fileName, Stream file, byte[] key, byte[] iv)
         {
             if (!Directory.Exists(_config.LocalDirectory))
                 Directory.CreateDirectory(_config.LocalDirectory);
 
             string filePath = GetFilePath(fileName);
-            AesCounterManaged.EncryptToFile(file, filePath, chunkSize, key, iv);
+            await AesCounterManaged.EncryptToFile(file, filePath, key, iv);
         }
 
-        public override void SaveFile(string fileName, Stream file)
+        public override async Task SaveFile(string fileName, Stream file)
         {
             if (!Directory.Exists(_config.LocalDirectory))
                 Directory.CreateDirectory(_config.LocalDirectory);
@@ -57,7 +57,7 @@ namespace Teknik.StorageService
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 file.Seek(0, SeekOrigin.Begin);
-                file.CopyTo(fileStream);
+                await file.CopyToAsync(fileStream);
             }
         }
 

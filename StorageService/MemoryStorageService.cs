@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,13 +13,13 @@ namespace Teknik.StorageService
 {
     public class MemoryStorageService : StorageService
     {
-        private static Dictionary<string, byte[]> _files;
-        private Dictionary<string, byte[]> Files
+        private static ConcurrentDictionary<string, byte[]> _files;
+        private ConcurrentDictionary<string, byte[]> Files
         {
             get
             {
                 if (_files == null)
-                    _files = new Dictionary<string, byte[]>();
+                    _files = new ConcurrentDictionary<string, byte[]>();
                 return _files;
             }
             set
@@ -56,7 +57,7 @@ namespace Teknik.StorageService
             return new MemoryStream(Files[fileName]);
         }
 
-        public override void SaveEncryptedFile(string fileName, Stream file, int chunkSize, byte[] key, byte[] iv)
+        public override async Task SaveEncryptedFile(string fileName, Stream file, byte[] key, byte[] iv)
         {
             if (file == null ||
                 Files.ContainsKey(fileName))
@@ -64,12 +65,12 @@ namespace Teknik.StorageService
 
             using (var ms = new MemoryStream())
             {
-                AesCounterManaged.EncryptToStream(file, ms, chunkSize, key, iv);
-                Files.Add(fileName, ms.ToArray());
+                await AesCounterManaged.EncryptToStream(file, ms, key, iv);
+                Files.TryAdd(fileName, ms.ToArray());
             }
         }
 
-        public override void SaveFile(string fileName, Stream file)
+        public override async Task SaveFile(string fileName, Stream file)
         {
             if (file == null ||
                 Files.ContainsKey(fileName))
@@ -78,15 +79,15 @@ namespace Teknik.StorageService
             using (var ms = new MemoryStream())
             {
                 file.Seek(0, SeekOrigin.Begin);
-                file.CopyTo(ms);
-                Files.Add(fileName, ms.ToArray());
+                await file.CopyToAsync(ms);
+                Files.TryAdd(fileName, ms.ToArray());
             }
         }
 
         public override void DeleteFile(string fileName)
         {
             if (Files.ContainsKey(fileName))
-                Files.Remove(fileName);
+                Files.TryRemove(fileName, out _);
         }
     }
 }

@@ -175,7 +175,7 @@ namespace Teknik.ServiceWorker
                     {
                         ClamClient clam = new ClamClient(config.UploadConfig.ClamConfig.Server, config.UploadConfig.ClamConfig.Port);
                         clam.MaxStreamSize = maxUploadSize;
-                        ClamScanResult scanResult = await clam.SendAndScanFileAsync(fileStream);
+                        ClamScanResult scanResult = await clam.SendAndScanFileAsync(aesStream);
 
                         switch (scanResult.Result)
                         {

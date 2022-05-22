@@ -13,6 +13,7 @@ using Teknik.StorageService;
 using Teknik.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Teknik.Areas.Upload
 {
@@ -21,27 +22,27 @@ namespace Teknik.Areas.Upload
         private static object _cacheLock = new object();
         private readonly static ObjectCache _uploadCache = new ObjectCache(300);
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength)
+        public static async Task<Models.Upload> SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength)
         {
-            return SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, string.Empty, null, null, 256, 128);
+            return await SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, string.Empty, null, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength, string fileExt)
+        public static async Task<Models.Upload> SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength, string fileExt)
         {
-            return SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, fileExt, null, null, 256, 128);
+            return await SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, fileExt, null, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength, string fileExt, string iv)
+        public static async Task<Models.Upload> SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength, string fileExt, string iv)
         {
-            return SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, fileExt, iv, null, 256, 128);
+            return await SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, fileExt, iv, null, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength, string fileExt, string iv, string key)
+        public static async Task<Models.Upload> SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength, string fileExt, string iv, string key)
         {
-            return SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, fileExt, iv, key, 256, 128);
+            return await SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, fileExt, iv, key, 256, 128);
         }
 
-        public static Models.Upload SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength, string fileExt, string iv, string key, int keySize, int blockSize)
+        public static async Task<Models.Upload> SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength, string fileExt, string iv, string key, int keySize, int blockSize)
         {
             var storageService = StorageServiceFactory.GetStorageService(config.UploadConfig.StorageConfig);
 
@@ -60,11 +61,11 @@ namespace Teknik.Areas.Upload
                 byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                 byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
-                storageService.SaveEncryptedFile(fileName, file, config.UploadConfig.ChunkSize, keyBytes, ivBytes);
+                await storageService.SaveEncryptedFile(fileName, file, keyBytes, ivBytes);
             }
             else
             {
-                storageService.SaveFile(fileName, file);
+                await storageService.SaveFile(fileName, file);
             }
 
             // Generate a unique url
@@ -118,7 +119,7 @@ namespace Teknik.Areas.Upload
             }
 
             db.Uploads.Add(upload);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
             return upload;
         }
