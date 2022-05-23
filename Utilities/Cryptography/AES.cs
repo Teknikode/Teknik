@@ -21,7 +21,7 @@ namespace Teknik.Utilities.Cryptography
             }
         }
 
-        public static byte[] Encrypt(RijndaelManaged cipher, byte[] value)
+        public static byte[] Encrypt(Aes cipher, byte[] value)
         {
             byte[] encryptedBytes;
             using (var encryptor = cipher.CreateEncryptor())
@@ -37,7 +37,7 @@ namespace Teknik.Utilities.Cryptography
             return encryptedBytes;
         }
 
-        public static byte[] Decrypt(RijndaelManaged cipher, byte[] value)
+        public static byte[] Decrypt(Aes cipher, byte[] value)
         {
             byte[] decryptedBytes;
             using (var decryptor = cipher.CreateDecryptor())
@@ -53,9 +53,9 @@ namespace Teknik.Utilities.Cryptography
             return decryptedBytes;
         }
 
-        public static RijndaelManaged CreateCipher(byte[] key, byte[] iv, int keyLength, int blockSize, int feedbackSize, CipherMode mode, PaddingMode paddingMode)
+        public static Aes CreateCipher(byte[] key, byte[] iv, int keyLength, int blockSize, int feedbackSize, CipherMode mode, PaddingMode paddingMode)
         {
-            RijndaelManaged cipher = new RijndaelManaged();
+            Aes cipher = Aes.Create();
             cipher.Mode = mode;
             cipher.Padding = paddingMode;
             cipher.Key = key;

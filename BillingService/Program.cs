@@ -50,7 +50,7 @@ namespace Teknik.BillingService
                             if (options.SyncSubscriptions)
                             {
                                 // Sync subscription information
-                                SyncSubscriptions(config, db);
+                                SyncSubscriptions(config, db).Wait();
                             }
                         }
 

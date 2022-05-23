@@ -731,7 +731,7 @@ namespace Teknik.IdentityServer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAuthTokens(string username)
+        public async Task<IActionResult> GetAuthTokens(string username, [FromServices] ApplicationDbContext dbContext)
         {
             if (string.IsNullOrEmpty(username))
                 return new JsonResult(new { success = false, message = "Username is required" });
@@ -739,6 +739,9 @@ namespace Teknik.IdentityServer.Controllers
             var foundUser = await GetCachedUser(username);
             if (foundUser != null)
             {
+                if (!dbContext.Exists(foundUser))
+                    dbContext.Attach(foundUser);
+
                 var authTokens = foundUser.AuthTokens.Select(t => new { authTokenId = t.AuthTokenId, name = t.Name, token = t.Token, lastUsed = t.LastUsed }).ToList();
                 return new JsonResult(new { success = true, data = authTokens });
             }
@@ -746,15 +749,18 @@ namespace Teknik.IdentityServer.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateAuthToken(CreateAuthTokenModel model, [FromServices] ApplicationDbContext dbContext)
+        public async Task<IActionResult> CreateAuthToken(CreateAuthTokenModel model, [FromServices] ApplicationDbContext dbContext)
         {
 
             if (string.IsNullOrEmpty(model.Username))
                 return new JsonResult(new { success = false, message = "Username is required" });
 
-            var foundUser = dbContext.Users.FirstOrDefault(u => u.UserName == model.Username);
+            var foundUser = await GetCachedUser(model.Username);
             if (foundUser != null)
             {
+                if (!dbContext.Exists(foundUser))
+                    dbContext.Attach(foundUser);
+
                 // Generate a unique token
                 var token = StringHelper.RandomString(40, "abcdefghjkmnpqrstuvwxyz1234567890");
                 while (dbContext.AuthTokens.FirstOrDefault(t => t.Token == token) != null)

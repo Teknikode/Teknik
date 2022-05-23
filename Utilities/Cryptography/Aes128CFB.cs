@@ -60,7 +60,7 @@ namespace Teknik.Utilities.Cryptography
 
         public static void ProcessCipher(bool encrypt, byte[] text, byte[] key, byte[] iv, int blockSize, int keySize, ref byte[] output, int offset)
         {
-            using (var cipher = new RijndaelManaged())
+            using (var cipher = Aes.Create())
             {
                 cipher.BlockSize = blockSize;
                 cipher.KeySize = keySize;

@@ -8,7 +8,7 @@ namespace Teknik.Utilities.Cryptography
         // Internal Variables
         private const int _BlockSize = 16;
         private readonly byte[] _InitialCounter;
-        private readonly AesManaged _Algo;
+        private readonly Aes _Algo;
 
         public AesCounterMode() : this(new byte[_BlockSize]) { }
 
@@ -20,11 +20,9 @@ namespace Teknik.Utilities.Cryptography
                     initialCounter.Length, _BlockSize));
 
             // Generate a new instance of the Aes Algorithm in ECB mode with no padding
-            _Algo = new AesManaged
-            {
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.None
-            };
+            _Algo = Aes.Create();
+            _Algo.Mode = CipherMode.ECB;
+            _Algo.Padding = PaddingMode.None;
 
             // Set the internal variables
             _InitialCounter = initialCounter;

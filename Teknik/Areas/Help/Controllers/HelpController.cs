@@ -111,7 +111,7 @@ namespace Teknik.Areas.Help.Controllers
         }
         
         [AllowAnonymous]
-        public async Task<IActionResult> Upload()
+        public IActionResult Upload()
         {
             ViewBag.Title = "Upload Service Help";
             UploadHelpViewModel model = new UploadHelpViewModel();

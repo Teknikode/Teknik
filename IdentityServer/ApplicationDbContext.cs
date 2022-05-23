@@ -36,5 +36,10 @@ namespace Teknik.IdentityServer
                 }
             }
         }
+
+        public bool Exists<T>(T entity) where T : class
+        {
+            return this.Set<T>().Local.Any(e => e == entity);
+        }
     }
 }

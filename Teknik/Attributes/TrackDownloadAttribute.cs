@@ -53,7 +53,10 @@ namespace Teknik.Attributes
                     // Fire and forget.  Don't need to wait for it.
                     _queue.QueueBackgroundWorkItem(async token =>
                     {
-                        Tracking.Tracking.TrackDownload(filterContext.HttpContext, _config, userAgent, clientIp, url, urlReferrer);
+                        await Task.Run(() =>
+                        {
+                            Tracking.Tracking.TrackDownload(filterContext.HttpContext, _config, userAgent, clientIp, url, urlReferrer);
+                        });
                     });
                 }
             }

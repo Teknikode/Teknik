@@ -97,7 +97,7 @@ namespace Teknik.Controllers
 
             using (var writer = new StringWriter())
             {
-                string path = (new Uri(Assembly.GetExecutingAssembly().CodeBase)).AbsolutePath;
+                string path = (new Uri(Assembly.GetExecutingAssembly().Location)).AbsolutePath;
                 ViewEngineResult viewResult =
                     viewEngine.GetView(path, viewName, false);
 
