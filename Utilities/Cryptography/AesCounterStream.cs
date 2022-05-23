@@ -24,7 +24,7 @@ namespace Teknik.Utilities.Cryptography
             _Inner = stream;
 
             // Create the Aes Cipher
-            AesCounterMode aes = new AesCounterMode(iv);
+            using AesCounterMode aes = new AesCounterMode(iv);
             if (encrypt)
             {
                 _Cipher = (CounterModeCryptoTransform)aes.CreateEncryptor(key, iv); // Encrypt
@@ -70,22 +70,22 @@ namespace Teknik.Utilities.Cryptography
         {
             if (_Inner != null && CanRead)
             {
-                Memory<byte> readBuf = buffer;
+                Span<byte> readBuf = buffer;
                 int processed = 0;
 
                 // Read the data from the stream
-                int bytesRead = _Inner.Read(readBuf.Span.Slice(offset, count));
+                int bytesRead = _Inner.Read(readBuf.Slice(offset, count));
                 if (bytesRead > 0)
                 {
                     // Process the read buffer
-                    processed = _Cipher.TransformBlock(readBuf.Span, offset, bytesRead);
+                    processed = _Cipher.TransformBlock(readBuf, offset, bytesRead);
                 }
 
                 // Do we have more?
                 if (processed < bytesRead)
                 {
                     // Finalize the cipher
-                    var finalProcessed = _Cipher.TransformFinalBlock(readBuf.Span, processed + offset, bytesRead);
+                    var finalProcessed = _Cipher.TransformFinalBlock(readBuf, processed + offset, bytesRead);
                     if (finalProcessed > 0)
                         processed += finalProcessed;
                 }
@@ -249,16 +249,16 @@ namespace Teknik.Utilities.Cryptography
 
         protected override void Dispose(bool disposing)
         {
+            _Cipher.Dispose();
             _Inner.Dispose();
 
             base.Dispose(disposing);
         }
 
-        public override ValueTask DisposeAsync()
+        public override async ValueTask DisposeAsync()
         {
-            _Inner.DisposeAsync();
-
-            return base.DisposeAsync();
+            await _Inner.DisposeAsync();
+            await base.DisposeAsync();
         }
 
         private void SyncCounter()

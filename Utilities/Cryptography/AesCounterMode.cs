@@ -7,17 +7,17 @@ namespace Teknik.Utilities.Cryptography
     {
         // Internal Variables
         private const int _BlockSize = 16;
-        private readonly byte[] _Counter;
+        private readonly byte[] _InitialCounter;
         private readonly AesManaged _Algo;
 
         public AesCounterMode() : this(new byte[_BlockSize]) { }
 
-        public AesCounterMode(byte[] counter)
+        public AesCounterMode(byte[] initialCounter)
         {
-            if (counter == null) throw new ArgumentNullException("counter");
-            if (counter.Length != _BlockSize)
+            if (initialCounter == null) throw new ArgumentNullException("counter");
+            if (initialCounter.Length != _BlockSize)
                 throw new ArgumentException(String.Format("Counter size must be same as block size (actual: {0}, expected: {1})",
-                    counter.Length, _BlockSize));
+                    initialCounter.Length, _BlockSize));
 
             // Generate a new instance of the Aes Algorithm in ECB mode with no padding
             _Algo = new AesManaged
@@ -27,18 +27,17 @@ namespace Teknik.Utilities.Cryptography
             };
 
             // Set the internal variables
-            _Counter = new byte[counter.Length];
-            counter.CopyTo(_Counter, 0);
+            _InitialCounter = initialCounter;
         }
 
         public override ICryptoTransform CreateEncryptor(byte[] key, byte[] iv)
         {
-            return new CounterModeCryptoTransform(_Algo, key, iv, _Counter);
+            return new CounterModeCryptoTransform(_Algo, key, iv, _InitialCounter);
         }
 
         public override ICryptoTransform CreateDecryptor(byte[] key, byte[] iv)
         {
-            return new CounterModeCryptoTransform(_Algo, key, iv, _Counter);
+            return new CounterModeCryptoTransform(_Algo, key, iv, _InitialCounter);
         }
 
         public override void GenerateKey()
@@ -50,17 +49,22 @@ namespace Teknik.Utilities.Cryptography
         {
             _Algo.GenerateIV();
         }
+
+        protected override void Dispose(bool disposed)
+        {
+            _Algo.Dispose();
+        }
     }
 
     public class CounterModeCryptoTransform : ICryptoTransform
     {
-        private readonly byte[] _IV;
+        private readonly int _BlockSize;
+        private readonly Memory<byte> _IV;
         private readonly byte[] _Counter;
+        private readonly byte[] _EncryptedCounter;
         private readonly ICryptoTransform _CounterEncryptor;
-        private readonly SymmetricAlgorithm _SymmetricAlgorithm;
 
         // Stateful Fields
-        private byte[] _EncryptedCounter;
 
         private int _Iterations;
         public int Iterations
@@ -87,28 +91,26 @@ namespace Teknik.Utilities.Cryptography
             }
         }
 
-        public CounterModeCryptoTransform(SymmetricAlgorithm symmetricAlgorithm, byte[] key, byte[] iv, byte[] counter)
+        public CounterModeCryptoTransform(SymmetricAlgorithm symmetricAlgorithm, byte[] key, byte[] iv, byte[] initialCounter)
         {
             if (symmetricAlgorithm == null) throw new ArgumentNullException("symmetricAlgorithm");
             if (key == null) throw new ArgumentNullException("key");
             if (iv == null) throw new ArgumentNullException("iv");
-            if (counter == null) throw new ArgumentNullException("counter");
+            if (initialCounter == null) throw new ArgumentNullException("counter");
 
             // Check lengths
-            if (counter.Length != symmetricAlgorithm.BlockSize / 8)
+            if (initialCounter.Length != symmetricAlgorithm.BlockSize / 8)
                 throw new ArgumentException(String.Format("Counter size must be same as block size (actual: {0}, expected: {1})",
-                    counter.Length, symmetricAlgorithm.BlockSize / 8));
+                    initialCounter.Length, symmetricAlgorithm.BlockSize / 8));
 
-            _SymmetricAlgorithm = symmetricAlgorithm;
+            _BlockSize = symmetricAlgorithm.BlockSize;
 
             // Initialize the encrypted counter
-            _EncryptedCounter = new byte[_SymmetricAlgorithm.BlockSize / 8];
+            _EncryptedCounter = new byte[_BlockSize / 8];
 
-            _IV = new byte[iv.Length];
-            iv.CopyTo(_IV, 0);
+            _IV = iv;
 
-            _Counter = new byte[counter.Length];
-            counter.CopyTo(_Counter, 0);
+            _Counter = initialCounter;
             
             _CounterEncryptor = symmetricAlgorithm.CreateEncryptor(key, iv);
 
@@ -164,6 +166,13 @@ namespace Teknik.Utilities.Cryptography
 
         public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
         {
+            ReadOnlySpan<byte> input = inputBuffer;
+            Span<byte> output = outputBuffer;
+            return TransformBlock(input, inputOffset, inputCount, output, outputOffset);
+        }
+
+        public int TransformBlock(ReadOnlySpan<byte> inputBuffer, int inputOffset, int inputCount, Span<byte> outputBuffer, int outputOffset)
+        {
             for (var i = 0; i < inputCount; i++)
             {
                 // Encrypt the counter if we have reached the end, or 
@@ -178,7 +187,7 @@ namespace Teknik.Utilities.Cryptography
                     // Increment the counter for the next batch
                     IncrementCounter();
                 }
-                
+
                 // XOR the encrypted counter with the input plain text
                 outputBuffer[outputOffset + i] = (byte)(_EncryptedCounter[_CounterPosition] ^ inputBuffer[inputOffset + i]);
 
@@ -191,17 +200,13 @@ namespace Teknik.Utilities.Cryptography
 
         public void EncryptCounter()
         {
-            // Clear the encrypted counter
-            Array.Clear(_EncryptedCounter, 0, _EncryptedCounter.Length);
-
             // Encrypt the current counter to the encrypted counter
             _CounterEncryptor.TransformBlock(_Counter, 0, _Counter.Length, _EncryptedCounter, 0);
         }
 
         public void ResetCounter()
         {
-            Array.Clear(_Counter, 0, _Counter.Length);
-            _IV.CopyTo(_Counter, 0);
+            _IV.CopyTo(_Counter);
             _Iterations = 0;
         }
 
@@ -214,13 +219,14 @@ namespace Teknik.Utilities.Cryptography
             _Iterations++;
         }
 
-        public int InputBlockSize { get { return _SymmetricAlgorithm.BlockSize / 8; } }
-        public int OutputBlockSize { get { return _SymmetricAlgorithm.BlockSize / 8; } }
+        public int InputBlockSize { get { return _BlockSize / 8; } }
+        public int OutputBlockSize { get { return _BlockSize / 8; } }
         public bool CanTransformMultipleBlocks { get { return true; } }
         public bool CanReuseTransform { get { return false; } }
 
         public void Dispose()
         {
+            _CounterEncryptor.Dispose();
         }
     }
 }

@@ -154,7 +154,10 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="btn-group pull-right" role="group">
-                                    <button type="button" class="btn btn-default btn-sm" id="shortenUrl"><i class="fa fa-link"></i>&nbsp;Shorten</button>
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <button type="button" class="btn btn-default btn-sm" id="shortenUrl"><i class="fa fa-link"></i>&nbsp;Shorten</button>
+                                    }
                                     <button type="button" class="btn btn-default btn-sm" id="delete-link"><i class="fa fa-trash"></i>&nbsp;Deletion Link</button>
                                 </div>
                             </div>
