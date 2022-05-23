@@ -21,15 +21,15 @@ You can see a live demo [here](https://www.teknik.io).
 ## Requirements
 In order to run Teknik on your server, you'll need:
 
-  * IIS 7+, Nginx, or Apache
-  * [.NET Core 2.1 Runtime](https://www.microsoft.com/net/download/) (Or SDK if building the src)
+  * IIS 10+, Nginx, or Apache
+  * [.NET 6 Runtime](https://www.microsoft.com/net/download/) (Or SDK if building the src)
   * A SQL Server (MS SQL Server, MySQL, SQLite)
   * [hMailServer](https://www.hmailserver.com/download) (If running email service)
   * [Gitea](https://github.com/go-gitea/gitea) (If you want to have Git integration)
   * Web Mail Client (If you would like to have webmail)
 
 ## Installation
- * Set up Asp.Net Core to work with your system of choice - [Instructions](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-2.1&tabs=aspnetcore2x) 
+ * Set up Asp.Net Core to work with your system of choice - [Instructions](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/) 
  * Download the latest release of Teknik for your system - [Releases](https://git.teknik.io/Teknikode/Teknik/releases)
  * Copy the files to your local web root directory.
  * Create a `ConnectionStrings.config` file in the `App_Data` directory and fill it with the following template and put in your SQL server connection details.
