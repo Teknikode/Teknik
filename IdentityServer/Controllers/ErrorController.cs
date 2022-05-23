@@ -58,7 +58,7 @@ namespace Teknik.IdentityServer.Controllers
         [AllowAnonymous]
         public IActionResult HttpGeneral(int statusCode)
         {
-            ViewBag.Title = statusCode;
+            ViewBag.Title = statusCode.ToString();
 
             LogError(LogLevel.Error, "HTTP Error Code: " + statusCode);
 
