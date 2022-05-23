@@ -60,7 +60,7 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
         {
-            ViewBag.Title = $"Sign in";
+            ViewBag.Title = "Sign in";
             // build a model so we know what to show on the login page
             var vm = await _account.BuildLoginViewModelAsync(returnUrl);
 

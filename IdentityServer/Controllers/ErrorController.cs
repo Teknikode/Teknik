@@ -153,10 +153,10 @@ namespace Teknik.IdentityServer.Controllers
             ViewBag.Title = "Identity Error";
             ViewBag.Description = "The Identity Service threw an error";
 
-            LogError(LogLevel.Error, "Identity Error: " + message.Error);
+            LogError(LogLevel.Error, "Identity Error: " + message?.Error);
 
             IdentityErrorViewModel model = new IdentityErrorViewModel();
-            model.Title = message.Error;
+            model.Title = message?.Error;
             model.Description = message.ErrorDescription;
 
             return GenerateActionResult(CreateErrorObj("Http", StatusCodes.Status500InternalServerError, message.Error), View("~/Views/Error/IdentityError.cshtml", model));

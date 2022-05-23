@@ -57,7 +57,7 @@ namespace Teknik.Areas.Error.Controllers
         [TrackPageView]
         public IActionResult HttpGeneral(int statusCode)
         {
-            ViewBag.Title = statusCode;
+            ViewBag.Title = statusCode.ToString();
 
             LogError(LogLevel.Error, "HTTP Error Code: " + statusCode);
 
