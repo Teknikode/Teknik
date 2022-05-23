@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>Teknik.BillingCore</AssemblyName>
     <RootNamespace>Teknik.BillingCore</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Stripe.net" Version="39.62.0" />
+    <PackageReference Include="Stripe.net" Version="39.112.0" />
   </ItemGroup>
 
   <ItemGroup>
