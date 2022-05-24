@@ -57,7 +57,6 @@ namespace Teknik.Logging
 
         private void WriteLogMessage(LogMessage log)
         {
-
             try
             {
                 // Lock the file processing so only 1 thread is working on the log file at a time

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Teknik.Utilities
 {
     public class ObjectCache
     {
-        private readonly static Dictionary<string, Tuple<DateTime, object>> objectCache = new Dictionary<string, Tuple<DateTime, object>>();
+        private readonly static ConcurrentDictionary<string, Tuple<DateTime, object>> objectCache = new ConcurrentDictionary<string, Tuple<DateTime, object>>();
         private readonly int _cacheSeconds;
 
         public ObjectCache(int cacheSeconds)
@@ -48,7 +49,7 @@ namespace Teknik.Utilities
 
         public void DeleteObject(string key)
         {
-            objectCache.Remove(key);
+            objectCache.TryRemove(key, out _);
         }
 
         public bool CacheValid(string key)

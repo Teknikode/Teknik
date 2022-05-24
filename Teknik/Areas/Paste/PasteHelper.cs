@@ -130,18 +130,21 @@ namespace Teknik.Areas.Paste
             // Fire and forget updating of the download count
             queue.QueueBackgroundWorkItem(async token =>
             {
-                var optionsBuilder = new DbContextOptionsBuilder<TeknikEntities>();
-                optionsBuilder.UseSqlServer(config.DbConnection);
-
-                using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
+                await Task.Run(() =>
                 {
-                    var paste = GetPaste(db, url);
-                    if (paste != null)
+                    var optionsBuilder = new DbContextOptionsBuilder<TeknikEntities>();
+                    optionsBuilder.UseSqlServer(config.DbConnection);
+
+                    using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
                     {
-                        paste.Views++;
-                        ModifyPaste(db, paste);
+                        var paste = GetPaste(db, url);
+                        if (paste != null)
+                        {
+                            paste.Views++;
+                            ModifyPaste(db, paste);
+                        }
                     }
-                }
+                });
             });
         }
 

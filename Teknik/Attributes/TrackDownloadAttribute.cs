@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web;
 using Teknik.Configuration;
 using Teknik.Utilities;
-using Teknik.Tracking;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -37,6 +36,9 @@ namespace Teknik.Attributes
 
             public override void OnActionExecuted(ActionExecutedContext filterContext)
             {
+                if (!_config.PiwikConfig.Enabled)
+                    return;
+
                 HttpRequest request = filterContext.HttpContext.Request;
 
                 string doNotTrack = request.Headers["DNT"];
@@ -50,12 +52,22 @@ namespace Teknik.Attributes
 
                     string url = request.GetEncodedUrl();
 
+                    string tokenAuth = _config.PiwikConfig.TokenAuth;
+                    int siteId = _config.PiwikConfig.SiteId;
+                    string apiUrl = _config.PiwikConfig.Url;
+
                     // Fire and forget.  Don't need to wait for it.
                     _queue.QueueBackgroundWorkItem(async token =>
                     {
                         await Task.Run(() =>
                         {
-                            Tracking.Tracking.TrackDownload(filterContext.HttpContext, _config, userAgent, clientIp, url, urlReferrer);
+                            Tracking.Tracking.TrackDownload(tokenAuth,
+                                                            siteId,
+                                                            apiUrl, 
+                                                            userAgent, 
+                                                            clientIp, 
+                                                            url, 
+                                                            urlReferrer);
                         });
                     });
                 }

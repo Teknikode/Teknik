@@ -38,6 +38,9 @@ namespace Teknik.Attributes
 
             public override void OnActionExecuted(ActionExecutedContext filterContext)
             {
+                if (!_config.PiwikConfig.Enabled)
+                    return;
+
                 HttpRequest request = filterContext.HttpContext.Request;
 
                 string doNotTrack = request.Headers["DNT"];
@@ -68,10 +71,32 @@ namespace Teknik.Attributes
 
                     bool hasJava = false;
 
+                    string tokenAuth = _config.PiwikConfig.TokenAuth;
+                    int siteId = _config.PiwikConfig.SiteId;
+                    string apiUrl = _config.PiwikConfig.Url;
+                    bool isDev = _config.DevEnvironment;
+
                     // Fire and forget.  Don't need to wait for it.
                     _queue.QueueBackgroundWorkItem(async token =>
                     {
-                        Tracking.Tracking.TrackPageView(filterContext.HttpContext, _config, title, sub, clientIp, url, urlReferrer, userAgent, pixelWidth, pixelHeight, hasCookies, acceptLang, hasJava);
+                        await Task.Run(() =>
+                        {
+                            Tracking.Tracking.TrackPageView(tokenAuth,
+                                                        siteId,
+                                                        apiUrl,
+                                                        title,
+                                                        sub,
+                                                        clientIp,
+                                                        url,
+                                                        urlReferrer,
+                                                        userAgent,
+                                                        pixelWidth,
+                                                        pixelHeight,
+                                                        hasCookies,
+                                                        acceptLang,
+                                                        hasJava,
+                                                        isDev);
+                        });
                     });
                 }
             }

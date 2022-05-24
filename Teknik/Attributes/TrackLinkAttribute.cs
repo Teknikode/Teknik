@@ -15,10 +15,12 @@ namespace Teknik.Attributes
 {
     public class TrackLink : ActionFilterAttribute
     {
+        private readonly IBackgroundTaskQueue _queue;
         private readonly Config _config;
 
-        public TrackLink(Config config)
+        public TrackLink(IBackgroundTaskQueue queue, Config config)
         {
+            _queue = queue;
             _config = config;
         }
 
@@ -41,8 +43,24 @@ namespace Teknik.Attributes
 
                 string url = request.GetEncodedUrl();
 
+                string tokenAuth = _config.PiwikConfig.TokenAuth;
+                int siteId = _config.PiwikConfig.SiteId;
+                string apiUrl = _config.PiwikConfig.Url;
+
                 // Fire and forget.  Don't need to wait for it.
-                Tracking.Tracking.TrackLink(filterContext.HttpContext, _config, userAgent, clientIp, url, urlReferrer);
+                _queue.QueueBackgroundWorkItem(async token =>
+                {
+                    await Task.Run(() =>
+                    {
+                        Tracking.Tracking.TrackLink(tokenAuth, 
+                                                    siteId,
+                                                    apiUrl,
+                                                    userAgent, 
+                                                    clientIp, 
+                                                    url, 
+                                                    urlReferrer);
+                    });
+                });
             }
         }
     }

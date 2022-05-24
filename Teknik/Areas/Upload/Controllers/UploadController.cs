@@ -405,7 +405,9 @@ namespace Teknik.Areas.Upload.Controllers
                                     byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                                     byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
-                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fileStream, false, keyBytes, ivBytes), (int)length, _config.UploadConfig.ChunkSize), false);
+                                    var aesStream = new AesCounterStream(fileStream, false, keyBytes, ivBytes);
+
+                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, aesStream, (int)length, _config.UploadConfig.ChunkSize), false);
                                 }
                                 else // Otherwise just send it
                                 {

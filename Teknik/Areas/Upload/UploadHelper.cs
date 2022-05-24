@@ -152,18 +152,21 @@ namespace Teknik.Areas.Upload
             // Fire and forget updating of the download count
             queue.QueueBackgroundWorkItem(async token =>
             {
-                var optionsBuilder = new DbContextOptionsBuilder<TeknikEntities>();
-                optionsBuilder.UseSqlServer(config.DbConnection);
-
-                using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
+                await Task.Run(() =>
                 {
-                    var upload = GetUpload(db, url);
-                    if (upload != null)
+                    var optionsBuilder = new DbContextOptionsBuilder<TeknikEntities>();
+                    optionsBuilder.UseSqlServer(config.DbConnection);
+
+                    using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
                     {
-                        upload.Downloads++;
-                        ModifyUpload(db, upload);
+                        var upload = GetUpload(db, url);
+                        if (upload != null)
+                        {
+                            upload.Downloads++;
+                            ModifyUpload(db, upload);
+                        }
                     }
-                }
+                });
             });
         }
 

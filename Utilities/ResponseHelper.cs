@@ -30,7 +30,7 @@ namespace Teknik.Utilities
                         // Flush the response
                         if (flush)
                         {
-                            await response.Body.FlushAsync();
+                            //await response.Body.FlushAsync();
                         }
                     }
                 }
@@ -42,7 +42,7 @@ namespace Teknik.Utilities
             }
             finally
             {
-                await response.Body.FlushAsync();
+                //await response.Body.FlushAsync();
 
                 // dispose of file stream
                 stream?.Dispose();
