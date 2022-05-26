@@ -54,10 +54,10 @@ namespace Teknik.Utilities.Cryptography
         }
     }
 
-    public class CounterModeCryptoTransform : ICryptoTransform
+    public class CounterModeCryptoTransform : ICryptoTransform, IDisposable
     {
         private readonly int _BlockSize;
-        private readonly Memory<byte> _IV;
+        private readonly byte[] _IV;
         private readonly byte[] _Counter;
         private readonly byte[] _EncryptedCounter;
         private readonly ICryptoTransform _CounterEncryptor;
@@ -103,13 +103,17 @@ namespace Teknik.Utilities.Cryptography
 
             _BlockSize = symmetricAlgorithm.BlockSize;
 
+            // Initialize Counter
+            _Counter = new byte[initialCounter.Length];
+            initialCounter.CopyTo(_Counter, 0);
+
             // Initialize the encrypted counter
             _EncryptedCounter = new byte[_BlockSize / 8];
 
-            _IV = iv;
+            // Initialize IV
+            _IV = new byte[iv.Length];
+            iv.CopyTo(_IV, 0);
 
-            _Counter = initialCounter;
-            
             _CounterEncryptor = symmetricAlgorithm.CreateEncryptor(key, iv);
 
             // Initialize State
@@ -204,7 +208,7 @@ namespace Teknik.Utilities.Cryptography
 
         public void ResetCounter()
         {
-            _IV.CopyTo(_Counter);
+            _IV.CopyTo(_Counter, 0);
             _Iterations = 0;
         }
 

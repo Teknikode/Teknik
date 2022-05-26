@@ -397,28 +397,7 @@ namespace Teknik.Areas.Upload.Controllers
                             // Reset file stream to starting position (or start of range)
                             fileStream.Seek(startByte, SeekOrigin.Begin);
 
-                            try
-                            {
-                                // If the IV is set, and Key is set, then decrypt it while sending
-                                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
-                                {
-                                    byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-                                    byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-
-                                    var aesStream = new AesCounterStream(fileStream, false, keyBytes, ivBytes);
-
-                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, aesStream, (int)length, _config.UploadConfig.ChunkSize), false);
-                                }
-                                else // Otherwise just send it
-                                {
-                                    // Send the file
-                                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, true, fileStream, (int)length, _config.UploadConfig.ChunkSize), false);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogWarning(ex, "Error in Download: {url}", new { url });
-                            }
+                            return DownloadData(url, fileStream, contentType, (int)length, key, iv);
                         }
                     }
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
@@ -462,19 +441,7 @@ namespace Teknik.Areas.Upload.Controllers
 
                         Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                        // If the IV is set, and Key is set, then decrypt it while sending
-                        if (decrypt && !string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
-                        {
-                            byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
-                            byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
-
-                            return new BufferedFileStreamResult(upload.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fileStream, false, keyBytes, ivBytes), (int)upload.ContentLength, _config.UploadConfig.ChunkSize), false);
-                        }
-                        else // Otherwise just send it
-                        {
-                            // Send the file
-                            return new BufferedFileStreamResult(upload.ContentType, (response) => ResponseHelper.StreamToOutput(response, true, fileStream, (int)upload.ContentLength, _config.UploadConfig.ChunkSize), false);
-                        }
+                        return DownloadData(upload.Url, fileStream, upload.ContentType, (int)upload.ContentLength, upload.Key, upload.IV);
                     }
                 }
                 return Json(new { error = new { message = "File Does Not Exist" } });
@@ -539,6 +506,34 @@ namespace Teknik.Areas.Upload.Controllers
                 return Json(new { error = new { message = "You do not have permission to delete this Upload" } });
             }
             return Json(new { error = new { message = "This Upload does not exist" } });
+        }
+
+        private IActionResult DownloadData(string url, Stream fileStream, string contentType, int length, string key, string iv)
+        {
+            try
+            {
+                // If the IV is set, and Key is set, then decrypt it while sending
+                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(iv))
+                {
+                    byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+                    byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
+
+                    var aesStream = new AesCounterStream(fileStream, false, keyBytes, ivBytes);
+                    //return File(aesStream, contentType, true);
+                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, aesStream, length, _config.UploadConfig.ChunkSize), false);
+                }
+                else // Otherwise just send it
+                {
+                    // Send the file
+                    return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, fileStream, length, _config.UploadConfig.ChunkSize), false);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error in Download: {url}", new { url });
+            }
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
     }
 }

@@ -11,8 +11,9 @@ namespace Teknik.Utilities
 {
     public static class ResponseHelper
     {
-        public async static Task StreamToOutput(HttpResponse response, bool flush, Stream stream, int length, int chunkSize)
+        public async static Task StreamToOutput(HttpResponse response, Stream stream, int length, int chunkSize)
         {
+            response.RegisterForDisposeAsync(stream);
             var bufferSize = chunkSize;
             if (length < chunkSize)
                 bufferSize = length;
@@ -27,11 +28,7 @@ namespace Teknik.Utilities
                     {
                         await response.Body.WriteAsync(buffer.Slice(0, processedBytes));
 
-                        // Flush the response
-                        if (flush)
-                        {
-                            //await response.Body.FlushAsync();
-                        }
+                        await response.Body.FlushAsync();
                     }
                 }
                 while (processedBytes > 0);
@@ -42,10 +39,10 @@ namespace Teknik.Utilities
             }
             finally
             {
-                //await response.Body.FlushAsync();
+                await response.Body.FlushAsync();
 
                 // dispose of file stream
-                stream?.Dispose();
+                //stream?.Dispose();
             }
         }
     }

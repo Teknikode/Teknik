@@ -45,7 +45,7 @@ namespace Teknik.Utilities.Cryptography
                 int processed = 0;
 
                 // Read the data from the stream
-                int bytesRead = await _Inner.ReadAsync(buffer);
+                int bytesRead = await _Inner.ReadAsync(buffer).ConfigureAwait(false);
                 if (bytesRead > 0)
                 {
                     // Process the read buffer
@@ -128,21 +128,20 @@ namespace Teknik.Utilities.Cryptography
             if (_Inner != null && CanWrite)
             {
                 // Process the cipher
-                Memory<byte> output = buffer;
+                Span<byte> output = buffer;
 
                 // Process the buffer
-                int processed = _Cipher.TransformBlock(output.Span, offset, count);
+                int processed = _Cipher.TransformBlock(output, offset, count);
 
                 // Do we have more?
                 if (processed < count)
                 {
                     // Finalize the cipher
-                    var finalProcessed = _Cipher.TransformFinalBlock(output.Span, processed + offset, count);
+                    var finalProcessed = _Cipher.TransformFinalBlock(output, processed + offset, count);
                     if (finalProcessed > 0)
                         processed += finalProcessed;
                 }
-                ReadOnlyMemory<byte> readOnlyOutput = buffer;
-                _Inner.Write(readOnlyOutput.Span);
+                _Inner.Write(output);
             }
         }
 
@@ -253,12 +252,6 @@ namespace Teknik.Utilities.Cryptography
             _Inner.Dispose();
 
             base.Dispose(disposing);
-        }
-
-        public override async ValueTask DisposeAsync()
-        {
-            await _Inner.DisposeAsync();
-            await base.DisposeAsync();
         }
 
         private void SyncCounter()

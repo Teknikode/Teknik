@@ -161,7 +161,7 @@ namespace Teknik.Areas.Paste.Controllers
 
                         Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                        return new BufferedFileStreamResult("application/octet-stream", async (response) => await ResponseHelper.StreamToOutput(response, true, new AesCounterStream(fileStream, false, keyBytes, ivBytes), contentSize, _config.PasteConfig.ChunkSize), false);
+                        return new BufferedFileStreamResult("application/octet-stream", async (response) => await ResponseHelper.StreamToOutput(response, new AesCounterStream(fileStream, false, keyBytes, ivBytes), contentSize, _config.PasteConfig.ChunkSize), false);
                     default:
                         return View("~/Areas/Paste/Views/Paste/Full.cshtml", model);
                 }

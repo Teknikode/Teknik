@@ -83,7 +83,7 @@ namespace Teknik.Areas.Podcast.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any, NoStore = false)]
         [TrackDownload]
         public IActionResult Download(int episode, string fileName)
         {
@@ -215,7 +215,7 @@ namespace Teknik.Areas.Podcast.Controllers
                     // Reset file stream to starting position (or start of range)
                     fileStream.Seek(startByte, SeekOrigin.Begin);
 
-                    return new BufferedFileStreamResult(contentType, (response) => ResponseHelper.StreamToOutput(response, true, fileStream, (int)length, 4 * 1024), false);
+                    return new BufferedFileStreamResult(contentType, (response) => ResponseHelper.StreamToOutput(response, fileStream, (int)length, 4 * 1024), false);
                 }
             }
             return new StatusCodeResult(StatusCodes.Status404NotFound);
