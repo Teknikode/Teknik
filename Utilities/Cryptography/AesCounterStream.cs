@@ -19,7 +19,7 @@ namespace Teknik.Utilities.Cryptography
         /// <param name="encrypt"></param>
         /// <param name="key"></param>
         /// <param name="iv"></param>
-        public AesCounterStream(Stream stream, bool encrypt, byte[] key, byte[] iv)
+        public AesCounterStream(Stream stream, bool encrypt, PooledArray key, PooledArray iv)
         {
             _Inner = stream;
 
@@ -27,11 +27,11 @@ namespace Teknik.Utilities.Cryptography
             using AesCounterMode aes = new AesCounterMode(iv);
             if (encrypt)
             {
-                _Cipher = (CounterModeCryptoTransform)aes.CreateEncryptor(key, iv); // Encrypt
+                _Cipher = (CounterModeCryptoTransform)aes.CreateEncryptor(key.Array, iv.Array); // Encrypt
             }
             else
             {
-                _Cipher = (CounterModeCryptoTransform)aes.CreateDecryptor(key, iv); // Decrypt
+                _Cipher = (CounterModeCryptoTransform)aes.CreateDecryptor(key.Array, iv.Array); // Decrypt
             }
 
             // Sync the counter

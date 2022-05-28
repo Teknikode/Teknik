@@ -116,7 +116,10 @@ namespace Teknik.Areas.Vault.Controllers
 
                                 byte[] ivBytes = Encoding.Unicode.GetBytes(paste.Paste.IV);
                                 byte[] keyBytes = AesCounterManaged.CreateKey(paste.Paste.Key, ivBytes, paste.Paste.KeySize);
-                                using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
+
+                                using (var keyArray = new PooledArray(keyBytes))
+                                using (var ivArray = new PooledArray(ivBytes))
+                                using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyArray, ivArray))
                                 using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
                                 {
                                     pasteModel.Content = await sr.ReadToEndAsync();

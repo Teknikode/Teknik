@@ -61,7 +61,11 @@ namespace Teknik.Areas.Upload
                 byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                 byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
 
-                await storageService.SaveEncryptedFile(fileName, file, keyBytes, ivBytes);
+                using (var keyArray = new PooledArray(keyBytes))
+                using (var ivArray = new PooledArray(ivBytes))
+                {
+                    await storageService.SaveEncryptedFile(fileName, file, keyArray, ivArray);
+                }
             }
             else
             {

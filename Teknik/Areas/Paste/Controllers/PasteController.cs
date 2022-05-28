@@ -85,8 +85,25 @@ namespace Teknik.Areas.Paste.Controllers
                     }
                 }
 
-                byte[] ivBytes = (string.IsNullOrEmpty(iv)) ? new byte[blockSize] : Encoding.Unicode.GetBytes(iv);
-                byte[] keyBytes = (string.IsNullOrEmpty(key)) ? new byte[keySize] : AesCounterManaged.CreateKey(key, ivBytes, keySize);
+                PooledArray ivArray;
+                if (!string.IsNullOrEmpty(iv))
+                {
+                    var ivBytes = Encoding.Unicode.GetBytes(iv);
+                    ivArray = new PooledArray(ivBytes);
+                }
+                else
+                    ivArray = new PooledArray(blockSize);
+                Response.RegisterForDispose(ivArray);
+
+                PooledArray keyArray;
+                if (!string.IsNullOrEmpty(key))
+                {
+                    var keyBytes = AesCounterManaged.CreateKey(key, ivArray.Array, keySize);
+                    keyArray = new PooledArray(keyBytes);
+                }
+                else
+                    keyArray = new PooledArray(keySize);
+                Response.RegisterForDispose(keyArray);
 
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(hashedPass))
@@ -100,7 +117,7 @@ namespace Teknik.Areas.Paste.Controllers
                     if (!string.IsNullOrEmpty(password))
                     {
                         hash = Crypto.HashPassword(key, password);
-                        keyBytes = AesCounterManaged.CreateKey(password, ivBytes, keySize);
+                        AesCounterManaged.CreateKey(password, ivArray.Array, keySize).CopyTo(keyArray.Array, 0);
                     }
                     if (string.IsNullOrEmpty(password) || hash != hashedPass)
                     {
@@ -136,7 +153,7 @@ namespace Teknik.Areas.Paste.Controllers
                 // Only load the model content if we aren't downloading it.
                 if (type.ToLower() != "download")
                 {
-                    using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
+                    using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyArray, ivArray))
                     using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
                     {
                         model.Content = await sr.ReadToEndAsync();
@@ -161,7 +178,7 @@ namespace Teknik.Areas.Paste.Controllers
 
                         Response.Headers.Add("Content-Disposition", cd.ToString());
 
-                        return new BufferedFileStreamResult("application/octet-stream", async (response) => await ResponseHelper.StreamToOutput(response, new AesCounterStream(fileStream, false, keyBytes, ivBytes), contentSize, _config.PasteConfig.ChunkSize), false);
+                        return new BufferedFileStreamResult("application/octet-stream", async (response) => await ResponseHelper.StreamToOutput(response, new AesCounterStream(fileStream, false, keyArray, ivArray), contentSize, _config.PasteConfig.ChunkSize), false);
                     default:
                         return View("~/Areas/Paste/Views/Paste/Full.cshtml", model);
                 }
@@ -240,8 +257,25 @@ namespace Teknik.Areas.Paste.Controllers
                 model.DatePosted = paste.DatePosted;
                 model.Username = paste.User?.Username;
 
-                byte[] ivBytes = (string.IsNullOrEmpty(paste.IV)) ? new byte[paste.BlockSize] : Encoding.Unicode.GetBytes(paste.IV);
-                byte[] keyBytes = (string.IsNullOrEmpty(paste.Key)) ? new byte[paste.KeySize] : AesCounterManaged.CreateKey(paste.Key, ivBytes, paste.KeySize);
+                PooledArray ivArray;
+                if (!string.IsNullOrEmpty(paste.IV))
+                {
+                    var ivBytes = Encoding.Unicode.GetBytes(paste.IV);
+                    ivArray = new PooledArray(ivBytes);
+                }
+                else
+                    ivArray = new PooledArray(paste.BlockSize);
+                Response.RegisterForDispose(ivArray);
+
+                PooledArray keyArray;
+                if (!string.IsNullOrEmpty(paste.Key))
+                {
+                    var keyBytes = AesCounterManaged.CreateKey(paste.Key, ivArray.Array, paste.KeySize);
+                    keyArray = new PooledArray(keyBytes);
+                }
+                else
+                    keyArray = new PooledArray(paste.KeySize);
+                Response.RegisterForDispose(keyArray);
 
                 // The paste has a password set
                 if (!string.IsNullOrEmpty(paste.HashedPassword))
@@ -255,7 +289,7 @@ namespace Teknik.Areas.Paste.Controllers
                     if (!string.IsNullOrEmpty(password))
                     {
                         hash = Crypto.HashPassword(paste.Key, password);
-                        keyBytes = AesCounterManaged.CreateKey(password, ivBytes, paste.KeySize);
+                        AesCounterManaged.CreateKey(password, ivArray.Array, paste.KeySize).CopyTo(keyArray.Array, 0);
                     }
                     if (string.IsNullOrEmpty(password) || hash != paste.HashedPassword)
                     {
@@ -285,7 +319,7 @@ namespace Teknik.Areas.Paste.Controllers
                 if (fileStream == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
 
-                using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
+                using (AesCounterStream cs = new AesCounterStream(fileStream, false, keyArray, ivArray))
                 using (StreamReader sr = new StreamReader(cs, Encoding.Unicode))
                 {
                     model.Content = await sr.ReadToEndAsync();

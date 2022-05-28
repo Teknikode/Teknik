@@ -38,7 +38,7 @@ namespace Teknik.StorageService
             return null;
         }
 
-        public override async Task SaveEncryptedFile(string fileName, Stream file, byte[] key, byte[] iv)
+        public override async Task SaveEncryptedFile(string fileName, Stream file, PooledArray key, PooledArray iv)
         {
             if (!Directory.Exists(_config.LocalDirectory))
                 Directory.CreateDirectory(_config.LocalDirectory);

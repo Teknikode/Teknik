@@ -9,7 +9,7 @@ namespace Teknik.Utilities.Cryptography
 {
     public class AesCounterManaged
     {
-        public static async Task EncryptToFile(Stream input, string filePath, byte[] key, byte[] iv)
+        public static async Task EncryptToFile(Stream input, string filePath, PooledArray key, PooledArray iv)
         {
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
@@ -17,7 +17,7 @@ namespace Teknik.Utilities.Cryptography
             }
         }
 
-        public static async Task EncryptToStream(Stream input, Stream output, byte[] key, byte[] iv)
+        public static async Task EncryptToStream(Stream input, Stream output, PooledArray key, PooledArray iv)
         {
             // Make sure the input stream is at the beginning
             if (input.CanSeek)

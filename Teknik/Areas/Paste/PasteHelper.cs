@@ -120,8 +120,10 @@ namespace Teknik.Areas.Paste
             // Encrypt Content
             byte[] data = Encoding.Unicode.GetBytes(content);
             using (MemoryStream ms = new MemoryStream(data))
+            using (var keyArray = new PooledArray(keyBytes))
+            using (var ivArray = new PooledArray(ivBytes))
             {
-                await storageService.SaveEncryptedFile(fileName, ms, keyBytes, ivBytes);
+                await storageService.SaveEncryptedFile(fileName, ms, keyArray, ivArray);
             }
         }
 

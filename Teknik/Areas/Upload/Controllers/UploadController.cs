@@ -517,8 +517,14 @@ namespace Teknik.Areas.Upload.Controllers
                 {
                     byte[] keyBytes = Encoding.UTF8.GetBytes(key);
                     byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
+                    
+                    var keyArray = new PooledArray(keyBytes);
+                    var ivArray = new PooledArray(ivBytes);
 
-                    var aesStream = new AesCounterStream(fileStream, false, keyBytes, ivBytes);
+                    Response.RegisterForDispose(keyArray);
+                    Response.RegisterForDispose(ivArray);
+
+                    var aesStream = new AesCounterStream(fileStream, false, keyArray, ivArray);
                     //return File(aesStream, contentType, true);
                     return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, aesStream, length, _config.UploadConfig.ChunkSize), false);
                 }

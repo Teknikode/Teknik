@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Teknik.Configuration;
+using Teknik.Utilities;
 
 namespace Teknik.StorageService
 {
@@ -19,7 +20,7 @@ namespace Teknik.StorageService
         public abstract Stream GetFile(string fileName);
         public abstract List<string> GetFileNames();
         public abstract Task SaveFile(string fileName, Stream file);
-        public abstract Task SaveEncryptedFile(string fileName, Stream file, byte[] key, byte[] iv);
+        public abstract Task SaveEncryptedFile(string fileName, Stream file, PooledArray key, PooledArray iv);
         public abstract void DeleteFile(string fileName);
     }
 }

@@ -57,7 +57,7 @@ namespace Teknik.StorageService
             return new MemoryStream(Files[fileName]);
         }
 
-        public override async Task SaveEncryptedFile(string fileName, Stream file, byte[] key, byte[] iv)
+        public override async Task SaveEncryptedFile(string fileName, Stream file, PooledArray key, PooledArray iv)
         {
             if (file == null ||
                 Files.ContainsKey(fileName))

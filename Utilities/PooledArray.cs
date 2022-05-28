@@ -18,6 +18,12 @@ namespace Teknik.Utilities
             Array = _arrayPool.Rent(size);
         }
 
+        public PooledArray(byte[] array)
+        {
+            Array = _arrayPool.Rent(array.Length);
+            array.CopyTo(Array, 0);
+        }
+
         public void Dispose()
         {
             _arrayPool.Return(Array);

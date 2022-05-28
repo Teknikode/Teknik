@@ -148,7 +148,7 @@ namespace Teknik.Areas.Error.Controllers
             model.StatusCode = StatusCodes.Status500InternalServerError;
             model.Exception = exception;
 
-            return GenerateActionResult(CreateErrorObj("Http", StatusCodes.Status500InternalServerError, exception.Message), View("~/Areas/Error/Views/Error/Http500.cshtml", model));
+            return GenerateActionResult(CreateErrorObj("Http", StatusCodes.Status500InternalServerError, exception?.Message), View("~/Areas/Error/Views/Error/Http500.cshtml", model));
         }
 
         [HttpPost]
