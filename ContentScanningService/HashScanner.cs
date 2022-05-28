@@ -14,6 +14,7 @@ namespace Teknik.ContentScanningService
     public class HashScanner : ContentScanner
     {
         private static readonly HttpClient _client = new HttpClient();
+
         public HashScanner(Config config) : base(config)
         { }
 

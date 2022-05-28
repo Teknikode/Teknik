@@ -13,20 +13,22 @@ namespace Teknik.Utilities
     {
         public async static Task StreamToOutput(HttpResponse response, Stream stream, int length, int chunkSize)
         {
-            response.RegisterForDisposeAsync(stream);
             var bufferSize = chunkSize;
             if (length < chunkSize)
                 bufferSize = length;
-            Memory<byte> buffer = new byte[bufferSize];
+            var pooledArray = new PooledArray(bufferSize);
+
+            response.RegisterForDispose(stream);
+            response.RegisterForDispose(pooledArray);
             try
             {
                 int processedBytes;
                 do
                 {
-                    processedBytes = await stream.ReadAsync(buffer);
+                    processedBytes = await stream.ReadAsync(pooledArray.Array);
                     if (processedBytes > 0)
                     {
-                        await response.Body.WriteAsync(buffer.Slice(0, processedBytes));
+                        await response.Body.WriteAsync(pooledArray.Array, 0, processedBytes);
 
                         await response.Body.FlushAsync();
                     }

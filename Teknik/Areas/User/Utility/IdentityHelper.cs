@@ -16,6 +16,8 @@ namespace Teknik.Areas.Users.Utility
 {
     public static class IdentityHelper
     {
+        private static HttpClient _httpClient = new HttpClient();
+
         public static async Task GetAccessToken(this HttpClient client, Config config)
         {
             var token = await client.GetAccessToken(config.UserConfig.IdentityServerConfig.Authority, config.UserConfig.IdentityServerConfig.ClientId, config.UserConfig.IdentityServerConfig.ClientSecret, "auth-api");
@@ -48,10 +50,9 @@ namespace Teknik.Areas.Users.Utility
 
         public static async Task<IdentityResult> Get(Config config, Uri url)
         {
-            var client = new HttpClient();
-            await client.GetAccessToken(config);
+            await _httpClient.GetAccessToken(config);
 
-            var content = await client.GetStringAsync(url);
+            var content = await _httpClient.GetStringAsync(url);
             if (!string.IsNullOrEmpty(content))
             {
                 return JsonConvert.DeserializeObject<IdentityResult>(content);
@@ -62,11 +63,10 @@ namespace Teknik.Areas.Users.Utility
 
         public static async Task<IdentityResult> Post(Config config, Uri url, object data)
         {
-            var client = new HttpClient();
-            await client.GetAccessToken(config);
+            await _httpClient.GetAccessToken(config);
 
 
-            var response = await client.PostAsJsonAsync(url, data);
+            var response = await _httpClient.PostAsJsonAsync(url, data);
             if (response.IsSuccessStatusCode)
             {
                 string content = await response.Content.ReadAsStringAsync();

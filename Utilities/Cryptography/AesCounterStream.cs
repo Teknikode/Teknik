@@ -248,8 +248,8 @@ namespace Teknik.Utilities.Cryptography
 
         protected override void Dispose(bool disposing)
         {
-            _Cipher.Dispose();
             _Inner.Dispose();
+            _Cipher.Dispose();
 
             base.Dispose(disposing);
         }
