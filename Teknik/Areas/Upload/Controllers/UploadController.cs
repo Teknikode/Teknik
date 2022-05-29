@@ -310,6 +310,8 @@ namespace Teknik.Areas.Upload.Controllers
                         long length = contentLength;
                         if (fileStream != null)
                         {
+                            Response.RegisterForDispose(fileStream);
+
                             #region Range Calculation
                             // Are they downloading it by range?
                             bool byRange = !string.IsNullOrEmpty(Request.Headers["Range"]); // We do not support ranges
@@ -428,6 +430,8 @@ namespace Teknik.Areas.Upload.Controllers
                     var fileStream = storageService.GetFile(upload.FileName);
                     if (fileStream != null)
                     {
+                        Response.RegisterForDispose(fileStream);
+
                         // Notify the client the content length we'll be outputting 
                         Response.Headers.Add("Content-Length", upload.ContentLength.ToString());
 
@@ -527,6 +531,8 @@ namespace Teknik.Areas.Upload.Controllers
                     Response.RegisterForDispose(ivArray);
 
                     var aesStream = new AesCounterStream(fileStream, false, keyArray, ivArray);
+                    Response.RegisterForDispose(aesStream);
+
                     //return File(aesStream, contentType, true);
                     return new BufferedFileStreamResult(contentType, async (response) => await ResponseHelper.StreamToOutput(response, aesStream, length, _config.UploadConfig.ChunkSize), false);
                 }

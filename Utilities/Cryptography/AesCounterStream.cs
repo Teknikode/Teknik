@@ -251,8 +251,10 @@ namespace Teknik.Utilities.Cryptography
 
         protected override void Dispose(bool disposing)
         {
-            _Inner.Dispose();
-            _Cipher.Dispose();
+            if (disposing)
+            {
+                _Cipher.Dispose();
+            }
 
             base.Dispose(disposing);
         }

@@ -23,9 +23,16 @@ namespace Teknik.Utilities
 
         public PooledArray(byte[] array)
         {
+            Length = array.Length;
             Array = _arrayPool.Rent(array.Length);
             array.CopyTo(Array, 0);
+        }
+
+        public PooledArray(PooledArray array)
+        {
             Length = array.Length;
+            Array = _arrayPool.Rent(array.Length);
+            array.CopyTo(Array);
         }
 
         public void CopyTo(byte[] destination)
@@ -40,7 +47,18 @@ namespace Teknik.Utilities
 
         public void Dispose()
         {
-            _arrayPool.Return(Array);
+            Dispose(true);
+
+            // Suppress finalization.
+            GC.SuppressFinalize(this);
+        }
+
+        public void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _arrayPool.Return(Array);
+            }
         }
     }
 }

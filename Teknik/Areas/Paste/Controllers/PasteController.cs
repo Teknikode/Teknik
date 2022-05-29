@@ -146,7 +146,7 @@ namespace Teknik.Areas.Paste.Controllers
                 if (string.IsNullOrEmpty(fileName))
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
                 var storageService = StorageServiceFactory.GetStorageService(_config.PasteConfig.StorageConfig);
-                var fileStream = storageService.GetFile(fileName);
+                using var fileStream = storageService.GetFile(fileName);
                 if (fileStream == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
 
@@ -317,7 +317,7 @@ namespace Teknik.Areas.Paste.Controllers
                 if (string.IsNullOrEmpty(paste.FileName))
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
                 var storageService = StorageServiceFactory.GetStorageService(_config.PasteConfig.StorageConfig);
-                var fileStream = storageService.GetFile(paste.FileName);
+                using var fileStream = storageService.GetFile(paste.FileName);
                 if (fileStream == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
 

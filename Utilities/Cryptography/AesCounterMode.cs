@@ -26,7 +26,7 @@ namespace Teknik.Utilities.Cryptography
             _Algo.Padding = PaddingMode.None;
 
             // Set the internal variables
-            _InitialCounter = initialCounter;
+            _InitialCounter = new PooledArray(initialCounter);
         }
 
         public override ICryptoTransform CreateEncryptor(byte[] key, byte[] iv)
@@ -51,7 +51,11 @@ namespace Teknik.Utilities.Cryptography
 
         protected override void Dispose(bool disposed)
         {
-            _Algo.Dispose();
+            if (!disposed)
+            {
+                _Algo.Dispose();
+                _InitialCounter.Dispose();
+            }
         }
     }
 
@@ -229,10 +233,21 @@ namespace Teknik.Utilities.Cryptography
 
         public void Dispose()
         {
-            _CounterEncryptor.Dispose();
-            _IV.Dispose();
-            _Counter.Dispose();
-            _EncryptedCounter.Dispose();
+            Dispose(true);
+
+            // Suppress finalization.
+            GC.SuppressFinalize(this);
+        }
+
+        public void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _CounterEncryptor.Dispose();
+                _IV.Dispose();
+                _Counter.Dispose();
+                _EncryptedCounter.Dispose();
+            }
         }
     }
 }

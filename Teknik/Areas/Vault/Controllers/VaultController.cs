@@ -110,7 +110,7 @@ namespace Teknik.Areas.Vault.Controllers
                             {
                                 // Read in the file
                                 var storageService = StorageServiceFactory.GetStorageService(_config.PasteConfig.StorageConfig);
-                                var fileStream = storageService.GetFile(paste.Paste.FileName);
+                                using var fileStream = storageService.GetFile(paste.Paste.FileName);
                                 if (fileStream == null)
                                     continue;
 
