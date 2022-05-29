@@ -228,7 +228,7 @@ namespace Teknik.Areas.Upload.Controllers
                 long contentLength = 0;
                 DateTime dateUploaded = new DateTime();
 
-                var upload = UploadHelper.GetUpload(_dbContext, _cache, file);
+                var upload = UploadHelper.GetUpload(_dbContext, _cache, file, false);
                 if (upload != null)
                 {
                     // Check Expiration
@@ -416,7 +416,7 @@ namespace Teknik.Areas.Upload.Controllers
         {
             if (_config.UploadConfig.DownloadEnabled)
             {
-                Models.Upload upload =  UploadHelper.GetUpload(_dbContext, _cache, file);
+                Models.Upload upload =  UploadHelper.GetUpload(_dbContext, _cache, file, false);
                 if (upload != null)
                 {
                     // Check Expiration
@@ -460,7 +460,7 @@ namespace Teknik.Areas.Upload.Controllers
         public IActionResult DeleteByKey(string file, string key)
         {
             ViewBag.Title = "File Delete | " + file ;
-            Models.Upload upload = UploadHelper.GetUpload(_dbContext, _cache, file);
+            Models.Upload upload = UploadHelper.GetUpload(_dbContext, _cache, file, false);
             if (upload != null)
             {
                 DeleteViewModel model = new DeleteViewModel();

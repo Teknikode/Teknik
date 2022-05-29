@@ -160,7 +160,7 @@ namespace Teknik.Areas.Upload
 
                     using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
                     {
-                        var upload = GetUpload(db, cache, url);
+                        var upload = GetUpload(db, cache, url, false);
                         if (upload != null)
                         {
                             upload.Downloads++;
@@ -173,9 +173,15 @@ namespace Teknik.Areas.Upload
 
         public static Models.Upload GetUpload(TeknikEntities db, ObjectCache cache, string url)
         {
-            var upload = cache.AddOrGetObject(url, (key) => db.Uploads.FirstOrDefault(up => up.Url == key));
+            return GetUpload(db, cache, url, true);
+        }
 
-            if (upload != null &&
+        public static Models.Upload GetUpload(TeknikEntities db, ObjectCache cache, string url, bool attach)
+        {
+            var upload = cache.AddOrGetObject(url, (key) => db.Uploads.AsNoTracking().FirstOrDefault(up => up.Url == key));
+
+            if (attach &&
+                upload != null &&
                 !db.Exists(upload))
                 db.Attach(upload);
 

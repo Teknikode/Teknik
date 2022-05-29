@@ -136,7 +136,7 @@ namespace Teknik.Areas.Paste
 
                     using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
                     {
-                        var paste = GetPaste(db, cache, url);
+                        var paste = GetPaste(db, cache, url, false);
                         if (paste != null)
                         {
                             paste.Views++;
@@ -149,9 +149,15 @@ namespace Teknik.Areas.Paste
 
         public static Models.Paste GetPaste(TeknikEntities db, ObjectCache cache, string url)
         {
-            var paste = cache.AddOrGetObject(url, (key) => db.Pastes.FirstOrDefault(up => up.Url == key));
+            return GetPaste(db, cache, url, true);
+        }
 
-            if (paste != null &&
+        public static Models.Paste GetPaste(TeknikEntities db, ObjectCache cache, string url, bool attach)
+        {
+            var paste = cache.AddOrGetObject(url, (key) => db.Pastes.AsNoTracking().FirstOrDefault(up => up.Url == key));
+
+            if (attach &&
+                paste != null &&
                 !db.Exists(paste))
                 db.Attach(paste);
 
