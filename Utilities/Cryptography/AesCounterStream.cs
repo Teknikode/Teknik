@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,16 +23,18 @@ namespace Teknik.Utilities.Cryptography
         public AesCounterStream(Stream stream, bool encrypt, PooledArray key, PooledArray iv)
         {
             _Inner = stream;
+            var keyBytes = key.ToArray();
+            var ivBytes = iv.ToArray();
 
             // Create the Aes Cipher
             using AesCounterMode aes = new AesCounterMode(iv);
             if (encrypt)
             {
-                _Cipher = (CounterModeCryptoTransform)aes.CreateEncryptor(key.Array, iv.Array); // Encrypt
+                _Cipher = (CounterModeCryptoTransform)aes.CreateEncryptor(keyBytes, ivBytes); // Encrypt
             }
             else
             {
-                _Cipher = (CounterModeCryptoTransform)aes.CreateDecryptor(key.Array, iv.Array); // Decrypt
+                _Cipher = (CounterModeCryptoTransform)aes.CreateDecryptor(keyBytes, ivBytes); // Decrypt
             }
 
             // Sync the counter

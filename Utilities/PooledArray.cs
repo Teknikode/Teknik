@@ -28,6 +28,16 @@ namespace Teknik.Utilities
             Length = array.Length;
         }
 
+        public void CopyTo(byte[] destination)
+        {
+            System.Array.Copy(Array, destination, Length);
+        }
+
+        public byte[] ToArray()
+        {
+            return Array.Take(Length).ToArray();
+        }
+
         public void Dispose()
         {
             _arrayPool.Return(Array);

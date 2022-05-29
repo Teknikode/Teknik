@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace Teknik.Utilities.Cryptography
@@ -105,7 +106,7 @@ namespace Teknik.Utilities.Cryptography
 
             // Initialize Counter
             _Counter = new PooledArray(initialCounter.Length);
-            initialCounter.Array.CopyTo(_Counter.Array, 0);
+            initialCounter.CopyTo(_Counter.Array);
 
             // Initialize the encrypted counter
             _EncryptedCounter = new PooledArray(_BlockSize / 8);
@@ -208,7 +209,7 @@ namespace Teknik.Utilities.Cryptography
 
         public void ResetCounter()
         {
-            _IV.Array.CopyTo(_Counter.Array, 0);
+            _IV.CopyTo(_Counter.Array);
             _Iterations = 0;
         }
 
