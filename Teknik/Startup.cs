@@ -101,6 +101,8 @@ namespace Teknik
 
             services.AddHostedService<TaskQueueService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddSingleton<ObjectCache, ObjectCache>(c => new ObjectCache(300));
+            services.AddHostedService<CacheCleanerService>();
             services.AddScoped<IErrorController, ErrorController>();
 
             // Add Tracking Filter scopes

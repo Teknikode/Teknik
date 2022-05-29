@@ -19,9 +19,6 @@ namespace Teknik.Areas.Upload
 {
     public static class UploadHelper
     {
-        private static object _cacheLock = new object();
-        private readonly static ObjectCache _uploadCache = new ObjectCache(300);
-
         public static async Task<Models.Upload> SaveFile(TeknikEntities db, Config config, Stream file, string contentType, long contentLength, bool encrypt, ExpirationUnit expirationUnit, int expirationLength)
         {
             return await SaveFile(db, config, file, contentType, contentLength, encrypt, expirationUnit, expirationLength, string.Empty, null, null, 256, 128);
@@ -128,14 +125,14 @@ namespace Teknik.Areas.Upload
             return upload;
         }
 
-        public static string GenerateDeleteKey(TeknikEntities db, Config config, string url)
+        public static string GenerateDeleteKey(TeknikEntities db, ObjectCache cache, Config config, string url)
         {
             var upload = db.Uploads.FirstOrDefault(up => up.Url == url);
             if (upload != null)
             {
                 string delKey = StringHelper.RandomString(config.UploadConfig.DeleteKeyLength);
                 upload.DeleteKey = delKey;
-                ModifyUpload(db, upload);
+                ModifyUpload(db, cache, upload);
                 return delKey;
             }
             return null;
@@ -151,7 +148,7 @@ namespace Teknik.Areas.Upload
             return false;
         }
 
-        public static void IncrementDownloadCount(IBackgroundTaskQueue queue, Config config, string url)
+        public static void IncrementDownloadCount(IBackgroundTaskQueue queue, ObjectCache cache, Config config, string url)
         {
             // Fire and forget updating of the download count
             queue.QueueBackgroundWorkItem(async token =>
@@ -163,34 +160,31 @@ namespace Teknik.Areas.Upload
 
                     using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
                     {
-                        var upload = GetUpload(db, url);
+                        var upload = GetUpload(db, cache, url);
                         if (upload != null)
                         {
                             upload.Downloads++;
-                            ModifyUpload(db, upload);
+                            ModifyUpload(db, cache, upload);
                         }
                     }
                 });
             });
         }
 
-        public static Models.Upload GetUpload(TeknikEntities db, string url)
+        public static Models.Upload GetUpload(TeknikEntities db, ObjectCache cache, string url)
         {
-            lock (_cacheLock)
-            {
-                var upload = _uploadCache.GetObject(url, (key) => db.Uploads.FirstOrDefault(up => up.Url == key));
+            var upload = cache.AddOrGetObject(url, (key) => db.Uploads.FirstOrDefault(up => up.Url == key));
 
-                if (upload != null &&
-                    !db.Exists(upload))
-                    db.Attach(upload);
+            if (upload != null &&
+                !db.Exists(upload))
+                db.Attach(upload);
 
-                return upload;
-            }
+            return upload;
         }
 
-        public static void DeleteFile(TeknikEntities db, Config config, ILogger<Logger> logger, string url)
+        public static void DeleteFile(TeknikEntities db, ObjectCache cache, Config config, ILogger<Logger> logger, string url)
         {
-            var upload = GetUpload(db, url);
+            var upload = GetUpload(db, cache, url);
             if (upload != null)
             {
                 try
@@ -209,19 +203,13 @@ namespace Teknik.Areas.Upload
             }
 
             // Remove from the cache
-            lock (_cacheLock)
-            {
-                _uploadCache.DeleteObject(url);
-            }
+            cache.DeleteObject<UploadConfig>(url);
         }
 
-        public static void ModifyUpload(TeknikEntities db, Models.Upload upload)
+        public static void ModifyUpload(TeknikEntities db, ObjectCache cache, Models.Upload upload)
         {
             // Update the cache's copy
-            lock (_cacheLock)
-            {
-                _uploadCache.UpdateObject(upload.Url, upload);
-            }
+            cache.UpdateObject(upload.Url, upload);
 
             if (upload != null)
             {

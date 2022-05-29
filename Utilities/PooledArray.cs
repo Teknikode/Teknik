@@ -13,15 +13,19 @@ namespace Teknik.Utilities
 
         public byte[] Array { get; private set; }
 
+        public readonly int Length;
+
         public PooledArray(int size)
         {
             Array = _arrayPool.Rent(size);
+            Length = size;
         }
 
         public PooledArray(byte[] array)
         {
             Array = _arrayPool.Rent(array.Length);
             array.CopyTo(Array, 0);
+            Length = array.Length;
         }
 
         public void Dispose()

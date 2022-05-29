@@ -26,12 +26,14 @@ namespace Teknik.Areas.Paste.Controllers
     public class PasteController : DefaultController
     {
         private readonly IBackgroundTaskQueue _queue;
+        private readonly ObjectCache _cache;
 
-        public PasteController(ILogger<Logger> logger, Config config, TeknikEntities dbContext, IBackgroundTaskQueue queue) : base(logger, config, dbContext)
+        public PasteController(ILogger<Logger> logger, Config config, TeknikEntities dbContext, IBackgroundTaskQueue queue, ObjectCache cache) : base(logger, config, dbContext)
         {
             _queue = queue;
+            _cache = cache;
         }
-        
+
         [AllowAnonymous]
         [TrackPageView]
         public IActionResult Index()
@@ -46,7 +48,7 @@ namespace Teknik.Areas.Paste.Controllers
         [TrackPageView]
         public async Task<IActionResult> ViewPaste(string type, string url, string password)
         {
-            Models.Paste paste = PasteHelper.GetPaste(_dbContext, url);
+            Models.Paste paste = PasteHelper.GetPaste(_dbContext, _cache, url);
             if (paste != null)
             {
                 ViewBag.Title = (string.IsNullOrEmpty(paste.Title)) ? "Untitled Paste" : paste.Title + " | Pastebin";
@@ -62,12 +64,12 @@ namespace Teknik.Areas.Paste.Controllers
                 // Check Expiration
                 if (PasteHelper.CheckExpiration(paste))
                 {
-                    PasteHelper.DeleteFile(_dbContext, _config, _logger, url);
+                    PasteHelper.DeleteFile(_dbContext, _cache, _config, _logger, url);
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
 
                 // Increment View Count
-                PasteHelper.IncrementViewCount(_queue, _config, url);
+                PasteHelper.IncrementViewCount(_queue, _cache, _config, url);
 
                 PasteViewModel model = new PasteViewModel();
                 model.Url = url;
@@ -234,7 +236,7 @@ namespace Teknik.Areas.Paste.Controllers
         [TrackPageView]
         public async Task<IActionResult> Edit(string url, string password)
         {
-            Models.Paste paste = PasteHelper.GetPaste(_dbContext, url);
+            Models.Paste paste = PasteHelper.GetPaste(_dbContext, _cache, url);
             if (paste != null)
             {
                 if (paste.User?.Username != User.Identity.Name)
@@ -246,7 +248,7 @@ namespace Teknik.Areas.Paste.Controllers
                 // Check Expiration
                 if (PasteHelper.CheckExpiration(paste))
                 {
-                    PasteHelper.DeleteFile(_dbContext, _config, _logger, url);
+                    PasteHelper.DeleteFile(_dbContext, _cache, _config, _logger, url);
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
                 }
 
@@ -338,7 +340,7 @@ namespace Teknik.Areas.Paste.Controllers
             {
                 try
                 {
-                    Models.Paste paste = PasteHelper.GetPaste(_dbContext, model.Url);
+                    Models.Paste paste = PasteHelper.GetPaste(_dbContext, _cache, model.Url);
                     if (paste != null)
                     {
                         if (paste.User?.Username != User.Identity.Name)
@@ -396,7 +398,7 @@ namespace Teknik.Areas.Paste.Controllers
                         paste.Syntax = model.Syntax;
                         paste.DateEdited = DateTime.Now;
 
-                        PasteHelper.ModifyPaste(_dbContext, paste);
+                        PasteHelper.ModifyPaste(_dbContext, _cache, paste);
 
                         // Delete the old file
                         storageService.DeleteFile(oldFile);
@@ -416,13 +418,13 @@ namespace Teknik.Areas.Paste.Controllers
         [HttpOptions]
         public IActionResult Delete(string id)
         {
-            Models.Paste foundPaste = PasteHelper.GetPaste(_dbContext, id);
+            Models.Paste foundPaste = PasteHelper.GetPaste(_dbContext, _cache, id);
             if (foundPaste != null)
             {
                 if (foundPaste.User?.Username == User.Identity.Name ||
                     User.IsInRole("Admin"))
                 {
-                    PasteHelper.DeleteFile(_dbContext, _config, _logger, id);
+                    PasteHelper.DeleteFile(_dbContext, _cache, _config, _logger, id);
 
                     return Json(new { result = true, redirect = Url.SubRouteUrl("p", "Paste.Index") });
                 }

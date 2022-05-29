@@ -19,9 +19,6 @@ namespace Teknik.Areas.Paste
 {
     public static class PasteHelper
     {
-        private static object _cacheLock = new object();
-        private readonly static ObjectCache _pasteCache = new ObjectCache(300);
-
         public static async Task<Models.Paste> CreatePaste(Config config, TeknikEntities db, string content, string title = "", string syntax = "text", ExpirationUnit expireUnit = ExpirationUnit.Never, int expireLength = 1, string password = "")
         {
             Models.Paste paste = new Models.Paste();
@@ -127,7 +124,7 @@ namespace Teknik.Areas.Paste
             }
         }
 
-        public static void IncrementViewCount(IBackgroundTaskQueue queue, Config config, string url)
+        public static void IncrementViewCount(IBackgroundTaskQueue queue, ObjectCache cache, Config config, string url)
         {
             // Fire and forget updating of the download count
             queue.QueueBackgroundWorkItem(async token =>
@@ -139,34 +136,31 @@ namespace Teknik.Areas.Paste
 
                     using (TeknikEntities db = new TeknikEntities(optionsBuilder.Options))
                     {
-                        var paste = GetPaste(db, url);
+                        var paste = GetPaste(db, cache, url);
                         if (paste != null)
                         {
                             paste.Views++;
-                            ModifyPaste(db, paste);
+                            ModifyPaste(db, cache, paste);
                         }
                     }
                 });
             });
         }
 
-        public static Models.Paste GetPaste(TeknikEntities db, string url)
+        public static Models.Paste GetPaste(TeknikEntities db, ObjectCache cache, string url)
         {
-            lock (_cacheLock)
-            {
-                var paste = _pasteCache.GetObject(url, (key) => db.Pastes.FirstOrDefault(up => up.Url == key));
+            var paste = cache.AddOrGetObject(url, (key) => db.Pastes.FirstOrDefault(up => up.Url == key));
 
-                if (paste != null &&
-                    !db.Exists(paste))
-                    db.Attach(paste);
+            if (paste != null &&
+                !db.Exists(paste))
+                db.Attach(paste);
 
-                return paste;
-            }
+            return paste;
         }
 
-        public static void DeleteFile(TeknikEntities db, Config config, ILogger<Logger> logger, string url)
+        public static void DeleteFile(TeknikEntities db, ObjectCache cache, Config config, ILogger<Logger> logger, string url)
         {
-            var paste = GetPaste(db, url);
+            var paste = GetPaste(db, cache, url);
             if (paste != null)
             {
                 try
@@ -185,19 +179,13 @@ namespace Teknik.Areas.Paste
             }
 
             // Remove from the cache
-            lock (_cacheLock)
-            {
-                _pasteCache.DeleteObject(url);
-            }
+            cache.DeleteObject<PasteConfig>(url);
         }
 
-        public static void ModifyPaste(TeknikEntities db, Models.Paste paste)
+        public static void ModifyPaste(TeknikEntities db, ObjectCache cache, Models.Paste paste)
         {
             // Update the cache's copy
-            lock (_cacheLock)
-            {
-                _pasteCache.UpdateObject(paste.Url, paste);
-            }
+            cache.UpdateObject(paste.Url, paste);
 
             if (paste != null)
             {

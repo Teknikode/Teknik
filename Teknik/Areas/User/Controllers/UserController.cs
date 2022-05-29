@@ -1408,7 +1408,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteData(string type, string id, [FromServices] IBackgroundTaskQueue queue)
+        public IActionResult DeleteData(string type, string id, [FromServices] IBackgroundTaskQueue queue, [FromServices] ObjectCache cache)
         {
             var context = new ControllerContext();
             context.HttpContext = Request.HttpContext;
@@ -1418,11 +1418,11 @@ namespace Teknik.Areas.Users.Controllers
             switch (type)
             {
                 case "upload":
-                    var uploadController = new Upload.Controllers.UploadController(_logger, _config, _dbContext, queue);
+                    var uploadController = new Upload.Controllers.UploadController(_logger, _config, _dbContext, queue, cache);
                     uploadController.ControllerContext = context;
                     return uploadController.Delete(id);
                 case "paste":
-                    var pasteController = new Paste.Controllers.PasteController(_logger, _config, _dbContext, queue);
+                    var pasteController = new Paste.Controllers.PasteController(_logger, _config, _dbContext, queue, cache);
                     pasteController.ControllerContext = context;
                     return pasteController.Delete(id);
                 case "shortenedUrl":

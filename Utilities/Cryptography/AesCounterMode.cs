@@ -15,9 +15,9 @@ namespace Teknik.Utilities.Cryptography
         public AesCounterMode(PooledArray initialCounter)
         {
             if (initialCounter == null) throw new ArgumentNullException("counter");
-            if (initialCounter.Array.Length != _BlockSize)
+            if (initialCounter.Length != _BlockSize)
                 throw new ArgumentException(String.Format("Counter size must be same as block size (actual: {0}, expected: {1})",
-                    initialCounter.Array.Length, _BlockSize));
+                    initialCounter.Length, _BlockSize));
 
             // Generate a new instance of the Aes Algorithm in ECB mode with no padding
             _Algo = Aes.Create();
@@ -82,7 +82,7 @@ namespace Teknik.Utilities.Cryptography
             }
             set
             {
-                if (value >= 0 && value < _EncryptedCounter.Array.Length)
+                if (value >= 0 && value < _EncryptedCounter.Length)
                 {
                     _CounterPosition = value;
                 }
@@ -97,14 +97,14 @@ namespace Teknik.Utilities.Cryptography
             if (initialCounter == null) throw new ArgumentNullException("counter");
 
             // Check lengths
-            if (initialCounter.Array.Length != symmetricAlgorithm.BlockSize / 8)
+            if (initialCounter.Length != symmetricAlgorithm.BlockSize / 8)
                 throw new ArgumentException(String.Format("Counter size must be same as block size (actual: {0}, expected: {1})",
-                    initialCounter.Array.Length, symmetricAlgorithm.BlockSize / 8));
+                    initialCounter.Length, symmetricAlgorithm.BlockSize / 8));
 
             _BlockSize = symmetricAlgorithm.BlockSize;
 
             // Initialize Counter
-            _Counter = new PooledArray(initialCounter.Array.Length);
+            _Counter = new PooledArray(initialCounter.Length);
             initialCounter.Array.CopyTo(_Counter.Array, 0);
 
             // Initialize the encrypted counter
@@ -144,7 +144,7 @@ namespace Teknik.Utilities.Cryptography
             for (var i = 0; i < inputCount; i++)
             {
                 // Encrypt the counter if we have reached the end, or 
-                if (_CounterPosition >= _EncryptedCounter.Array.Length)
+                if (_CounterPosition >= _EncryptedCounter.Length)
                 {
                     //Reset current counter position
                     _CounterPosition = 0;
@@ -178,7 +178,7 @@ namespace Teknik.Utilities.Cryptography
             for (var i = 0; i < inputCount; i++)
             {
                 // Encrypt the counter if we have reached the end, or 
-                if (_CounterPosition >= _EncryptedCounter.Array.Length)
+                if (_CounterPosition >= _EncryptedCounter.Length)
                 {
                     //Reset current counter position
                     _CounterPosition = 0;
@@ -203,7 +203,7 @@ namespace Teknik.Utilities.Cryptography
         public void EncryptCounter()
         {
             // Encrypt the current counter to the encrypted counter
-            _CounterEncryptor.TransformBlock(_Counter.Array, 0, _Counter.Array.Length, _EncryptedCounter.Array, 0);
+            _CounterEncryptor.TransformBlock(_Counter.Array, 0, _Counter.Length, _EncryptedCounter.Array, 0);
         }
 
         public void ResetCounter()
@@ -214,7 +214,7 @@ namespace Teknik.Utilities.Cryptography
 
         public void IncrementCounter()
         {
-            int j = _Counter.Array.Length;
+            int j = _Counter.Length;
             while (--j >= 0 && ++_Counter.Array[j] == 0)
             {
             }
