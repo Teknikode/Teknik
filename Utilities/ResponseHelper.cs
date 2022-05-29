@@ -25,7 +25,7 @@ namespace Teknik.Utilities
                 int processedBytes;
                 do
                 {
-                    processedBytes = await stream.ReadAsync(pooledArray.Array);
+                    processedBytes = await stream.ReadAsync(pooledArray.Array, 0, pooledArray.Length);
                     if (processedBytes > 0)
                     {
                         await response.Body.WriteAsync(pooledArray.Array, 0, processedBytes);
