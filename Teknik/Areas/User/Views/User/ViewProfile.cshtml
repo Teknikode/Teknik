@@ -6,7 +6,7 @@
 <div class="container">
     @if (!Model.Error)
     {
-        bool OwnProfile = (Model.Username == User.Identity.Name || User.IsInRole("Admin")) && User.Identity.IsAuthenticated;
+        bool OwnProfile = (User.Identity?.IsAuthenticated ?? false) && (Model.Username == User.Identity?.Name || User.IsInRole("Admin"));
         string gitHost = Config.GitConfig.Host;
         string gitFullUrl = string.Empty;
         if (!string.IsNullOrEmpty(gitHost))
