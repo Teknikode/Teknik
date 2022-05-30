@@ -18,14 +18,14 @@
         string pgpFingerprint = pgpFingerprint = string.Empty;
         string pgpFingerprint64 = string.Empty;
 
-        if (!string.IsNullOrEmpty(Model.IdentityUserInfo.PGPPublicKey))
+        if (!string.IsNullOrEmpty(Model.IdentityUserInfo?.PGPPublicKey))
         {
-            pgpFingerprint = PGP.GetFingerprint(Model.IdentityUserInfo.PGPPublicKey);
-            pgpFingerprint64 = PGP.GetFingerprint64(Model.IdentityUserInfo.PGPPublicKey);
+            pgpFingerprint = PGP.GetFingerprint(Model.IdentityUserInfo?.PGPPublicKey);
+            pgpFingerprint64 = PGP.GetFingerprint64(Model.IdentityUserInfo?.PGPPublicKey);
         }
 
         <div class="row text-center">
-            <div class="col-sm-4 @(string.IsNullOrEmpty(Model.UserSettings.About) ? "col-sm-offset-4" : "")"><h1>@Model.Username</h1></div>
+            <div class="col-sm-4 @(string.IsNullOrEmpty(Model.UserSettings?.About) ? "col-sm-offset-4" : "")"><h1>@Model.Username</h1></div>
         </div>
         if (User.IsInRole("Admin"))
         {
@@ -68,7 +68,7 @@
                         <br />
                         <div class="row">
                             <div class="col-sm-12">
-                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" readonly>@Model.IdentityUserInfo.PGPPublicKey</textarea>
+                                <textarea class="form-control wmd-input" name="pgpKeyBlock" id="pgpKeyBlock" title="Public Key" rows="10" readonly>@Model.IdentityUserInfo?.PGPPublicKey</textarea>
                             </div>
                         </div>
                     </div>
@@ -77,20 +77,20 @@
         </div>
         <div class="row">
             <!-- Left Info Box -->
-            <div class="col-sm-4 @(string.IsNullOrEmpty(Model.UserSettings.About) ? "col-sm-offset-4" : "")"><!--left col-->
+            <div class="col-sm-4 @(string.IsNullOrEmpty(Model.UserSettings?.About) ? "col-sm-offset-4" : "")"><!--left col-->
                 <ul class="list-group">
-                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.IdentityUserInfo.CreationDate?.ToString("s")">@Model.IdentityUserInfo.CreationDate?.ToString("MMMM dd, yyyy")</time></li>
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Joined</strong></span> <time datetime="@Model.IdentityUserInfo?.CreationDate?.ToString("s")">@Model.IdentityUserInfo?.CreationDate?.ToString("MMMM dd, yyyy")</time></li>
                     @if (OwnProfile)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.IdentityUserInfo.LastSeen?.ToString("s")">@Model.IdentityUserInfo.LastSeen?.ToString("dd/MM/yyyy hh:mm tt")</time></li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Last Seen</strong></span> <time datetime="@Model.IdentityUserInfo?.LastSeen?.ToString("s")">@Model.IdentityUserInfo?.LastSeen?.ToString("dd/MM/yyyy hh:mm tt")</time></li>
                     }
                     @if (OwnProfile)
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Type</strong></span> @Model.IdentityUserInfo.AccountType</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Type</strong></span> @Model.IdentityUserInfo?.AccountType</li>
                     }
                     @if (User.IsInRole("Admin"))
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Status</strong></span> @Model.IdentityUserInfo.AccountStatus</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Account Status</strong></span> @Model.IdentityUserInfo?.AccountStatus</li>
                     }
                     @if (!string.IsNullOrEmpty(pgpFingerprint))
                     {
@@ -98,22 +98,22 @@
                     }
                     @if (!string.IsNullOrEmpty(Model.Email) && Config.EmailConfig.Enabled && UserHelper.UserEmailEnabled(Config, Model.Email))
                     {
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> @(Html.Raw(User.Identity.IsAuthenticated ? $"<a href=\"mailto:{Model.Email}\">{Model.Email}</a>" : $"{Model.Username} at {Config.EmailConfig.Domain}"))</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> @(Html.Raw(User.Identity.IsAuthenticated ? $"<a href=\"mailto:{Model.Email}\">{Model.Email}</a>" : $"{Model.Username} at {Config.EmailConfig?.Domain}"))</li>
                     }
-                    <li class="list-group-item text-right"><span class="pull-left"><strong>Blog</strong></span> <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = Model.Username })" id="blog_title">@(string.IsNullOrEmpty(Model.BlogSettings.Title) ? string.Format("{0}'s Blog", Model.Username) : Model.BlogSettings.Title)</a></li>
+                    <li class="list-group-item text-right"><span class="pull-left"><strong>Blog</strong></span> <a href="@Url.SubRouteUrl("blog", "Blog.Blog", new { username = Model.Username })" id="blog_title">@(string.IsNullOrEmpty(Model.BlogSettings?.Title) ? string.Format("{0}'s Blog", Model.Username) : Model.BlogSettings?.Title)</a></li>
                     @if (!string.IsNullOrEmpty(gitFullUrl))
                     {
                         <li class="list-group-item text-right"><span class="pull-left"><strong>Git</strong></span> <a href="@gitFullUrl">Public Repos</a></li>
                     }
                 </ul>
-                @if (!string.IsNullOrEmpty(Model.UserSettings.Website))
+                @if (!string.IsNullOrEmpty(Model.UserSettings?.Website))
                 {
                 <div class="panel panel-default">
                     <div class="panel-heading">Website <i class="fa fa-link fa-1x"></i></div>
-                    <div class="panel-body"><a href="@Model.UserSettings.Website" id="website">@Model.UserSettings.Website</a></div>
+                    <div class="panel-body"><a href="@Model.UserSettings?.Website" id="website">@Model.UserSettings?.Website</a></div>
                 </div>
                 }
-                @if (!string.IsNullOrEmpty(Model.UserSettings.Quote))
+                @if (!string.IsNullOrEmpty(Model.UserSettings?.Quote))
                 {
                 <div class="panel panel-default">
                     <div class="panel-heading">Quote <i class="fa fa-quote-right fa-1x"></i></div>
@@ -121,17 +121,17 @@
                 </div>
                 }
             </div><!--/col-3-->
-            @if (!string.IsNullOrEmpty(Model.UserSettings.About))
+            @if (!string.IsNullOrEmpty(Model.UserSettings?.About))
             {
             <!-- Right Content Area -->
             <div class="col-sm-8">
                 @if (OwnProfile)
                 {
-                        <div class="col-sm-12" id="markdown_body">@Html.Markdown(Model.UserSettings.About)</div>
+                        <div class="col-sm-12" id="markdown_body">@Html.Markdown(Model.UserSettings?.About)</div>
                 }
                 else
                 {
-                    @Html.Markdown(Model.UserSettings.About)
+                    @Html.Markdown(Model.UserSettings?.About)
                 }
             </div><!--/col-9-->
             }
