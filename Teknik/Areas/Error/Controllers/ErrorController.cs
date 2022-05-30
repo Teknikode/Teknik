@@ -20,6 +20,7 @@ namespace Teknik.Areas.Error.Controllers
 {
     [Authorize]
     [Area("Error")]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class ErrorController : DefaultController, IErrorController
     {
         public ErrorController(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }

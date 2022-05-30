@@ -214,6 +214,8 @@ namespace Teknik.Areas.Upload.Controllers
         [HttpGet]
         [AllowAnonymous]
         [TrackPageView]
+        [TrackDownload]
+        [IgnoreAntiforgeryToken]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> Download(string file)
         {
@@ -412,6 +414,7 @@ namespace Teknik.Areas.Upload.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [TrackDownload]
         public IActionResult DownloadData(string file, bool decrypt)
         {
             if (_config.UploadConfig.DownloadEnabled)

@@ -31,6 +31,7 @@ namespace Teknik.IdentityServer.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        [IgnoreAntiforgeryToken]
         public IActionResult Favicon([FromServices] IWebHostEnvironment env)
         {
             string imageFile = FileHelper.MapPath(env, Constants.FAVICON_PATH);

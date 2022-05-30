@@ -30,7 +30,6 @@ namespace Teknik.Areas.Users.Controllers
 {
     [Authorize]
     [Area("User")]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class UserController : DefaultController
     {
         private static readonly UsedCodesManager usedCodesManager = new UsedCodesManager();

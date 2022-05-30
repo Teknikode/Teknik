@@ -84,6 +84,7 @@ namespace Teknik.Areas.Podcast.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any, NoStore = false)]
+        [IgnoreAntiforgeryToken]
         [TrackDownload]
         public IActionResult Download(int episode, string fileName)
         {

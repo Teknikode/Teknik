@@ -19,7 +19,6 @@ namespace Teknik.Controllers
 {
     [Area("Default")]
     [CORSActionFilter]
-    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
     public class DefaultController : Controller
     {
         protected string Subdomain
@@ -45,6 +44,7 @@ namespace Teknik.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        [IgnoreAntiforgeryToken]
         public IActionResult Favicon([FromServices] IWebHostEnvironment env)
         {
             string imageFile = FileHelper.MapPath(env, Constants.FAVICON_PATH);
@@ -56,6 +56,7 @@ namespace Teknik.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ResponseCache(Duration = 31536000, Location = ResponseCacheLocation.Any)]
+        [IgnoreAntiforgeryToken]
         public IActionResult Logo([FromServices] IWebHostEnvironment env)
         {
             string imageFile = FileHelper.MapPath(env, Constants.LOGO_PATH);
