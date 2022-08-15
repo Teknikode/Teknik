@@ -47,6 +47,19 @@ namespace Teknik.BillingCore
             return null;
         }
 
+        public override string GetCustomerProfileUrl(string email)
+        {
+            if (!string.IsNullOrEmpty(email))
+            {
+                var service = new CustomerService();
+                var foundCustomer = service.Get(email);
+                if (foundCustomer != null)
+                    return $"https://dashboard.stripe.com/customers/{foundCustomer.Id}";
+            }
+
+            return null;
+        }
+
         public override string CreateCustomer(string username, string email)
         {
             if (string.IsNullOrEmpty(username))

@@ -20,6 +20,7 @@ namespace Teknik.BillingCore
 
         public abstract List<Customer> GetCustomers();
         public abstract Customer GetCustomer(string id);
+        public abstract string GetCustomerProfileUrl(string id);
         public abstract string CreateCustomer(string username, string email);
 
         public abstract List<Product> GetProductList();

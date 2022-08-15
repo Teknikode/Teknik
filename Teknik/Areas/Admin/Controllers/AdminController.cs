@@ -19,6 +19,8 @@ using Teknik.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Teknik.MailService;
+using Teknik.Areas.Billing;
+using Teknik.BillingCore;
 
 namespace Teknik.Areas.Admin.Controllers
 {
@@ -61,6 +63,19 @@ namespace Teknik.Areas.Admin.Controllers
                 if (info.AccountStatus.HasValue)
                     model.AccountStatus = info.AccountStatus.Value;
 
+                // Get Biling Service
+                var billingService = BillingFactory.GetBillingService(_config.BillingConfig);
+                if (billingService != null &&
+                    user.BillingCustomer != null)
+                {
+                    var customer = billingService.GetCustomer(user.BillingCustomer?.CustomerId);
+                    if (customer != null)
+                    {
+                        model.CustomerId = customer.CustomerId;
+                        model.CustomerProfileUrl = billingService.GetCustomerProfileUrl(customer.CustomerId);
+                    }
+                }
+                
                 var email = UserHelper.GetUserEmailAddress(_config, username);
                 if (UserHelper.UserEmailExists(mailService, _config, email))
                     model.Email = email;

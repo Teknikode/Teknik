@@ -11,6 +11,9 @@ namespace Teknik.BillingCore
     {
         public static BillingService GetBillingService(BillingConfig config)
         {
+            if (config == null)
+                return null;
+
             switch (config.Type)
             {
                 case BillingType.Stripe:
