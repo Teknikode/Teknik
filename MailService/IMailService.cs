@@ -8,20 +8,22 @@ namespace Teknik.MailService
 
         DateTime LastActive(string username);
 
-        bool Enabled(string username);
+        bool IsEnabled(string username);
 
-        void CreateAccount(string username, string password, long size);
+        bool CreateAccount(string username, string password, long size);
 
-        void EditPassword(string username, string password);
+        bool EditPassword(string username, string password);
 
-        void EditMaxSize(string username, long size);
+        long GetMaxSize(string username);
 
-        void EditMaxEmailsPerDay(string username, int maxPerDay);
+        bool EditMaxSize(string username, long size);
 
-        void EnableAccount(string username);
+        bool EditMaxEmailsPerDay(string username, int maxPerDay);
 
-        void DisableAccount(string username);
+        bool EnableAccount(string username);
 
-        void DeleteAccount(string username);
+        bool DisableAccount(string username);
+
+        bool DeleteAccount(string username);
     }
 }

@@ -96,7 +96,7 @@
                     {
                         <li class="list-group-item text-right"><span class="pull-left"><strong>Public Key</strong></span> <a href="#" data-toggle="modal" data-target="#pgpSignature">@pgpFingerprint64.AddStringAtInterval(4, " ")</a></li>
                     }
-                    @if (!string.IsNullOrEmpty(Model.Email) && Config.EmailConfig.Enabled && UserHelper.UserEmailEnabled(Config, Model.Email))
+                    @if (!string.IsNullOrEmpty(Model.Email))
                     {
                         <li class="list-group-item text-right"><span class="pull-left"><strong>Email</strong></span> @(Html.Raw(User.Identity.IsAuthenticated ? $"<a href=\"mailto:{Model.Email}\">{Model.Email}</a>" : $"{Model.Username} at {Config.EmailConfig?.Domain}"))</li>
                     }

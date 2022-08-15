@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CommandLine;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Teknik.Areas.Billing;
 using Teknik.Areas.Users.Models;
 using Teknik.Areas.Users.Utility;
@@ -13,6 +14,7 @@ using Teknik.BillingCore;
 using Teknik.BillingCore.Models;
 using Teknik.Configuration;
 using Teknik.Data;
+using Teknik.MailService;
 using Teknik.Utilities;
 
 namespace Teknik.BillingService
@@ -25,6 +27,7 @@ namespace Teknik.BillingService
 
         private static readonly object dbLock = new object();
         private static readonly object scanStatsLock = new object();
+        private static readonly ILogger logger = new Logger(Console.Out);
 
         public static event Action<string> OutputEvent;
 
@@ -78,6 +81,9 @@ namespace Teknik.BillingService
             // Get Biling Service
             var billingService = BillingFactory.GetBillingService(config.BillingConfig);
 
+            // Get Mail Service
+            var mailService = UserHelper.CreateMailService(config, logger);
+
             // Get all customers
             var customers = billingService.GetCustomers();
             if (customers != null)
@@ -114,7 +120,7 @@ namespace Teknik.BillingService
                     var emailPrice = subscriptions.SelectMany(s => s.Prices).FirstOrDefault(p => p.ProductId == config.BillingConfig.EmailProductId);
                     if (emailPrice != null)
                     {
-                        BillingHelper.SetEmailLimits(config, user, emailPrice.Storage, true);
+                        BillingHelper.SetEmailLimits(config, mailService, user, emailPrice.Storage, true);
                     }
                     else
                     {
@@ -122,9 +128,9 @@ namespace Teknik.BillingService
                         var userInfo = await IdentityHelper.GetIdentityUserInfo(config, user.Username);
                         if (userInfo != null &&
                             userInfo.AccountType == AccountType.Premium)
-                            BillingHelper.SetEmailLimits(config, user, config.EmailConfig.MaxSize, true);
+                            BillingHelper.SetEmailLimits(config, mailService, user, config.EmailConfig.MaxSize, true);
                         else
-                            BillingHelper.SetEmailLimits(config, user, config.EmailConfig.MaxSize, false);
+                            BillingHelper.SetEmailLimits(config, mailService, user, config.EmailConfig.MaxSize, false);
                     }
                 }
             }
@@ -132,7 +138,7 @@ namespace Teknik.BillingService
 
         public static void Output(string message)
         {
-            Console.WriteLine(message);
+            logger.Log(LogLevel.Information, message);
             if (OutputEvent != null)
             {
                 OutputEvent(message);

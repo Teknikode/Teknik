@@ -10,6 +10,8 @@ using Teknik.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Teknik.Logging;
+using Teknik.Areas.Users.Utility;
+using Teknik.MailService;
 
 namespace Teknik.Areas.Contact.Controllers
 {
@@ -21,12 +23,23 @@ namespace Teknik.Areas.Contact.Controllers
         
         [AllowAnonymous]
         [TrackPageView]
-        public IActionResult Index()
+        public IActionResult Index([FromServices] IMailService mailService)
         {
             ViewBag.Title = "Contact Us";
             ViewBag.Description = "Contact Teknik Support";
+            var model = new ContactViewModel();
 
-            return View(new ContactViewModel());
+            if (User.Identity.IsAuthenticated)
+            {
+                model.Name = User.Identity.Name;
+
+                var email = UserHelper.GetUserEmailAddress(_config, User.Identity.Name);
+                if (UserHelper.UserEmailEnabled(mailService, _config, email))
+                {
+                    model.Email = email;
+                }
+            }
+            return View(model);
         }
 
         [HttpPost]

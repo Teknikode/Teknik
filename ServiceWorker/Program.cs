@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using nClam;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -159,8 +160,8 @@ namespace Teknik.ServiceWorker
                 // If the IV is set, and Key is set, then scan it
                 if (!string.IsNullOrEmpty(upload.Key) && !string.IsNullOrEmpty(upload.IV))
                 {
-                    byte[] keyBytes = Encoding.UTF8.GetBytes(upload.Key);
-                    byte[] ivBytes = Encoding.UTF8.GetBytes(upload.IV);
+                    var keyArray = new PooledArray(Encoding.UTF8.GetBytes(upload.Key));
+                    var ivArray = new PooledArray(Encoding.UTF8.GetBytes(upload.IV));
 
 
                     long maxUploadSize = config.UploadConfig.MaxUploadFileSize;
@@ -171,7 +172,7 @@ namespace Teknik.ServiceWorker
                             maxUploadSize = upload.User.UploadSettings.MaxUploadFileSize.Value;
                     }
 
-                    using (AesCounterStream aesStream = new AesCounterStream(fileStream, false, keyBytes, ivBytes))
+                    using (AesCounterStream aesStream = new AesCounterStream(fileStream, false, keyArray, ivArray))
                     {
                         ClamClient clam = new ClamClient(config.UploadConfig.ClamConfig.Server, config.UploadConfig.ClamConfig.Port);
                         clam.MaxStreamSize = maxUploadSize;

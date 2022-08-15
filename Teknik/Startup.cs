@@ -30,6 +30,8 @@ using Teknik.WebCommon.Middleware;
 using Teknik.WebCommon;
 using Teknik.Areas.Error.Controllers;
 using Teknik.Services;
+using Teknik.MailService;
+using Teknik.Areas.Users.Utility;
 
 namespace Teknik
 {
@@ -67,6 +69,7 @@ namespace Teknik
 
             // Resolve the services from the service provider
             var config = sp.GetService<Config>();
+            var logger = sp.GetService<ILogger<Logger>>();
             var devEnv = config?.DevEnvironment ?? true;
             var defaultConn = config?.DbConnection ?? string.Empty;
             var authority = config?.UserConfig?.IdentityServerConfig?.Authority ?? string.Empty;
@@ -102,6 +105,7 @@ namespace Teknik
             services.AddHostedService<TaskQueueService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddSingleton<ObjectCache, ObjectCache>(c => new ObjectCache(300));
+            services.AddSingleton<IMailService, IMailService>(s => UserHelper.CreateMailService(config, logger));
             services.AddHostedService<CacheCleanerService>();
             services.AddScoped<IErrorController, ErrorController>();
 

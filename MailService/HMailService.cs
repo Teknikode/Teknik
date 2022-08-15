@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,6 +8,7 @@ namespace Teknik.MailService
     public class HMailService : IMailService
     {
         private readonly hMailServer.Application _App;
+        private readonly ILogger _logger;
 
         private string _Host { get; set; }
         private string _Username { get; set; }
@@ -19,7 +21,16 @@ namespace Teknik.MailService
         private string _CounterPassword { get; set; }
         private int _CounterPort { get; set; }
 
-        public HMailService(string host, string username, string password, string domain, string counterServer, string counterDatabase, string counterUsername, string counterPassword, int counterPort)
+        public HMailService(string host, 
+                            string username, 
+                            string password, 
+                            string domain, 
+                            string counterServer, 
+                            string counterDatabase, 
+                            string counterUsername, 
+                            string counterPassword, 
+                            int counterPort,
+                            ILogger logger)
         {
             _Host = host;
             _Username = username;
@@ -32,10 +43,11 @@ namespace Teknik.MailService
             _CounterPassword = counterPassword;
             _CounterPort = counterPort;
 
+            _logger = logger;
             _App = InitApp();
         }
 
-        public void CreateAccount(string username, string password, long size)
+        public bool CreateAccount(string username, string password, long size)
         {
             var domain = _App.Domains.ItemByName[_Domain];
             var newAccount = domain.Accounts.Add();
@@ -45,73 +57,92 @@ namespace Teknik.MailService
             newAccount.MaxSize = (int)(size / 1000000);
 
             newAccount.Save();
+            return true;
         }
 
         public bool AccountExists(string username)
         {
-            try
-            {
-                GetAccount(username);
-                // We didn't error out, so the email exists
-                return true;
-            }
-            catch { }
-            return false;
+            var account = GetAccount(username);
+            return account != null;
         }
 
-        public void DeleteAccount(string username)
+        public bool DeleteAccount(string username)
         {
             var account = GetAccount(username);
             if (account != null)
             {
                 account.Delete();
+                return true;
             }
+            return false;
         }
 
-        public void EnableAccount(string username)
+        public bool EnableAccount(string username)
         {
-            EditActivity(username, true);
+            return EditActivity(username, true);
         }
 
-        public void DisableAccount(string username)
+        public bool DisableAccount(string username)
         {
-            EditActivity(username, false);
+            return EditActivity(username, false);
         }
 
-        public void EditActivity(string username, bool active)
+        public bool EditActivity(string username, bool active)
         {
             var account = GetAccount(username);
-            account.Active = active;
-            account.Save();
+            if (account != null)
+            {
+                account.Active = active;
+                account.Save();
+                return true;
+            }
+            return false;
         }
 
-        public void EditMaxEmailsPerDay(string username, int maxPerDay)
+        public bool EditMaxEmailsPerDay(string username, int maxPerDay)
         {
             //We need to check the actual git database
             MysqlDatabase mySQL = new MysqlDatabase(_CounterServer, _CounterDatabase, _CounterUsername, _CounterPassword, _CounterPort);
             string sql = @"INSERT INTO mailcounter.counts (qname, lastdate, qlimit, count) VALUES ({1}, NOW(), {0}, 0)
                                     ON DUPLICATE KEY UPDATE qlimit = {0}";
             mySQL.Execute(sql, new object[] { maxPerDay, username });
+            return true;
         }
 
-        public void EditMaxSize(string username, long size)
+        public long GetMaxSize(string username)
         {
             var account = GetAccount(username);
-            account.MaxSize = (int)(size / 1000000);
-            account.Save();
+            return account?.MaxSize ?? 0;
         }
 
-        public void EditPassword(string username, string password)
+        public bool EditMaxSize(string username, long size)
         {
             var account = GetAccount(username);
-            account.Password = password;
-            account.Save();
+            if (account != null)
+            {
+                account.MaxSize = (int)(size / 1000000);
+                account.Save();
+                return true;
+            }
+            return false;
+        }
+
+        public bool EditPassword(string username, string password)
+        {
+            var account = GetAccount(username);
+            if (account != null)
+            {
+                account.Password = password;
+                account.Save();
+                return true;
+            }
+            return false;
         }
 
         public DateTime LastActive(string username)
         {
             var account = GetAccount(username);
-            return (DateTime)account.LastLogonTime;
+            return (DateTime)(account?.LastLogonTime ?? DateTime.MinValue);
         }
 
         private hMailServer.Application InitApp()
@@ -125,14 +156,22 @@ namespace Teknik.MailService
 
         private hMailServer.Account GetAccount(string username)
         {
-            var domain = _App.Domains.ItemByName[_Domain];
-            return domain.Accounts.ItemByAddress[username];
+            try
+            {
+                var domain = _App.Domains.ItemByName[_Domain];
+                return domain.Accounts.ItemByAddress[username];
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred getting Email Account");
+            }
+            return null;
         }
 
-        public bool Enabled(string username)
+        public bool IsEnabled(string username)
         {
             var account = GetAccount(username);
-            return account.Active;
+            return account?.Active ?? false;
         }
     }
 }

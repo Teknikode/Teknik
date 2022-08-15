@@ -33,6 +33,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Teknik.Utilities.Routing;
+using Microsoft.Extensions.Logging;
 
 namespace Teknik.Areas.Users.Utility
 {
@@ -81,7 +82,7 @@ namespace Teknik.Areas.Users.Utility
             return isValid;
         }
 
-        public static async Task<bool> UsernameAvailable(TeknikEntities db, Config config, string username)
+        public static async Task<bool> UsernameAvailable(TeknikEntities db, Config config, IMailService mailService, string username)
         {
             bool isAvailable = true;
 
@@ -89,27 +90,27 @@ namespace Teknik.Areas.Users.Utility
             isAvailable &= !UsernameReserved(config, username);
             isAvailable &= !await IdentityHelper.UserExists(config, username);
             isAvailable &= !UserExists(db, username);
-            isAvailable &= !UserEmailExists(config, GetUserEmailAddress(config, username));
+            isAvailable &= !UserEmailExists(mailService, config, GetUserEmailAddress(config, username));
             isAvailable &= !UserGitExists(config, username);
 
             return isAvailable;
         }
 
-        public static async Task<DateTime> GetLastAccountActivity(TeknikEntities db, Config config, string username)
+        public static async Task<DateTime> GetLastAccountActivity(TeknikEntities db, Config config, IMailService mailService, string username)
         {
             var userInfo = await IdentityHelper.GetIdentityUserInfo(config, username);
-            return GetLastAccountActivity(db, config, username, userInfo);
+            return GetLastAccountActivity(db, config, mailService, username, userInfo);
         }
 
-        public static DateTime GetLastAccountActivity(TeknikEntities db, Config config, string username, IdentityUserInfo userInfo)
+        public static DateTime GetLastAccountActivity(TeknikEntities db, Config config, IMailService mailService, string username, IdentityUserInfo userInfo)
         {
             try
             {
                 DateTime lastActive = new DateTime(1900, 1, 1);
 
-                if (UserEmailExists(config, GetUserEmailAddress(config, username)))
+                if (UserEmailExists(mailService, config, GetUserEmailAddress(config, username)))
                 {
-                    DateTime emailLastActive = UserEmailLastActive(config, GetUserEmailAddress(config, username));
+                    DateTime emailLastActive = UserEmailLastActive(mailService, config, GetUserEmailAddress(config, username));
                     if (lastActive < emailLastActive)
                         lastActive = emailLastActive;
                 }
@@ -136,7 +137,7 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static async Task CreateAccount(TeknikEntities db, Config config, IUrlHelper url, string username, string password, string recoveryEmail, string inviteCode)
+        public static async Task CreateAccount(TeknikEntities db, Config config, IMailService mailService, IUrlHelper url, string username, string password, string recoveryEmail, string inviteCode)
         {
             try
             {
@@ -147,10 +148,10 @@ namespace Teknik.Areas.Users.Utility
                     string userId = (string)result.Data;
 
                     // Create an Email Account
-                    CreateUserEmail(config, GetUserEmailAddress(config, username), password);
+                    CreateUserEmail(mailService, config, GetUserEmailAddress(config, username), password);
 
                     // Disable the email account
-                    DisableUserEmail(config, GetUserEmailAddress(config, username));
+                    DisableUserEmail(mailService, config, GetUserEmailAddress(config, username));
 
                     // Create a Git Account
                     CreateUserGit(config, username, password, userId);
@@ -189,12 +190,12 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static async Task ChangeAccountPassword(TeknikEntities db, Config config, string username, string currentPassword, string newPassword)
+        public static async Task ChangeAccountPassword(TeknikEntities db, Config config, IMailService mailService, string username, string currentPassword, string newPassword)
         {
             IdentityResult result = await IdentityHelper.UpdatePassword(config, username, currentPassword, newPassword);
             if (result.Success)
             {
-                ChangeServicePasswords(db, config, username, newPassword);
+                ChangeServicePasswords(db, config, mailService, username, newPassword);
             }
             else
             {
@@ -202,12 +203,12 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static async Task ResetAccountPassword(TeknikEntities db, Config config, string username, string token, string newPassword)
+        public static async Task ResetAccountPassword(TeknikEntities db, Config config, IMailService mailService, string username, string token, string newPassword)
         {
             IdentityResult result = await IdentityHelper.ResetPassword(config, username, token, newPassword);
             if (result.Success)
             {
-                ChangeServicePasswords(db, config, username, newPassword);
+                ChangeServicePasswords(db, config, mailService, username, newPassword);
             }
             else
             {
@@ -215,16 +216,16 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static void ChangeServicePasswords(TeknikEntities db, Config config, string username, string newPassword)
+        public static void ChangeServicePasswords(TeknikEntities db, Config config, IMailService mailService, string username, string newPassword)
         {
             try
             {
                 // Make sure they have a git and email account before resetting their password
                 string email = GetUserEmailAddress(config, username);
-                if (config.EmailConfig.Enabled && UserEmailExists(config, email))
+                if (config.EmailConfig.Enabled && UserEmailExists(mailService, config, email))
                 {
                     // Change email password
-                    EditUserEmailPassword(config, GetUserEmailAddress(config, username), newPassword);
+                    EditUserEmailPassword(mailService, config, GetUserEmailAddress(config, username), newPassword);
                 }
 
                 if (config.GitConfig.Enabled && UserGitExists(config, username))
@@ -239,7 +240,7 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static async Task EditAccountType(TeknikEntities db, Config config, string username, AccountType type)
+        public static async Task EditAccountType(TeknikEntities db, Config config, IMailService mailService, string username, AccountType type)
         {
             try
             {
@@ -257,11 +258,11 @@ namespace Teknik.Areas.Users.Utility
                     {
                         case AccountType.Basic:
                             // Disable their email
-                            DisableUserEmail(config, email);
+                            DisableUserEmail(mailService, config, email);
                             break;
                         case AccountType.Premium:
                             // Enable their email account
-                            EnableUserEmail(config, email);
+                            EnableUserEmail(mailService, config, email);
                             break;
                     }
                 }
@@ -276,7 +277,7 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static async Task EditAccountStatus(TeknikEntities db, Config config, string username, AccountStatus status)
+        public static async Task EditAccountStatus(TeknikEntities db, Config config, IMailService mailService, string username, AccountStatus status)
         {
             try
             {
@@ -294,13 +295,13 @@ namespace Teknik.Areas.Users.Utility
                     {
                         case AccountStatus.Active:
                             // Enable Email
-                            EnableUserEmail(config, email);
+                            EnableUserEmail(mailService, config, email);
                             // Enable Git
                             EnableUserGit(config, username);
                             break;
                         case AccountStatus.Banned:
                             // Disable Email
-                            DisableUserEmail(config, email);
+                            DisableUserEmail(mailService, config, email);
                             // Disable Git
                             DisableUserGit(config, username);
                             break;
@@ -317,7 +318,7 @@ namespace Teknik.Areas.Users.Utility
             }
         }
 
-        public static async Task DeleteAccount(TeknikEntities db, Config config, User user)
+        public static async Task DeleteAccount(TeknikEntities db, Config config, IMailService mailService, User user)
         {
             try
             {
@@ -332,8 +333,8 @@ namespace Teknik.Areas.Users.Utility
                     DeleteUser(db, config, user);
 
                     // Delete Email Account
-                    if (UserEmailExists(config, GetUserEmailAddress(config, username)))
-                        DeleteUserEmail(config, GetUserEmailAddress(config, username));
+                    if (UserEmailExists(mailService, config, GetUserEmailAddress(config, username)))
+                        DeleteUserEmail(mailService, config, GetUserEmailAddress(config, username));
 
                     // Delete Git Account
                     if (UserGitExists(config, username))
@@ -621,58 +622,61 @@ If you recieved this email and you did not reset your password, you can ignore t
         #region Email Management
         public static string GetUserEmailAddress(Config config, string username)
         {
+            if (config.EmailConfig == null)
+                return null;
             return string.Format("{0}@{1}", username, config.EmailConfig.Domain);
         }
 
-        public static IMailService CreateMailService(Config config)
+        public static IMailService CreateMailService(Config config, ILogger logger)
         {
-            return new HMailService(
-                config.EmailConfig.MailHost,
-                config.EmailConfig.Username,
-                config.EmailConfig.Password,
-                config.EmailConfig.Domain,
-                config.EmailConfig.CounterDatabase.Server,
-                config.EmailConfig.CounterDatabase.Database,
-                config.EmailConfig.CounterDatabase.Username,
-                config.EmailConfig.CounterDatabase.Password,
-                config.EmailConfig.CounterDatabase.Port
-                );
+            if (config.EmailConfig != null &&
+                config.EmailConfig.Enabled)
+                return new HMailService(
+                    config.EmailConfig.MailHost,
+                    config.EmailConfig.Username,
+                    config.EmailConfig.Password,
+                    config.EmailConfig.Domain,
+                    config.EmailConfig.CounterDatabase.Server,
+                    config.EmailConfig.CounterDatabase.Database,
+                    config.EmailConfig.CounterDatabase.Username,
+                    config.EmailConfig.CounterDatabase.Password,
+                    config.EmailConfig.CounterDatabase.Port,
+                    logger
+                    );
+            return new EmptyMailService();
         }
 
-        public static bool UserEmailExists(Config config, string email)
+        public static bool UserEmailExists(IMailService mailService, Config config, string email)
         {
             // If Email Server is enabled
             if (config.EmailConfig.Enabled)
             {
-                var svc = CreateMailService(config);
-                return svc.AccountExists(email);
+                return mailService.AccountExists(email);
             }
             return false;
         }
 
-        public static DateTime UserEmailLastActive(Config config, string email)
+        public static DateTime UserEmailLastActive(IMailService mailService, Config config, string email)
         {
             DateTime lastActive = new DateTime(1900, 1, 1);
 
             if (config.EmailConfig.Enabled)
             {
-                var svc = CreateMailService(config);
-                var lastEmail = svc.LastActive(email);
+                var lastEmail = mailService.LastActive(email);
                 if (lastActive < lastEmail)
                     lastActive = lastEmail;
             }
             return lastActive;
         }
 
-        public static bool UserEmailEnabled(Config config, string email)
+        public static bool UserEmailEnabled(IMailService mailService, Config config, string email)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var svc = CreateMailService(config);
-                    return svc.Enabled(email);
+                    return mailService.IsEnabled(email);
                 }
             }
             catch (Exception ex)
@@ -682,15 +686,14 @@ If you recieved this email and you did not reset your password, you can ignore t
             return false;
         }
 
-        public static void CreateUserEmail(Config config, string email, string password)
+        public static void CreateUserEmail(IMailService mailService, Config config, string email, string password)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var svc = CreateMailService(config);
-                    svc.CreateAccount(email, password, config.EmailConfig.MaxSize);
+                    mailService.CreateAccount(email, password, config.EmailConfig.MaxSize);
                 }
             }
             catch (Exception ex)
@@ -699,15 +702,14 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
 
-        public static void EnableUserEmail(Config config, string email)
+        public static void EnableUserEmail(IMailService mailService, Config config, string email)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var svc = CreateMailService(config);
-                    svc.EnableAccount(email);
+                    mailService.EnableAccount(email);
                 }
             }
             catch (Exception ex)
@@ -716,15 +718,14 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
 
-        public static void DisableUserEmail(Config config, string email)
+        public static void DisableUserEmail(IMailService mailService, Config config, string email)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var svc = CreateMailService(config);
-                    svc.DisableAccount(email);
+                    mailService.DisableAccount(email);
                 }
             }
             catch (Exception ex)
@@ -733,15 +734,14 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
 
-        public static void EditUserEmailPassword(Config config, string email, string password)
+        public static void EditUserEmailPassword(IMailService mailService, Config config, string email, string password)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var svc = CreateMailService(config);
-                    svc.EditPassword(email, password);
+                    mailService.EditPassword(email, password);
                 }
             }
             catch (Exception ex)
@@ -750,15 +750,14 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
 
-        public static void EditUserEmailMaxSize(Config config, string email, long size)
+        public static void EditUserEmailMaxSize(IMailService mailService, Config config, string email, long size)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var svc = CreateMailService(config);
-                    svc.EditMaxSize(email, size);
+                    mailService.EditMaxSize(email, size);
                 }
             }
             catch (Exception ex)
@@ -767,15 +766,31 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
 
-        public static void EditUserEmailMaxEmailsPerDay(Config config, string email, int maxPerDay)
+        public static long GetUserEmailMaxSize(IMailService mailService, Config config, string email)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var svc = CreateMailService(config);
-                    svc.EditMaxEmailsPerDay(email, maxPerDay);
+                    return mailService.GetMaxSize(email);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to edit email account mailbox size.", ex);
+            }
+            return -1;
+        }
+
+        public static void EditUserEmailMaxEmailsPerDay(IMailService mailService, Config config, string email, int maxPerDay)
+        {
+            try
+            {
+                // If Email Server is enabled
+                if (config.EmailConfig.Enabled)
+                {
+                    mailService.EditMaxEmailsPerDay(email, maxPerDay);
                 }
             }
             catch (Exception ex)
@@ -784,15 +799,14 @@ If you recieved this email and you did not reset your password, you can ignore t
             }
         }
 
-        public static void DeleteUserEmail(Config config, string email)
+        public static void DeleteUserEmail(IMailService mailService, Config config, string email)
         {
             try
             {
                 // If Email Server is enabled
                 if (config.EmailConfig.Enabled)
                 {
-                    var svc = CreateMailService(config);
-                    svc.DeleteAccount(email);
+                    mailService.DeleteAccount(email);
                 }
             }
             catch (Exception ex)

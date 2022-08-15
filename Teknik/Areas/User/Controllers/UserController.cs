@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Http;
 using IdentityServer4.Models;
 using Teknik.Utilities.Routing;
 using Teknik.BillingCore;
+using Teknik.MailService;
 
 namespace Teknik.Areas.Users.Controllers
 {
@@ -51,11 +52,11 @@ namespace Teknik.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl)
+        public IActionResult Login(string returnUrl, [FromServices] IMailService mailService)
         {
             // Let's double check their email and git accounts to make sure they exist
             string email = UserHelper.GetUserEmailAddress(_config, User.Identity.Name);
-            if (_config.EmailConfig.Enabled && !UserHelper.UserEmailExists(_config, email))
+            if (_config.EmailConfig.Enabled && !UserHelper.UserEmailExists(mailService, _config, email))
             {
                 //UserHelper.AddUserEmail(_config, email, model.Password);
             }
@@ -102,7 +103,7 @@ namespace Teknik.Areas.Users.Controllers
         [HttpOptions]
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([Bind(Prefix = "Register")]RegisterViewModel model)
+        public async Task<IActionResult> Register([Bind(Prefix = "Register")]RegisterViewModel model, [FromServices] IMailService mailService)
         {
             model.Error = false;
             model.ErrorMessage = string.Empty;
@@ -115,7 +116,7 @@ namespace Teknik.Areas.Users.Controllers
                         model.Error = true;
                         model.ErrorMessage = "That username is not valid";
                     }
-                    if (!model.Error && !(await UserHelper.UsernameAvailable(_dbContext, _config, model.Username)))
+                    if (!model.Error && !(await UserHelper.UsernameAvailable(_dbContext, _config, mailService, model.Username)))
                     {
                         model.Error = true;
                         model.ErrorMessage = "That username is not available";
@@ -152,7 +153,7 @@ namespace Teknik.Areas.Users.Controllers
                     {
                         try
                         {
-                            await UserHelper.CreateAccount(_dbContext, _config, Url, model.Username, model.Password, model.RecoveryEmail, model.InviteCode);
+                            await UserHelper.CreateAccount(_dbContext, _config, mailService, Url, model.Username, model.Password, model.RecoveryEmail, model.InviteCode);
                         }
                         catch (Exception ex)
                         {
@@ -184,7 +185,7 @@ namespace Teknik.Areas.Users.Controllers
         // GET: Profile/Profile
         [AllowAnonymous]
         [TrackPageView]
-        public async Task<IActionResult> ViewProfile(string username)
+        public async Task<IActionResult> ViewProfile(string username, [FromServices] IMailService mailService)
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -208,13 +209,15 @@ namespace Teknik.Areas.Users.Controllers
                     model.Username = user.Username;
                     if (_config.EmailConfig.Enabled)
                     {
-                        model.Email = string.Format("{0}@{1}", user.Username, _config.EmailConfig.Domain);
+                        var email = UserHelper.GetUserEmailAddress(_config, user.Username);
+                        if (UserHelper.UserEmailEnabled(mailService, _config, email))
+                            model.Email = email;
                     }
 
                     // Get the user claims for this user
                     model.IdentityUserInfo = await IdentityHelper.GetIdentityUserInfo(_config, user.Username);
 
-                    model.LastSeen = UserHelper.GetLastAccountActivity(_dbContext, _config, user.Username, model.IdentityUserInfo);
+                    model.LastSeen = UserHelper.GetLastAccountActivity(_dbContext, _config, mailService, user.Username, model.IdentityUserInfo);
 
                     model.UserSettings = user.UserSettings;
                     model.BlogSettings = user.BlogSettings;
@@ -745,7 +748,7 @@ namespace Teknik.Areas.Users.Controllers
             return Json(new { error = "Invalid Parameters" });
         }
 
-        public async Task<IActionResult> ChangePassword(AccountSettingsViewModel settings)
+        public async Task<IActionResult> ChangePassword(AccountSettingsViewModel settings, [FromServices] IMailService mailService)
         {
 
             if (ModelState.IsValid)
@@ -775,7 +778,7 @@ namespace Teknik.Areas.Users.Controllers
                             return Json(new { error = "Password resets are disabled" });
 
                         // Change their password
-                        await UserHelper.ChangeAccountPassword(_dbContext, _config, user.Username, settings.CurrentPassword, settings.NewPassword);
+                        await UserHelper.ChangeAccountPassword(_dbContext, _config, mailService, user.Username, settings.CurrentPassword, settings.NewPassword);
 
                         return Json(new { result = true });
                     }
@@ -791,7 +794,7 @@ namespace Teknik.Areas.Users.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete()
+        public async Task<IActionResult> Delete([FromServices] IMailService mailService)
         {
             if (ModelState.IsValid)
             {
@@ -800,7 +803,7 @@ namespace Teknik.Areas.Users.Controllers
                     User user = UserHelper.GetUser(_dbContext, User.Identity.Name);
                     if (user != null)
                     {
-                        await UserHelper.DeleteAccount(_dbContext, _config, user);
+                        await UserHelper.DeleteAccount(_dbContext, _config, mailService, user);
 
                         // Sign Out
                         await HttpContext.SignOutAsync("Cookies");
@@ -945,7 +948,7 @@ namespace Teknik.Areas.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SetUserPassword(SetPasswordViewModel passwordViewModel)
+        public async Task<IActionResult> SetUserPassword(SetPasswordViewModel passwordViewModel, [FromServices] IMailService mailService)
         {
             if (ModelState.IsValid)
             {
@@ -973,7 +976,7 @@ namespace Teknik.Areas.Users.Controllers
 
                             try
                             {
-                                await UserHelper.ResetAccountPassword(_dbContext, _config, username, code, passwordViewModel.Password);
+                                await UserHelper.ResetAccountPassword(_dbContext, _config, mailService, username, code, passwordViewModel.Password);
 
                                 _session.Remove(_AuthSessionKey);
                                 _session.Remove("AuthCode");

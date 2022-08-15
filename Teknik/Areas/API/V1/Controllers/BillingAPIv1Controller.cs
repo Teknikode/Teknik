@@ -14,6 +14,7 @@ using Teknik.BillingCore.Models;
 using Teknik.Configuration;
 using Teknik.Data;
 using Teknik.Logging;
+using Teknik.MailService;
 
 namespace Teknik.Areas.API.V1.Controllers
 {
@@ -21,7 +22,7 @@ namespace Teknik.Areas.API.V1.Controllers
     {
         public BillingAPIv1Controller(ILogger<Logger> logger, Config config, TeknikEntities dbContext) : base(logger, config, dbContext) { }
 
-        public async Task<IActionResult> HandleCheckoutCompleteEvent()
+        public async Task<IActionResult> HandleCheckoutCompleteEvent([FromServices] IMailService mailService)
         {
             if (!_config.BillingConfig.Enabled)
                 return Forbid();
@@ -38,13 +39,13 @@ namespace Teknik.Areas.API.V1.Controllers
             {
                 var subscription = billingService.GetSubscription(session.SubscriptionId);
 
-                BillingHelper.ProcessSubscription(_config, _dbContext, session.CustomerId, subscription);
+                BillingHelper.ProcessSubscription(_config, _dbContext, mailService, session.CustomerId, subscription);
             }
 
             return Ok();
         }
 
-        public async Task<IActionResult> HandleSubscriptionChange()
+        public async Task<IActionResult> HandleSubscriptionChange([FromServices] IMailService mailService)
         {
             if (!_config.BillingConfig.Enabled)
                 return Forbid();
@@ -60,7 +61,7 @@ namespace Teknik.Areas.API.V1.Controllers
             if (subscriptionEvent == null)
                 return BadRequest();
 
-            BillingHelper.ProcessSubscription(_config, _dbContext, subscriptionEvent.CustomerId, subscriptionEvent);
+            BillingHelper.ProcessSubscription(_config, _dbContext, mailService, subscriptionEvent.CustomerId, subscriptionEvent);
 
             return Ok();
         }

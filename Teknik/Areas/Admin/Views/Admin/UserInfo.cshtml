@@ -6,6 +6,7 @@
     var deleteUserURL = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "DeleteAccount" })';
     var editAccountType = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "EditUserAccountType" })';
     var editAccountStatus = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "EditUserAccountStatus" })';
+    var editEmailActive = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "EditEmailActive" })';
     var createInviteCode = '@Url.SubRouteUrl("admin", "Admin.Action", new { action = "CreateInviteCode" })';
     var username = '@Model.Username';
 </script>
@@ -49,6 +50,36 @@
                     }
                 }
             </select>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-2 col-sm-offset-1">
+            Email:
+        </div>
+        <div class="col-sm-8">
+            @Model.Email
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-2 col-sm-offset-1">
+            Email Active:
+        </div>
+        <div class="col-sm-8">
+            <select class="userEmailActive">
+                <!option @(Model.EmailEnabled ? "selected" : string.Empty)>Enabled</!option>
+                <!option @(!Model.EmailEnabled ? "selected" : string.Empty)>Disabled</!option>
+            </select>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-2 col-sm-offset-1">
+            Email Max Size:
+        </div>
+        <div class="col-sm-8">
+            <input class="emailMaxSize" value="@Model.MaxEmailStorage" />
         </div>
     </div>
     <br />

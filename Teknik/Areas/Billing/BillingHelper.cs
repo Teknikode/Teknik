@@ -6,6 +6,7 @@ using Teknik.BillingCore;
 using Teknik.BillingCore.Models;
 using Teknik.Configuration;
 using Teknik.Data;
+using Teknik.MailService;
 
 namespace Teknik.Areas.Billing
 {
@@ -41,7 +42,7 @@ namespace Teknik.Areas.Billing
             }
         }
 
-        public static void ProcessSubscription(Config config, TeknikEntities db, string customerId, Subscription subscription)
+        public static void ProcessSubscription(Config config, TeknikEntities db, IMailService mailService, string customerId, Subscription subscription)
         {
             // They have paid, so let's get their subscription and update their user settings
             var user = db.Users.FirstOrDefault(u => u.BillingCustomer != null &&
@@ -51,12 +52,12 @@ namespace Teknik.Areas.Billing
                 var isActive = subscription.Status == SubscriptionStatus.Active;
                 foreach (var price in subscription.Prices)
                 {
-                    ProcessPrice(config, db, user, price, isActive);
+                    ProcessPrice(config, db, mailService, user, price, isActive);
                 }
             }
         }
 
-        public static void ProcessPrice(Config config, TeknikEntities db, User user, Price price, bool active)
+        public static void ProcessPrice(Config config, TeknikEntities db, IMailService mailService, User user, Price price, bool active)
         {
             // What type of subscription is this
             if (config.BillingConfig.UploadProductId == price.ProductId)
@@ -68,7 +69,7 @@ namespace Teknik.Areas.Billing
             }
             else if (config.BillingConfig.EmailProductId == price.ProductId)
             {
-                SetEmailLimits(config, user, price.Storage, active);
+                SetEmailLimits(config, mailService, user, price.Storage, active);
             }
         }
 
@@ -81,18 +82,18 @@ namespace Teknik.Areas.Billing
             db.SaveChanges();
         }
 
-        public static void SetEmailLimits(Config config, User user, long storage, bool active)
+        public static void SetEmailLimits(Config config, IMailService mailService, User user, long storage, bool active)
         {
             // Process an email subscription
             string email = UserHelper.GetUserEmailAddress(config, user.Username);
             if (active)
             {
-                UserHelper.EnableUserEmail(config, email);
-                UserHelper.EditUserEmailMaxSize(config, email, storage);
+                UserHelper.EnableUserEmail(mailService, config, email);
+                UserHelper.EditUserEmailMaxSize(mailService, config, email, storage);
             }
             else
             {
-                UserHelper.DisableUserEmail(config, email);
+                UserHelper.DisableUserEmail(mailService, config, email);
             }
         }
     }

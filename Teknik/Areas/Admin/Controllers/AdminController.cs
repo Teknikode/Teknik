@@ -18,6 +18,7 @@ using Teknik.ViewModels;
 using Teknik.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Teknik.MailService;
 
 namespace Teknik.Areas.Admin.Controllers
 {
@@ -45,7 +46,7 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpGet]
         [TrackPageView]
-        public async Task<IActionResult> UserInfo(string username)
+        public async Task<IActionResult> UserInfo(string username, [FromServices] IMailService mailService)
         {
             if (UserHelper.UserExists(_dbContext, username))
             {
@@ -59,6 +60,13 @@ namespace Teknik.Areas.Admin.Controllers
                     model.AccountType = info.AccountType.Value;
                 if (info.AccountStatus.HasValue)
                     model.AccountStatus = info.AccountStatus.Value;
+
+                var email = UserHelper.GetUserEmailAddress(_config, username);
+                if (UserHelper.UserEmailExists(mailService, _config, email))
+                    model.Email = email;
+                model.EmailEnabled = UserHelper.UserEmailEnabled(mailService, _config, email);
+                model.MaxEmailStorage = UserHelper.GetUserEmailMaxSize(mailService, _config, email);
+
                 return View(model);
             }
             return new StatusCodeResult(StatusCodes.Status404NotFound);
@@ -89,11 +97,12 @@ namespace Teknik.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetUserSearchResults(string query, [FromServices] ICompositeViewEngine viewEngine)
+        public async Task<IActionResult> GetUserSearchResults(string query, [FromServices] ICompositeViewEngine viewEngine, [FromServices] IMailService mailService)
         {
             List<UserResultViewModel> models = new List<UserResultViewModel>();
 
-            var results = _dbContext.Users.Where(u => u.Username.Contains(query)).ToList();
+            var results = _dbContext.Users.Where(u => u.Username.Contains(query) || 
+                                                      (u.BillingCustomer != null && u.BillingCustomer.CustomerId == query)).ToList();
             if (results != null)
             {
                 foreach (User user in results)
@@ -110,7 +119,7 @@ namespace Teknik.Areas.Admin.Controllers
                         if (info.CreationDate.HasValue)
                             model.JoinDate = info.CreationDate.Value;
 
-                        model.LastSeen = await UserHelper.GetLastAccountActivity(_dbContext, _config, user.Username);
+                        model.LastSeen = await UserHelper.GetLastAccountActivity(_dbContext, _config, mailService, user.Username);
                         models.Add(model);
                     }
                     catch (Exception)
@@ -192,12 +201,12 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditUserAccountType(string username, AccountType accountType)
+        public async Task<IActionResult> EditUserAccountType(string username, AccountType accountType, [FromServices] IMailService mailService)
         {
             if (UserHelper.UserExists(_dbContext, username))
             {
                 // Edit the user's account type
-                await UserHelper.EditAccountType(_dbContext, _config, username, accountType);
+                await UserHelper.EditAccountType(_dbContext, _config, mailService, username, accountType);
                 return Json(new { result = new { success = true } });
             }
             return new StatusCodeResult(StatusCodes.Status404NotFound);
@@ -205,12 +214,28 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditUserAccountStatus(string username, AccountStatus accountStatus)
+        public async Task<IActionResult> EditUserAccountStatus(string username, AccountStatus accountStatus, [FromServices] IMailService mailService)
         {
             if (UserHelper.UserExists(_dbContext, username))
             {
                 // Edit the user's account type
-                await UserHelper.EditAccountStatus(_dbContext, _config, username, accountStatus);
+                await UserHelper.EditAccountStatus(_dbContext, _config, mailService, username, accountStatus);
+                return Json(new { result = new { success = true } });
+            }
+            return new StatusCodeResult(StatusCodes.Status404NotFound);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditEmailActive(string username, string active, [FromServices] IMailService mailService)
+        {
+            if (UserHelper.UserExists(_dbContext, username))
+            {
+                var email = UserHelper.GetUserEmailAddress(_config, username);
+                if (active == "Enabled")
+                    UserHelper.EnableUserEmail(mailService, _config, email);
+                else
+                    UserHelper.DisableUserEmail(mailService, _config, email);
                 return Json(new { result = new { success = true } });
             }
             return new StatusCodeResult(StatusCodes.Status404NotFound);
@@ -241,14 +266,14 @@ namespace Teknik.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteAccount(string username)
+        public async Task<IActionResult> DeleteAccount(string username, [FromServices] IMailService mailService)
         {
             try
             {
                 User user = UserHelper.GetUser(_dbContext, username);
                 if (user != null)
                 {
-                    await UserHelper.DeleteAccount(_dbContext, _config, user);
+                    await UserHelper.DeleteAccount(_dbContext, _config, mailService, user);
                     return Json(new { result = true });
                 }
             }

@@ -20,6 +20,10 @@ $(function () {
                         $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                     }
                 }
+                else {
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>No HTML Response.</div>');
+                }
             }
         });
     });
@@ -42,6 +46,37 @@ $(function () {
                         $("#top_msg").css('display', 'inline', 'important');
                         $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
                     }
+                }
+                else {
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>No HTML Response.</div>');
+                }
+            }
+        });
+    });
+
+    $('.userEmailActive').on('change', function () {
+        var selected = $(this).find("option:selected").val();
+
+        $.ajax({
+            type: "POST",
+            url: editEmailActive,
+            data: AddAntiForgeryToken({ username: username, active: selected }),
+            success: function (html) {
+                if (html) {
+                    if (html.result.success) {
+                        $("#top_msg").css('display', 'none');
+                        $("#top_msg").html('');
+                        alert('Successfully changed the email active status for \'' + username + '\' to: ' + selected);
+                    }
+                    else {
+                        $("#top_msg").css('display', 'inline', 'important');
+                        $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + parseErrorMessage(html) + '</div>');
+                    }
+                }
+                else {
+                    $("#top_msg").css('display', 'inline', 'important');
+                    $("#top_msg").html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>No HTML Response.</div>');
                 }
             }
         });
