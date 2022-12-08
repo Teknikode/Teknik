@@ -13,7 +13,7 @@
     <PackageReference Include="Markdig" Version="0.30.2" />
     <PackageReference Include="Mime-Detective" Version="0.0.6-beta4" />
     <PackageReference Include="MySql.Data" Version="8.0.29" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.10" />
   </ItemGroup>
 
